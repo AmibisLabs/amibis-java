@@ -1,0 +1,56 @@
+<hmtl>
+<body>
+<P>
+This package contains the classes use to create a service according to 
+the definition given in the <i><b>B</b>asic <b>I</b>nterconnexion <b>P</b>rotocol</i> (BIP).
+A service BIP implies a registration to DNS-SD, and the creation of a TCP service for the service control.
+This package contains also classes to discover service, and to do queries to the control port.
+</P>
+<P>
+The registration to DNS-SD enables to discover this service.
+The service are registered to DNS-SD with the type "_bip._tcp".
+The control port enables to obtain a description of the service through the list 
+of its inputs, its outputs and its variables.
+</P>
+
+<P><b>How to create a service ?</b></P>
+<P>
+To create a service, the user must extend one of these two classes:
+<ul><li>ControlServer
+</li><li>ServiceFromXml
+</li></ul>
+The second creates a ControlServer and then load a XML description that contains 
+data about variables, input and output. These data are for example name, description.
+</P>
+<P>
+The methods that can need to be reimplemented are modifVariable and connect called to answer queries
+about a modification of a variable or a connection to do.
+</P>
+<P>
+The item of a service : variable, input, output are manipulated through the 
+classes VariableAttribut, and InOutputAttribut;
+</P>
+
+<P><b>How to find a service ?</b></P>
+<P>
+The class BrowseForService enables to list the service registered on DNS-SD with a given type.
+</P>
+<P>
+The class WaitForBipService enables to find a particular service registered on DNS-SD with the type "_bip._tcp".
+</P>
+
+<P><b>How to question a service ?</b></P>
+<P>To interact with the control port, there is the class ControlClient.
+It enables to send query, then it waits for answer, and parses it.
+With BIP, the peer mus be identified by an identifier, 
+it can be obtained by using the static method BipService.GenerateServiceId.
+</P>
+<P>
+Note : A good way to obtain a ControlClient instance for a service is to 
+used the class BipService, and call the method initControlClient.
+</P>
+
+<P><i>See the description of each class for more information.</i></P>
+
+</body>
+</hmtl>

@@ -1,0 +1,79 @@
+<HTML>
+<BODY>
+
+<P>
+This package contains the class use to exchange messages according to the 
+<i><b>B</b>asic <b>I</b>nterconnexion <b>P</b>rotocol</i> (BIP).
+</P>
+
+<P>
+<ul>
+<li>TcpServer and TcpClient enable to exhange message over TCP.
+</li><li>Message is used to contains the exchanged messages.
+</li><li>MsgManager enable to store the received messages, to process them later.
+</li></ul>
+</P>
+
+<P>
+<b>Some information about BIP for the message exchange :</b>
+</P>
+<P>
+Data that transits over any link with service obeys the following message format.
+Messages are the lowest-level of the protocol, i.e. what transits over a network
+connection to a service. They contain a fixed-size (34 bytes) header and a
+variable-size payload; the header is the concatenation of the following ASCII
+strings:
+<ol>
+<li> Magic header (7 bytes). It is a string of the form ``BIP/X.Y``, where ``X``
+   is the major version of the protocol, ``Y`` is the minor version.
+   Currently all services should use ``BIP/1.0``.
+</li>
+<li> Space (1 byte).
+</li>
+<li> Peer identifier (8 bytes). A unique identifier for the peer that emitted the
+   message. It represents a 32-bit unsigned integer formatted as hex. 
+   
+   For peers that are services, the first 16 bits may represent the service
+   startup time in seconds since the UNIX epoch, modulo 65536, and the last 16
+   bits may be randomly chosen.
+</li>   
+<li> Space (1 byte).
+</li>
+<li> Message identifier (8 bytes). A message identifier that is unique for the
+   (simplex) link. It represents a 32-bit unsigned integer formatted
+   as hex. It is incremented for each sent message and starts from 0. The
+   message identifier 0 is used during the link establishment process.
+</li>   
+<li> Space (1 byte).
+</li>
+<li> Payload size (8 bytes). The number of bytes in the message contents. It
+   represents a 32-bit integer formatted as hex.
+</li>
+</ol>
+</P>
+
+<P>   
+Both the header and the payload are immediately followed by the ``&lt;cr&gt;``
+carriage-return plus ``&lt;lf&gt;`` line-feed line termination sequence (bytes
+``0x0A`` and ``0x0D``), which are not taken into account for length
+calculations. In the case of an empty payload (length zero), the termination
+sequence must still be appended; in other words, the message end with two
+successive ``&lt;cr&gt;&lt;lf&gt;`` sequences.
+</P>
+
+<P>
+Example message :
+<ul> <li>BIP/1.0 A47F64A1 00000000 0000000&lt;cr&gt;&lt;lf&gt;&lt;cr&gt;&lt;lf&gt;
+</li><li>BIP/1.0 A47F64A1 00000000 000000D&lt;cr&gt;&lt;lf&gt;hello, world!&lt;cr&gt;&lt;lf&gt;
+</ul>
+</P>
+
+<P>
+A service accepts TCP link on one TCP port for control links, and one TCP port
+for each input and output. For inputs, it also accepts messages over UDP if a
+TCP link has been established (see below). For outputs, it can emit over UDP if
+requested. To establish the link, after the opening of the TCP connection, an empty message is exchanged.
+</P>
+
+</BODY>
+</HTML>
