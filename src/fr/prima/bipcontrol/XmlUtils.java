@@ -95,7 +95,10 @@ public class XmlUtils {
             }
         }
         try {
-            org.w3c.dom.Document doc = parser.parse(is);
+            org.w3c.dom.Document doc;
+            synchronized (parser) {
+                doc = parser.parse(is);
+            }
             return doc;
         } catch (SAXException e) {
             e.printStackTrace();

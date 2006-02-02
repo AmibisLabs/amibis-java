@@ -267,7 +267,10 @@ public class ServiceXmlTree implements ServiceEventListener{
                             Element eltVar = doc.createElement(va.getName());
                             if(!va.getValueStr().equals("")){
                                 //System.out.println("ServiceXmlTree:"+va.getValueStr());
-                                Document tmpDoc = docBuilder.parse(new ByteArrayInputStream(va.getValueStr().getBytes()));
+                                Document tmpDoc;
+                                synchronized (docBuilder) {
+                                    tmpDoc = docBuilder.parse(new ByteArrayInputStream(va.getValueStr().getBytes()));
+                                }
                                 Node n = doc.importNode(tmpDoc.getDocumentElement(), true);
                                 eltVar.appendChild(n);
                             }
@@ -298,7 +301,10 @@ public class ServiceXmlTree implements ServiceEventListener{
             String str = ioa.getFormatDescription();
             if(str != null){
                 try{
-                    Document tmpDoc = docBuilder.parse(new ByteArrayInputStream(str.getBytes()));
+                    Document tmpDoc;
+                    synchronized (docBuilder) {
+                        tmpDoc = docBuilder.parse(new ByteArrayInputStream(str.getBytes()));
+                    }
                     Node n = doc.importNode(tmpDoc.getDocumentElement(), true);
                     ioElt.appendChild(n);                            
                 }catch(IOException e){
