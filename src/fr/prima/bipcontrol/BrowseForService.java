@@ -33,7 +33,7 @@ public class BrowseForService implements ResolveListener, BrowseListener {
     }
     
     /** Object associated to the query for browsing */
-    private DNSSDService dnssdService;
+    //private DNSSDService dnssdService;
 
     /** Type of registration looked for */
     private String regType;
@@ -103,7 +103,8 @@ public class BrowseForService implements ResolveListener, BrowseListener {
      */
     public void startBrowse() {
         try {
-            dnssdService = DNSSD.browse(0, 0, regType, null, this);
+            //dnssdService =
+            DNSSD.browse(0, 0, regType, null, this);
         } catch (DNSSDException e) {
             System.err.println("Error in StartBrowse");
             e.printStackTrace();
