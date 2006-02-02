@@ -1,9 +1,10 @@
 package fr.prima.bipcontrol ;
 
-import fr.prima.bipcom.MsgSocket;
-import fr.prima.bipcom.interf.BipMessageListener;
 import java.io.IOException;
 import java.util.Random;
+
+import fr.prima.bipcom.MsgSocket;
+import fr.prima.bipcom.interf.BipMessageListener;
 
 /**
  * Structure to group the data about a service. Group the data extracted from DNS-SD. Provides also methods to generate id for BIP service  (used in BIP exchange), to manipulate the text records.
@@ -131,17 +132,22 @@ public class BipService extends Service{
         return null;
     }
     
-    
-    private static Random randomForThisProcess = new Random(System.currentTimeMillis());
+    private static Random randomForThisJVM = new Random(System.currentTimeMillis());
     /**
      * Generate an id for a BIP service
-     * based on a random number and the current time
+     * based on a random number and the current time.
+     * 
+     * Warning !!! If two jvms init their variables at the same currentTimeMillis
+     * and call generateServiceId at the same currentTimeMillis there *will* be a problem.
+     * 
+     * Note that it is virtually not guaranteed that this id is unique.
+     *  
      * @return a new id for a service
      */
     public static int generateServiceId() {
-        System.out.println(Thread.currentThread().getId() + ": " + randomForThisProcess);
+        //System.out.println(Thread.currentThread().getId() + " , "+ Thread.currentThread().getName() + " , "+ Thread.currentThread().getThreadGroup().getName() + ": " + randomForThisJVM);
         int partTime = (int) (System.currentTimeMillis() & 0x0000FFFF);
-        double r = Math.random();
+        double r = randomForThisJVM.nextDouble();
         int partRandom = (int)((int)( r * 0xEFFFFFFF) & 0xFFFF0000);
         return partTime + partRandom;
         //return (int) (System.currentTimeMillis() & 0xFFFFFFFF);

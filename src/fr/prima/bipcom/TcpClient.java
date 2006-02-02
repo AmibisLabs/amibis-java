@@ -42,7 +42,7 @@ public class TcpClient extends MsgSocketTCP {
         Socket socket = new Socket();
         if (host.endsWith(".local.")) {
             host = host.replaceAll("[.]local[.]$","");
-            System.out.println(host);
+            //System.out.println(host);
         }
         InetSocketAddress endpoint = new InetSocketAddress(host, port);
         socket.connect(endpoint);
