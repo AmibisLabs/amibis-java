@@ -85,7 +85,7 @@ public class XmlUtils {
     /** parser used to change message into XML tree */
     static public DocumentBuilder parser = null;
     
-    static public Document changeStringToXmlTree(InputStream is) {
+    static synchronized public Document changeStringToXmlTree(InputStream is) {
         if(parser == null){
             try{
                 parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -95,10 +95,7 @@ public class XmlUtils {
             }
         }
         try {
-            org.w3c.dom.Document doc;
-            synchronized (parser) {
-                doc = parser.parse(is);
-            }
+            org.w3c.dom.Document doc = parser.parse(is);
             return doc;
         } catch (SAXException e) {
             e.printStackTrace();
