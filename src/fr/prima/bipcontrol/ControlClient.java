@@ -597,7 +597,7 @@ public class ControlClient implements BipMessageListener {
                             msgAnswer = null;
                             if (checkMessage(m, theMsgId)) return m;
                         }else{
-                            System.out.println("answer null");
+                            System.out.println("answer null from "+this.getPeerId());
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
