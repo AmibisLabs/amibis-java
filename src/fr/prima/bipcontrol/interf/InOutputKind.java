@@ -12,7 +12,7 @@ public class InOutputKind {
             "output");
 
     public static final InOutputKind InOutput = new InOutputKind("In_Output",
-            "in_output");
+            "inoutput");
 
     /** String for representation of an input/output kind */
     private String kind = null;
