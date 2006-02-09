@@ -6,9 +6,9 @@
 package fr.prima.bipcom;
 
 
-import java.net.Socket;
-import java.net.InetSocketAddress;
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 
 /**
  * TCP Client. Exchange of BIP message over TCP connexion.
@@ -27,6 +27,17 @@ public class TcpClient extends MsgSocketTCP {
     public TcpClient(int serviceId) {
         super(serviceId);
     }
+    
+    public static boolean stripTrailingDotLocalDot = true;
+    static {
+        try {
+            stripTrailingDotLocalDot = null == System.getenv("BIPNS_USE_MSDN_NAME_SOLVING");
+        } catch (SecurityException e) {
+            // Access to environment variable is forbidden
+            System.out.println("Warning: access to environment variables is forbidden.");
+        }        
+        
+    };
 
     /**
      * Connexion to a server.
@@ -40,7 +51,7 @@ public class TcpClient extends MsgSocketTCP {
      */
     public void connectTo(String host, int port) throws IOException {
         Socket socket = new Socket();
-        if (host.endsWith(".local.")) {
+        if (stripTrailingDotLocalDot && host.endsWith(".local.")) {
             host = host.replaceAll("[.]local[.]$","");
             //System.out.println(host);
         }
