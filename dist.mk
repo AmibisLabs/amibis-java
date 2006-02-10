@@ -1,7 +1,15 @@
 
 
 
-dist-on-venus:
+dist-on-oberon: prepare
+	scp bipProject.jar ${USER}@oberon:/var/www/release
+	mv bipProject.jar ${HOME}/tmp
+
+dist-on-venus: prepare
+	scp bipProject.jar ${USER}@venus:/var/www/Prima/prima/people/${USER}/release
+	mv bipProject.jar ${HOME}/tmp
+
+prepare:
 	rm -rf ,,build
 	cp -r bin ,,build
 	#cp -r ../ServicesJava/bin/* ,,build
@@ -11,5 +19,3 @@ dist-on-venus:
 	#echo "Class-Path: dns_sd.jar bipProject.jar" >> ,,build/MANIFEST.MF
 	#cd ,,build && jar mcvf MANIFEST.MF ../bipTools.jar .
 	cd ,,build && jar cvf ../bipProject.jar .
-	scp bipProject.jar ${USER}@venus:/var/www/Prima/prima/people/${USER}/release
-	mv bipProject.jar ${HOME}/tmp
