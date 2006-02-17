@@ -2,10 +2,10 @@ package fr.prima.bipcontrol;
 
 
 
-import fr.prima.bipcontrol.interf.InOutputKind;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Vector;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -13,11 +13,16 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import fr.prima.bipcontrol.interf.InOutputKind;
+import fr.prima.bipdnssd.interf.ServiceEvent;
+import fr.prima.bipdnssd.interf.ServiceEventListener;
 
 
 public class ServiceXmlTree implements ServiceEventListener{
@@ -213,7 +218,7 @@ public class ServiceXmlTree implements ServiceEventListener{
             java.util.Iterator<ServiceElement> it = serviceSet.iterator();
             while(it.hasNext()){
                 ServiceElement se = it.next();
-                if(se.service.fullName.equals(serviceName))
+                if(se.service.getFullName().equals(serviceName))
                     return se;
             }
             return null;
@@ -253,7 +258,7 @@ public class ServiceXmlTree implements ServiceEventListener{
                 ctrlClient.queryCompleteDescription();
                 
                 elt = doc.createElement("service");
-                elt.setAttribute("name", s.fullName);
+                elt.setAttribute("name", s.getFullName());
                 
                 
                 java.util.Iterator<VariableAttribut> it = null;
@@ -337,33 +342,33 @@ public class ServiceXmlTree implements ServiceEventListener{
     
     public void serviceEventReceived(ServiceEvent e) {
         if(e.isFound()){
-            insertAService(new BipService(serviceId, e.getService()));                
+            insertAService(new BipService(serviceId, e.getServiceInformation()));                
         }else{
-            removeAService(e.getService().fullName);
+            removeAService(e.getServiceInformation().getFullName());
         }
     }
    
-    public static void main(String arg[]){
-        ServiceXmlTree sxt = new ServiceXmlTree(BipService.generateServiceId());
-        
-        BrowseForService bfs = new BrowseForService(BipService.REG_TYPE);
-        bfs.addListener(sxt);
-        bfs.startBrowse();        
-        /*while(true){
-        try{
-          
-            System.out.println(elementToString(sxt.rootNode));
-            Thread.sleep(1000);
-        }catch(InterruptedException e){}
-        }*/
-        
-/*        BipService[] bs = sxt.getWantedService("//service/*");
-        if(bs == null){
-            System.out.println("No Service");
-        }else{
-            for(int i=0; i<bs.length; i++){
-                System.out.println("--> "+ bs[i].fullName);
-            }
-        }*/
-    }
+//    public static void main(String arg[]){
+//        ServiceXmlTree sxt = new ServiceXmlTree(BipService.generateServiceId());
+//        
+//        BrowseForService bfs = new BrowseForService(BipService.REG_TYPE);
+//        bfs.addListener(sxt);
+//        bfs.startBrowse();        
+//        /*while(true){
+//        try{
+//          
+//            System.out.println(elementToString(sxt.rootNode));
+//            Thread.sleep(1000);
+//        }catch(InterruptedException e){}
+//        }*/
+//        
+///*        BipService[] bs = sxt.getWantedService("//service/*");
+//        if(bs == null){
+//            System.out.println("No Service");
+//        }else{
+//            for(int i=0; i<bs.length; i++){
+//                System.out.println("--> "+ bs[i].fullName);
+//            }
+//        }*/
+//    }
 }

@@ -1,21 +1,16 @@
 
 
 
-dist-on-oberon: prepare
-	scp bipProject.jar ${USER}@oberon:/var/www/release
-	mv bipProject.jar ${HOME}/tmp
+DISTON=${USER}@oberon:/var/www/release
+BASEJAR=bipProject.jar
+CLASSDIR=bin
 
-dist-on-venus: prepare
-	scp bipProject.jar ${USER}@venus:/var/www/Prima/prima/people/${USER}/release
-	mv bipProject.jar ${HOME}/tmp
+dist: prepare
+	scp $(BASEJAR) $(DISTON)
+	mv $(BASEJAR) ${HOME}/tmp
 
 prepare:
 	rm -rf ,,build
-	cp -r bin ,,build
-	#cp -r ../ServicesJava/bin/* ,,build
-	#rm -rf ,,build/src
-	#cd ,,build && jar xvf ../../ServicesJava/archive/external/dns_sd.jar
-	#echo "Main-Class: fr.prima.bipgui.BipTools" > ,,build/MANIFEST.MF
-	#echo "Class-Path: dns_sd.jar bipProject.jar" >> ,,build/MANIFEST.MF
-	#cd ,,build && jar mcvf MANIFEST.MF ../bipTools.jar .
-	cd ,,build && jar cvf ../bipProject.jar .
+	cp -r $(CLASSDIR) ,,build
+	cd ,,build && jar cvf ../$(BASEJAR) .
+

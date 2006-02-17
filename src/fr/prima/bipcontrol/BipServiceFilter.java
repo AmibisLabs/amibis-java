@@ -5,9 +5,9 @@ package fr.prima.bipcontrol ;
  * with the name whished by the user, to check other properties : it enabled to connect to the control server
  * to check the existence of particular output, the values of some variables, ... 
  *
- * @author Sebastien Pesnel
+ * @author Sebastien Pesnel refactoring emonet
  */
-public interface WaitForTheGoodBipService {
+public interface BipServiceFilter {
     /** Call on each service with a good name
      * @param s the data about the service providing by DNS-SD
      * @return true is this service is ok according to the wishes of the user,

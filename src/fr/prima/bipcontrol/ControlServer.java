@@ -1,15 +1,17 @@
 package fr.prima.bipcontrol ;
 
-import fr.prima.bipcom.ComTools;
-import fr.prima.bipcom.TcpServer;
-import fr.prima.bipcontrol.interf.InOutputKind;
-import fr.prima.bipcontrol.interf.VariableChangeListener;
-
 import java.util.Set;
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import fr.prima.bipcom.ComTools;
+import fr.prima.bipcom.TcpServer;
+import fr.prima.bipcontrol.interf.InOutputKind;
+import fr.prima.bipcontrol.interf.VariableChangeListener;
+import fr.prima.bipdnssd.interf.ServiceRegistration;
 
 
 /**
@@ -18,7 +20,7 @@ import org.w3c.dom.NodeList;
  * @see fr.prima.bipcontrol.VariableAttribut
  * @see fr.prima.bipcontrol.InOutputAttribut
  * @author  Sebastien Pesnel  
- * Refactoring by Patrick Reignier
+ * Refactoring by Patrick Reignier and emonet
  * Adding the stop method to unregister the bip service (Patrick Reignier)
  */
 public class ControlServer extends XmlMsgManager implements
@@ -64,7 +66,7 @@ public class ControlServer extends XmlMsgManager implements
     private Thread threadProcessMsg = null;
 
     /** Object to register the service to DNS-SD */
-    private RegisterBipService registerBipService = null;
+    private ServiceRegistration serviceRegistration = null;
 
     /**
      * Create a new instance of ControlServer.
@@ -75,7 +77,7 @@ public class ControlServer extends XmlMsgManager implements
     public ControlServer(String serviceName) {
         initDefaultVar();
         
-        registerBipService = new RegisterBipService(serviceName);
+        serviceRegistration = BipService.dnssdFactory.createServiceRegistration(serviceName, BipService.REG_TYPE);
     }
     
     /**
@@ -87,19 +89,19 @@ public class ControlServer extends XmlMsgManager implements
     public ControlServer() {
         initDefaultVar();
         
-        registerBipService = new RegisterBipService("default_name");
+        serviceRegistration = BipService.dnssdFactory.createServiceRegistration("default_name", BipService.REG_TYPE);
     }
     
     public void stop()
     {
-       registerBipService.stop() ;
+       serviceRegistration.unregister() ;
     }
     
     /** Enable to change the service name. 
      * Must be called before service registration,
      * that is to say before a call to the startServer method. */
     public void setServiceName(String serviceName){
-        registerBipService.setServiceName(serviceName);
+        serviceRegistration.setName(serviceName);
     }
     
     /** create the default variables for a service */
@@ -169,7 +171,7 @@ public class ControlServer extends XmlMsgManager implements
         while (it.hasNext()) {
             InOutputAttribut ioa = it.next();
 
-            registerBipService.addProperty(ioa.getName(), ioa
+            serviceRegistration.addProperty(ioa.getName(), ioa
                     .generateRecordData());
 
             if (ioa.isInput()) {
@@ -190,15 +192,14 @@ public class ControlServer extends XmlMsgManager implements
             inOutputRecord = inOutputRecord.substring(0, inOutputRecord
                     .length() - 1);
 
-        registerBipService
-                .addProperty("owner", System.getProperty("user.name"));
+        serviceRegistration.addProperty("owner", System.getProperty("user.name"));
 
-        registerBipService.addProperty("peerId", fr.prima.bipcom.MsgSocket.intTo8HexString(serviceId));
-        registerBipService.addProperty("inputs", inputRecord);
-        registerBipService.addProperty("outputs", outputRecord);
-        registerBipService.addProperty("inoutputs", inOutputRecord);
+        serviceRegistration.addProperty("peerId", fr.prima.bipcom.MsgSocket.intTo8HexString(serviceId));
+        serviceRegistration.addProperty("inputs", inputRecord);
+        serviceRegistration.addProperty("outputs", outputRecord);
+        serviceRegistration.addProperty("inoutputs", inOutputRecord);
 
-        return registerBipService.register(port);
+        return serviceRegistration.register(port);
     }
 
     /**
@@ -262,13 +263,13 @@ public class ControlServer extends XmlMsgManager implements
 
     /** @return the service name */
     public String getServiceName(){
-        return  registerBipService.getName();
+        return  serviceRegistration.getName();
     }
     /** Access to the name created during registration : 
      * available only after registration.
      * @return the service name kept in registration */
     public String getRegisteredServiceName(){
-        return registerBipService.getRegisteredName();
+        return serviceRegistration.getRegisteredName();
     }
     
     /** @return the status value */

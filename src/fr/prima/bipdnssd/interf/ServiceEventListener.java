@@ -1,4 +1,6 @@
-package fr.prima.bipcontrol ;
+package fr.prima.bipdnssd.interf ;
+
+
 
 /**
  * Listener interface for service events.

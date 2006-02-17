@@ -4,9 +4,10 @@
  */
 package fr.prima.bipcontrol ;
 
+
 /**
  * Wait for several BIP services. This class enables to search in the same time several BIP services. Then it enables to wait that they are all found.
- * @author  Sebastien Pesnel
+ * @author  Sebastien Pesnel refactoring emonet
  */
 public class WaitForBipServices {
     /** Number max of service for which we can wait */
@@ -16,7 +17,7 @@ public class WaitForBipServices {
 	 * @uml.property  name="searchServiceArray"
 	 * @uml.associationEnd  multiplicity="(0 -1)"
 	 */
-    private SearchBipService searchServiceArray[] = new SearchBipService[MAX_SERVICES];
+    private BipServiceWaiter searchServiceArray[] = new BipServiceWaiter[MAX_SERVICES];
 
     /** Create a new instance of WaitForBipServices */
     public WaitForBipServices() {
@@ -35,7 +36,7 @@ public class WaitForBipServices {
      * @param w an object implementing WaitForTheGoodBipService interface to test
      * if the service is ok according the wishes of the user.
      * @return the index to retrieve the wanted service or to know if it has been found */
-    public int needService(String name, WaitForTheGoodBipService w) {
+    public int needService(String name, BipServiceFilter w) {
         int index = -1;
         for (int i = 0; i < searchServiceArray.length; i++) {
             if (searchServiceArray[i] == null) {
@@ -44,8 +45,8 @@ public class WaitForBipServices {
             }
         }
         if (index != -1) {
-            searchServiceArray[index] = new SearchBipService(name);
-            searchServiceArray[index].startSearch(w);
+            searchServiceArray[index] = new BipServiceWaiter(name,w);
+            searchServiceArray[index].startSearch();
         }
         return index;
     }
@@ -83,22 +84,22 @@ public class WaitForBipServices {
      * @see WaitForBipServices#isResolved(int)*/
     public BipService getService(int index) {
         if (searchServiceArray[index].isResolved())
-            return searchServiceArray[index].theService;
+            return searchServiceArray[index].getBipService();
         else
             return null;
     }
-    /** Main method for test. Wait for a service named "essai".*/
-    public static void main(String[] arg) {
-        WaitForBipServices waitfor = new WaitForBipServices();
-        int index = waitfor.needService("essai");
-        waitfor.waitResolve();
-
-        Service s = waitfor.getService(index);
-
-        for (int i = 0; i < s.txtRecord.size(); i++) {
-            System.out.println(s.txtRecord.getKey(i) + " --> "
-                    + s.txtRecord.getValueAsString(i));
-        }
-    }
+//    /** Main method for test. Wait for a service named "essai".*/
+//    public static void main(String[] arg) {
+//        WaitForBipServices waitfor = new WaitForBipServices();
+//        int index = waitfor.needService("essai");
+//        waitfor.waitResolve();
+//
+//        Service s = waitfor.getService(index);
+//
+//        for (int i = 0; i < s.txtRecord.size(); i++) {
+//            System.out.println(s.txtRecord.getKey(i) + " --> "
+//                    + s.txtRecord.getValueAsString(i));
+//        }
+//    }
 }
 

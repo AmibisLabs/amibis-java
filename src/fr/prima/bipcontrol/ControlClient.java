@@ -4,6 +4,7 @@ import fr.prima.bipcom.MsgSocket;
 import fr.prima.bipcom.TcpClient;
 import fr.prima.bipcom.interf.BipMessageListener;
 import fr.prima.bipcom.interf.Message;
+
 import java.util.Set;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -752,46 +753,46 @@ public class ControlClient implements BipMessageListener {
         return eltService;
     }
 
-    public static void main(String arg[]) {
-
-        WaitForBipServices wfbs = new WaitForBipServices();
-        int index = wfbs.needService("essai");
-        wfbs.waitResolve();
-        Service service = wfbs.getService(index);
-
-        int serviceId = BipService.generateServiceId();
-        ControlClient client = new ControlClient(serviceId);
-        if (!client.connectToControlServer(service.hostName, service.port)) {
-            System.err.println("error connection");
-            System.exit(1);
-        }
-        System.out.println("query global description");
-        if (!client.queryGlobalDescription()) {
-            System.err.println("error global description");
-            System.exit(1);
-        } else {
-            java.util.Iterator<String> it = null;
-
-            System.out.println("Variables : ");
-            it = client.variableNameSet.iterator();
-            while (it.hasNext()) {
-                System.out.println(" - " + (String) it.next());
-            }
-            System.out.println("Input : ");
-            it = client.inputNameSet.iterator();
-            while (it.hasNext()) {
-                System.out.println(" - " + (String) it.next());
-            }
-            System.out.println("Output : ");
-            it = client.outputNameSet.iterator();
-            while (it.hasNext()) {
-                System.out.println(" - " + (String) it.next());
-            }
-            System.out.println("In/Output : ");
-            it = client.inOutputNameSet.iterator();
-            while (it.hasNext()) {
-                System.out.println(" - " + (String) it.next());
-            }
-        }
-    }
+//    public static void main(String arg[]) {
+//
+//        WaitForBipServices wfbs = new WaitForBipServices();
+//        int index = wfbs.needService("essai");
+//        wfbs.waitResolve();
+//        BipService service = wfbs.getService(index);
+//
+//        int serviceId = BipService.generateServiceId();
+//        ControlClient client = new ControlClient(serviceId);
+//        if (!client.connectToControlServer(service.getHostName(), service.getPort())) {
+//            System.err.println("error connection");
+//            System.exit(1);
+//        }
+//        System.out.println("query global description");
+//        if (!client.queryGlobalDescription()) {
+//            System.err.println("error global description");
+//            System.exit(1);
+//        } else {
+//            java.util.Iterator<String> it = null;
+//
+//            System.out.println("Variables : ");
+//            it = client.variableNameSet.iterator();
+//            while (it.hasNext()) {
+//                System.out.println(" - " + (String) it.next());
+//            }
+//            System.out.println("Input : ");
+//            it = client.inputNameSet.iterator();
+//            while (it.hasNext()) {
+//                System.out.println(" - " + (String) it.next());
+//            }
+//            System.out.println("Output : ");
+//            it = client.outputNameSet.iterator();
+//            while (it.hasNext()) {
+//                System.out.println(" - " + (String) it.next());
+//            }
+//            System.out.println("In/Output : ");
+//            it = client.inOutputNameSet.iterator();
+//            while (it.hasNext()) {
+//                System.out.println(" - " + (String) it.next());
+//            }
+//        }
+//    }
 }
