@@ -78,7 +78,7 @@ public class ServiceInformation implements Externalizable {
         return properties.get(key);
     }
     public String getStringProperty(String key) {
-        return new String(getProperty(key));
+        return getProperty(key)==null ? null : new String(getProperty(key));
     }
     public Iterable<String> getPropertyKeys() {
         return properties.keySet();

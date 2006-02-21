@@ -32,7 +32,7 @@ public class ServiceEvent {
     }
     
     /**
-	 * Access to the service 
+	 * Access to the service information associated with this service event
 	 * @return  the Service object
 	 * @uml.property  name="service"
 	 */
@@ -41,13 +41,13 @@ public class ServiceEvent {
     }
     
     /** Access to the kind of event 
-     * @return if the service is lost */
+     * @return whether this service event notifies that a service is lost */
     public boolean isLost() {
         return event == LOST;
     }
     
     /** Access to the kind of event 
-     * @return if the service is found */
+     * @return whether this service event notifies that a service is found */
     public boolean isFound() {
         return event == FOUND;
     }

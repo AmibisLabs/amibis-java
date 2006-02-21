@@ -6,6 +6,8 @@ package fr.prima.bipdnssd.interf;
 
 
 /**
+ * ServiceBrowser allows browsing for services registered under dnssd
+ * with a given dnssd registration type.
  * 
  * @author emonet
  *
@@ -13,26 +15,29 @@ package fr.prima.bipdnssd.interf;
 public interface ServiceBrowser {
     
     /**
+     * Adds a listener to this browser. When a service event occurs,
+     * all listeners are notified.
      * @param l
      *            listener interested in service event
      */
     void addListener(ServiceEventListener l);
 
     /**
+     * Removes the given listener.
      * @param l
      *            listener no more interested in service event
      */
     void removeListener(ServiceEventListener l);
     
     /**
-     * Start to receive information about the available services, and to
-     * generate service events
+     * Starts the service browser. All the listeners will first be notified of the
+     * declared services and then will start receiving service event 
+     * associated to registration/unregistration of services.
      */
     void start();
 
     /**
-     * Stop receiving information about the available services, and 
-     * generating service events
+     * Stops the service browse ; listeners won't be notified any more (but are still listeners).
      */
     void stop();
 }

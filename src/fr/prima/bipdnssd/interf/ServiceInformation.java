@@ -6,12 +6,12 @@ package fr.prima.bipdnssd.interf;
 
 /**
  * 
+ * Informations describing a service under dnssd.
+ * 
  * @author emonet
  *
  */
 public interface ServiceInformation {
-
-    //String getDomain();
 
     String getFullName();
 

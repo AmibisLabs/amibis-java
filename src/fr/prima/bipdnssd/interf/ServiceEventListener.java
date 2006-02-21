@@ -1,19 +1,22 @@
 package fr.prima.bipdnssd.interf ;
 
+import java.util.EventListener;
+
 
 
 /**
  * Listener interface for service events.
  * 
  * @see ServiceEvent
- * @see BrowseForService
  * 
- * @author Sebastien Pesnel
+ * @author Sebastien Pesnel refactoring emonet
  */
-public interface ServiceEventListener extends java.util.EventListener {
+public interface ServiceEventListener extends EventListener {
 
-    /** Call when a service event occured : 
-     * a service is found or lost.
+    /** 
+     * Listener method called when a service event is send
+     * (a new service is found or an existing is lost).
+     * 
      * @param e the data about the event
      */
     public void serviceEventReceived(ServiceEvent e);

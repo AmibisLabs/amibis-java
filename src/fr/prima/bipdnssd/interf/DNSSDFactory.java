@@ -11,15 +11,53 @@ import fr.prima.bipdnssd.client.DNSSDFactoryBip;
 
 /**
  * 
+ * Factory interface used to generate objects to access the dnssd network.
+ * The concrete factories implementing this interface are the entry points
+ * to each implementation of the dnssd abstracting layout.
+ * 
+ * All classes in this package describe this abstract layout interfacing
+ * the user with dnssd. 
+ * @see ServiceBrowser
+ * @see ServiceRegistration
+ * @see ServiceInformation
+ * @see ServiceEventListener
+ *
  * @author emonet
  *
  */
 public interface DNSSDFactory {
     
+    /**
+     * Creates a ServiceBrowser that will list all services of the given dnssd registration type.
+     * @see ServiceBrowser to see how to use the {@link ServiceBrowser}
+     * 
+     * @param registrationType
+     * @return a new concrete ServiceBrower that will be used for service listing 
+     */
     ServiceBrowser createServiceBrowser(String registrationType);
     
+    /**
+     * Creates a new object representing the registration to the dnssd network.
+     * @see ServiceRegistration to see how to register and unregister services using {@link ServiceRegistration}
+     * 
+     * @param serviceName
+     * @param registrationType
+     * @return 
+     */
     ServiceRegistration createServiceRegistration(String serviceName, String registrationType);
 
+    
+    /**
+     * 
+     * Static methods to lasily instanciate the default factory used
+     * (that is the default concrete dnssd implementation used to implement the abstract layout).
+     * 
+     * The static {@link DNSSDFactory.DefaultFactory#instance()} method returns a factory based on
+     * the class name given in the {@link DNSSDFactory.DefaultFactory#dnssdFactoryKey} key value
+     * found in the {@link DNSSDFactory.DefaultFactory#propertyBundle}.properties property file.
+     * If a problem occurs, the default hard coded factory is returned.
+     *
+     */
     public static final class DefaultFactory {
         private static final String propertyBundle = "cfg";
         private static final String dnssdFactoryKey = "dnssdFactory";

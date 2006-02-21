@@ -43,7 +43,7 @@ public class BipServiceWaiter implements ServiceEventListener {
         if (e.isFound() && !isResolved()) {
             if (e.getServiceInformation().getFullName().startsWith(prefixForServiceName)) {
                 BipService bipService = new BipService(e.getServiceInformation());
-                if (bipServiceFilter.isAGoodService(bipService)) {
+                if (bipServiceFilter==null || bipServiceFilter.isAGoodService(bipService)) {
                     foundService = bipService;
                     serviceBrowser.stop();
                 }
