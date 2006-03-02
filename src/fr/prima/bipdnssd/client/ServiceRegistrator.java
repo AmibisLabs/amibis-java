@@ -5,8 +5,8 @@
 package fr.prima.bipdnssd.client;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -17,22 +17,28 @@ import fr.prima.bipdnssd.server.ServiceInformation;
 public class ServiceRegistrator implements Runnable  {
 
     private Socket notificationSocket;
-    private ObjectOutputStream notificationSocketOut;
-    private ObjectInputStream notificationSocketIn;
+//  private ObjectOutputStream notificationSocketOut;
+//  private ObjectInputStream notificationSocketIn;
+    private OutputStream notificationSocketOut;
+    private InputStream notificationSocketIn;
     private Hashtable<String, ServiceInformation> notifications = new Hashtable<String, ServiceInformation>();
 
     /*package*/ ServiceRegistrator(String serverName, int port) throws UnknownHostException, IOException {
         notificationSocket = new Socket(serverName,port);
-        notificationSocketOut = new ObjectOutputStream(notificationSocket.getOutputStream());
-        notificationSocketOut.writeObject(null);
-        notificationSocketIn = new ObjectInputStream(notificationSocket.getInputStream());
+//        notificationSocketOut = new ObjectOutputStream(notificationSocket.getOutputStream());
+//        notificationSocketOut.writeObject(null);
+        notificationSocketOut = notificationSocket.getOutputStream();
+        ServiceInformation.writeNullString(notificationSocketOut);
+//        notificationSocketIn = new ObjectInputStream(notificationSocket.getInputStream());
+        notificationSocketIn = notificationSocket.getInputStream();
         new Thread(this).start();
     }
     
     public void run() {
         try {
             while(true) {
-                ServiceInformation serviceInformation = (ServiceInformation) notificationSocketIn.readObject();
+                //ServiceInformation serviceInformation = (ServiceInformation) notificationSocketIn.readObject();
+                ServiceInformation serviceInformation = ServiceInformation.crosslanguageReadNew(notificationSocketIn);
                 String id = Integer.toString(serviceInformation.getPort());
                 assert notifications.containsKey(id);
                 ServiceInformation i = notifications.get(id);
@@ -44,14 +50,15 @@ public class ServiceRegistrator implements Runnable  {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+//        } catch (ClassNotFoundException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
         }
     }
     
     private synchronized void send(ServiceInformation serviceInformation) throws IOException {
-        notificationSocketOut.writeObject(serviceInformation);
+        //notificationSocketOut.writeObject(serviceInformation);
+        serviceInformation.crosslanguageWrite(notificationSocketOut);
     }
 
     public boolean register(ServiceRegistration serviceRegistration) {

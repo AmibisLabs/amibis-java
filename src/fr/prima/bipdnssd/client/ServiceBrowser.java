@@ -5,8 +5,8 @@
 package fr.prima.bipdnssd.client;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -14,7 +14,6 @@ import java.util.Vector;
 
 import fr.prima.bipdnssd.interf.ServiceEvent;
 import fr.prima.bipdnssd.interf.ServiceEventListener;
-import fr.prima.bipdnssd.client.ServiceInformation;
 
 public class ServiceBrowser implements fr.prima.bipdnssd.interf.ServiceBrowser {
     
@@ -51,11 +50,15 @@ public class ServiceBrowser implements fr.prima.bipdnssd.interf.ServiceBrowser {
             new Thread(new Runnable() {
                 public void run() {
                     try {
-                        ObjectOutputStream outputSream = new ObjectOutputStream(socket.getOutputStream());
-                        outputSream.writeObject(registrationType);
-                        ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+                        //ObjectOutputStream outputSream = new ObjectOutputStream(socket.getOutputStream());
+                        //outputSream.writeObject(registrationType);
+                        OutputStream outputSream = socket.getOutputStream();
+                        fr.prima.bipdnssd.server.ServiceInformation.writeString(outputSream, registrationType);
+                        //ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+                        InputStream inputStream = socket.getInputStream();
                         while (true) {
-                            ServiceInformation serviceInformation = new ServiceInformation((fr.prima.bipdnssd.server.ServiceInformation) inputStream.readObject());
+                            //ServiceInformation serviceInformation = new ServiceInformation((fr.prima.bipdnssd.server.ServiceInformation) inputStream.readObject());
+                            ServiceInformation serviceInformation = new ServiceInformation(fr.prima.bipdnssd.server.ServiceInformation.crosslanguageReadNew(inputStream));
                             assert serviceInformation.isConnecting() || serviceInformation.isDisconnecting();
                             ServiceEvent ev = new ServiceEvent( serviceInformation,
                                     serviceInformation.isConnecting() ? ServiceEvent.FOUND : ServiceEvent.LOST);
@@ -67,9 +70,9 @@ public class ServiceBrowser implements fr.prima.bipdnssd.interf.ServiceBrowser {
                     } catch (IOException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
-                    } catch (ClassNotFoundException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+//                    } catch (ClassNotFoundException e) {
+//                        // TODO Auto-generated catch block
+//                        e.printStackTrace();
                     }
                 }
             }).start();            
