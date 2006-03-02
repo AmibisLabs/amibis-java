@@ -15,13 +15,13 @@ import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
 
 
 /**
- * Create a control port and register the Service as a BIP service on DNS-SD. The service has a variable to give its state, the number of variable, the number of inputs/outputs. The control has the list of variables and the list of in/outputs for the service. The description of variable and input are stored in object called VariableAttribut and InOutputAttribut. These data can be consulted by xml query on the control port. In that purpose the class ControlClient enables to do these queries  and stores the results. <br> The control server has three possibles status : <ul><li>BEGIN : the service is not registered yet </li><li>INIT : the service is registered, and can wait for data or other service to begin processing </li><li>RUNNING : the service is running : the service computes data.  </li></ul> <br> Two methods needs to be reimplemented to manage correctly some queries. That are connect and modifVariable. The first is called when an in/output is demanded to connect a particular port, the second is called when there is a query for the  modification of a variable. Use: <ul><li> Create a new instance of control server with the name of the service. Eventually, you can implemented the methods connect and modifVariable if necessary. </li><li> Register all the variable, and the in/outputs. </li><li> Start the service (startServer). You can process query to the control server in a processing loop (then call  processMessages()), or in another thread (then call  startThreadProcessMessage()). </li><li> Wait for data or other service. When you are ready, set the status value to RUNNING and start processing </li></ul> An example of server is given in the method main. The service is called "essai". It has two own variables : var_1 and var_2. var_1 can be modified by the user. var_2 is regularly incremented. It has also one output that send regularly to all  connected clients the message "hello".
+ * Create a control port and register the Service as a OMiSCID service on DNS-SD. The service has a variable to give its state, the number of variable, the number of inputs/outputs. The control has the list of variables and the list of in/outputs for the service. The description of variable and input are stored in object called VariableAttribut and InOutputAttribut. These data can be consulted by xml query on the control port. In that purpose the class ControlClient enables to do these queries  and stores the results. <br> The control server has three possibles status : <ul><li>BEGIN : the service is not registered yet </li><li>INIT : the service is registered, and can wait for data or other service to begin processing </li><li>RUNNING : the service is running : the service computes data.  </li></ul> <br> Two methods needs to be reimplemented to manage correctly some queries. That are connect and modifVariable. The first is called when an in/output is demanded to connect a particular port, the second is called when there is a query for the  modification of a variable. Use: <ul><li> Create a new instance of control server with the name of the service. Eventually, you can implemented the methods connect and modifVariable if necessary. </li><li> Register all the variable, and the in/outputs. </li><li> Start the service (startServer). You can process query to the control server in a processing loop (then call  processMessages()), or in another thread (then call  startThreadProcessMessage()). </li><li> Wait for data or other service. When you are ready, set the status value to RUNNING and start processing </li></ul> An example of server is given in the method main. The service is called "essai". It has two own variables : var_1 and var_2. var_1 can be modified by the user. var_2 is regularly incremented. It has also one output that send regularly to all  connected clients the message "hello".
  * @see fr.prima.omiscid.control.ControlClient
  * @see fr.prima.omiscid.control.VariableAttribut
  * @see fr.prima.omiscid.control.InOutputAttribut
  * @author  Sebastien Pesnel  
  * Refactoring by Patrick Reignier and emonet
- * Adding the stop method to unregister the bip service (Patrick Reignier)
+ * Adding the stop method to unregister the omiscid service (Patrick Reignier)
  */
 public class ControlServer extends XmlMsgManager implements
         VariableChangeListener {
@@ -34,8 +34,8 @@ public class ControlServer extends XmlMsgManager implements
     /** value for the variable status : when the service is running */
     public static final int STATUS_RUNNING = 2;
 
-    /** the service id used in BIP exchange */
-    private final int serviceId = BipService.generateServiceId();
+    /** the service id used OMiSCID exchange */
+    private final int serviceId = OmiscidService.generateServiceId();
 
     /** TCP server : the control server */
     private TcpServer tcpServer = null;
@@ -77,7 +77,7 @@ public class ControlServer extends XmlMsgManager implements
     public ControlServer(String serviceName) {
         initDefaultVar();
         
-        serviceRegistration = BipService.dnssdFactory.createServiceRegistration(serviceName, BipService.REG_TYPE);
+        serviceRegistration = OmiscidService.dnssdFactory.createServiceRegistration(serviceName, OmiscidService.REG_TYPE);
     }
     
     /**
@@ -89,7 +89,7 @@ public class ControlServer extends XmlMsgManager implements
     public ControlServer() {
         initDefaultVar();
         
-        serviceRegistration = BipService.dnssdFactory.createServiceRegistration("default_name", BipService.REG_TYPE);
+        serviceRegistration = OmiscidService.dnssdFactory.createServiceRegistration("default_name", OmiscidService.REG_TYPE);
     }
     
     public void stop()
@@ -136,7 +136,7 @@ public class ControlServer extends XmlMsgManager implements
     public boolean startServer(int port) {
         try {
             tcpServer = new TcpServer(getServiceId(), port);
-            tcpServer.addBipMessageListener(this);
+            tcpServer.addOmiscidMessageListener(this);
             tcpServer.start();
 
             // register the service
@@ -677,9 +677,9 @@ public class ControlServer extends XmlMsgManager implements
         try {
             tcpServer = new fr.prima.omiscid.com.TcpServer(ctrl.getServiceId(), 0);
             tcpServer.start();
-            tcpServer.addBipMessageListener(new fr.prima.omiscid.com.interf.BipMessageListener(){
-                public void receivedBipMessage(fr.prima.omiscid.com.interf.Message m){
-                    System.out.println("received bip message");
+            tcpServer.addOmiscidMessageListener(new fr.prima.omiscid.com.interf.OmiscidMessageListener(){
+                public void receivedOmiscidMessage(fr.prima.omiscid.com.interf.Message m){
+                    System.out.println("received OMiSCID message");
                 }
             });
         } catch (java.io.IOException e) {

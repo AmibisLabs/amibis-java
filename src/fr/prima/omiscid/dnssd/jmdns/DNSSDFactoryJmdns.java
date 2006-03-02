@@ -34,9 +34,4 @@ public class DNSSDFactoryJmdns implements DNSSDFactory {
         return new fr.prima.omiscid.dnssd.jmdns.ServiceRegistration(jmdns, serviceName, registrationType + ".local.");
     }
 
-//    public ServiceInformation createServiceInformation() {
-//        // TODO Auto-generated method stub
-//        return null;
-//    }
-
 }

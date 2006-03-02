@@ -52,13 +52,6 @@ implements fr.prima.omiscid.dnssd.interf.ServiceBrowser, ServiceListener {
 
     private ServiceInformation fullInfoOf(javax.jmdns.ServiceEvent event) {
         return new fr.prima.omiscid.dnssd.jmdns.ServiceInformation(event.getInfo());
-//        return new fr.prima.bipcontrol.bipdnssd.jmdns.ServiceInformation(
-//                event.getType(),
-//                event.getName(),
-//                event.getInfo().getPort(),
-//                event.getInfo().getWeight(),
-//                event.getInfo().getPriority(),
-//                event.getInfo().getTextBytes());
     }
 
     public void serviceAdded(javax.jmdns.ServiceEvent event) {

@@ -11,7 +11,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
- * TCP Client. Exchange of BIP message over TCP connexion.
+ * TCP Client. Exchange of OMiSCID message over TCP connexion.
  * 
  * @author Sebastien Pesnel
  * Refactoring by Patick Reignier
@@ -21,7 +21,7 @@ public class TcpClient extends MsgSocketTCP {
      * Creates a new instance of TcpClient
      * 
      * @param serviceId
-     *            id of service associated to this object (id exchanged in BIP
+     *            id of service associated to this object (id exchanged in OMiSCID
      *            message)
      */
     public TcpClient(int serviceId) {
@@ -31,7 +31,7 @@ public class TcpClient extends MsgSocketTCP {
     public static boolean stripTrailingDotLocalDot = true;
     static {
         try {
-            stripTrailingDotLocalDot = null == System.getenv("BIPNS_USE_MSDN_NAME_SOLVING");
+            stripTrailingDotLocalDot = null == System.getenv("OMISCIDNS_USE_MSDN_NAME_SOLVING");
         } catch (SecurityException e) {
             // Access to environment variable is forbidden
             System.out.println("Warning: access to environment variables is forbidden.");

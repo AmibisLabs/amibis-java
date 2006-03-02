@@ -2,7 +2,7 @@ package fr.prima.omiscid.control ;
 
 import fr.prima.omiscid.com.MsgSocket;
 import fr.prima.omiscid.com.TcpClient;
-import fr.prima.omiscid.com.interf.BipMessageListener;
+import fr.prima.omiscid.com.interf.OmiscidMessageListener;
 import fr.prima.omiscid.com.interf.Message;
 
 import java.util.Set;
@@ -13,17 +13,17 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Communication with a control server of a BIP service. Query data, store answer. Has a local copy of the data. <br> Use: <ul><li> Creates a ControlClient instance </li><li> Connect the control client to a control server </li><li> query a global description of the service : then you have the  names for all variables and in/outputs. </li><li> you can do specific query on variable, or in/output  </li></ul>
+ * Communication with a control server of a OMiSCID service. Query data, store answer. Has a local copy of the data. <br> Use: <ul><li> Creates a ControlClient instance </li><li> Connect the control client to a control server </li><li> query a global description of the service : then you have the  names for all variables and in/outputs. </li><li> you can do specific query on variable, or in/output  </li></ul>
  * @author  Sebastien Pesnel  Refactoring by Patrick Reignier
  */
-public class ControlClient implements BipMessageListener {
+public class ControlClient implements OmiscidMessageListener {
     /** The max time to wait for the answer to a query */
     private final int MaxTimeToWait = 2000; // milliseconds
 
     /** The connection to the control port */
     private TcpClient tcpClient = null;
 
-    /** Id used in BIP exhange */
+    /** Id used in OMiSCID exhange */
     private int serviceId = 0;
 
     /** Query Id : the answer to a query have the same id that the query */
@@ -85,7 +85,7 @@ public class ControlClient implements BipMessageListener {
      * Create a new instance of ControlClient class
      * 
      * @param serviceId
-     *            the id to use to identify peer in BIP exchange
+     *            the id to use to identify peer in OMiSCID exchange
      */
     public ControlClient(int serviceId) {
         this.serviceId = serviceId;
@@ -107,7 +107,7 @@ public class ControlClient implements BipMessageListener {
             
             tcpClient = new TcpClient(serviceId);
             tcpClient.connectTo(host, port);
-            tcpClient.addBipMessageListener(this);
+            tcpClient.addOmiscidMessageListener(this);
 
             return true;
         } catch (java.io.IOException e) {
@@ -136,14 +136,14 @@ public class ControlClient implements BipMessageListener {
     }
 
     /**
-     * Implement the BipMessageListerner interface Test if the message is an
+     * Implement the OmiscidMessageListerner interface Test if the message is an
      * answer to a query or a control event. In case of answer, the reception of
      * this is signaled, for the control event message, they are given to the
      * ControlEventListener
      * 
-     * @param msg a new BIP message received
+     * @param msg a new OMiSCID message received
      */
-    public void receivedBipMessage(Message msg) {
+    public void receivedOmiscidMessage(Message msg) {
 //         System.out.println("ControlClient:MsgReceived: " +
 //         msg.getBufferAsString());
         XmlMessage xmlMsg = XmlMessage.changeMessageToXmlTree(msg);
@@ -755,12 +755,12 @@ public class ControlClient implements BipMessageListener {
 
 //    public static void main(String arg[]) {
 //
-//        WaitForBipServices wfbs = new WaitForBipServices();
+//        WaitForOmiscidServices wfbs = new WaitForOmiscidServices();
 //        int index = wfbs.needService("essai");
 //        wfbs.waitResolve();
-//        BipService service = wfbs.getService(index);
+//        OmiscidService service = wfbs.getService(index);
 //
-//        int serviceId = BipService.generateServiceId();
+//        int serviceId = OmiscidService.generateServiceId();
 //        ControlClient client = new ControlClient(serviceId);
 //        if (!client.connectToControlServer(service.getHostName(), service.getPort())) {
 //            System.err.println("error connection");

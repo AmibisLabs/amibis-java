@@ -31,14 +31,14 @@ public class ServiceXmlTree implements ServiceEventListener{
 	 * @author  reignier
 	 */
     static class ServiceElement{
-        BipService service = null;
+        OmiscidService service = null;
         Element element = null;
         Element elementParent = null;
-        public ServiceElement(BipService s, Element elt){
+        public ServiceElement(OmiscidService s, Element elt){
             service = s;
             element = elt;
         }
-        public ServiceElement(BipService s, Element elt, Element parent){
+        public ServiceElement(OmiscidService s, Element elt, Element parent){
             service = s;
             element = elt;
             elementParent = parent;
@@ -119,7 +119,7 @@ public class ServiceXmlTree implements ServiceEventListener{
         return doc;
     }
     
-    public BipService[] getWantedService(String query){
+    public OmiscidService[] getWantedService(String query){
         
         System.out.println("ServiceXmlTree::getWantedService ["+query+"]");
         XPathFactory xpf = XPathFactory.newInstance();
@@ -141,7 +141,7 @@ public class ServiceXmlTree implements ServiceEventListener{
                     System.out.println("getWantedService : serviceFromElement  : "+v.size());
                 }
                 if(v.size()>0){
-                    BipService bs[] = new BipService[v.size()];
+                    OmiscidService bs[] = new OmiscidService[v.size()];
                     java.util.Iterator<ServiceElement> it = v.iterator();
                     int i =0;
                     while(it.hasNext()){
@@ -157,7 +157,7 @@ public class ServiceXmlTree implements ServiceEventListener{
         return null;
     }
     
-    public boolean insertAService(BipService s){      
+    public boolean insertAService(OmiscidService s){      
         //System.out.println("insertAService rootNode="+rootNode.getNodeName());
         Element elt = elementFromService(s);
         Element parent = null;
@@ -187,7 +187,7 @@ public class ServiceXmlTree implements ServiceEventListener{
                     serviceSet.add(new ServiceElement(s, elt, parent));
                     
                     //System.out.println("In ServiceXmlTree::insertAService");
-                    //System.out.println(BipControl.XmlUtils.elementToString(rootNode, ""));
+                    //System.out.println(OmiscidControl.XmlUtils.elementToString(rootNode, ""));
                     //System.out.println("Out ServiceXmlTree::insertAService");
                     
                     signalChange();
@@ -225,7 +225,7 @@ public class ServiceXmlTree implements ServiceEventListener{
         }        
     }
     
-    /*protected Element elementFromService(BipService s){
+    /*protected Element elementFromService(OmiscidService s){
         Element elt = null;
         
         ControlClient ctrl_client = s.initControlClient();
@@ -238,7 +238,7 @@ public class ServiceXmlTree implements ServiceEventListener{
                 elt = ctrl_client.createXmlElement(doc);
                 elt.setAttribute("name", s.fullName);
                 
-                BipControl.VariableAttribut va = ctrl_client.findVariable("genealogy");
+                OmiscidControl.VariableAttribut va = ctrl_client.findVariable("genealogy");
                 if(va != null){
                     genealogy = va.getValueStr();
                 }
@@ -247,7 +247,7 @@ public class ServiceXmlTree implements ServiceEventListener{
         }
         return elt;
     }*/
-    protected Element elementFromService(BipService s){
+    protected Element elementFromService(OmiscidService s){
         Element elt = null;
         
         ControlClient ctrlClient = s.initControlClient();
@@ -342,16 +342,16 @@ public class ServiceXmlTree implements ServiceEventListener{
     
     public void serviceEventReceived(ServiceEvent e) {
         if(e.isFound()){
-            insertAService(new BipService(serviceId, e.getServiceInformation()));                
+            insertAService(new OmiscidService(serviceId, e.getServiceInformation()));                
         }else{
             removeAService(e.getServiceInformation().getFullName());
         }
     }
    
 //    public static void main(String arg[]){
-//        ServiceXmlTree sxt = new ServiceXmlTree(BipService.generateServiceId());
+//        ServiceXmlTree sxt = new ServiceXmlTree(OmiscidService.generateServiceId());
 //        
-//        BrowseForService bfs = new BrowseForService(BipService.REG_TYPE);
+//        BrowseForService bfs = new BrowseForService(OmiscidService.REG_TYPE);
 //        bfs.addListener(sxt);
 //        bfs.startBrowse();        
 //        /*while(true){
@@ -362,7 +362,7 @@ public class ServiceXmlTree implements ServiceEventListener{
 //        }catch(InterruptedException e){}
 //        }*/
 //        
-///*        BipService[] bs = sxt.getWantedService("//service/*");
+///*        OmiscidService[] bs = sxt.getWantedService("//service/*");
 //        if(bs == null){
 //            System.out.println("No Service");
 //        }else{

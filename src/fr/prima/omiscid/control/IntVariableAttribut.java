@@ -1,7 +1,7 @@
 package fr.prima.omiscid.control ;
 
 /**
- * Group an integer, and a variable description for bip service. Enable to maintain easily the value in the integer and the value in the description. For that purpose, the interger is accessed through methods as getIntValue, SetIntValue.
+ * Group an integer, and a variable description for OMiSCID service. Enable to maintain easily the value in the integer and the value in the description. For that purpose, the interger is accessed through methods as getIntValue, SetIntValue.
  * @see fr.prima.omiscid.control.VariableAttribut
  * @author  Sebastien Pesnel  Refactoring by Patrick Reignier
  */

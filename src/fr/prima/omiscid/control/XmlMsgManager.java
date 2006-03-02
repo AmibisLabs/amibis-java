@@ -1,17 +1,17 @@
 package fr.prima.omiscid.control ;
 
 /**
- * Change the BIP message into XML tree. Store the received messages. The
+ * Change the OMiSCID message into XML tree. Store the received messages. The
  * message are processed by the method processMessage.
  * 
  * @author Sebastien Pesnel
  * Refactoring by Patrick Reignier
  */
-public class XmlMsgManager implements fr.prima.omiscid.com.interf.BipMessageListener {
+public class XmlMsgManager implements fr.prima.omiscid.com.interf.OmiscidMessageListener {
     /** list of message */
     private java.util.LinkedList<XmlMessage> msgSet = new java.util.LinkedList<XmlMessage>();
 
-    public void receivedBipMessage(fr.prima.omiscid.com.interf.Message msg) {
+    public void receivedOmiscidMessage(fr.prima.omiscid.com.interf.Message msg) {
         // System.out.println("Msg: |" + msg.getBufferAsString() +"|");
         synchronized (msgSet) {
             XmlMessage xmlMsg = XmlMessage.changeMessageToXmlTree(msg);

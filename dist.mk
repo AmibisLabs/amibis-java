@@ -2,7 +2,7 @@
 
 
 DISTON=${USER}@oberon:/var/www/release
-BASEJAR=bipProject.jar
+BASEJAR=omiscid.jar
 CLASSDIR=bin
 
 dist: prepare

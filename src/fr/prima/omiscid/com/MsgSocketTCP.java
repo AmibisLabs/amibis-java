@@ -14,7 +14,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 /**
- * BIP Communication based on TCP protocol
+ * OMiSCID Communication based on TCP protocol
  * @author  Sebastien Pesnel  Refactoring by Patrick Reignier
  */
 public class MsgSocketTCP extends MsgSocket {
@@ -26,7 +26,7 @@ public class MsgSocketTCP extends MsgSocket {
      * Creates a new instance of MsgSocketTCP
      * 
      * @param serviceId
-     *            the id use in BIP exchange
+     *            the id use in OMiSCID exchange
      */
     public MsgSocketTCP(int serviceId) {
         super(serviceId);
@@ -36,7 +36,7 @@ public class MsgSocketTCP extends MsgSocket {
      * Creates a new instance of MsgSocketTCP
      * 
      * @param serviceId
-     *            the id use in BIP exchange
+     *            the id use in OMiSCID exchange
      * @param aSocket
      *            the socket associate to a TCP connection
      * @see MsgSocketTCP#setSocket(Socket)
@@ -57,7 +57,7 @@ public class MsgSocketTCP extends MsgSocket {
     }
 
     /**
-     * Send an array of byte with a BIP header
+     * Send an array of byte with a OMiSCID header
      * 
      * @param buffer
      *            the array of byte to send
@@ -82,14 +82,14 @@ public class MsgSocketTCP extends MsgSocket {
     }
     
     /**
-     * Sends a String message with a BIP header
+     * Sends a String message with a OMiSCID header
      * 
      * @param msgBody
-     *            the message to send once completed with the BIP header
+     *            the message to send once completed with the OMiSCID header
      */
     public void send( String msgBody) {
         send(msgBody.getBytes());
-        //TODO should getBytes with the BIP charset (if any)
+        //TODO should getBytes with the OMiSCID charset (if any)
     }
     
     /** Receive byte from the TCP connection */

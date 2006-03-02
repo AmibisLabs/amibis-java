@@ -57,7 +57,7 @@ public class ServiceBrowser implements fr.prima.omiscid.dnssd.interf.ServiceBrow
                         //ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
                         InputStream inputStream = socket.getInputStream();
                         while (true) {
-                            //ServiceInformation serviceInformation = new ServiceInformation((fr.prima.bipdnssd.server.ServiceInformation) inputStream.readObject());
+                            //ServiceInformation serviceInformation = new ServiceInformation((fr.prima.omiscid.dnssd.server.ServiceInformation) inputStream.readObject());
                             ServiceInformation serviceInformation = new ServiceInformation(fr.prima.omiscid.dnssd.server.ServiceInformation.crosslanguageReadNew(inputStream));
                             assert serviceInformation.isConnecting() || serviceInformation.isDisconnecting();
                             ServiceEvent ev = new ServiceEvent( serviceInformation,

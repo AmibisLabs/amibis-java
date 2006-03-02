@@ -4,7 +4,7 @@ package fr.prima.omiscid.com;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
-import fr.prima.omiscid.com.interf.BipMessageListener;
+import fr.prima.omiscid.com.interf.OmiscidMessageListener;
 import fr.prima.omiscid.com.interf.Message;
 
 
@@ -16,7 +16,7 @@ import fr.prima.omiscid.com.interf.Message;
  * @author Sebastien Pesnel
  * Refactoring by Patrick Reignier
  */
-public class MsgManager implements BipMessageListener {
+public class MsgManager implements OmiscidMessageListener {
     /** List the message received */
     private LinkedList<Message> msgSet = new LinkedList<Message>();
 
@@ -24,9 +24,9 @@ public class MsgManager implements BipMessageListener {
      * Method calls on the received messages
      * 
      * @param msg
-     *            a BIP message newly received
+     *            a OMiSCID message newly received
      */
-    public void receivedBipMessage(Message msg) {
+    public void receivedOmiscidMessage(Message msg) {
         synchronized (msgSet) {
             msgSet.addLast(msg);
             msgSet.notifyAll();

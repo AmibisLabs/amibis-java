@@ -9,7 +9,7 @@ import fr.prima.omiscid.com.interf.Message;
 
 
 /**
- * Contains the data about a BIP Message. It contains a buffer of byte that contains the body message, the service id that is the source of the message, an the id message.
+ * Contains the data about a OMiSCID Message. It contains a buffer of byte that contains the body message, the service id that is the source of the message, an the id message.
  * @author  Sebastien Pesnel  Refactoring by Patrick Reignier
  */
 public class MessageImpl implements Message {
@@ -50,14 +50,14 @@ public class MessageImpl implements Message {
     }
 
     /* (non-Javadoc)
-	 * @see fr.prima.bipcom.Message#getBufferAsString()
+	 * @see fr.prima.omiscid.com.Message#getBufferAsString()
 	 */
     public String getBufferAsString() {
         return new String(buffer);
     }
 
     /* (non-Javadoc)
-	 * @see fr.prima.bipcom.Message#getBuffer()
+	 * @see fr.prima.omiscid.com.Message#getBuffer()
 	 */
     /**
 	 * @return  Returns the buffer.
@@ -68,21 +68,21 @@ public class MessageImpl implements Message {
     }
 
     /* (non-Javadoc)
-	 * @see fr.prima.bipcom.Message#getPeerId()
+	 * @see fr.prima.omiscid.com.Message#getPeerId()
 	 */
     public int getPeerId() {
         return pid;
     }
 
     /* (non-Javadoc)
-	 * @see fr.prima.bipcom.Message#getMsgId()
+	 * @see fr.prima.omiscid.com.Message#getMsgId()
 	 */
     public int getMsgId() {
         return mid;
     }
 
     /* (non-Javadoc)
-	 * @see fr.prima.bipcom.Message#toString()
+	 * @see fr.prima.omiscid.com.Message#toString()
 	 */
     public String toString() {
         return "Msg " + pid + " " + mid + " " + buffer.length;

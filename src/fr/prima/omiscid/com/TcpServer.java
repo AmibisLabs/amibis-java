@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.io.IOException;
 
-import fr.prima.omiscid.com.interf.BipMessageListener;
+import fr.prima.omiscid.com.interf.OmiscidMessageListener;
 
 
 /**
@@ -28,20 +28,20 @@ public class TcpServer extends Thread implements ComTools {
     /** Set of connections : set of MsgSocketTcp objects */
     private Set<MsgSocketTCP> connectionSet;
 
-    /** Service id used to identify connecton in BIP exchange */
+    /** Service id used to identify connecton in OMiSCID exchange */
     private int serviceId;
 
     /** Server Socket thay listen for connection */
     private ServerSocket serverSocket;
 
-    /** Set of listener call when BIP messages arrive */
-    private Set<BipMessageListener> listenerSet;
+    /** Set of listener call when OMiSCID messages arrive */
+    private Set<OmiscidMessageListener> listenerSet;
 
     /**
      * Creates a new instance of TcpServer
      * 
      * @param serviceId
-     *            the id use in BIP exchange
+     *            the id use in OMiSCID exchange
      * @param port
      *            the port number where the TCP server must listen
      * @exception IOException
@@ -51,7 +51,7 @@ public class TcpServer extends Thread implements ComTools {
         serverSocket = new ServerSocket(port);
         this.serviceId = serviceId;
         connectionSet = new HashSet<MsgSocketTCP>();
-        listenerSet = new HashSet<BipMessageListener>();
+        listenerSet = new HashSet<OmiscidMessageListener>();
     }
     
     public void close()
@@ -77,9 +77,9 @@ public class TcpServer extends Thread implements ComTools {
                 MsgSocketTCP msgSocket = new MsgSocketTCP(serviceId, s);
 
                 synchronized (listenerSet) {
-                    java.util.Iterator<BipMessageListener> it = listenerSet.iterator();
+                    java.util.Iterator<OmiscidMessageListener> it = listenerSet.iterator();
                     while (it.hasNext()) {
-                        msgSocket.addBipMessageListener(it.next());
+                        msgSocket.addOmiscidMessageListener(it.next());
                     }
                 }
                 msgSocket.start();
@@ -154,13 +154,13 @@ public class TcpServer extends Thread implements ComTools {
     }
 
     /**
-     * Add a listener on the BIP message
+     * Add a listener on the OMiSCID message
      * 
      * @param listener
      *            a listener interested in the message received by the TCP
      *            server
      */
-    public void addBipMessageListener(BipMessageListener listener) {
+    public void addOmiscidMessageListener(OmiscidMessageListener listener) {
         synchronized (listenerSet) {
             listenerSet.add(listener);
             synchronized (connectionSet) {
@@ -169,7 +169,7 @@ public class TcpServer extends Thread implements ComTools {
                 while (it.hasNext()) {
                     MsgSocketTCP client = it.next();
                     if (client.isConnected()) {
-                        client.addBipMessageListener(listener);
+                        client.addOmiscidMessageListener(listener);
                     } else {
                         tmpSet.add(client);
                     }
@@ -183,12 +183,12 @@ public class TcpServer extends Thread implements ComTools {
     }
 
     /**
-     * Remove a listener on the BIP message
+     * Remove a listener on the OMiSCID message
      * 
      * @param listener
      *            the listener to remove
      */
-    public void removeBipMessageListener(BipMessageListener listener) {
+    public void removeOmiscidMessageListener(OmiscidMessageListener listener) {
         synchronized (listenerSet) {
             if (listenerSet.remove(listener)) {
                 listenerSet.add(listener);
@@ -198,7 +198,7 @@ public class TcpServer extends Thread implements ComTools {
                     while (it.hasNext()) {
                         MsgSocketTCP client = it.next();
                         if (client.isConnected()) {
-                            client.removeBipMessageListener(listener);
+                            client.removeOmiscidMessageListener(listener);
                         } else {
                             tmpSet.add(client);
                         }
@@ -344,14 +344,8 @@ public class TcpServer extends Thread implements ComTools {
             };
             t.start();
 
-            /*
-             * tcpClient.addBipMessageListener( new BipMessageListener() {
-             * public void receivedBipMessage(Message msg) {
-             * System.out.println("in toto listener:"); System.out.println(msg); }
-             * });
-             */
             MsgManager msgManager = new MsgManager();
-            tcpClient.addBipMessageListener(msgManager);
+            tcpClient.addOmiscidMessageListener(msgManager);
 
             while (true) {
                 msgManager.waitForMessage();

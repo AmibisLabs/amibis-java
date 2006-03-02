@@ -7,11 +7,11 @@ package fr.prima.omiscid.control ;
  *
  * @author Sebastien Pesnel refactoring emonet
  */
-public interface BipServiceFilter {
+public interface OmiscidServiceFilter {
     /** Call on each service with a good name
      * @param s the data about the service providing by DNS-SD
      * @return true is this service is ok according to the wishes of the user,
      * false otherwise, then the process will wait for another service.
      */
-    public boolean isAGoodService(BipService s);
+    public boolean isAGoodService(OmiscidService s);
 }

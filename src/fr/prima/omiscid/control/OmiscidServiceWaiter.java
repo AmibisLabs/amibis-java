@@ -13,20 +13,20 @@ import fr.prima.omiscid.dnssd.interf.ServiceEventListener;
  * @author emonet
  *
  */
-public class BipServiceWaiter implements ServiceEventListener {
+public class OmiscidServiceWaiter implements ServiceEventListener {
 
     private ServiceBrowser serviceBrowser;
     private String prefixForServiceName;
-    private BipServiceFilter bipServiceFilter;
-    private BipService foundService = null;
+    private OmiscidServiceFilter omiscidServiceFilter;
+    private OmiscidService foundService = null;
     
-    public BipServiceWaiter(String prefixForServiceName, BipServiceFilter bipServiceFilter) {
+    public OmiscidServiceWaiter(String prefixForServiceName, OmiscidServiceFilter omiscidServiceFilter) {
         this.prefixForServiceName = prefixForServiceName;
-        this.bipServiceFilter = bipServiceFilter;
+        this.omiscidServiceFilter = omiscidServiceFilter;
     }
 
     public void startSearch() {
-        this.serviceBrowser = BipService.dnssdFactory.createServiceBrowser(BipService.REG_TYPE);
+        this.serviceBrowser = OmiscidService.dnssdFactory.createServiceBrowser(OmiscidService.REG_TYPE);
         this.serviceBrowser.addListener(this);
         this.serviceBrowser.start();
     }
@@ -35,16 +35,16 @@ public class BipServiceWaiter implements ServiceEventListener {
         return foundService != null;
     }
 
-    public BipService getBipService() {
+    public OmiscidService getOmiscidService() {
         return foundService;
     }
 
     public void serviceEventReceived(ServiceEvent e) {
         if (e.isFound() && !isResolved()) {
             if (e.getServiceInformation().getFullName().startsWith(prefixForServiceName)) {
-                BipService bipService = new BipService(e.getServiceInformation());
-                if (bipServiceFilter==null || bipServiceFilter.isAGoodService(bipService)) {
-                    foundService = bipService;
+                OmiscidService omiscidService = new OmiscidService(e.getServiceInformation());
+                if (omiscidServiceFilter==null || omiscidServiceFilter.isAGoodService(omiscidService)) {
+                    foundService = omiscidService;
                     serviceBrowser.stop();
                 }
             }

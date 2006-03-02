@@ -4,17 +4,17 @@ import java.io.IOException;
 import java.util.Random;
 
 import fr.prima.omiscid.com.MsgSocket;
-import fr.prima.omiscid.com.interf.BipMessageListener;
+import fr.prima.omiscid.com.interf.OmiscidMessageListener;
 import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.dnssd.interf.ServiceInformation;
 
 /**
- * Structure to group the data about a service. Group the data extracted from DNS-SD. Provides also methods to generate id for BIP service  (used in BIP exchange), to manipulate the text records.
+ * Structure to group the data about a service. Group the data extracted from DNS-SD. Provides also methods to generate id for OMiSCID service  (used in OMiSCID exchange), to manipulate the text records.
  * @author  Sebastien Pesnel  Refactoring by Patrick Reignier and emonet
  */
-public class BipService {
+public class OmiscidService {
     /** Type for the registration */
-    public static final String REG_TYPE = new String("_bip._tcp");
+    public static final String REG_TYPE = new String("_omiscid._tcp");
         
     public static DNSSDFactory dnssdFactory = DNSSDFactory.DefaultFactory.instance();
     
@@ -30,32 +30,23 @@ public class BipService {
     
     private ServiceInformation serviceInformation;
 
-    /** Creates a new instance of BipService with the data of a service.
+    /** Creates a new instance of OmiscidService with the data of a service.
      * @param serviceId an id used to create a control client to communicate 
      * with the service s.
      * @param s service containing the data from DNS-SD */
-    public BipService(int serviceId, ServiceInformation s){        
+    public OmiscidService(int serviceId, ServiceInformation s){        
         this.serviceInformation = s;
         this.serviceId = serviceId;
     }
 
-    public BipService(ServiceInformation s){        
+    public OmiscidService(ServiceInformation s){        
         this.serviceInformation = s;
     }
-//    /**
-//     * Create a new instance of BipService
-//     * @param name service name
-//     * @param regType register type
-//     * @param aDomain domain name
-//     */
-//    public BipService(String name, String regType, String aDomain){
-//        super(name, regType, aDomain);
-//    }
-    
+
     /**
 	 * Define the id to use to create the control client and communicate with the control server
 	 * @param serviceId  the id to use
-	 * @see  BipService#initControlClient()
+	 * @see  OmiscidService#initControlClient()
 	 * @uml.property  name="serviceId"
 	 */
     public void setServiceId(int serviceId){
@@ -93,7 +84,7 @@ public class BipService {
      * When the user do not use the control client any more, the user must call
      * closeControlClient.
      * @return the control client or null if the creation failed 
-     * @see BipService#closeControlClient()
+     * @see OmiscidService#closeControlClient()
      */
     public ControlClient initControlClient(){
         synchronized (controlClientSync){
@@ -113,7 +104,7 @@ public class BipService {
      * (Must be called even if the connection has already been lost)
      * The number of current user of control client is decremented.
      * If the number becomes 0, the control client is really closed. 
-     * The control client can be obtained by calling {@link BipService#initControlClient()}
+     * The control client can be obtained by calling {@link OmiscidService#initControlClient()}
      */
     public void closeControlClient(){
         synchronized (controlClientSync){
@@ -129,11 +120,11 @@ public class BipService {
      * @param ioa description associated to the server
      * @return a new TcpClient object or null if the connection failed.
      * */
-    public fr.prima.omiscid.com.TcpClient connectToAServer(InOutputAttribut ioa, BipMessageListener bml){
+    public fr.prima.omiscid.com.TcpClient connectToAServer(InOutputAttribut ioa, OmiscidMessageListener bml){
         if(ioa != null){
             try{
                 fr.prima.omiscid.com.TcpClient tcpClient = new fr.prima.omiscid.com.TcpClient(serviceId);
-                if(bml != null) tcpClient.addBipMessageListener(bml);
+                if(bml != null) tcpClient.addOmiscidMessageListener(bml);
                 tcpClient.connectTo(serviceInformation.getHostName(), ioa.getTcpPort());            
                 return tcpClient;
             }catch(IOException e){}
@@ -143,7 +134,7 @@ public class BipService {
     
     private static Random randomForThisJVM = new Random(System.currentTimeMillis());
     /**
-     * Generate an id for a BIP service
+     * Generate an id for a OMiSCID service
      * based on a random number and the current time.
      * 
      * Warning !!! If two jvms init their variables at the same currentTimeMillis

@@ -11,7 +11,7 @@ import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.dnssd.interf.ServiceBrowser;
 import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
 
-public class DNSSDFactoryBip implements DNSSDFactory {
+public class DNSSDFactoryOmiscid implements DNSSDFactory {
 
     private static int port = 12053;
     private static String host = "localhost";

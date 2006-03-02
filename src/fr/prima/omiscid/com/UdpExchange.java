@@ -6,13 +6,13 @@
 
 package fr.prima.omiscid.com;
 
-import fr.prima.omiscid.com.interf.BipMessageListener;
+import fr.prima.omiscid.com.interf.OmiscidMessageListener;
 import fr.prima.omiscid.com.interf.Message;
 
 
 
 /**
- * Communication with BIP message on UDP protocol
+ * Communication with OMiSCID message on UDP protocol
  * 
  * @author Sebastien Pesnel
  * Refactoring by Patrick Reignier
@@ -23,7 +23,7 @@ public class UdpExchange extends MsgSocketUDP {
      * Creates a new instance of UdpExchange
      * 
      * @param serviceId
-     *            the id use in BIP exchange
+     *            the id use in OMiSCID exchange
      * @exception SocketException
      *                if error during socket creation
      */
@@ -35,7 +35,7 @@ public class UdpExchange extends MsgSocketUDP {
      * Creates a new instance of UdpExchange Bind the socket to a port
      * 
      * @param serviceId
-     *            the id use in BIP exchange
+     *            the id use in OMiSCID exchange
      * @param port
      *            port where bind the socket
      * @exception SocketException
@@ -71,8 +71,8 @@ public class UdpExchange extends MsgSocketUDP {
 
             System.out.println("launched");
 
-            udpRecv.addBipMessageListener(new BipMessageListener() {
-                public void receivedBipMessage(Message msg) {
+            udpRecv.addOmiscidMessageListener(new OmiscidMessageListener() {
+                public void receivedOmiscidMessage(Message msg) {
                     System.out.println("in toto listener:");
                     System.out.println(msg);
                 }

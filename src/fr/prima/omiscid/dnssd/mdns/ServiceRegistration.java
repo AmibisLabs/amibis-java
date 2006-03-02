@@ -12,7 +12,7 @@ import com.apple.dnssd.TXTRecord;
 
 /**
  * 
- * @author emonet initial build from RegisterBipService by pesnel and reignier
+ * @author emonet initial build from RegisterOmiscidService by pesnel and reignier
  *
  */
 public class ServiceRegistration

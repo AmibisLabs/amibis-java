@@ -16,7 +16,7 @@ public interface ControlEventListener extends java.util.EventListener {
      * call on control event
      * 
      * @param xmlMsg
-     *            a BIP message change in XML tree that contains the control
+     *            a OMiSCID message change in XML tree that contains the control
      *            event
      */
     public void receivedControlEvent(XmlMessage xmlMsg);

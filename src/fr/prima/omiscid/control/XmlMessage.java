@@ -62,10 +62,10 @@ public class XmlMessage {
 
 
     /**
-     * Change a BIP message into XmlMessage
+     * Change a OMiSCID message into XmlMessage
      * 
      * @param msg
-     *            a BIP message
+     *            a OMiSCID message
      */
     static public XmlMessage changeMessageToXmlTree(Message msg) {        
         org.w3c.dom.Document doc = XmlUtils.changeStringToXmlTree(msg.getBuffer());

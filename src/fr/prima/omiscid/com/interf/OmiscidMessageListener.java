@@ -1,5 +1,5 @@
 /*
- * BipMessageListener.java
+ * OmiscidMessageListener.java
  *
  * Created on 3 avril 2005, 14:33
  */
@@ -9,9 +9,9 @@ package fr.prima.omiscid.com.interf;
 
 
 /**
- * Listener for BIP message
+ * Listener for OMiSCID message
  * 
- * Interface to implement to receive BIP message. The object that implements
+ * Interface to implement to receive OMiSCID message. The object that implements
  * this interface can be given to object as TcpClient, TcpServer to receive and
  * process message.
  * 
@@ -19,13 +19,13 @@ package fr.prima.omiscid.com.interf;
  * @author Sebastien Pesnel
  * Refactoring by Patrick Reignier
  */
-public interface BipMessageListener extends java.util.EventListener {
+public interface OmiscidMessageListener extends java.util.EventListener {
     /**
      * Call on receive message when the object is declared as listener to the
      * source of message
      * 
      * @param msg
-     *            the BIP message
+     *            the OMiSCID message
      */
-    public void receivedBipMessage(Message msg);
+    public void receivedOmiscidMessage(Message msg);
 }

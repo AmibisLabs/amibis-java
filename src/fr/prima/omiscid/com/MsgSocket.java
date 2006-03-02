@@ -5,7 +5,7 @@
 package fr.prima.omiscid.com;
 
 
-import fr.prima.omiscid.com.interf.BipMessageListener;
+import fr.prima.omiscid.com.interf.OmiscidMessageListener;
 import fr.prima.omiscid.com.interf.Message;
 
 import java.util.HashSet;
@@ -13,7 +13,7 @@ import java.util.Set;
 
 
 /**
- * Manage the buffer to store bytes and parsed BIP messages The buffer can receive byte. The method 'received' give the number of byte added to the buffer. The method 'process' try to parse BIP message.
+ * Manage the buffer to store bytes and parsed OMiSCID messages The buffer can receive byte. The method 'received' give the number of byte added to the buffer. The method 'process' try to parse OMiSCID message.
  * @author  Sebastien Pesnel  Refactoring by Patrick Reignier
  */
 final class ReceiveBuffer {
@@ -38,7 +38,7 @@ final class ReceiveBuffer {
     private int position;
 
     /**
-     * Array used to store temporarly data extracted from header of BIP message :
+     * Array used to store temporarly data extracted from header of OMiSCID message :
      * peer id, message id, message length
      */
     private String[] msgAttribut;
@@ -51,7 +51,7 @@ final class ReceiveBuffer {
      * 
      * @param msgSocket
      *            the MsgSocket object working with this ReceiveBuffer object.
-     *            The BIP message will be returned to this object.
+     *            The OMiSCID message will be returned to this object.
      */
     public ReceiveBuffer(MsgSocket msgSocket) {
         this.msgSocket = msgSocket;
@@ -153,7 +153,7 @@ final class ReceiveBuffer {
     }
 
     /**
-     * Test if the buffer contains a BIP message. If the first byte not yet used
+     * Test if the buffer contains a OMiSCID message. If the first byte not yet used
      * (pointed by 'position') is the beggining of a message, the header are
      * extracted and copied in msgAttribut, 'position' is changed and points on
      * the first byte of the message body, and then the methods returns 2.
@@ -224,13 +224,13 @@ final class ReceiveBuffer {
 }
 
 /**
- * Manage the message reception in a thread, when a message arrived the method of the Bip Message listener is called. Bip message can be send by using the method Send. Base of TcpServer and TcpClient The byte reception, and detection of message is managed by a ReceiveBuffer object.
+ * Manage the message reception in a thread, when a message arrived the method of the OMiSCID Message listener is called. OMiSCID message can be send by using the method Send. Base of TcpServer and TcpClient The byte reception, and detection of message is managed by a ReceiveBuffer object.
  * @author  Sebastien Pesnel
  */
 public abstract class MsgSocket extends Thread implements ComTools {
     /** @ */
     /**
-     * the id for this connection used in BIP exhange : used when a message is
+     * the id for this connection used in OMiSCID exhange : used when a message is
      * send to peer
      */
     private int serviceId;
@@ -255,7 +255,7 @@ public abstract class MsgSocket extends Thread implements ComTools {
     public static final byte[] msgEnd = { '\r', '\n' };
 
     /**
-     * the min size of a BIP message (size of header + 2 byte for the message
+     * the min size of a OMiSCID message (size of header + 2 byte for the message
      * end)
      */
     public static final int MIN_LENGTH_MSG = msgBegin.length + 8 + 1 + 8 + 1
@@ -290,12 +290,12 @@ public abstract class MsgSocket extends Thread implements ComTools {
     }
 
     /**
-     * the object who manage the byte reception and the BIP detection
+     * the object who manage the byte reception and the OMiSCID detection
      */
     protected ReceiveBuffer receiveBuffer = null;
 
-    /** Set of listener to call when a BIP message is received */
-    private Set<BipMessageListener> ListenerSet;
+    /** Set of listener to call when a OMiSCID message is received */
+    private Set<OmiscidMessageListener> ListenerSet;
 
     /**
      * Creates a new instance of MsgSocket
@@ -307,15 +307,15 @@ public abstract class MsgSocket extends Thread implements ComTools {
         this.serviceId = serviceId;
         connected = false;
         receiveBuffer = new ReceiveBuffer(this);
-        ListenerSet = new HashSet<BipMessageListener>();
+        ListenerSet = new HashSet<OmiscidMessageListener>();
     }
 
     /**
-     * Generate a BIP header Build the message with the service id, the current
+     * Generate a OMiSCID header Build the message with the service id, the current
      * message id and the length given as parameter. Increment the message id
      * 
      * @param len
-     *            give the length that will appear in BIP header
+     *            give the length that will appear in OMiSCID header
      */
     public String GenerateHeader(int len) {
         String str = msgBeginStr + intTo8HexString(serviceId) + " "
@@ -330,19 +330,19 @@ public abstract class MsgSocket extends Thread implements ComTools {
      * @param listener
      *            the listener interested in the received message
      */
-    public void addBipMessageListener(BipMessageListener listener) {
+    public void addOmiscidMessageListener(OmiscidMessageListener listener) {
         synchronized (ListenerSet) {
             ListenerSet.add(listener);
         }
     }
 
     /**
-     * Remove a listener on BIP message
+     * Remove a listener on OMiSCID message
      * 
      * @param listener
      *            the listener no more interested in the received message
      */
-    public void removeBipMessageListener(BipMessageListener listener) {
+    public void removeOmiscidMessageListener(OmiscidMessageListener listener) {
         synchronized (ListenerSet) {
             ListenerSet.remove(listener);
         }
@@ -359,10 +359,10 @@ public abstract class MsgSocket extends Thread implements ComTools {
         // System.out.println("NewMessageReceived :");
         // System.out.println(msg);
         synchronized (ListenerSet) {
-            java.util.Iterator<BipMessageListener> it = ListenerSet.iterator();
+            java.util.Iterator<OmiscidMessageListener> it = ListenerSet.iterator();
             while (it.hasNext()) {
-                BipMessageListener listener = (BipMessageListener) it.next();
-                listener.receivedBipMessage(msg);
+                OmiscidMessageListener listener = (OmiscidMessageListener) it.next();
+                listener.receivedOmiscidMessage(msg);
             }
         }
     }
@@ -456,7 +456,7 @@ public abstract class MsgSocket extends Thread implements ComTools {
     }
 
     /**
-     * Send an array of byte in a BIP message
+     * Send an array of byte in a OMiSCID message
      * 
      * @param buffer
      *            array of byte to send

@@ -14,7 +14,7 @@ import java.net.InetAddress;
 import java.io.IOException;
 
 /**
- * BIP Communication based on UDP protocol
+ * OMiSCID Communication based on UDP protocol
  * 
  * @author Sebastien Pesnel
  * Refactoring by Patrick Reignier
@@ -38,7 +38,7 @@ public class MsgSocketUDP extends MsgSocket {
     /**
      * Creates a new instance of MsgSocketUDP
      * 
-     * @param serviceId use in BIP exchange
+     * @param serviceId use in OMiSCID exchange
      * @throws SocketException
      *             if error in creating datagram socket
      */
@@ -53,7 +53,7 @@ public class MsgSocketUDP extends MsgSocket {
      * Creates a new instance of MsgSocketUDP
      * 
      * @param serviceId
-     *            the id use in BIP exchange
+     *            the id use in OMiSCID exchange
      * @param port
      *            port number where bind the datagram socket
      * @throws SocketException
