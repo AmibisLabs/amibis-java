@@ -93,7 +93,11 @@ public class ServiceInformation implements Externalizable {
 
     
     public static void writeString(OutputStream out, String s) throws IOException {
-        writeByteArray(out, s.getBytes(crosslanguageCharset));
+        if (s==null) {
+            writeNullString(out);
+        } else {
+            writeByteArray(out, s.getBytes(crosslanguageCharset));
+        }
     }
     
     public static void writeNullString(OutputStream out) throws IOException {
