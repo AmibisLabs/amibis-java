@@ -14,7 +14,7 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
  */
 public class OmiscidService {
     /** Type for the registration */
-    public static final String REG_TYPE = new String("_omiscid._tcp");
+    public static final String REG_TYPE = new String("_bip._tcp");
         
     public static DNSSDFactory dnssdFactory = DNSSDFactory.DefaultFactory.instance();
     
