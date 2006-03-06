@@ -116,10 +116,14 @@ public class ServiceInformation implements Externalizable {
         writeString(out,hostName);
         writeInt(out,port);
         writeInt(out,status);
-        writeInt(out,properties.size());
-        for (String key : properties.keySet()) {
-            writeString(out, key);
-            writeByteArray(out, properties.get(key));
+        if (properties!=null) {
+            writeInt(out,properties.size());
+            for (String key : properties.keySet()) {
+                writeString(out, key);
+                writeByteArray(out, properties.get(key));
+            }
+        } else {
+            writeInt(out, 0);
         }
         out.flush();
     }
