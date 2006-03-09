@@ -14,7 +14,7 @@ import java.io.OutputStream;
 import java.util.Hashtable;
 
 /**
- * This class is a pure copy of the corresponding class in the OmiscidDnssdServer project.
+ * This class is a pure copy of the corresponding class in the jOMiSCIDDnssdServer project.
  * 
  * @author emonet
  * 
