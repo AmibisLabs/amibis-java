@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jardesc>
-<jar path="BipProject/bipProject.jar"/>
-<options buildIfNeeded="true" compress="true" descriptionLocation="/BipProject/export.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="true" overwrite="false" saveDescription="true" useSourceFolders="false"/>
-<manifest generateManifest="true" manifestLocation="/BipProject/manifest.mf" manifestVersion="1.0" reuseManifest="false" saveManifest="true" usesManifest="true">
+<jar path="jOMiSCID/jOMiSCID.jar"/>
+<options buildIfNeeded="true" compress="true" descriptionLocation="/jOMiSCID/export.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="true" overwrite="true" saveDescription="true" useSourceFolders="false"/>
+<manifest generateManifest="true" manifestLocation="/jOMiSCID/manifest.mf" manifestVersion="1.0" reuseManifest="false" saveManifest="true" usesManifest="true">
 <sealing sealJar="false">
 <packagesToSeal/>
 <packagesToUnSeal/>
 </sealing>
 </manifest>
 <selectedElements exportClassFiles="false" exportJavaFiles="true" exportOutputFolder="true">
-<javaElement handleIdentifier="=BipProject/src"/>
+<javaElement handleIdentifier="=jOMiSCID"/>
 </selectedElements>
 </jardesc>
