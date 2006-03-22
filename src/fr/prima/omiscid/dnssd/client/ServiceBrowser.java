@@ -22,6 +22,7 @@ public class ServiceBrowser implements fr.prima.omiscid.dnssd.interf.ServiceBrow
     private String host;
     private int port;
     private Socket socket;
+    private boolean shouldStop = false;
     
     /*package*/ ServiceBrowser(String registrationType, String host, int port) {
         this.registrationType = registrationType;
@@ -56,7 +57,7 @@ public class ServiceBrowser implements fr.prima.omiscid.dnssd.interf.ServiceBrow
                         fr.prima.omiscid.dnssd.server.ServiceInformation.writeString(outputSream, registrationType);
                         //ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
                         InputStream inputStream = socket.getInputStream();
-                        while (true) {
+                        while (!shouldStop) {
                             //ServiceInformation serviceInformation = new ServiceInformation((fr.prima.omiscid.dnssd.server.ServiceInformation) inputStream.readObject());
                             ServiceInformation serviceInformation = new ServiceInformation(fr.prima.omiscid.dnssd.server.ServiceInformation.crosslanguageReadNew(inputStream));
                             assert serviceInformation.isConnecting() || serviceInformation.isDisconnecting();
@@ -67,24 +68,17 @@ public class ServiceBrowser implements fr.prima.omiscid.dnssd.interf.ServiceBrow
                             }
                             //System.out.println(serviceInformation.getFullName()+" with status "+serviceInformation.getStatus());
                         }
+                        socket.close();
                     } catch (IOException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
-//                    } catch (ClassNotFoundException e) {
-//                        // TODO Auto-generated catch block
-//                        e.printStackTrace();
                     }
                 }
             }).start();            
     }
 
     public void stop() {
-        try {
-            socket.close();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        shouldStop = true;
     }
 
 }
