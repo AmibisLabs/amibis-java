@@ -29,7 +29,7 @@ public class TcpServer extends Thread implements ComTools {
     private Set<MsgSocketTCP> connectionSet;
 
     /** Service id used to identify connecton in OMiSCID exchange */
-    private int serviceId;
+    protected int serviceId;
 
     /** Server Socket thay listen for connection */
     private ServerSocket serverSocket;

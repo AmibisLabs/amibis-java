@@ -8,6 +8,7 @@ package fr.prima.omiscid.com;
 
 import fr.prima.omiscid.com.interf.OmiscidMessageListener;
 import fr.prima.omiscid.com.interf.Message;
+import fr.prima.omiscid.com.interf.UdpExchange;
 
 
 
@@ -17,7 +18,7 @@ import fr.prima.omiscid.com.interf.Message;
  * @author Sebastien Pesnel
  * Refactoring by Patrick Reignier
  */
-public class UdpExchange extends MsgSocketUDP {
+public class UdpExchangeImpl extends MsgSocketUDP implements UdpExchange {
 
     /**
      * Creates a new instance of UdpExchange
@@ -27,7 +28,7 @@ public class UdpExchange extends MsgSocketUDP {
      * @exception SocketException
      *                if error during socket creation
      */
-    public UdpExchange(int serviceId) throws java.net.SocketException {
+    public UdpExchangeImpl(int serviceId) throws java.net.SocketException {
         super(serviceId);
     }
 
@@ -41,21 +42,14 @@ public class UdpExchange extends MsgSocketUDP {
      * @exception SocketException
      *                if error during socket creation
      */
-    public UdpExchange(int serviceId, int port)
+    public UdpExchangeImpl(int serviceId, int port)
             throws java.net.SocketException {
         super(serviceId, port);
     }
 
-    /**
-     * Send a message to a particular destination
-     * 
-     * @param buffer
-     *            the message body
-     * @param host
-     *            the host name of the destination
-     * @param port
-     *            the port number of the destination
-     */
+    /* (non-Javadoc)
+	 * @see fr.prima.omiscid.com.UdpExchange#send(byte[], java.lang.String, int)
+	 */
     public void send(byte[] buffer, String host, int port) {
         setDestination(host, port);
         send(buffer);
@@ -64,10 +58,10 @@ public class UdpExchange extends MsgSocketUDP {
     /** Main for test */
     public static void main(String[] arg) {
         UdpExchange udpSent = null;
-        UdpExchange udpRecv = null;
+        UdpExchangeImpl udpRecv = null;
         try {
-            udpSent = new UdpExchange(666);
-            udpRecv = new UdpExchange(999, 5555);
+            udpSent = new UdpExchangeImpl(666);
+            udpRecv = new UdpExchangeImpl(999, 5555);
 
             System.out.println("launched");
 
