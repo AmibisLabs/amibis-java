@@ -205,4 +205,18 @@ public class TcpClientServer extends TcpServer {
 			return false ;
 		}
 	}
+
+	/* (non-Javadoc)
+	 * @see fr.prima.omiscid.com.TcpServer#close()
+	 */
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		super.close();
+		
+		for (TcpClient client : listOfClients.values())
+		{
+			client.closeConnection() ;
+		}
+	}
 }
