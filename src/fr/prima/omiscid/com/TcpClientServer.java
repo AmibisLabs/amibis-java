@@ -50,6 +50,8 @@ public class TcpClientServer extends TcpServer {
 		TcpClient tcpClient = new TcpClient(serviceId) ;
 		try {
 			tcpClient.connectTo(host, port) ;
+			tcpClient.send((byte[]) null) ;
+			tcpClient.receive() ;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
