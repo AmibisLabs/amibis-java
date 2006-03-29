@@ -19,7 +19,6 @@ package fr.prima.omiscid.com;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Vector;
 
 import fr.prima.omiscid.com.interf.OmiscidMessageListener;
