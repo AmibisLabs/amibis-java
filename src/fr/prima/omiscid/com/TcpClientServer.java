@@ -51,7 +51,10 @@ public class TcpClientServer extends TcpServer {
 		try {
 			tcpClient.connectTo(host, port) ;
 			tcpClient.send((byte[]) null) ;
-			tcpClient.receive() ;
+			while (tcpClient.getPeerId() == 0)
+			{
+				Thread.yield() ;
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
