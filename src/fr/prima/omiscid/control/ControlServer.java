@@ -194,10 +194,10 @@ public class ControlServer extends XmlMsgManager implements
 
         serviceRegistration.addProperty("owner", System.getProperty("user.name"));
 
-        serviceRegistration.addProperty("peerId", fr.prima.omiscid.com.MsgSocket.intTo8HexString(serviceId));
-        serviceRegistration.addProperty("inputs", inputRecord);
-        serviceRegistration.addProperty("outputs", outputRecord);
-        serviceRegistration.addProperty("inoutputs", inOutputRecord);
+        serviceRegistration.addProperty(OmiscidService.KEY_PEERID, fr.prima.omiscid.com.MsgSocket.intTo8HexString(serviceId));
+        serviceRegistration.addProperty(OmiscidService.KEY_INPUTS, inputRecord);
+        serviceRegistration.addProperty(OmiscidService.KEY_OUTPUTS, outputRecord);
+        serviceRegistration.addProperty(OmiscidService.KEY_INOUTPUTS, inOutputRecord);
 
         return serviceRegistration.register(port);
     }
