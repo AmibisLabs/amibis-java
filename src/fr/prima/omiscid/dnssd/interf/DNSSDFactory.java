@@ -7,7 +7,7 @@ package fr.prima.omiscid.dnssd.interf;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
-import fr.prima.omiscid.dnssd.client.DNSSDFactoryOmiscid;
+import fr.prima.omiscid.dnssd.mdns.DNSSDFactoryMdns;
 
 /**
  * 
@@ -99,7 +99,7 @@ public interface DNSSDFactory {
             }
         }
         private static DNSSDFactory makeHardCodedDefault() {
-            return new DNSSDFactoryOmiscid();
+            return new DNSSDFactoryMdns();
         }
     }
 }

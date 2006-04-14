@@ -36,15 +36,15 @@ fr.prima.omiscid.dnssd.interf.ServiceBrowser {
         this.registrationType = registrationType;
     }
 
-    public void addListener(ServiceEventListener l) {
+    public synchronized void addListener(ServiceEventListener l) {
         listeners.add(l);
     }
 
-    public void removeListener(ServiceEventListener l) {
+    public synchronized void removeListener(ServiceEventListener l) {
         listeners.remove(l);
     }
 
-    public void start() {
+    public synchronized void start() {
         try {
             dnssdService = DNSSD.browse(0, 0, registrationType, null, this);
         } catch (DNSSDException e) {
@@ -53,23 +53,23 @@ fr.prima.omiscid.dnssd.interf.ServiceBrowser {
         }
     }
 
-    public void stop() {
+    public synchronized void stop() {
         dnssdService.stop();
     }
 
-    private void notifyListeners(ServiceInformation serviceInformation, int type) {
+    private synchronized void notifyListeners(ServiceInformation serviceInformation, int type) {
         ServiceEvent event = new ServiceEvent(serviceInformation, type);
         for (ServiceEventListener l : listeners) {
             l.serviceEventReceived(event);
         }
     }
 
-    public void serviceLost(DNSSDService browser, int flags, int ifIndex,
+    public synchronized void serviceLost(DNSSDService browser, int flags, int ifIndex,
             String serviceName, String regType, String domain) {
         notifyListeners(new ServiceInformation(regType, serviceName), ServiceEvent.LOST);
     }
 
-    public void operationFailed(DNSSDService service, int errorCode) {
+    public synchronized void operationFailed(DNSSDService service, int errorCode) {
         System.err.println(this.getClass().getName()+": operation failed ("+errorCode+")");
     }
 
@@ -82,13 +82,14 @@ fr.prima.omiscid.dnssd.interf.ServiceBrowser {
             this.registrationType = registrationType;
             this.serviceName = serviceName;
         }
-        public void serviceResolved(DNSSDService resolver, int flags, int ifIndex,
+        public synchronized void serviceResolved(final DNSSDService resolver, int flags, int ifIndex,
                 String fullName, String hostName, int port, TXTRecord txtRecord) {
-            resolver.stop();
-            ServiceInformation serviceInformation = new ServiceInformation( this.registrationType, this.serviceName, hostName, port, txtRecord);
+            ServiceInformation serviceInformation = new ServiceInformation( this.registrationType, fullName, hostName, port, txtRecord);
             notifyListeners(serviceInformation, ServiceEvent.FOUND);
+            // it seems to be important to be after that notify listener ... probably a dnssd implementation bug
+            resolver.stop();
         }
-        public void operationFailed(DNSSDService service, int errorCode) {
+        public synchronized void operationFailed(DNSSDService service, int errorCode) {
             System.err.println(this.getClass().getName()+": operation failed ("+errorCode+")");
         }
     }
