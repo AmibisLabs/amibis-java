@@ -74,8 +74,10 @@ fr.prima.omiscid.dnssd.interf.ServiceRegistration {
     public synchronized boolean register(int port) {
         registered = false;
         try {
-            dnssdRegistration = DNSSD.register(FLAG, IF_INDEX, serviceName,
-                    registrationType, DOMAIN, null, port, txtRecord, this);
+            synchronized (DNSSD.class) {
+                dnssdRegistration = DNSSD.register(FLAG, IF_INDEX, serviceName,
+                        registrationType, DOMAIN, null, port, txtRecord, this);
+            }
             this.wait();
             // System.err.println("out register");
         } catch (com.apple.dnssd.DNSSDException e) {

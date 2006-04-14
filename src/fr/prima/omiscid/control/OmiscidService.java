@@ -57,9 +57,9 @@ public class OmiscidService {
         this.serviceId = serviceId;
     }
     
-    /** Returns the name of the service */
+    /** Returns the name of the service (with the bip suffix removed and spaces replaced) */
     public String toString(){
-        return serviceInformation.getFullName();
+        return getSimplifiedName();
     }
     
     /** Extract owner name from the text records 
@@ -171,5 +171,15 @@ public class OmiscidService {
 
     public String getFullName() {
         return serviceInformation.getFullName();
+    }
+    
+    public String getSimplifiedName() {
+        return cleanName(getFullName());
+    }
+
+    public static String cleanName(String fullName) {
+        return fullName
+        .replaceAll( ("."+OmiscidService.REG_TYPE+".local.$").replaceAll("[.]", "\\."), "")
+        .replaceAll("\\\\032", " ");
     }
 }

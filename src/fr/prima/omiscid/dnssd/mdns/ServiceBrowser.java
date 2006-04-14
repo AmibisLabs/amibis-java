@@ -46,7 +46,9 @@ fr.prima.omiscid.dnssd.interf.ServiceBrowser {
 
     public synchronized void start() {
         try {
-            dnssdService = DNSSD.browse(0, 0, registrationType, null, this);
+            synchronized (DNSSD.class) {
+                dnssdService = DNSSD.browse(0, 0, registrationType, null, this);
+            }            
         } catch (DNSSDException e) {
             System.err.println("Error in Start Browse");
             e.printStackTrace();
@@ -97,9 +99,10 @@ fr.prima.omiscid.dnssd.interf.ServiceBrowser {
     public void serviceFound(DNSSDService browser, int flags, int ifIndex,
             String serviceName, String regType, String domain) {
         try {
-            //new Service(serviceName, regType, domain);
-            DNSSD.resolve(0, ifIndex, serviceName, regType, domain,
-                    new MemoryResolveListener(regType, serviceName));
+            synchronized (DNSSD.class) {
+                DNSSD.resolve(0, ifIndex, serviceName, regType, domain,
+                        new MemoryResolveListener(regType, serviceName));
+            }            
         } catch (DNSSDException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
