@@ -49,14 +49,13 @@ fr.prima.omiscid.dnssd.interf.ServiceRegistration {
     
     public synchronized void serviceRegistered(DNSSDRegistration registration, int flags,
             String serviceName, String regType, String domain) {
-//        synchronized (registerEvent) {
-        if (registration == dnssdRegistration) {
-            // System.err.println("service registered");
-            registered = true;
-            registeredServiceName = serviceName;
-            this.notify();
+        if (registration != dnssdRegistration) {
+//            System.out.println(registration);
+//            System.out.println(dnssdRegistration);
         }
-//        }
+        registered = true;
+        registeredServiceName = serviceName;
+        this.notify();
     }
     
     public void addProperty(String name, String value) {
@@ -74,12 +73,9 @@ fr.prima.omiscid.dnssd.interf.ServiceRegistration {
     public synchronized boolean register(int port) {
         registered = false;
         try {
-            synchronized (DNSSD.class) {
-                dnssdRegistration = DNSSD.register(FLAG, IF_INDEX, serviceName,
-                        registrationType, DOMAIN, null, port, txtRecord, this);
-            }
+            dnssdRegistration = DNSSD.register(FLAG, IF_INDEX, serviceName,
+                    registrationType, DOMAIN, null, port, txtRecord, this);
             this.wait();
-            // System.err.println("out register");
         } catch (com.apple.dnssd.DNSSDException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -88,15 +84,15 @@ fr.prima.omiscid.dnssd.interf.ServiceRegistration {
         return registered;
     }
 
-    public boolean isRegistered() {
+    public synchronized boolean isRegistered() {
         return registered;
     }
 
-    public void unregister() {
+    public synchronized void unregister() {
         dnssdRegistration.stop();
     }
 
-    public String getRegisteredName() {
+    public synchronized String getRegisteredName() {
         return registeredServiceName;
     }
 
