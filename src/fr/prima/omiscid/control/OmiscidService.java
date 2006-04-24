@@ -72,7 +72,7 @@ public class OmiscidService {
     }
     /** Extract peer id from the text record or from message exchange on controlClient */
     public int getPeerId(){
-        String str = serviceInformation.getStringProperty("peerId");
+        String str = serviceInformation.getStringProperty(KEY_PEERID);
         if(str != null){
             return MsgSocket.hexStringToInt(str);
         }else{
