@@ -24,7 +24,7 @@ fr.prima.omiscid.dnssd.interf.ServiceRegistration {
     /** IF_INDEX for the registration */
     private static final int IF_INDEX = 0;
     /** Domain for the registration */
-    private static final String DOMAIN = new String("local");
+    private static final String DOMAIN = null;
 
     
     private String serviceName;
@@ -73,8 +73,8 @@ fr.prima.omiscid.dnssd.interf.ServiceRegistration {
     public synchronized boolean register(int port) {
         registered = false;
         try {
-            dnssdRegistration = DNSSD.register(FLAG, IF_INDEX, serviceName,
-                    registrationType, DOMAIN, null, port, txtRecord, this);
+          dnssdRegistration = DNSSD.register(FLAG, IF_INDEX, serviceName,
+          registrationType, DOMAIN, null, port, txtRecord, this);
             this.wait();
         } catch (com.apple.dnssd.DNSSDException e) {
             e.printStackTrace();
