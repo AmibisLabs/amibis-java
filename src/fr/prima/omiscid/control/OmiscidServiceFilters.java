@@ -57,7 +57,7 @@ public final class OmiscidServiceFilters {
     }
 
     public static OmiscidServiceFilter nameIs(String nameRegexp) {
-        return new Name("^"+nameRegexp+"$");
+        return new Name("^"+nameRegexp+"\\(\\d+\\)\\s*$"); 
     }
     public static OmiscidServiceFilter namePrefixIs(String prefixRegexp) {
         return new Name("^"+prefixRegexp+".*$");
