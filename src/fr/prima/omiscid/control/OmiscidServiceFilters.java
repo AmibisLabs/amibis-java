@@ -13,7 +13,7 @@ public final class OmiscidServiceFilters {
             this.nameRegexp = nameRegexp;            
         }
         public boolean isAGoodService(OmiscidService s) {
-            return s.getFullName().matches(nameRegexp);
+            return s.getSimplifiedName().matches(nameRegexp);
         }
     }
     /** Test if the host of the service has a good name */
@@ -57,7 +57,7 @@ public final class OmiscidServiceFilters {
     }
 
     public static OmiscidServiceFilter nameIs(String nameRegexp) {
-        return new Name("^"+nameRegexp+"\\(\\d+\\)\\s*$"); 
+        return new Name("^"+nameRegexp+"( \\(\\d+\\))?"+".*$"); // @@@( \(\d+\))?@@@
     }
     public static OmiscidServiceFilter namePrefixIs(String prefixRegexp) {
         return new Name("^"+prefixRegexp+".*$");
