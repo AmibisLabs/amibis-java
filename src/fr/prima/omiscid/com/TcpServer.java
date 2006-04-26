@@ -73,6 +73,7 @@ public class TcpServer extends Thread implements ComTools {
             try {
 
                 Socket s = serverSocket.accept();
+                s.setTcpNoDelay(true) ;
                 // System.out.println("New Connection " + getNbConnections());
                 MsgSocketTCP msgSocket = new MsgSocketTCP(serviceId, s);
 

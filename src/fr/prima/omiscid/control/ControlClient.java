@@ -1,16 +1,18 @@
 package fr.prima.omiscid.control ;
 
-import fr.prima.omiscid.com.MsgSocket;
-import fr.prima.omiscid.com.TcpClient;
-import fr.prima.omiscid.com.interf.OmiscidMessageListener;
-import fr.prima.omiscid.com.interf.Message;
-
+import java.util.Calendar;
 import java.util.Set;
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import fr.prima.omiscid.com.MsgSocket;
+import fr.prima.omiscid.com.TcpClient;
+import fr.prima.omiscid.com.interf.Message;
+import fr.prima.omiscid.com.interf.OmiscidMessageListener;
 
 /**
  * Communication with a control server of a OMiSCID service. Query data, store answer. Has a local copy of the data. <br> Use: <ul><li> Creates a ControlClient instance </li><li> Connect the control client to a control server </li><li> query a global description of the service : then you have the  names for all variables and in/outputs. </li><li> you can do specific query on variable, or in/output  </li></ul>
@@ -18,7 +20,7 @@ import org.w3c.dom.NodeList;
  */
 public class ControlClient implements OmiscidMessageListener {
     /** The max time to wait for the answer to a query */
-    private final int MaxTimeToWait = 2000; // milliseconds
+    private final int MaxTimeToWait = 500; // milliseconds
 
     /** The connection to the control port */
     private TcpClient tcpClient = null;
@@ -321,6 +323,7 @@ public class ControlClient implements OmiscidMessageListener {
     public VariableAttribut queryVariableDescription(String name) {
         String request = "<variable name=\"" + name + "\"/>";
         XmlMessage msg = queryToServer(request, true);
+        System.err.println("queryVariableDescription : sent " + request + " and had " + msg) ; //- trace
         if (msg != null) {
             VariableAttribut vattr = findVariable(name);
             Element elt = XmlUtils.firstChild(msg.getRootNode(), "variable");
@@ -589,16 +592,16 @@ public class ControlClient implements OmiscidMessageListener {
                 tcpClient.send(str.getBytes());
                 if (waitAnswer) {
                     try {
-                        // System.out.println("queryToServer : before wait");
+                        System.out.println("queryToServer : before wait " + Calendar.getInstance().getTime()); //- trace
                         answerEvent.wait(MaxTimeToWait);
-                        // System.out.println("queryToServer : after wait");
+                        System.out.println("queryToServer : after wait " +  Calendar.getInstance().getTime()); //- trace
                         
                         if (msgAnswer != null){
                             XmlMessage m = msgAnswer;
                             msgAnswer = null;
                             if (checkMessage(m, theMsgId)) return m;
                         }else{
-                            System.out.println("answer null from "+this.getPeerId());
+                            System.out.println("answer null to request " + request + " from "+Integer.toHexString(getPeerId()));
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();

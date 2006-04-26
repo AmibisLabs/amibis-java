@@ -51,6 +51,7 @@ public class TcpClient extends MsgSocketTCP {
      */
     public void connectTo(String host, int port) throws IOException {
         Socket socket = new Socket();
+        socket.setTcpNoDelay(true) ;
         if (stripTrailingDotLocalDot && host.endsWith(".local.")) {
             host = host.replaceAll("[.]local[.]$","");
             //System.out.println(host);
