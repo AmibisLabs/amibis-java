@@ -401,7 +401,7 @@ public abstract class MsgSocket extends Thread implements ComTools {
      * @return true if the peer id has a particular value
      */
     public boolean isConnectedToPeer(int peerId) {
-        return peerId == peerId;
+        return this.peerId == peerId;
     }
 
     /**

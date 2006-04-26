@@ -102,6 +102,7 @@ public class TcpServer extends Thread implements ComTools {
                     }
                     */                    
                     connectionSet.add(msgSocket);
+                    System.err.println("##### " + connectionSet) ;
                 }
                 
             } catch (IOException e) {
@@ -148,6 +149,7 @@ public class TcpServer extends Thread implements ComTools {
     public boolean sendToOneClient(byte[] buffer, int pid) {
         MsgSocket m = findConnection(pid);
         if (m != null) {
+        		//System.err.println("not found client. Sending to " + m.getTcpPort()) ;
             m.send(buffer);
             return true;
         }
@@ -221,17 +223,17 @@ public class TcpServer extends Thread implements ComTools {
      */
     protected MsgSocket findConnection(int pid) {
         synchronized (connectionSet) {
-            //System.out.println("findConnection "+ pid);
+            //System.out.println("		findConnection "+ Integer.toHexString(pid));
             Set<MsgSocketTCP> tmpSet = new HashSet<MsgSocketTCP>();
             java.util.Iterator<MsgSocketTCP> it = connectionSet.iterator();
             MsgSocket found = null;
             while (it.hasNext() /*&& found == null*/) {
                 MsgSocketTCP current = it.next();
-                // System.out.println(pid +" // "+ current.getPeerId());
+                //System.out.println("		" + Integer.toHexString(pid) +" // "+ Integer.toHexString(current.getPeerId()));
                 if (current.isConnected()) {
                     if (current.isConnectedToPeer(pid)){
                         found = current;
-                        //System.out.println("findConnection "+ pid+" found");
+                        //System.out.println("		findConnection "+ Integer.toHexString(pid)+" found");
                     }
                 } else {
                     tmpSet.add(current);

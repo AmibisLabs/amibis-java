@@ -149,6 +149,11 @@ public class MsgSocketTCP extends MsgSocket {
         }
         return 0;
     }
+    
+    public String toString()
+    {
+    	  return "MsgSocket " + Integer.toHexString(getServiceId()) + " to " + Integer.toHexString(getPeerId()) + ":" + getTcpPort() ; 
+    }
         
     
 }
