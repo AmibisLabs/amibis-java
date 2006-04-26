@@ -91,9 +91,11 @@ public class TcpClientServer extends TcpServer {
 	 */
 	public boolean sendToOneClient(byte[] buffer,int pid)
 	{
+		System.err.println("Sending to " + pid) ;
 		TcpClient client = listOfClients.get(pid) ;
 		if (client != null)
 		{
+			System.err.println("found client " + client.getPeerId()) ;
 			client.send(buffer) ;
 			return true ;
 		}
