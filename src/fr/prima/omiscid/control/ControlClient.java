@@ -323,7 +323,7 @@ public class ControlClient implements OmiscidMessageListener {
     public VariableAttribut queryVariableDescription(String name) {
         String request = "<variable name=\"" + name + "\"/>";
         XmlMessage msg = queryToServer(request, true);
-        System.err.println("queryVariableDescription : sent " + request + " and had " + msg) ; //- trace
+   //     System.err.println("queryVariableDescription : sent " + request + " and had " + msg) ; //- trace
         if (msg != null) {
             VariableAttribut vattr = findVariable(name);
             Element elt = XmlUtils.firstChild(msg.getRootNode(), "variable");
