@@ -592,9 +592,9 @@ public class ControlClient implements OmiscidMessageListener {
                 tcpClient.send(str.getBytes());
                 if (waitAnswer) {
                     try {
-                        System.out.println("queryToServer : before wait " + Calendar.getInstance().getTime()); //- trace
+//                        System.out.println("queryToServer : before wait " + Calendar.getInstance().getTime()); //- trace
                         answerEvent.wait(MaxTimeToWait);
-                        System.out.println("queryToServer : after wait " +  Calendar.getInstance().getTime()); //- trace
+//                        System.out.println("queryToServer : after wait " +  Calendar.getInstance().getTime()); //- trace
                         
                         if (msgAnswer != null){
                             XmlMessage m = msgAnswer;
