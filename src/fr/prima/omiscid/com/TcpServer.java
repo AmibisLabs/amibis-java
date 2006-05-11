@@ -4,263 +4,269 @@
  */
 package fr.prima.omiscid.com;
 
-
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Set;
 import java.util.HashSet;
-import java.io.IOException;
+import java.util.Set;
 
-import fr.prima.omiscid.com.interf.OmiscidMessageListener;
-
+import fr.prima.omiscid.com.interf.BipMessageListener;
+import fr.prima.omiscid.com.interf.Message;
 
 /**
- * TCP Server. Accept multiple connection. Enable to send message to one or all
- * clients, and to receive message from client identify by their ids. Manage a
- * set of MsgSocketTcp.
+ * TCP Server. Accept multiple connections. Enables sending messages to one or
+ * all clients. Receives message from client identified by their ids. Manages a
+ * set of MessageSocketTcp.
  * 
- * @author Sebastien Pesnel
- * Refactoring by Patrick Reignier
+ * @author Sebastien Pesnel Refactoring by Patrick Reignier and emonet
  */
-public class TcpServer extends Thread implements ComTools {
-    /** Set of connections : set of MsgSocketTcp objects */
-    private Set<MsgSocketTCP> connectionSet;
+// \REVIEWTASK shouldn't this be a monitor?
+public class TcpServer implements CommunicationServer {
+    /** Set of connections : set of MessageSocketTcp objects */
+    private Set<MessageSocketTCP> connectionsSet;
 
-    /** Service id used to identify connecton in OMiSCID exchange */
-    protected int serviceId;
+    /** Service id used to identify connecton in BIP exchanges */
+    protected int peerId;
 
-    /** Server Socket thay listen for connection */
+    /** Server Socket that listens for connection */
     private ServerSocket serverSocket;
 
+    /** Thread to listen on the socket */
+    private Thread listeningThread;
+
     /** Set of listener call when OMiSCID messages arrive */
-    private Set<OmiscidMessageListener> listenerSet;
+    private Set<BipMessageListener> listenersSet;
 
     /**
-     * Creates a new instance of TcpServer
+     * Creates a new instance of TcpServer.
      * 
-     * @param serviceId
-     *            the id use in OMiSCID exchange
+     * @param peerId
+     *            the BIP peer id to use in BIP exchange to represent the local
+     *            peer
      * @param port
-     *            the port number where the TCP server must listen
+     *            the TCP port number to listen to
      * @exception IOException
-     *                if error during socket creation
+     *                if an error occurs during socket creation
      */
-    public TcpServer(int serviceId, int port) throws IOException {
+    public TcpServer(int peerId, int port) throws IOException {
         serverSocket = new ServerSocket(port);
-        this.serviceId = serviceId;
-        connectionSet = new HashSet<MsgSocketTCP>();
-        listenerSet = new HashSet<OmiscidMessageListener>();
-    }
-    
-    public void close()
-    {
-    		try {
-				serverSocket.close() ;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+        this.peerId = peerId;
+        connectionsSet = new HashSet<MessageSocketTCP>();
+        listenersSet = new HashSet<BipMessageListener>();
     }
 
     /**
-     * Method run in a thread Accept connection on the TCP server Creation of
-     * MsgSocket add to the set of connection
+     * Closes this server. The main socket is closed, the listening thread is
+     * stopped. However all the initiated connections are still alive.
      */
-    public void run() {
+    // \REVIEWTASK should we close all the subconnections ? should we propose
+    // both ? ...
+    public void close() {
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Method run by the listening thread to accept new connections and
+     * initialize {@link MessageSocketTCP}.
+     */
+    private void run() {
         while (!serverSocket.isClosed()) {
             try {
-
-                Socket s = serverSocket.accept();
-                s.setTcpNoDelay(true) ;
-                // System.out.println("New Connection " + getNbConnections());
-                MsgSocketTCP msgSocket = new MsgSocketTCP(serviceId, s);
-
-                synchronized (listenerSet) {
-                    java.util.Iterator<OmiscidMessageListener> it = listenerSet.iterator();
-                    while (it.hasNext()) {
-                        msgSocket.addOmiscidMessageListener(it.next());
+                Socket socket = serverSocket.accept();
+                socket.setTcpNoDelay(true);
+                // \REVIEWTASK tcp no delay policy
+                MessageSocketTCP messageSocket = new MessageSocketTCP(peerId, socket);
+                synchronized (listenersSet) {
+                    for (BipMessageListener listener : listenersSet) {
+                        messageSocket.addOmiscidMessageListener(listener);
                     }
                 }
-                msgSocket.start();
-                msgSocket.send((byte[])null);
-                
-                /*while(!msgSocket.getEmptyMsgReceived()){
-                    try{
-                        Thread.sleep(1);
-                    }catch(InterruptedException e){}
-                }                
-                */
-                
-                synchronized (connectionSet) {                                       
-                /*    MsgSocket m = null;
-                    m = findConnection(msgSocket.getPeerId());
-                    while(m != null){
-                        m.closeConnection();
-                        m = findConnection(msgSocket.getPeerId());
-                    }
-                    */                    
-                    connectionSet.add(msgSocket);
-                    System.err.println("##### " + connectionSet) ;
+                messageSocket.start();
+                messageSocket.initializeConnection();
+                synchronized (connectionsSet) {
+                    connectionsSet.add(messageSocket);
                 }
-                
             } catch (IOException e) {
-//                System.out.println("TcpServer::run");
-//                System.out.println(e);
+                /** Connection closed by {@link #close()} */
             }
         }
     }
 
     /**
-     * Send a message to all connected clients
+     * @deprecated Use {@link #sendToAllClients(byte[])} instead.
+     */
+    @Deprecated
+    public void sendToClients(byte[] buffer) {
+        sendToAllClients(buffer);
+    }
+
+    /**
+     * Sends a message to all still connected clients.
      * 
      * @param buffer
      *            the message to send
      */
-    public void sendToClients(byte[] buffer) {
-        synchronized (connectionSet) {
-            Set<MsgSocketTCP> tmpSet = new HashSet<MsgSocketTCP>();
-            java.util.Iterator<MsgSocketTCP> it = connectionSet.iterator();
-            while (it.hasNext()) {
-                MsgSocketTCP client = it.next();
+    public void sendToAllClients(byte[] buffer) {
+        synchronized (connectionsSet) {
+            Set<MessageSocketTCP> disconnectedClients = new HashSet<MessageSocketTCP>();
+            for (MessageSocketTCP client : connectionsSet) {
                 if (client.isConnected()) {
                     client.send(buffer);
                 } else {
-                    tmpSet.add(client);
+                    disconnectedClients.add(client);
                 }
             }
-            it = tmpSet.iterator();
-            while (it.hasNext()) {
-                connectionSet.remove(it.next());
-            }
+            connectionsSet.removeAll(disconnectedClients);
         }
     }
 
     /**
-     * Send a message to a particular client
+     * Sends a String message to all still connected clients. The string is
+     * encoded using the BIP encoding. To check that the encoding process went
+     * right, you must do it yourself using
+     * {@link BipUtils#stringToByteArray(String)}.
+     * 
+     * @param message
+     *            the message to send
+     */
+    public void sendToAllClientsUnchecked(String message) {
+        sendToAllClients(BipUtils.stringToByteArray(message));
+    }
+
+    /**
+     * Sends a message to a particular client.
      * 
      * @param buffer
      *            the message to send
-     * @param pid
+     * @param peerid
      *            identify the client to contact
-     * @return if the client to contact has been found
+     * @return whether the client to contact has been found and the message was
+     *         delivered to it
      */
-    public boolean sendToOneClient(byte[] buffer, int pid) {
-        MsgSocket m = findConnection(pid);
-        if (m != null) {
-        		//System.err.println("not found client. Sending to " + m.getTcpPort()) ;
-            m.send(buffer);
+    public boolean sendToOneClient(byte[] buffer, int peerid) {
+        MessageSocket client = findConnection(peerid);
+        if (client != null) {
+            client.send(buffer);
+            // \REVIEWTASK what if ! client.isConnected() ? to be though of when
+            // changing this class to a monitor
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
     /**
-     * Add a listener on the OMiSCID message
+     * Sends a String message to a given client. The string is encoded using the
+     * BIP encoding. To check that the encoding process went right, you must do
+     * it yourself using {@link BipUtils#stringToByteArray(String)}.
+     * 
+     * @param buffer
+     *            the message to send
+     * @param peerid
+     *            identify the client to contact
+     */
+    public void sendToOneClientUnchecked(String message, int peerId) {
+        sendToOneClient(BipUtils.stringToByteArray(message), peerId);
+    }
+
+    /**
+     * Adds a listener for the received BIP messages.
      * 
      * @param listener
      *            a listener interested in the message received by the TCP
      *            server
      */
-    public void addOmiscidMessageListener(OmiscidMessageListener listener) {
-        synchronized (listenerSet) {
-            listenerSet.add(listener);
-            synchronized (connectionSet) {
-                Set<MsgSocketTCP> tmpSet = new HashSet<MsgSocketTCP>();
-                java.util.Iterator<MsgSocketTCP> it = connectionSet.iterator();
-                while (it.hasNext()) {
-                    MsgSocketTCP client = it.next();
+    public void addOmiscidMessageListener(BipMessageListener listener) {
+        synchronized (listenersSet) {
+            listenersSet.add(listener);
+            synchronized (connectionsSet) {
+                Set<MessageSocketTCP> disconnectedClients = new HashSet<MessageSocketTCP>();
+                for (MessageSocketTCP client : connectionsSet) {
                     if (client.isConnected()) {
                         client.addOmiscidMessageListener(listener);
                     } else {
-                        tmpSet.add(client);
+                        disconnectedClients.add(client);
                     }
                 }
-                it = tmpSet.iterator();
-                while (it.hasNext()) {
-                    connectionSet.remove(it.next());
-                }
+                connectionsSet.removeAll(disconnectedClients);
             }
         }
     }
 
     /**
-     * Remove a listener on the OMiSCID message
+     * Removes a listener for the received OMiSCID messages.
      * 
      * @param listener
      *            the listener to remove
      */
-    public void removeOmiscidMessageListener(OmiscidMessageListener listener) {
-        synchronized (listenerSet) {
-            if (listenerSet.remove(listener)) {
-                listenerSet.add(listener);
-                synchronized (connectionSet) {
-                    Set<MsgSocketTCP> tmpSet = new HashSet<MsgSocketTCP>();
-                    java.util.Iterator<MsgSocketTCP> it = connectionSet.iterator();
-                    while (it.hasNext()) {
-                        MsgSocketTCP client = it.next();
+    public void removeOmiscidMessageListener(BipMessageListener listener) {
+        synchronized (listenersSet) {
+            if (listenersSet.remove(listener)) {
+                // the listener was actually in the listeners list
+                synchronized (connectionsSet) {
+                    Set<MessageSocketTCP> disconnectedClients = new HashSet<MessageSocketTCP>();
+                    for (MessageSocketTCP client : connectionsSet) {
                         if (client.isConnected()) {
                             client.removeOmiscidMessageListener(listener);
                         } else {
-                            tmpSet.add(client);
+                            disconnectedClients.add(client);
                         }
                     }
-                    it = tmpSet.iterator();
-                    while (it.hasNext()) {
-                        connectionSet.remove(it.next());
-                    }
+                    connectionsSet.removeAll(disconnectedClients);
                 }
             }
         }
     }
 
     /**
-     * Finds a connection
+     * Finds a connection using a peer id.
      * 
-     * @param pid
-     * 
+     * @param peerId
+     * @return the connection found or null if none
      */
-    protected MsgSocket findConnection(int pid) {
-        synchronized (connectionSet) {
-            //System.out.println("		findConnection "+ Integer.toHexString(pid));
-            Set<MsgSocketTCP> tmpSet = new HashSet<MsgSocketTCP>();
-            java.util.Iterator<MsgSocketTCP> it = connectionSet.iterator();
-            MsgSocket found = null;
-            while (it.hasNext() /*&& found == null*/) {
-                MsgSocketTCP current = it.next();
-                //System.out.println("		" + Integer.toHexString(pid) +" // "+ Integer.toHexString(current.getPeerId()));
-                if (current.isConnected()) {
-                    if (current.isConnectedToPeer(pid)){
-                        found = current;
-                        //System.out.println("		findConnection "+ Integer.toHexString(pid)+" found");
+    protected MessageSocket findConnection(int peerId) {
+        synchronized (connectionsSet) {
+            Set<MessageSocketTCP> disconnectedClients = new HashSet<MessageSocketTCP>();
+            MessageSocket found = null;
+            for (MessageSocketTCP client : connectionsSet) {
+                if (client.isConnected()) {
+                    if (client.isConnectedToPeer(peerId)) {
+                        assert found == null;
+                        found = client;
+                        // could break but the assert stuff adds some checking
                     }
                 } else {
-                    tmpSet.add(current);
+                    disconnectedClients.add(client);
                 }
             }
-            it = tmpSet.iterator();
-            while (it.hasNext()) {
-                connectionSet.remove(it.next());
-            }
+            connectionsSet.removeAll(disconnectedClients);
             return found;
         }
     }
-    
-    /** Test if a peer is still connected to the server 
-     * @param peerId the id of the peer
+
+    /**
+     * Tests whether a peer is still connected to the server.
+     * 
+     * @param peerId
+     *            the id of the peer
      * @return if the peer is connected
      */
-    public boolean isStillConnected(int peerId){
-        MsgSocket m = findConnection(peerId);
-        if(m != null && m.isConnected()) return true;
-        return false;
+    public boolean isStillConnected(int peerId) {
+        MessageSocket m = findConnection(peerId);
+        return m != null && m.isConnected();
     }
-    
+
     /**
-     * The port where listen the server
+     * Accesses the port the server is listening to new connections.
      * 
-     * @return the port where listen the server
+     * @return the port the server is listening to.
      */
     public int getTcpPort() {
         return serverSocket.getLocalPort();
@@ -272,13 +278,12 @@ public class TcpServer extends Thread implements ComTools {
     }
 
     /**
-     * The host name of the server
+     * Accesses the host name of the server.
      * 
      * @return the host name
      */
     public String getHost() {
         try {
-            // System.out.println("InetAddr: " + InetAddress.getLocalHost());
             return InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
             System.err.println("in TcpServer::getHost : Error");
@@ -288,28 +293,20 @@ public class TcpServer extends Thread implements ComTools {
     }
 
     /**
-     * Number of connections
+     * Queries the number of connections.
      * 
      * @return number of connected client
      */
     public int getNbConnections() {
-        synchronized (connectionSet) {
-            int nb = 0;
-            Set<MsgSocketTCP> tmpSet = new HashSet<MsgSocketTCP>();
-            java.util.Iterator<MsgSocketTCP> it = connectionSet.iterator();
-            while (it.hasNext()) {
-                MsgSocketTCP client = it.next();
-                if (client.isConnected()) {
-                    nb++;
-                } else {
-                    tmpSet.add(client);
+        synchronized (connectionsSet) {
+            Set<MessageSocketTCP> disconnectedClients = new HashSet<MessageSocketTCP>();
+            for (MessageSocketTCP client : connectionsSet) {
+                if (!client.isConnected()) {
+                    disconnectedClients.add(client);
                 }
             }
-            it = tmpSet.iterator();
-            while (it.hasNext()) {
-                connectionSet.remove(it.next());
-            }
-            return nb;
+            connectionsSet.removeAll(disconnectedClients);
+            return connectionsSet.size();
         }
     }
 
@@ -339,7 +336,7 @@ public class TcpServer extends Thread implements ComTools {
                     while (true) {
                         nb++;
                         if (nb % 100 == 0) {
-                            tcpServer.sendToClients(str.getBytes());
+                            tcpServer.sendToAllClientsUnchecked(str);
                             nb = 0;
                         }
                     }
@@ -347,12 +344,21 @@ public class TcpServer extends Thread implements ComTools {
             };
             t.start();
 
-            MsgManager msgManager = new MsgManager();
-            tcpClient.addOmiscidMessageListener(msgManager);
+            MessageManager messageManager = new MessageManager() {
+                protected void processMessage(Message message) {
+                    try {
+                        System.out.println(message.getBufferAsString());
+                    } catch (BipMessageInterpretationException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            };
+            tcpClient.addOmiscidMessageListener(messageManager);
 
             while (true) {
-                msgManager.waitForMessage();
-                int nbProcess = msgManager.processMessages();
+                messageManager.waitForMessages();
+                int nbProcess = messageManager.processMessages();
                 System.out.println("----------------process : " + nbProcess);
             }
         } catch (IOException e) {
@@ -360,25 +366,38 @@ public class TcpServer extends Thread implements ComTools {
             System.out.println(e);
         }
     }
-    
-    public int getPeerId(java.util.Vector<Integer> vec){
-        synchronized (connectionSet) {
+
+    /**
+     * Starts this server. A background thread is started to listen for incoming
+     * connections on the server port. The started thread is automatically
+     * stopped on any call to {@link #close()}.
+     */
+    public void start() {
+        if (listeningThread == null) {
+            listeningThread = new Thread(new Runnable() {
+                public void run() {
+                    TcpServer.this.run();
+                }
+            });
+            listeningThread.start();
+        } else {
+            System.err.println("Warning: TcpServer start() method called more than once");
+        }
+    }
+
+    public int getConnectedPeerIds(java.util.Vector<Integer> vec) {
+        synchronized (connectionsSet) {
             int nb = 0;
-            Set<MsgSocketTCP> tmpSet = new HashSet<MsgSocketTCP>();
-            java.util.Iterator<MsgSocketTCP> it = connectionSet.iterator();
-            while (it.hasNext()) {
-                MsgSocketTCP client = it.next();
+            Set<MessageSocketTCP> disconnectedClients = new HashSet<MessageSocketTCP>();
+            for (MessageSocketTCP client : connectionsSet) {
                 if (client.isConnected()) {
-                    vec.add(new Integer(client.getPeerId()));
+                    vec.add(new Integer(client.getRemotePeerId()));
                     nb++;
                 } else {
-                    tmpSet.add(client);
+                    disconnectedClients.add(client);
                 }
             }
-            it = tmpSet.iterator();
-            while (it.hasNext()) {
-                connectionSet.remove(it.next());
-            }
+            connectionsSet.removeAll(disconnectedClients);
             return nb;
         }
     }

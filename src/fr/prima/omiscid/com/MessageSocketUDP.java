@@ -1,11 +1,10 @@
 /*
- * MsgSocketUDP.java
+ * MessageSocketUDP.java
  *
  * Created on 3 avril 2005, 15:29
  */
 
 package fr.prima.omiscid.com;
-
 
 import java.net.DatagramSocket;
 import java.net.DatagramPacket;
@@ -14,12 +13,11 @@ import java.net.InetAddress;
 import java.io.IOException;
 
 /**
- * OMiSCID Communication based on UDP protocol
+ * BIP Communication based on UDP protocol
  * 
- * @author Sebastien Pesnel
- * Refactoring by Patrick Reignier
+ * @author Sebastien Pesnel Refactoring by Patrick Reignier and emonet
  */
-public class MsgSocketUDP extends MsgSocket {
+public class MessageSocketUDP extends MessageSocket {
     /** Datagram socket for the UDP connection */
     private DatagramSocket datagramSocket;
 
@@ -27,7 +25,7 @@ public class MsgSocketUDP extends MsgSocket {
     private int BUFFER_SIZE = 2000;
 
     /** buffer sent */
-    private byte[] BufferSent;
+    private byte[] bufferSent;
 
     /** host where send data */
     private String host;
@@ -36,47 +34,49 @@ public class MsgSocketUDP extends MsgSocket {
     private int port;
 
     /**
-     * Creates a new instance of MsgSocketUDP
+     * Creates a new instance of MessageSocketUDP.
      * 
-     * @param serviceId use in OMiSCID exchange
+     * @param peerId
+     *            the local BIP peer id used in BIP exchanges
      * @throws SocketException
      *             if error in creating datagram socket
      */
-    public MsgSocketUDP(int serviceId) throws SocketException {
-        super(serviceId);
+    public MessageSocketUDP(int peerId) throws SocketException {
+        super(peerId);
         datagramSocket = new DatagramSocket();
-        BufferSent = new byte[BUFFER_SIZE];
+        bufferSent = new byte[BUFFER_SIZE];
         connected = true;
     }
 
     /**
-     * Creates a new instance of MsgSocketUDP
+     * Creates a new instance of MessageSocketUDP.
      * 
-     * @param serviceId
-     *            the id use in OMiSCID exchange
+     * @param peerId
+     *            the local BIP peer id used in BIP exchanges
      * @param port
-     *            port number where bind the datagram socket
+     *            port number where to bind the datagram socket (port to listen
+     *            to)
      * @throws SocketException
-     *             if error in creating datagram socket
+     *             if error occurs during the creation of the datagram socket
      */
-    public MsgSocketUDP(int serviceId, int port) throws SocketException {
-        super(serviceId);
+    public MessageSocketUDP(int peerId, int port) throws SocketException {
+        super(peerId);
         datagramSocket = new DatagramSocket(port);
-        BufferSent = new byte[BUFFER_SIZE];
+        bufferSent = new byte[BUFFER_SIZE];
         connected = true;
     }
 
     /**
-     * Set the destination where send data
+     * Sets the destination where send data.
      * 
-     * @param eHost
+     * @param host
      *            name of the host
-     * @param ePort
+     * @param port
      *            port number
      */
-    public void setDestination(String eHost, int ePort) {
-        host = eHost;
-        port = ePort;
+    public void setDestination(String host, int port) {
+        this.host = host;
+        this.port = port;
     }
 
     /**
@@ -87,25 +87,23 @@ public class MsgSocketUDP extends MsgSocket {
      *            the array of bytes to send
      */
     public synchronized void send(byte[] buffer) {
-        // System.out.println("in MsgSocketUDP::Send");
+        // System.out.println("in MessageSocketUDP::Send");
         try {
-            String header = GenerateHeader(buffer.length);
-            byte tab[] = header.getBytes();
+            byte header[] = generateHeaderByte(buffer.length);
             int offset = 0;
-            for (int i = 0; i < tab.length; i++)
-                BufferSent[i] = tab[i];
-            offset += tab.length;
-            for (int i = 0; i < buffer.length; i++)
-                BufferSent[i + offset] = buffer[i];
-            offset += buffer.length;
-            BufferSent[offset] = '\r';
-            BufferSent[offset + 1] = '\n';
-            offset += 2;
-            DatagramPacket p = new DatagramPacket(BufferSent, 0, offset,
-                    InetAddress.getByName(host), port);
+            for (byte b : header) {
+                bufferSent[offset++] = b;
+            }
+            for (byte b : buffer) {
+                bufferSent[offset++] = b;
+            }
+            for (byte b : BipUtils.messageEnd) {
+                bufferSent[offset++] = b;
+            }
+            DatagramPacket p = new DatagramPacket(bufferSent, 0, offset, InetAddress.getByName(host), port);
             datagramSocket.send(p);
         } catch (IOException e) {
-            System.out.println("MsgSocketUDP::send \n");
+            System.out.println("MessageSocketUDP::send \n");
             e.printStackTrace();
             connected = false;
         }
@@ -113,21 +111,20 @@ public class MsgSocketUDP extends MsgSocket {
 
     /** Receive byte on a datagram socket */
     protected void receive() {
-        // System.out.println("in MsgSocketUDP::Receive");
+        // System.out.println("in MessageSocketUDP::Receive");
         try {
-            DatagramPacket p = new DatagramPacket(receiveBuffer.buffer,
-                    receiveBuffer.offset(), receiveBuffer.available());
+            DatagramPacket p = new DatagramPacket(receiveBuffer.buffer, receiveBuffer.offset(), receiveBuffer.available());
             datagramSocket.receive(p);
             int nbRead = p.getLength();
             if (nbRead == 0) {
-                System.out.println("MsgSocketUDP::receive (read=0)");
+                System.out.println("MessageSocketUDP::receive (read=0)");
                 connected = false;
             } else {
                 receiveBuffer.received(nbRead);
                 receiveBuffer.process();
             }
         } catch (IOException e) {
-            System.out.println("MsgSocketUDP::receive Error");
+            System.out.println("MessageSocketUDP::receive Error");
             e.printStackTrace();
             connected = false;
         }
@@ -147,17 +144,11 @@ public class MsgSocketUDP extends MsgSocket {
 
     /** @return the datagramsocket port */
     public int getUdpPort() {
-        if (datagramSocket == null)
+        if (datagramSocket == null) {
             return 0;
-        else
+        } else {
             return datagramSocket.getPort();
-    }
-    
-    public int getPeerId(java.util.Vector<Integer> vec){
-        if(isConnected()){
-            vec.add(new Integer(getPeerId()));
-            return 1;
         }
-        return 0;
     }
+
 }

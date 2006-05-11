@@ -5,42 +5,40 @@
 
 package fr.prima.omiscid.com;
 
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
- * TCP Client. Exchange of OMiSCID message over TCP connexion.
+ * Client for exchanges of BIP messages over TCP connexion.
  * 
- * @author Sebastien Pesnel
- * Refactoring by Patick Reignier
+ * @author Sebastien Pesnel Refactoring by Patick Reignier
  */
-public class TcpClient extends MsgSocketTCP {
+public class TcpClient extends MessageSocketTCP {
     /**
-     * Creates a new instance of TcpClient
+     * Creates a new instance of TcpClient.
      * 
-     * @param serviceId
-     *            id of service associated to this object (id exchanged in OMiSCID
-     *            message)
+     * @param peerId
+     *            BIP peer id of the local peer
      */
-    public TcpClient(int serviceId) {
-        super(serviceId);
+    public TcpClient(int peerId) {
+        super(peerId);
     }
-    
+
     public static boolean stripTrailingDotLocalDot = true;
     static {
         try {
             stripTrailingDotLocalDot = null == System.getenv("OMISCIDNS_USE_MSDN_NAME_SOLVING");
+            // \REVIEWTASK this variable name should be documented somewhere
         } catch (SecurityException e) {
             // Access to environment variable is forbidden
-            System.out.println("Warning: access to environment variables is forbidden.");
-        }        
-        
+            System.err.println("Warning: access to environment variables is forbidden.");
+        }
+
     };
 
     /**
-     * Connexion to a server.
+     * Connects to a server.
      * 
      * @param host
      *            host name where listens the server
@@ -51,15 +49,16 @@ public class TcpClient extends MsgSocketTCP {
      */
     public void connectTo(String host, int port) throws IOException {
         Socket socket = new Socket();
-        socket.setTcpNoDelay(true) ;
+        socket.setTcpNoDelay(true);
+        // \REVIEWTASK should have a policy on tcp no delay
         if (stripTrailingDotLocalDot && host.endsWith(".local.")) {
-            host = host.replaceAll("[.]local[.]$","");
-            //System.out.println(host);
+            host = host.replaceAll("[.]local[.]$", "");
+            // System.out.println(host);
         }
         InetSocketAddress endpoint = new InetSocketAddress(host, port);
         socket.connect(endpoint);
         super.setSocket(socket);
         super.start();
-        send((byte[])null);
+        initializeConnection();
     }
 }

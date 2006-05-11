@@ -4,15 +4,10 @@
  */
 package fr.prima.omiscid.dnssd.client;
 
-
-
 /**
- * 
  * @author emonet
- *
  */
-public class ServiceInformation
-implements fr.prima.omiscid.dnssd.interf.ServiceInformation {
+public class ServiceInformation implements fr.prima.omiscid.dnssd.interf.ServiceInformation {
 
     private fr.prima.omiscid.dnssd.server.ServiceInformation delegate;
 
@@ -71,5 +66,5 @@ implements fr.prima.omiscid.dnssd.interf.ServiceInformation {
     public int getStatus() {
         return delegate.getStatus();
     }
-    
+
 }

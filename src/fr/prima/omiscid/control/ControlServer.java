@@ -1,5 +1,7 @@
-package fr.prima.omiscid.control ;
+package fr.prima.omiscid.control;
 
+import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.w3c.dom.Attr;
@@ -7,24 +9,59 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import fr.prima.omiscid.com.ComTools;
+import fr.prima.omiscid.com.BipMessageInterpretationException;
+import fr.prima.omiscid.com.BipUtils;
+import fr.prima.omiscid.com.CommunicationServer;
+import fr.prima.omiscid.com.MessageManager;
 import fr.prima.omiscid.com.TcpServer;
+import fr.prima.omiscid.com.XmlMessage;
+import fr.prima.omiscid.com.interf.Message;
 import fr.prima.omiscid.control.interf.InOutputKind;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
 
-
 /**
- * Create a control port and register the Service as a OMiSCID service on DNS-SD. The service has a variable to give its state, the number of variable, the number of inputs/outputs. The control has the list of variables and the list of in/outputs for the service. The description of variable and input are stored in object called VariableAttribut and InOutputAttribut. These data can be consulted by xml query on the control port. In that purpose the class ControlClient enables to do these queries  and stores the results. <br> The control server has three possibles status : <ul><li>BEGIN : the service is not registered yet </li><li>INIT : the service is registered, and can wait for data or other service to begin processing </li><li>RUNNING : the service is running : the service computes data.  </li></ul> <br> Two methods needs to be reimplemented to manage correctly some queries. That are connect and modifVariable. The first is called when an in/output is demanded to connect a particular port, the second is called when there is a query for the  modification of a variable. Use: <ul><li> Create a new instance of control server with the name of the service. Eventually, you can implemented the methods connect and modifVariable if necessary. </li><li> Register all the variable, and the in/outputs. </li><li> Start the service (startServer). You can process query to the control server in a processing loop (then call  processMessages()), or in another thread (then call  startThreadProcessMessage()). </li><li> Wait for data or other service. When you are ready, set the status value to RUNNING and start processing </li></ul> An example of server is given in the method main. The service is called "essai". It has two own variables : var_1 and var_2. var_1 can be modified by the user. var_2 is regularly incremented. It has also one output that send regularly to all  connected clients the message "hello".
+ * Represents a "local" OmiscidService. To access remote service, use the
+ * {@link OmiscidService} class. Creates a control channel and register the
+ * service as a OMiSCID service on DNS-SD. The service has a variable to give
+ * its state, the number of variable, the number of inputs/outputs. The control
+ * channel exposes the list of variables and the list of in/outputs of the
+ * service. The descriptions of variables and inputs are stored in object called
+ * VariableAttribute and InOutputAttribute. These data can be consulted by xml
+ * query on the control port (through {@link OmiscidService}). The control
+ * server has three possibles status:
+ * <ul>
+ * <li>BEGIN: the service is not registered yet </li>
+ * <li>INIT: the service is registered, and can wait for data or other service
+ * to begin processing </li>
+ * <li>RUNNING : the service is running : the service computes data.</li>
+ * </ul>
+ * Two methods needs to be reimplemented to manage correctly some queries. These
+ * methods are {@link #connectionQuery(String, int, boolean, InOutputAttribute)}
+ * and {@link #variableModificationQuery(byte[], int, VariableAttribute)}. The
+ * first is called when an in/output is asked to connect a particular port, the
+ * second is called when there is a query for the modification of a variable.
+ * Example use:
+ * <ul>
+ * <li>Create a new instance of control server with the name of the service.
+ * Eventually, you can implemented the methods connect and modifVariable if
+ * necessary.</li>
+ * <li> Register all the variable, and the in/outputs.</li>
+ * <li> Start the service {@link #startServer(int)}. You can process query to
+ * the control server in a processing loop (then call {@link #processMessages()}
+ * in your loop), or in another thread (that can be started using
+ * {@link #startProcessMessagesThread()}).</li>
+ * <li> Wait for data or other service. When you are ready, set the status value
+ * to RUNNING and start processing </li>
+ * </ul>
+ * 
  * @see fr.prima.omiscid.control.ControlClient
- * @see fr.prima.omiscid.control.VariableAttribut
- * @see fr.prima.omiscid.control.InOutputAttribut
- * @author  Sebastien Pesnel  
- * Refactoring by Patrick Reignier and emonet
- * Adding the stop method to unregister the omiscid service (Patrick Reignier)
+ * @see fr.prima.omiscid.control.VariableAttribute
+ * @see fr.prima.omiscid.control.InOutputAttribute
+ * @author Sebastien Pesnel Refactoring by Patrick Reignier and emonet
  */
-public class ControlServer extends XmlMsgManager implements
-        VariableChangeListener {
+// \REVIEWTASK should externalize some strings to the OmiscidService class
+public class ControlServer extends MessageManager implements VariableChangeListener {
     /** value for the variable status : when the service begins */
     public static final int STATUS_BEGIN = 0;
 
@@ -35,107 +72,124 @@ public class ControlServer extends XmlMsgManager implements
     public static final int STATUS_RUNNING = 2;
 
     /** the service id used OMiSCID exchange */
-    private final int serviceId = OmiscidService.generateServiceId();
+    private final int peerId = BipUtils.generateBIPPeerId();
 
     /** TCP server : the control server */
     private TcpServer tcpServer = null;
 
     /**
-     * Set of variable descriptions (Set of VariableAttribut object)
+     * Set of variable descriptions (Set of VariableAttribute object)
      */
-    private Set<VariableAttribut> variableSet = new java.util.HashSet<VariableAttribut>();
+    private Set<VariableAttribute> variablesSet = new HashSet<VariableAttribute>();
 
     /**
-     * Set of inputs and outputs descriptions (Set of InOutputAttribut object)
+     * Set of inputs and outputs descriptions (Set of InOutputAttribute object)
      */
-    private Set<InOutputAttribut> inoutputSet = new java.util.HashSet<InOutputAttribut>();
+    private Set<InOutputAttribute> inoutputsSet = new HashSet<InOutputAttribute>();
 
     /** the variable for the service status */
-    private IntVariableAttribut statusIntVar = null;
-    
+    private IntVariableAttribute statusIntegerVariable = null;
+
     /** the variable for the lock attribute */
-    private IntVariableAttribut lockIntVar = null;
+    private IntVariableAttribute lockIntegerVar = null;
 
     /** the variable for the number of variable in the service */
-    private IntVariableAttribut nbvarIntVar = null;
+    private IntVariableAttribute variablesCountIntegerVariable = null;
 
     /** the variable for the number of variable in the service */
-    private IntVariableAttribut nbinoutputIntVar = null;
+    private IntVariableAttribute inoutputsCountIntegerVariable = null;
 
     /** Thread where the message are processed */
-    private Thread threadProcessMsg = null;
+    private Thread threadProcessMessages = null;
 
     /** Object to register the service to DNS-SD */
     private ServiceRegistration serviceRegistration = null;
 
+    /** Tells the listening thread when to stop */
+    private boolean processMessagesThreadRunning;
+
     /**
-     * Create a new instance of ControlServer.
-     * The status is BEGIN.
+     * Creates a new instance of ControlServer. Its status is BEGIN and its base
+     * variables are defined. The service is not registered to DNS-SD. It will
+     * only on subsequent call to {@link #startServer(int)}. A BIP peer id is
+     * automatically generated and associated to this service. The peer id can
+     * be retrieved using {@link #getPeerId()}.
      * 
-     * @param serviceName name for the service
+     * @param serviceName
+     *            name for the service
      */
     public ControlServer(String serviceName) {
         initDefaultVar();
-        
         serviceRegistration = OmiscidService.dnssdFactory.createServiceRegistration(serviceName, OmiscidService.REG_TYPE);
     }
-    
+
     /**
-     * Create a new instance of ControlServer.
-     * The status is BEGIN.
-     * The service has a default name.
-     * The name need to be changed before a call to the startServer method.
+     * Creates a new instance of ControlServer. Its status is BEGIN its service
+     * name has a default value. The name should be changed before any call to
+     * the {@link #startServer(int)} method. A BIP peer id is automatically
+     * generated and associated to this service. The peer id can be retrieved
+     * using {@link #getPeerId()}.
      */
     public ControlServer() {
         initDefaultVar();
-        
-        serviceRegistration = OmiscidService.dnssdFactory.createServiceRegistration("default_name", OmiscidService.REG_TYPE);
-    }
-    
-    public void stop()
-    {
-       serviceRegistration.unregister() ;
-    }
-    
-    /** Enable to change the service name. 
-     * Must be called before service registration,
-     * that is to say before a call to the startServer method. */
-    public void setServiceName(String serviceName){
-        serviceRegistration.setName(serviceName);
-    }
-    
-    /** create the default variables for a service */
-    private void initDefaultVar(){
-        VariableAttribut nbvarVar = addVariable("number of variables");
-        nbvarIntVar = new IntVariableAttribut(nbvarVar, 1);
-
-        VariableAttribut nbinoutVar = addVariable("number of inoutputs");
-        nbinoutputIntVar = new IntVariableAttribut(nbinoutVar, 0);
-
-        VariableAttribut lockVar = addVariable("lock");
-        lockIntVar = new IntVariableAttribut(lockVar, 0);
-        
-        VariableAttribut statusVar = addVariable("status");
-        statusIntVar = new IntVariableAttribut(statusVar, STATUS_BEGIN);
+        serviceRegistration = OmiscidService.dnssdFactory.createServiceRegistration("O3MiSCID_default_name", OmiscidService.REG_TYPE);
     }
 
     /**
-	 * Access to the TCP server 
-	 * @return  tcpServer : the control server over TCP
-	 * @uml.property  name="tcpServer"
-	 */
+     * Unregisters the service from DNS-SD.
+     */
+    public void stop() {
+        serviceRegistration.unregister();
+        processMessagesThreadRunning = false;
+    }
+
+    /**
+     * Changes the service name. Must be called before service registration,
+     * that is to say before calling {@link #startServer(int)}.
+     */
+    public void setServiceName(String serviceName) {
+        serviceRegistration.setName(serviceName);
+    }
+
+    /**
+     * Creates the default variables for a service
+     */
+    private void initDefaultVar() {
+        VariableAttribute nbvarVar = addVariable("number of variables");
+        variablesCountIntegerVariable = new IntVariableAttribute(nbvarVar, 1);
+
+        VariableAttribute nbinoutVar = addVariable("number of inoutputs");
+        inoutputsCountIntegerVariable = new IntVariableAttribute(nbinoutVar, 0);
+
+        VariableAttribute lockVar = addVariable("lock");
+        lockIntegerVar = new IntVariableAttribute(lockVar, 0);
+
+        VariableAttribute statusVar = addVariable("status");
+        statusIntegerVariable = new IntVariableAttribute(statusVar, STATUS_BEGIN);
+    }
+
+    /**
+     * Accesses the TCP server.
+     * 
+     * @return tcpServer: the control server over TCP
+     */
     public TcpServer getTcpServer() {
         return tcpServer;
     }
-    /** Start the server And register the service to DNS-SD.
-     * If ok, the status become INIT.
-     * @param port the port number where must listen the control server.
-     * (with 0 a free port will be automatically used) 
-     * @return if the server is correctly launched and 
-     * if the service is correctly registered. */
+
+    /**
+     * Starts the control server and register the service to DNS-SD. If all went
+     * fine, the status become INIT.
+     * 
+     * @param port
+     *            the port number where the control server should be listening
+     *            (0 to choose automatically an available port).
+     * @return whether the server was correctly started and was the service
+     *         registered.
+     */
     public boolean startServer(int port) {
         try {
-            tcpServer = new TcpServer(getServiceId(), port);
+            tcpServer = new TcpServer(getPeerId(), port);
             tcpServer.addOmiscidMessageListener(this);
             tcpServer.start();
 
@@ -143,9 +197,10 @@ public class ControlServer extends XmlMsgManager implements
             if (registerTheService(tcpServer.getTcpPort())) {
                 setStatus(STATUS_INIT);
                 return true;
-            } else
+            } else {
                 return false;
-        } catch (java.io.IOException e) {
+            }
+        } catch (IOException e) {
             tcpServer = null;
             e.printStackTrace();
             return false;
@@ -153,27 +208,22 @@ public class ControlServer extends XmlMsgManager implements
     }
 
     /**
-     * Register the service to DNS-SD. Creation of the text record : owner,
+     * Registers the service to DNS-SD. Creates the text containing: owner,
      * peerId, list of input/output.
      * 
      * @param host
-     *            the host where the service is launched
+     *            the host where the service is started
      * @param port
-     *            the port number where the control port listens
-     * @return is the service is correctly registered
+     *            the port number the control port listens to
+     * @return whether the service was correctly registered
      */
     private boolean registerTheService(int port) {
         String inputRecord = "";
         String outputRecord = "";
         String inOutputRecord = "";
 
-        java.util.Iterator<InOutputAttribut> it = inoutputSet.iterator();
-        while (it.hasNext()) {
-            InOutputAttribut ioa = it.next();
-
-            serviceRegistration.addProperty(ioa.getName(), ioa
-                    .generateRecordData());
-
+        for (InOutputAttribute ioa : inoutputsSet) {
+            serviceRegistration.addProperty(ioa.getName(), ioa.generateRecordData());
             if (ioa.isInput()) {
                 inputRecord = inputRecord + ioa.getName() + ",";
             } else if (ioa.isOutput()) {
@@ -182,19 +232,17 @@ public class ControlServer extends XmlMsgManager implements
                 inOutputRecord = inOutputRecord + ioa.getName() + ",";
             }
         }
-
-        if (inputRecord.length() > 0)
+        if (inputRecord.length() > 0) {
             inputRecord = inputRecord.substring(0, inputRecord.length() - 1);
-        if (outputRecord.length() > 0)
-            outputRecord = outputRecord.substring(0,
-                    outputRecord.length() - 1);
-        if (inOutputRecord.length() > 0)
-            inOutputRecord = inOutputRecord.substring(0, inOutputRecord
-                    .length() - 1);
-
-        serviceRegistration.addProperty("owner", System.getProperty("user.name"));
-
-        serviceRegistration.addProperty(OmiscidService.KEY_PEERID, fr.prima.omiscid.com.MsgSocket.intTo8HexString(serviceId));
+        }
+        if (outputRecord.length() > 0) {
+            outputRecord = outputRecord.substring(0, outputRecord.length() - 1);
+        }
+        if (inOutputRecord.length() > 0) {
+            inOutputRecord = inOutputRecord.substring(0, inOutputRecord.length() - 1);
+        }
+        serviceRegistration.addProperty(OmiscidService.KEY_OWNER, System.getProperty("user.name"));
+        serviceRegistration.addProperty(OmiscidService.KEY_PEERID, fr.prima.omiscid.com.BipUtils.intTo8HexString(peerId));
         serviceRegistration.addProperty(OmiscidService.KEY_INPUTS, inputRecord);
         serviceRegistration.addProperty(OmiscidService.KEY_OUTPUTS, outputRecord);
         serviceRegistration.addProperty(OmiscidService.KEY_INOUTPUTS, inOutputRecord);
@@ -202,182 +250,232 @@ public class ControlServer extends XmlMsgManager implements
         return serviceRegistration.register(port);
     }
 
-    /**
-     * Method of the VariableChangeListener.
-     * This method enables to generate ControlEvent to answer to subscribe request.
+    /*
+     * (non-Javadoc)
      * 
-     * @param var
-     *            The VariableAttribut object associated to the modified
-     *            variable
+     * @see fr.prima.omiscid.control.interf.VariableChangeListener#variableChanged(fr.prima.omiscid.control.VariableAttribute)
      */
-    public void changeOccured(VariableAttribut var) {
-        Set<Integer> peerSet = var.getPeerInterestedIn();
+    public void variableChanged(VariableAttribute variable) {
+        Set<Integer> peersSet = variable.getPeerInterestedIn();
 
-        Set<Integer> tmpSet = new java.util.HashSet<Integer>();
-        String str = "<controlEvent>" +
-            var.generateValueMessage() +
-            "</controlEvent>";
+        Set<Integer> unreachablePeers = new java.util.HashSet<Integer>();
+        String message = "<controlEvent>" + variable.generateValueMessage() + "</controlEvent>";
 
-        java.util.Iterator<Integer> it = peerSet.iterator();
-        while (it.hasNext()) {
-            Integer peer = it.next();
-            if (!tcpServer.sendToOneClient(str.getBytes(), peer.intValue())) {
-                tmpSet.add(peer);
+        for (Integer peer : peersSet) {
+            if (!tcpServer.sendToOneClient(message.getBytes(), peer.intValue())) {
+                unreachablePeers.add(peer);
             }
         }
-
-        it = tmpSet.iterator();
-        while (it.hasNext()) {
-            var.removePeer((Integer) it.next());
-        }
+        variable.removeAllPeers(unreachablePeers);
     }
 
     /**
-     * Launch a thread to process the message, to answer to ControlQuery
-     * 
-     * @return false if a thread is already launched to process message
+     * @deprecated Use {@link #startProcessMessagesThread()} instead
      */
+    @Deprecated
     public boolean startThreadProcessMessage() {
-        if (threadProcessMsg == null) {
-            threadProcessMsg = new Thread() {
+        return startProcessMessagesThread();
+    }
+
+    /**
+     * Launches a thread to process the messages, to answer to ControlQuery
+     * 
+     * @return whether the thread has been launched (false if a thread is
+     *         already launched to process messages)
+     * @deprecated Use {@link #startProcessMessagesThread()} instead
+     */
+    public boolean startProcessMessageThread() {
+        return startProcessMessagesThread();
+    }
+
+    /**
+     * Launches a thread to process the messages, to answer to ControlQuery
+     * 
+     * @return whether the thread has been launched (false if a thread is
+     *         already launched to process messages)
+     */
+    public boolean startProcessMessagesThread() {
+        processMessagesThreadRunning = true;
+        if (threadProcessMessages == null || !threadProcessMessages.isAlive()) {
+            threadProcessMessages = new Thread() {
                 public void run() {
-                    while (true) {                        
-                        if (waitForMessage())
+                    while (ControlServer.this.processMessagesThreadRunning) {
+                        if (waitForMessages()) {
                             processMessages();
+                        }
                     }
                 }
             };
-            threadProcessMsg.start();
+            threadProcessMessages.start();
             return true;
-        } else
+        } else {
             return false;
+        }
     }
 
     /**
-	 * @return  the service id
-	 * @uml.property  name="serviceId"
-	 */
-    public int getServiceId() {
-        return serviceId;
+     * Accesses the BIP peer id of this service. This peer id is automatically
+     * generated when the ControlServer object is instantiated.
+     * 
+     * @return the BIP peer id associated to this service
+     */
+    public int getPeerId() {
+        return peerId;
     }
 
-    /** @return the service name */
-    public String getServiceName(){
-        return  serviceRegistration.getName();
+    /**
+     * Accesses the desired service name provided when constructing this
+     * service. After registration, an unique name is affected to the service
+     * and can be accessed using {@link #getRegisteredServiceName()}.
+     * 
+     * @return the service name
+     */
+    public String getServiceName() {
+        return serviceRegistration.getName();
     }
-    /** Access to the name created during registration : 
-     * available only after registration.
-     * @return the service name kept in registration */
-    public String getRegisteredServiceName(){
+
+    /**
+     * Accesses the name created during registration: available only after
+     * registration.
+     * 
+     * @return the service name after registration
+     */
+    public String getRegisteredServiceName() {
         return serviceRegistration.getRegisteredName();
     }
-    
-    /** @return the status value */
+
+    /**
+     * Accesses the service status
+     * 
+     * @return the status value
+     */
     public int getStatus() {
-        return statusIntVar.getIntValue();
+        return statusIntegerVariable.getIntValue();
     }
 
     /**
-     * change the status value
+     * Changes the service status.
      * 
-     * @param s
+     * @param status
      *            the new value for the status
      */
-    public void setStatus(int s) {
-        statusIntVar.setIntValue(s);
+    public void setStatus(int status) {
+        statusIntegerVariable.setIntValue(status);
     }
 
     /**
-     * Add a variable for this service
+     * Adds a variable to this service.
      * 
      * @param name
      *            name of the variable
-     * @return a new VariableAttribut associated to this variable. This object
-     *         can be used to precise the description
+     * @return a new VariableAttribute associated to this variable. This return
+     *         value can be manipulated to specify the variable description for
+     *         example.
      */
-    public VariableAttribut addVariable(String name) {
-        VariableAttribut v = new VariableAttribut(name);
+    public VariableAttribute addVariable(String name) {
+        VariableAttribute v = new VariableAttribute(name);
         v.addListenerChange(this);
-        variableSet.add(v);
-        if (nbvarIntVar != null) {
-            nbvarIntVar.incr();
+        variablesSet.add(v);
+        if (variablesCountIntegerVariable != null) {
+            variablesCountIntegerVariable.increment();
         }
         return v;
     }
 
     /**
-     * Add an input/output for this service
+     * Adds an input/output to this service.
      * 
      * @param name
      *            name of the input / output
-     * @param ct
-     *            the ComTools object associated to the input/output
-     * @param iok
-     *            kind of input/output : input, output, in/output
-     * @return a new InOutputAttribut associated to this input/output. This
-     *         object can be used to precise the description
+     * @param communicationServer
+     *            the {@link CommunicationServer} instance associated to the
+     *            input/output
+     * @param ioKind
+     *            kind of input/output: input, output, in/output
+     * @return a new InOutputAttribute associated to this input/output. This
+     *         object can be manipulate to specify the in/output description for
+     *         example.
      */
-    public InOutputAttribut addInOutput(String name, ComTools ct,
-            InOutputKind iok) {
-        InOutputAttribut ioa = new InOutputAttribut(name, ct);
-        ioa.setKind(iok);
-        inoutputSet.add(ioa);
-
-        nbinoutputIntVar.incr();
-
+    public InOutputAttribute addInOutput(String name, CommunicationServer communicationServer, InOutputKind ioKind) {
+        InOutputAttribute ioa = new InOutputAttribute(name, communicationServer);
+        ioa.setKind(ioKind);
+        inoutputsSet.add(ioa);
+        inoutputsCountIntegerVariable.increment();
         return ioa;
     }
 
     /**
-     * Generate a short global description for the service. Use to answer to
-     * global description query
+     * Generates a short global description for the service. Used to answer to
+     * global description query.
      * 
      * @return short global description for the service
      */
     protected String generateShortGlobalDescription() {
         String str = "";
-        java.util.Iterator<VariableAttribut> it = variableSet.iterator();
-        while (it.hasNext()) {
-            str += it.next().generateShortDescription();
+        for (VariableAttribute variable : variablesSet) {
+            str += variable.generateShortDescription();
         }
-        java.util.Iterator<InOutputAttribut> itIo = inoutputSet.iterator();
-        while (itIo.hasNext()) {
-            str += itIo.next().generateShortDescription();
+        for (InOutputAttribute inoutput : inoutputsSet) {
+            str += inoutput.generateShortDescription();
         }
         return str;
     }
 
-    /** Call by connect query */
-    protected void connect(String host, int port, boolean tcp,
-            InOutputAttribut ioa) {
-        System.out.println("in connect : " + ioa.getName() + " on " + host
-                + ":" + port);
+    /**
+     * Processes connection query received through the control channel. This
+     * implementation just prints some info. You can either overide it or
+     * implement it.
+     * 
+     * @param host
+     *            the host to connect to
+     * @param port
+     *            the port to connect to
+     * @param tcp
+     *            whether to connect using tcp
+     * @param ioa
+     *            the local input/output channel to connect
+     */
+    protected void connectionQuery(String host, int port, boolean tcp, InOutputAttribute ioa) {
+        System.out.println("in connect : " + ioa.getName() + " on " + host + ":" + port);
+        // \REVIEWTASK shouldn't this be implemented (or abstract)
     }
 
     /**
-     * Call by modification of variable query
+     * Processes a variable modification query received through the control
+     * channnel.
      * 
      * @param buffer
      *            the new value for the variable
      * @param status
      *            the current service status
      * @param va
-     *            the VaraibleAttribut object associated to the variable
+     *            the VaraibleAttribute object associated to the variable to
+     *            modify
      */
-    protected void modifVariable(byte[] buffer, int status, VariableAttribut va) {
+    protected void variableModificationQuery(byte[] buffer, int status, VariableAttribute va) {
         System.out.println("in modifVariable : " + va.getName());
+        // \REVIEWTASK shouldn't this be implemented (or abstract)
+    }
+
+    protected void processMessage(Message message) {
+        try {
+            processXMLMessage(new XmlMessage(message));
+        } catch (BipMessageInterpretationException e) {
+            System.err.println("Warning: wrong xml received on control server, the exception stack follows");
+            e.printStackTrace();
+        }
     }
 
     /**
-     * Process a message received by the control server
+     * Processes a message received by the control server.
      * 
-     * @param msg
+     * @param message
      *            a message received by the control server
      */
-    protected void processAMessage(XmlMessage msg) {
+    protected void processXMLMessage(XmlMessage message) {
         // System.out.println("in ControlServer::processAMessage");
-        if (msg.getRootNode() != null) {
-            Element root = msg.getRootNode();
+        if (message.getRootElement() != null) {
+            Element root = message.getRootElement();
             if (root.getNodeName().equals("controlQuery")) {
                 Attr attrId = root.getAttributeNode("id");
 
@@ -387,56 +485,47 @@ public class ControlServer extends XmlMsgManager implements
                     // global description
                     str = generateShortGlobalDescription();
                 } else {
-                    for(int i=0; i<nodeList.getLength(); i++){
+                    for (int i = 0; i < nodeList.getLength(); i++) {
                         Node cur = nodeList.item(i);
-                        if(cur.getNodeType() == Node.ELEMENT_NODE){
+                        if (cur.getNodeType() == Node.ELEMENT_NODE) {
                             String curName = cur.getNodeName();
-                            if (curName.equals(InOutputAttribut.Input.getXMLTag())) {
-                                str += processInOutputQuery((Element)cur,
-                                        InOutputAttribut.Input);
-                            } else if (curName.equals(InOutputAttribut.Output
-                                    .getXMLTag())) {
-                                str += processInOutputQuery((Element)cur,
-                                        InOutputAttribut.Output);
-                            } else if (curName.equals(InOutputAttribut.InOutput
-                                    .getXMLTag())) {
-                                str += processInOutputQuery((Element)cur,
-                                        InOutputAttribut.InOutput);
+                            if (curName.equals(InOutputAttribute.Input.getXMLTag())) {
+                                str += processInOutputQuery((Element) cur, InOutputAttribute.Input);
+                            } else if (curName.equals(InOutputAttribute.Output.getXMLTag())) {
+                                str += processInOutputQuery((Element) cur, InOutputAttribute.Output);
+                            } else if (curName.equals(InOutputAttribute.InOutput.getXMLTag())) {
+                                str += processInOutputQuery((Element) cur, InOutputAttribute.InOutput);
                             } else if (curName.equals("variable")) {
-                                str += processVariableQuery((Element)cur, msg.getPid());
+                                str += processVariableQuery((Element) cur, message.getPeerId());
                             } else if (curName.equals("connect")) {
-                                str += processConnectQuery((Element)cur);
+                                str += processConnectQuery((Element) cur);
                             } else if (curName.equals("subscribe")) {
-                                str += processSubscribeQuery((Element)cur, msg.getPid(),
-                                        true);
+                                str += processSubscribeQuery((Element) cur, message.getPeerId(), true);
                             } else if (curName.equals("unsubscribe")) {
-                                str += processSubscribeQuery((Element)cur, msg.getPid(),
-                                        false);
-                            }else if(curName.equals("lock")){
-                                str += processLockQuery((Element)cur, msg.getPid());
-                            }else if(curName.equals("unlock")){
-                                str += processUnlockQuery((Element)cur, msg.getPid());
+                                str += processSubscribeQuery((Element) cur, message.getPeerId(), false);
+                            } else if (curName.equals("lock")) {
+                                str += processLockQuery((Element) cur, message.getPeerId());
+                            } else if (curName.equals("unlock")) {
+                                str += processUnlockQuery((Element) cur, message.getPeerId());
                             } else
                                 System.err.println("unknow tag : " + curName);
                         }
                     }
                 }
 
-                str = "<controlAnswer id=\"" + attrId.getValue() + "\">" + str
-                        + "</controlAnswer>";
+                str = "<controlAnswer id=\"" + attrId.getValue() + "\">" + str + "</controlAnswer>";
 
-                if (!tcpServer.sendToOneClient(str.getBytes(), msg.getPid())) {
-                    System.err.println("ControlServer : Send failed : peer not found : "
-                            + msg.getPid());
-                }//else System.out.println("send to " + msg.getPid());
-            } else
-                System.out.println("Unknown Tag : "
-                        + msg.getRootNode().getNodeName());
+                if (!tcpServer.sendToOneClient(str.getBytes(), message.getPeerId())) {
+                    System.err.println("Warning: ControlServer: Send failed: peer not found : " + BipUtils.intTo8HexString(message.getPeerId()));
+                }
+            } else {
+                System.err.println("Warning: in ControlServer#processAMessage, Unknown Tag: " + message.getRootElement().getNodeName());
+            }
         }
     }
 
     /**
-     * Process the subcribe/unsubscribe queries
+     * Processes the subcribe/unsubscribe queries.
      * 
      * @param elt
      *            piece of XML tree for the subcribe/unsubscribe query
@@ -444,58 +533,69 @@ public class ControlServer extends XmlMsgManager implements
      *            the service id that ask for subscribe
      * @param subscribe
      *            true if subscribe query, false if unsubscribe query
-     * @return answer to the query : no answer : ""
+     * @return answer to the query (empty string for no answer)
      */
-    protected String processSubscribeQuery(Element elt, int pid,
-            boolean subscribe) {
+    protected String processSubscribeQuery(Element elt, int pid, boolean subscribe) {
         Attr attrName = elt.getAttributeNode("name");
 
-        VariableAttribut va = findVariable(attrName.getValue());
+        VariableAttribute va = findVariable(attrName.getValue());
         if (va != null) {
-            if (subscribe)
+            if (subscribe) {
                 va.addPeer(pid);
-            else
+            } else {
                 va.removePeer(pid);
+            }
         }
         return "";
     }
-    /** Process the queries about in/output
-     * @param elt part of the XML tree contained between tag about in/output : "input",
-     * "output", or "inOutput".
-     * @param kind input, output, or inOutput
+
+    /**
+     * Processes the queries about in/outputs.
+     * 
+     * @param elt
+     *            part of the XML tree contained between tag about in/output :
+     *            "input", "output", or "inOutput".
+     * @param kind
+     *            input, output, or inOutput
      * @return the answer to the query
      */
     protected String processInOutputQuery(Element elt, InOutputKind kind) {
         Attr attrName = elt.getAttributeNode("name");
-        InOutputAttribut ioa = findInOutput(attrName.getValue(), kind);
-        if(ioa != null){
+        InOutputAttribute ioa = findInOutput(attrName.getValue(), kind);
+        if (ioa != null) {
             return ioa.generateLongDescription();
-        }else{
+        } else {
             return "";
-        }        
+        }
     }
-    
-    /** Process query about variable
-     * @param elt part of the xml tree contained between tag "variable" 
-     * @param pid id of the peer (origin of the query). Used in case of 
-     * modification to enable or not the modification according to the lock attribute
-     * @return the answer to the query, "" if the variable concerner is not found */
+
+    /**
+     * Processes the queries about variables.
+     * 
+     * @param elt
+     *            part of the xml tree contained between tag "variable"
+     * @param pid
+     *            id of the peer (origin of the query). Used in case of
+     *            modification to enable or not the modification according to
+     *            the lock attribute
+     * @return the answer to the query, "" if the variable concerner is not
+     *         found
+     */
     protected String processVariableQuery(Element elt, int pid) {
         Attr attrName = elt.getAttributeNode("name");
-        if (attrName == null)
-            System.err.println("understood query (name requested)");
-        else {
+        if (attrName == null) {
+            System.err.println("Warning: understood query (name requested)");
+        } else {
             String name = attrName.getValue();
-            VariableAttribut va = findVariable(name);
+            VariableAttribute va = findVariable(name);
             if (va != null) {
-                if (elt.getChildNodes().getLength() == 0)
+                if (elt.getChildNodes().getLength() == 0) {
                     return va.generateLongDescription();
-                else {
+                } else {
                     Element eltVal = XmlUtils.firstChild(elt, "value");
                     if (eltVal != null) {
-                        if (lockOk(pid) && va.canBeModified(statusIntVar.getIntValue())) {
-                            modifVariable(eltVal.getFirstChild().getNodeValue().getBytes(),
-                                    statusIntVar.getIntValue(), va);
+                        if (lockOk(pid) && va.canBeModified(statusIntegerVariable.getIntValue())) {
+                            variableModificationQuery(eltVal.getFirstChild().getNodeValue().getBytes(), statusIntegerVariable.getIntValue(), va);
                         }
                         return va.generateValueMessage();
                     }
@@ -503,17 +603,22 @@ public class ControlServer extends XmlMsgManager implements
             }
         }
         return "";
-    }    
-    /** Process a query for connection 
-     * @param elt the part of xml tree between tag "connect" */
+    }
+
+    /**
+     * Processes a query for connection.
+     * 
+     * @param elt
+     *            the part of xml tree between tag "connect"
+     */
     protected String processConnectQuery(Element elt) {
         Attr attrName = elt.getAttributeNode("name");
 
-        if (attrName == null)
-            System.err.println("understood query (name requested)\n");
-        else {
+        if (attrName == null) {
+            System.err.println("Warning: understood query (name requested)\n");
+        } else {
             String name = attrName.getValue();
-            InOutputAttribut ioa = findInOutput(name, null);
+            InOutputAttribute ioa = findInOutput(name, null);
             if (ioa != null) {
                 boolean foundHost = false;
                 boolean foundPort = false;
@@ -522,7 +627,7 @@ public class ControlServer extends XmlMsgManager implements
                 String host = null;
 
                 NodeList nodeList = elt.getChildNodes();
-                for(int i=0; i<nodeList.getLength(); i++){
+                for (int i = 0; i < nodeList.getLength(); i++) {
                     Node cur = nodeList.item(i);
                     String curName = cur.getNodeName();
                     if (curName.equals("host")) {
@@ -533,134 +638,144 @@ public class ControlServer extends XmlMsgManager implements
                         foundPort = true;
                         port = Integer.parseInt(cur.getFirstChild().getNodeValue());
                     } else {
-                        System.out.println("in connect query : unused tag : "
-                                + curName);
+                        System.out.println("Warning: in connect query: ignored tag : " + curName);
                     }
                 }
-
                 if (foundPort && foundHost) {
-                    connect(host, port, tcp, ioa);
+                    connectionQuery(host, port, tcp, ioa);
                     return ioa.generateConnectAnswer();
                 }
             }
         }
         return "";
     }
-    /** Process a query to lock the control server
-     * @param elt part of XML containing the query 
-     * @param pid id of peer that asks to lock the control server
+
+    /**
+     * Processes queries to lock the control server.
+     * 
+     * @param elt
+     *            part of XML containing the query
+     * @param pid
+     *            id of peer that asks to lock the control server
      * @return the result of the query : &lt;lock result="res" peer="id" /&gt;
-     * where res has the value ok or failed and id the id of the peer thats currently lock the server.
+     *         where res has the value ok or failed and id the id of the peer
+     *         thats currently lock the server.
      */
-    protected String processLockQuery(Element elt, int pid){
+    protected String processLockQuery(Element elt, int pid) {
         String res = null;
-        if(lockOk(pid)){
-            lockIntVar.setIntValue(pid);
+        if (lockOk(pid)) {
+            lockIntegerVar.setIntValue(pid);
             res = "ok";
-        }else{
-            res = "failed";
-        }
-        return "<lock result=\""+res+"\" peer=\""+
-            fr.prima.omiscid.com.MsgSocket.intTo8HexString(lockIntVar.getIntValue()) +
-            "\"/>";
-    }
-    /** Process a query to unlock the control server
-     * @param elt part of XML containing the query 
-     * @param pid id of peer that asks to unlock the control server
-     * @return the result of the query : &lt;unlock result="res" peer="id" /&gt;
-     * where res has the value ok or failed and id the id of the peer thats currently lock the server.
-     * If the query succeeds, the id value is 0.
-     */
-    protected String processUnlockQuery(Element elt, int pid){
-        String res = null;
-        if(lockOk(pid)){
-            res = "ok";
-            lockIntVar.setIntValue(0);
-        }else{
-            res = "failed";
-        }
-        return "<unlock result=\""+res+"\" peer=\""+
-            fr.prima.omiscid.com.MsgSocket.intTo8HexString(lockIntVar.getIntValue()) +
-            "\"/>";
-    }
-    
-    /** Find a variable of the service 
-     * @param name name of the variable to find 
-     * @return the VariableAttribut object associated to the variable name
-     * or null if not found */
-    public VariableAttribut findVariable(String name) {
-        java.util.Iterator<VariableAttribut> it = variableSet.iterator();
-        while (it.hasNext()) {
-            VariableAttribut va = it.next();
-            if (va.getName().equals(name))
-                return va;
-        }
-        return null;
-    }
-    /** Find an in/output of the service 
-     * @param name name of the in/output to find
-     * @param k kind of the in/output to find : input, output, or inOutput
-     * @return the InOutputAttribut object associated to the name
-     * or null if not found */
-    public InOutputAttribut findInOutput(String name, InOutputKind k) {
-        java.util.Iterator<InOutputAttribut> it = inoutputSet.iterator();
-        if (k == null) {
-            while (it.hasNext()) {
-                InOutputAttribut ioa = it.next();
-                if (ioa.getName().equals(name))
-                    return ioa;
-            }
         } else {
-            while (it.hasNext()) {
-                InOutputAttribut ioa = it.next();
-                if (ioa.getKind() == k && ioa.getName().equals(name))
-                    return ioa;
-            }
+            res = "failed";
         }
-        return null;
-    }
-    
-    /** Test when the server is locked if the peer that locked the service is
-     * still existing */
-    protected void refreshLock(){
-        int peer = lockIntVar.getIntValue();
-        if(peer != 0){
-            if(!tcpServer.isStillConnected(peer)){
-                lockIntVar.setIntValue(0);
-            }
-        }
-    }
-    /** Test if the lock enables to do modification for a particular peer
-     * @param peer the id of the peer to test */
-    protected boolean lockOk(int peer){
-        refreshLock();
-        return (lockIntVar.getIntValue() == 0) || (lockIntVar.getIntValue() == peer);
+        return "<lock result=\"" + res + "\" peer=\"" + BipUtils.intTo8HexString(lockIntegerVar.getIntValue()) + "\"/>";
     }
 
     /**
-     * Service example.
-     * A service named essai, with 2 variables (var_1, var_2) and an output (my_output).
-     * var_1 can be modified by the user.
-     * var_2 is regularly modified by the service.
+     * Processes a query to unlock the control server.
+     * 
+     * @param elt
+     *            part of XML containing the query
+     * @param pid
+     *            id of peer that asks to unlock the control server
+     * @return the result of the query : &lt;unlock result="res" peer="id" /&gt;
+     *         where res has the value ok or failed and id the id of the peer
+     *         thats currently lock the server. If the query succeeds, the id
+     *         value is 0.
+     */
+    protected String processUnlockQuery(Element elt, int pid) {
+        String res = null;
+        if (lockOk(pid)) {
+            res = "ok";
+            lockIntegerVar.setIntValue(0);
+        } else {
+            res = "failed";
+        }
+        return "<unlock result=\"" + res + "\" peer=\"" + BipUtils.intTo8HexString(lockIntegerVar.getIntValue()) + "\"/>";
+    }
+
+    /**
+     * Finds a variable of the service using its name.
+     * 
+     * @param name
+     *            name of the variable to look for
+     * @return the VariableAttribute object associated to the variable name or
+     *         null if not found
+     */
+    public VariableAttribute findVariable(String name) {
+        for (VariableAttribute variable : variablesSet) {
+            if (variable.getName().equals(name)) {
+                return variable;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Finds an in/output of the service using its name.
+     * 
+     * @param name
+     *            name of the in/output to find
+     * @param k
+     *            null or a particular kind of the in/output to look for
+     * @return the InOutputAttribute object associated to the name or null if
+     *         not found
+     */
+    public InOutputAttribute findInOutput(String name, InOutputKind k) {
+        for (InOutputAttribute ioa : inoutputsSet) {
+            if (ioa.getName().equals(name) && (k == null || k == ioa.getKind())) {
+                return ioa;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Checks the server is not locked by a dead connection. Closes the
+     * connection if so.
+     */
+    protected void refreshLock() {
+        int peer = lockIntegerVar.getIntValue();
+        if (peer != 0) {
+            if (!tcpServer.isStillConnected(peer)) {
+                lockIntegerVar.setIntValue(0);
+            }
+        }
+    }
+
+    /**
+     * Tests if the lock allows to do modification from a particular peer.
+     * 
+     * @param peer
+     *            the BIP peer id of the peer to test
+     */
+    protected boolean lockOk(int peer) {
+        refreshLock();
+        return (lockIntegerVar.getIntValue() == 0) || (lockIntegerVar.getIntValue() == peer);
+    }
+
+    /**
+     * Service example. A service named essai, with 2 variables (var_1, var_2)
+     * and an output (my_output). var_1 can be modified by the user. var_2 is
+     * regularly modified by the service.
      */
     public static void main(String[] args) {
         int controlPort = 0;
         String serviceName = "essai";
         System.out.println("ControlServer creation");
         ControlServer ctrl = new ControlServer(serviceName) {
-            protected void modifVariable(byte[] buffer, int status,
-                    VariableAttribut va) {
+            protected void variableModificationQuery(byte[] buffer, int status, VariableAttribute va) {
                 String valueStr = new String(buffer);
-                System.out.println("modif variable " + va.getName() + " <- "
-                        + valueStr);
+                System.out.println("modif variable " + va.getName() + " <- " + valueStr);
                 va.setValueStr(valueStr);
             }
         };
 
         System.out.println("add variable");
-        VariableAttribut va = null;
+        VariableAttribute va = null;
         va = ctrl.addVariable("var_1");
-        va.setAccess(VariableAttribut.READ_WRITE);
+        va.setAccess(VariableAttribute.READ_WRITE);
         va.setType("integer");
         va.setDefaultValue("0");
         va.setDescription("a variable to modify for test");
@@ -669,42 +784,39 @@ public class ControlServer extends XmlMsgManager implements
 
         va = ctrl.addVariable("var_2");
         va.setDescription("automatically incremented");
-        IntVariableAttribut var2 = new IntVariableAttribut(va, 0);
-        
+        IntVariableAttribute var2 = new IntVariableAttribute(va, 0);
+
         System.out.println("add an output");
-        InOutputAttribut ioa = null;
+        InOutputAttribute ioa = null;
         fr.prima.omiscid.com.TcpServer tcpServer = null;
         try {
-            tcpServer = new fr.prima.omiscid.com.TcpServer(ctrl.getServiceId(), 0);
+            tcpServer = new fr.prima.omiscid.com.TcpServer(ctrl.getPeerId(), 0);
             tcpServer.start();
-            tcpServer.addOmiscidMessageListener(new fr.prima.omiscid.com.interf.OmiscidMessageListener(){
-                public void receivedOmiscidMessage(fr.prima.omiscid.com.interf.Message m){
+            tcpServer.addOmiscidMessageListener(new fr.prima.omiscid.com.interf.BipMessageListener() {
+                public void receivedBipMessage(fr.prima.omiscid.com.interf.Message m) {
                     System.out.println("received OMiSCID message");
                 }
             });
         } catch (java.io.IOException e) {
             e.printStackTrace();
         }
-        ioa = ctrl
-                .addInOutput("my output", tcpServer, InOutputAttribut.Output);
+        ioa = ctrl.addInOutput("my output", tcpServer, InOutputAttribute.Output);
         ioa.setDescription("output for test");
 
         System.out.println("Register, creation control port");
         ctrl.startServer(controlPort);
-        System.out.println("Thread process msg");
-        ctrl.startThreadProcessMessage();
+        System.out.println("Thread process message");
+        ctrl.startProcessMessagesThread();
 
         ctrl.setStatus(ControlServer.STATUS_RUNNING);
 
-        System.out.println("Control Server Launched : "
-                + ctrl.getTcpServer().getHost() + ":"
-                + ctrl.getTcpServer().getTcpPort());
+        System.out.println("Control Server Launched : " + ctrl.getTcpServer().getHost() + ":" + ctrl.getTcpServer().getTcpPort());
         System.out.println("Service registered as " + ctrl.getRegisteredServiceName());
         String str = "hello";
         while (true) {
             try {
-                tcpServer.sendToClients(str.getBytes());
-                var2.incr();
+                tcpServer.sendToAllClientsUnchecked(str);
+                var2.increment();
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
             }

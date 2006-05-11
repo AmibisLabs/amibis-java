@@ -14,30 +14,36 @@ import java.util.Hashtable;
 
 import fr.prima.omiscid.dnssd.server.ServiceInformation;
 
-public class ServiceRegistrator implements Runnable  {
+public class ServiceRegistrator implements Runnable {
 
     private Socket notificationSocket;
-//  private ObjectOutputStream notificationSocketOut;
-//  private ObjectInputStream notificationSocketIn;
+
+    // private ObjectOutputStream notificationSocketOut;
+    // private ObjectInputStream notificationSocketIn;
     private OutputStream notificationSocketOut;
+
     private InputStream notificationSocketIn;
+
     private Hashtable<String, ServiceInformation> notifications = new Hashtable<String, ServiceInformation>();
 
-    /*package*/ ServiceRegistrator(String serverName, int port) throws UnknownHostException, IOException {
-        notificationSocket = new Socket(serverName,port);
-//        notificationSocketOut = new ObjectOutputStream(notificationSocket.getOutputStream());
-//        notificationSocketOut.writeObject(null);
+    /* package */ServiceRegistrator(String serverName, int port) throws UnknownHostException, IOException {
+        notificationSocket = new Socket(serverName, port);
+        // notificationSocketOut = new
+        // ObjectOutputStream(notificationSocket.getOutputStream());
+        // notificationSocketOut.writeObject(null);
         notificationSocketOut = notificationSocket.getOutputStream();
         ServiceInformation.writeNullString(notificationSocketOut);
-//        notificationSocketIn = new ObjectInputStream(notificationSocket.getInputStream());
+        // notificationSocketIn = new
+        // ObjectInputStream(notificationSocket.getInputStream());
         notificationSocketIn = notificationSocket.getInputStream();
         new Thread(this).start();
     }
-    
+
     public void run() {
         try {
-            while(true) {
-                //ServiceInformation serviceInformation = (ServiceInformation) notificationSocketIn.readObject();
+            while (true) {
+                // ServiceInformation serviceInformation = (ServiceInformation)
+                // notificationSocketIn.readObject();
                 ServiceInformation serviceInformation = ServiceInformation.crosslanguageReadNew(notificationSocketIn);
                 String id = Integer.toString(serviceInformation.getPort());
                 assert notifications.containsKey(id);
@@ -50,20 +56,21 @@ public class ServiceRegistrator implements Runnable  {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-//        } catch (ClassNotFoundException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
+            // } catch (ClassNotFoundException e) {
+            // // TODO Auto-generated catch block
+            // e.printStackTrace();
         }
     }
-    
+
     private synchronized void send(ServiceInformation serviceInformation) throws IOException {
-        //notificationSocketOut.writeObject(serviceInformation);
+        // notificationSocketOut.writeObject(serviceInformation);
         serviceInformation.crosslanguageWrite(notificationSocketOut);
     }
 
     public boolean register(ServiceRegistration serviceRegistration) {
         try {
-            ServiceInformation i = new ServiceInformation(serviceRegistration.getRegistrationType(),serviceRegistration.getServiceName(),InetAddress.getLocalHost().getHostName(), serviceRegistration.getPort(), serviceRegistration.getProperties(), ServiceInformation.statusRegistering);
+            ServiceInformation i = new ServiceInformation(serviceRegistration.getRegistrationType(), serviceRegistration.getServiceName(), InetAddress
+                    .getLocalHost().getHostName(), serviceRegistration.getPort(), serviceRegistration.getProperties(), ServiceInformation.statusRegistering);
             String id = Integer.toString(i.getPort());
             notifications.put(id, i);
             synchronized (i) {
@@ -73,7 +80,7 @@ public class ServiceRegistrator implements Runnable  {
             i = notifications.get(id);
             notifications.remove(id);
             assert i.isNotifying();
-            assert i.getPort()==serviceRegistration.getPort();
+            assert i.getPort() == serviceRegistration.getPort();
             String registeredServiceName = i.getFullName();
             serviceRegistration.setRegisteredServiceName(registeredServiceName);
             return true;
@@ -92,7 +99,8 @@ public class ServiceRegistrator implements Runnable  {
 
     public void unregister(ServiceRegistration serviceRegistration) {
         try {
-            ServiceInformation i = new ServiceInformation(serviceRegistration.getRegistrationType(),serviceRegistration.getRegisteredName(),InetAddress.getLocalHost().getHostName(), 0, serviceRegistration.getProperties(), ServiceInformation.statusUnregistering);
+            ServiceInformation i = new ServiceInformation(serviceRegistration.getRegistrationType(), serviceRegistration.getRegisteredName(), InetAddress
+                    .getLocalHost().getHostName(), 0, serviceRegistration.getProperties(), ServiceInformation.statusUnregistering);
             String id = Integer.toString(i.getPort());
             notifications.put(id, i);
             synchronized (i) {
@@ -102,7 +110,7 @@ public class ServiceRegistrator implements Runnable  {
             i = notifications.get(id);
             notifications.remove(id);
             assert i.isNotifying();
-            assert i.getPort()==serviceRegistration.getPort();
+            assert i.getPort() == serviceRegistration.getPort();
             String registeredServiceName = i.getFullName();
             serviceRegistration.setRegisteredServiceName(registeredServiceName);
         } catch (UnknownHostException e) {

@@ -10,17 +10,21 @@ import java.util.Hashtable;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 
-public class ServiceRegistration
-implements fr.prima.omiscid.dnssd.interf.ServiceRegistration {
+public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.ServiceRegistration {
 
     private JmDNS jmdns;
+
     private String serviceName;
+
     private String registrationType;
+
     private final Hashtable<String, String> properties = new Hashtable<String, String>();
+
     private boolean registered;
+
     private ServiceInfo serviceInfo;
 
-    /*package*/ ServiceRegistration(JmDNS jmdns, String serviceName, String registrationType) {
+    /* package */ServiceRegistration(JmDNS jmdns, String serviceName, String registrationType) {
         this.jmdns = jmdns;
         this.registrationType = registrationType;
         this.serviceName = serviceName;

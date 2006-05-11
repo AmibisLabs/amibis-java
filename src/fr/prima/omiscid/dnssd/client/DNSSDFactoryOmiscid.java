@@ -14,17 +14,19 @@ import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
 public class DNSSDFactoryOmiscid implements DNSSDFactory {
 
     private static int port = 12053;
+
     private static String host = "localhost";
+
     private ServiceRegistrator serviceRegistrator;
-    
+
     public synchronized ServiceBrowser createServiceBrowser(String registrationType) {
-        return new fr.prima.omiscid.dnssd.client.ServiceBrowser(registrationType+".local.", host, port);
+        return new fr.prima.omiscid.dnssd.client.ServiceBrowser(registrationType + ".local.", host, port);
     }
 
     public synchronized ServiceRegistration createServiceRegistration(String serviceName, String registrationType) {
         if (serviceRegistrator == null) {
             try {
-                serviceRegistrator = new ServiceRegistrator(host,port);
+                serviceRegistrator = new ServiceRegistrator(host, port);
             } catch (UnknownHostException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -33,7 +35,7 @@ public class DNSSDFactoryOmiscid implements DNSSDFactory {
                 e.printStackTrace();
             }
         }
-        return new fr.prima.omiscid.dnssd.client.ServiceRegistration(serviceRegistrator,serviceName,registrationType+".local.");
+        return new fr.prima.omiscid.dnssd.client.ServiceRegistration(serviceRegistrator, serviceName, registrationType + ".local.");
     }
 
 }

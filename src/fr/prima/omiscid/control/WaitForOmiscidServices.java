@@ -1,66 +1,93 @@
 /*
  * Created on 6 juin 2005
- * TODO wait for 2 different instance of a service 
+ * TODO wait for 2 different instance of a service
  */
-package fr.prima.omiscid.control ;
+package fr.prima.omiscid.control;
 
+import java.util.Vector;
+
+import fr.prima.omiscid.com.BipUtils;
 
 /**
- * Wait for several OMiSCID services. This class enables to search in the same time several OMiSCID services. Then it enables to wait that they are all found.
- * @author  Sebastien Pesnel refactoring emonet
+ * Waits for several OMiSCID services at the same time. Allows to search in the
+ * same time several OMiSCID services matching the specified services. Allows to
+ * wait that they are all found.
+ * 
+ * @author Sebastien Pesnel refactoring emonet
  */
 public class WaitForOmiscidServices {
-    /** Number max of service for which we can wait */
-    private final int MAX_SERVICES = 10;
     /**
-	 * researched services
-	 * @uml.property  name="searchServiceArray"
-	 * @uml.associationEnd  multiplicity="(0 -1)"
-	 */
-    private OmiscidServiceWaiter searchServiceArray[] = new OmiscidServiceWaiter[MAX_SERVICES];
+     * Services we are searching for.
+     */
+    private final Vector<OmiscidServiceWaiter> searchServiceArray = new Vector<OmiscidServiceWaiter>();
 
-    public WaitForOmiscidServices() {
-        for (int i = 0; i < searchServiceArray.length; i++) {
-            searchServiceArray[i] = null;
-        }
+    /**
+     * The BIP peer id used to describe the local peer.
+     */
+    private int peerId;
+
+    /**
+     * Creates a WaitForOmiscidServices using the given local peer id. If you
+     * application has already a BIP peer id, you can pass it to this
+     * constructor to have it used through all subsequent BIP connections. BIP
+     * peer ids can be generated using {@link BipUtils#generateBIPPeerId()}.
+     * 
+     * @param peerId
+     *            the peer id representing the local BIP peer
+     */
+    public WaitForOmiscidServices(int peerId) {
+        this.peerId = peerId;
     }
-    /** Need a service 
-     * @param name the name of the wanted service 
-     * @return the index to retrieve the wanted service or to know if it has been found */
-    public int needService(String name) {
+
+    /**
+     * Adds a new service to the required services. The service is only
+     * specified by its name, no specific filter is given.
+     * 
+     * @param name
+     *            the name of the desired service ({@link OmiscidServiceWaiter#OmiscidServiceWaiter(String, OmiscidServiceFilter)})
+     * @return the index to retrieve the desired service via
+     *         {@link #getService(int)} or to test whether it has been found via
+     *         {@link #isResolved(int)}
+     */
+    public synchronized int needService(String name) {
         return needService(name, null);
     }
-    /** Need a service 
-     * @param name the name of the wanted service 
-     * @param w an object implementing {@link OmiscidServiceWaiter} interface to test
-     * if the service is ok according the wishes of the user.
-     * @return the index to retrieve the wanted service or to know if it has been found */
-    public int needService(String name, OmiscidServiceFilter w) {
-        int index = -1;
-        for (int i = 0; i < searchServiceArray.length; i++) {
-            if (searchServiceArray[i] == null) {
-                index = i;
-                break;
-            }
-        }
-        if (index != -1) {
-            searchServiceArray[index] = new OmiscidServiceWaiter(name,w);
-            searchServiceArray[index].startSearch();
-        }
-        return index;
+
+    /**
+     * Adds a new service to the required services.
+     * 
+     * @param name
+     *            the name of the wanted service
+     * @param filter
+     *            an {@link OmiscidServiceFilter} representing the acceptance
+     *            test for the service
+     * @return the index to retrieve the wanted service or to know if it has
+     *         been found
+     */
+    public synchronized int needService(String name, OmiscidServiceFilter filter) {
+        searchServiceArray.add(new OmiscidServiceWaiter(name, filter, peerId));
+        searchServiceArray.lastElement().startSearch();
+        return searchServiceArray.size() - 1;
     }
-    /** Returns if all the needed services have been found
-     * @return true if all the needed services have been found */
-    private boolean areAllResolved() {
-        for (int i = 0; i < searchServiceArray.length; i++) {
-            if (searchServiceArray[i] != null
-                    && !searchServiceArray[i].isResolved())
+
+    /**
+     * Tests whether all the required services have been found.
+     * 
+     * @return whether all the required services have been found
+     */
+    private synchronized boolean areAllResolved() {
+        for (OmiscidServiceWaiter waiter : searchServiceArray) {
+            if (!waiter.isResolved()) {
                 return false;
+            }
         }
         return true;
     }
-    /** Wait until all the needed services have been found */
-    public void waitResolve() {
+
+    /**
+     * Waits until all the required services have been found.
+     */
+    public synchronized void waitResolve() {
         while (!areAllResolved()) {
             try {
                 Thread.sleep(10);
@@ -69,23 +96,33 @@ public class WaitForOmiscidServices {
             }
         }
     }
-    /** Returns if a needed service has been found
-     * @param index the index associated to the needed service (return by needService)
-     * @return if a needed service has been found
-     * @see WaitForOmiscidServices#needService(String) */
-    public boolean isResolved(int index){
-        return searchServiceArray[index].isResolved();
+
+    /**
+     * Tests whether a given awaited service has been found.
+     * 
+     * @param index
+     *            the index associated to the needed service (returned for
+     *            example by {@link #needService(String, OmiscidServiceFilter)})
+     * @return whether the awaited service has been found
+     */
+    public synchronized boolean isResolved(int index) {
+        return searchServiceArray.get(index).isResolved();
     }
-    /** Returns the needed service 
-     * @param index the index associated to the needed service (return by needService)
-     * @return the needed service or null if not found yet. 
+
+    /**
+     * Accesses the found service associated to the search given index.
+     * 
+     * @param index
+     *            the index associated to the required service
+     * @return the required service or null if not found yet
      * @see WaitForOmiscidServices#needService(String)
-     * @see WaitForOmiscidServices#isResolved(int)*/
-    public OmiscidService getService(int index) {
-        if (searchServiceArray[index].isResolved())
-            return searchServiceArray[index].getOmiscidService();
-        else
+     * @see WaitForOmiscidServices#isResolved(int)
+     */
+    public synchronized OmiscidService getService(int index) {
+        if (searchServiceArray.get(index).isResolved()) {
+            return searchServiceArray.get(index).getOmiscidService();
+        } else {
             return null;
+        }
     }
 }
-

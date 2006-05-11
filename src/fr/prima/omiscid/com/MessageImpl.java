@@ -5,29 +5,32 @@
 
 package fr.prima.omiscid.com;
 
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+
 import fr.prima.omiscid.com.interf.Message;
 
-
 /**
- * Contains the data about a OMiSCID Message. It contains a buffer of byte that contains the body message, the service id that is the source of the message, an the id message.
- * @author  Sebastien Pesnel  Refactoring by Patrick Reignier
+ * Contains the data about a BIP Message.
+ * 
+ * @see Message The content of the message are basically stored in a byte array.
+ * @author Sebastien Pesnel Refactoring by Patrick Reignier and emonet
  */
 public class MessageImpl implements Message {
     /** buffer of byte to store the message body */
-    byte[] buffer;
+    private byte[] buffer;
 
-    /** id of the service (source of this message) */
-    int pid;
+    /** BIP peer id of the source peer (source of this message) */
+    private int peerId;
 
     /** message id */
-    int mid;
+    private int messageId;
 
-    /** Create a new instance of Message */
     public MessageImpl() {
     }
 
     /**
-     * Create a new instance with the data in parameter
+     * Create a new instance with the data in parameter.
      * 
      * @param source
      *            a buffer that contains the bytes of the message
@@ -35,57 +38,95 @@ public class MessageImpl implements Message {
      *            index where begin to read the buffer (source)
      * @param length
      *            number of byte to copy from source
-     * @param msgId
+     * @param messageId
      *            the message id
      * @param pId
-     *            the id of the service : source of the message
+     *            the BIP peer id of the source peer: source of the message
      */
-    public MessageImpl(byte[] source, int offset, int length, int msgId, int pid) {
-        this.mid = msgId;
-        this.pid = pid;
+    public MessageImpl(byte[] source, int offset, int length, int messageId, int peerId) {
+        this.messageId = messageId;
+        this.peerId = peerId;
         buffer = new byte[length];
         for (int i = 0; i < length; ++i) {
             buffer[i] = source[i + offset];
         }
     }
 
-    /* (non-Javadoc)
-	 * @see fr.prima.omiscid.com.Message#getBufferAsString()
-	 */
-    public String getBufferAsString() {
-        return new String(buffer);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see fr.prima.omiscid.com.Message#getBufferAsString()
+     */
+    public String getBufferAsString() throws BipMessageInterpretationException {
+        String res = BipUtils.byteArrayToString(buffer);
+        if (res == null) {
+            throw new BipMessageInterpretationException(null);
+        } else {
+            return res;
+        }
     }
 
-    /* (non-Javadoc)
-	 * @see fr.prima.omiscid.com.Message#getBuffer()
-	 */
+    public String getBufferAsStringUnchecked() {
+        try {
+            return getBufferAsString();
+        } catch (BipMessageInterpretationException e) {
+            return null;
+        }
+    }
+
+    public Element getBufferAsXML() throws BipMessageInterpretationException {
+        try {
+            return BipUtils.byteArrayToDomElement(buffer);
+        } catch (SAXException e) {
+            throw new BipMessageInterpretationException(e);
+        }
+    }
+
+    public Element getBufferAsXMLUnchecked() {
+        try {
+            return getBufferAsXML();
+        } catch (BipMessageInterpretationException e) {
+            return null;
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see fr.prima.omiscid.com.Message#getBuffer()
+     */
     /**
-	 * @return  Returns the buffer.
-	 * @uml.property  name="buffer"
-	 */
+     * @return the raw data buffer
+     */
     public byte[] getBuffer() {
         return buffer;
     }
 
-    /* (non-Javadoc)
-	 * @see fr.prima.omiscid.com.Message#getPeerId()
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see fr.prima.omiscid.com.Message#getPeerId()
+     */
     public int getPeerId() {
-        return pid;
+        return peerId;
     }
 
-    /* (non-Javadoc)
-	 * @see fr.prima.omiscid.com.Message#getMsgId()
-	 */
-    public int getMsgId() {
-        return mid;
+    /*
+     * (non-Javadoc)
+     * 
+     * @see fr.prima.omiscid.com.Message#getMessageId()
+     */
+    public int getMessageId() {
+        return messageId;
     }
 
-    /* (non-Javadoc)
-	 * @see fr.prima.omiscid.com.Message#toString()
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see fr.prima.omiscid.com.Message#toString()
+     */
     public String toString() {
-        return "Msg " + pid + " " + mid + " " + buffer.length;
+        return "Message " + peerId + " " + messageId + " " + buffer.length;
     }
 
 }

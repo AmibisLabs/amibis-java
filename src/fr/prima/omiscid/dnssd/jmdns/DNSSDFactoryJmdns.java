@@ -16,7 +16,7 @@ import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
 public class DNSSDFactoryJmdns implements DNSSDFactory {
 
     private JmDNS jmdns;
-    
+
     public DNSSDFactoryJmdns() {
         try {
             this.jmdns = new JmDNS(InetAddress.getLocalHost());
@@ -25,7 +25,7 @@ public class DNSSDFactoryJmdns implements DNSSDFactory {
             e.printStackTrace();
         }
     }
-    
+
     public ServiceBrowser createServiceBrowser(String registrationType) {
         return new fr.prima.omiscid.dnssd.jmdns.ServiceBrowser(jmdns, registrationType + ".local.");
     }

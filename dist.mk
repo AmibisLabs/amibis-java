@@ -1,7 +1,8 @@
 
 
-
-DISTON=${USER}@oberon:/var/www/release
+SERVER=oberon
+SERVERPATH=/var/www/release
+DISTON=${USER}@${SERVER}:${SERVERPATH}
 BASEJAR=omiscid.jar
 CLASSDIR=bin
 

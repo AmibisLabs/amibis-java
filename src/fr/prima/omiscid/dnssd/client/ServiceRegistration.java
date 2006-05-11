@@ -4,28 +4,38 @@
  */
 package fr.prima.omiscid.dnssd.client;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Hashtable;
 
-public class ServiceRegistration
-implements fr.prima.omiscid.dnssd.interf.ServiceRegistration {
+public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.ServiceRegistration {
 
     private ServiceRegistrator serviceRegistrator;
-    
+
     private boolean registered;
+
     private String registrationType;
+
     private String serviceName;
+
     private String registeredServiceName;
+
     private Hashtable<String, byte[]> properties = new Hashtable<String, byte[]>();
+
     private int port;
 
-    /*package*/ ServiceRegistration(ServiceRegistrator serviceRegistrator, String serviceName, String registrationType) {
+    /* package */ServiceRegistration(ServiceRegistrator serviceRegistrator, String serviceName, String registrationType) {
         this.serviceRegistrator = serviceRegistrator;
         this.registrationType = registrationType;
         this.serviceName = serviceName;
     }
 
     public void addProperty(String name, String value) {
-        properties.put(name, value.getBytes());
+        try {
+            properties.put(name, value.getBytes("utf-8"));
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     public void setName(String serviceName) {
@@ -54,7 +64,7 @@ implements fr.prima.omiscid.dnssd.interf.ServiceRegistration {
         return registeredServiceName;
     }
 
-    /*package*/ void setRegisteredServiceName(String registeredServiceName) {
+    /* package */void setRegisteredServiceName(String registeredServiceName) {
         this.registeredServiceName = registeredServiceName;
     }
 

@@ -14,31 +14,41 @@ import java.io.OutputStream;
 import java.util.Hashtable;
 
 /**
- * This class is a pure copy of the corresponding class in the jOMiSCIDDnssdServer project.
+ * This class is a pure copy of the corresponding class in the
+ * jOMiSCIDDnssdServer project.
  * 
  * @author emonet
- * 
  */
 public class ServiceInformation implements Externalizable {
 
     private static final long serialVersionUID = -7947660767854019970L;
-    
+
     private String registrationType = null;
+
     private String fullName = null;
+
     private String hostName = null;
+
     private int port;
+
     private Hashtable<String, byte[]> properties = new Hashtable<String, byte[]>();
+
     private int status;
+
     public final static int statusConnecting = 1000;
+
     public final static int statusDisconnecting = 1001;
-    public final static int statusRegistering = 2000; 
+
+    public final static int statusRegistering = 2000;
+
     public final static int statusUnregistering = 2001;
+
     public final static int statusNotifyingRegistered = 1002;
-    public final static String crosslanguageCharset ="UTF-8";
-    
+
+    public final static String crosslanguageCharset = "UTF-8";
+
     public ServiceInformation() {
     }
-
 
     public static ServiceInformation crosslanguageReadNew(InputStream in) throws IOException {
         ServiceInformation serviceInformation = new ServiceInformation();
@@ -67,7 +77,7 @@ public class ServiceInformation implements Externalizable {
                 if (read == -1) {
                     throw new EOFException("in readByteArray");
                 }
-                bytes[i] = (byte)read;
+                bytes[i] = (byte) read;
             }
             return bytes;
         }
@@ -76,48 +86,45 @@ public class ServiceInformation implements Externalizable {
     private static int readInt(InputStream in) throws IOException {
         byte[] bytes = new byte[1024];
         int size;
-        for (size = 0; ; size++) {
+        for (size = 0;; size++) {
             int read = in.read();
             if (read == -1) {
                 throw new EOFException("EOF in readByteArray");
             }
-            if ((byte)read == (byte)'\n') {
+            if ((byte) read == (byte) '\n') {
                 break;
             }
-            bytes[size] = (byte)read;
+            bytes[size] = (byte) read;
         }
-        int i = Integer.parseInt(new String(bytes,0,size,crosslanguageCharset));
+        int i = Integer.parseInt(new String(bytes, 0, size, crosslanguageCharset));
         return i;
     }
 
-
-    
     public static void writeString(OutputStream out, String s) throws IOException {
-        if (s==null) {
+        if (s == null) {
             writeNullString(out);
         } else {
             writeByteArray(out, s.getBytes(crosslanguageCharset));
         }
     }
-    
+
     public static void writeNullString(OutputStream out) throws IOException {
         writeInt(out, -1);
     }
 
     public static String readString(InputStream in) throws IOException {
         byte[] bs = readByteArray(in);
-        return bs==null ? null : new String(bs);
+        return bs == null ? null : new String(bs);
     }
 
-    
     public void crosslanguageWrite(OutputStream out) throws IOException {
-        writeString(out,registrationType);
-        writeString(out,fullName);
-        writeString(out,hostName);
-        writeInt(out,port);
-        writeInt(out,status);
-        if (properties!=null) {
-            writeInt(out,properties.size());
+        writeString(out, registrationType);
+        writeString(out, fullName);
+        writeString(out, hostName);
+        writeInt(out, port);
+        writeInt(out, status);
+        if (properties != null) {
+            writeInt(out, properties.size());
             for (String key : properties.keySet()) {
                 writeString(out, key);
                 writeByteArray(out, properties.get(key));
@@ -127,7 +134,7 @@ public class ServiceInformation implements Externalizable {
         }
         out.flush();
     }
-    
+
     public void crosslanguageRead(InputStream in) throws IOException {
         registrationType = readString(in);
         fullName = readString(in);
@@ -140,9 +147,9 @@ public class ServiceInformation implements Externalizable {
         }
     }
 
-
     public void writeExternal(ObjectOutput out) throws IOException {
-        if(true) throw new RuntimeException("writeExternal should not be called: use crosslanguage protocol instead");
+        if (true)
+            throw new RuntimeException("writeExternal should not be called: use crosslanguage protocol instead");
         out.writeObject(registrationType);
         out.writeObject(fullName);
         out.writeObject(hostName);
@@ -150,9 +157,11 @@ public class ServiceInformation implements Externalizable {
         out.writeObject(properties);
         out.writeInt(status);
     }
+
     @SuppressWarnings("unchecked")
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        if(true) throw new RuntimeException("readExternal should not be called: use crosslanguage protocol instead");
+        if (true)
+            throw new RuntimeException("readExternal should not be called: use crosslanguage protocol instead");
         registrationType = (String) in.readObject();
         fullName = (String) in.readObject();
         hostName = (String) in.readObject();
@@ -160,39 +169,49 @@ public class ServiceInformation implements Externalizable {
         properties = (Hashtable<String, byte[]>) in.readObject();
         status = in.readInt();
     }
-    
+
     public void setNotifying(String registeredName) {
         assert status == statusRegistering || status == statusUnregistering;
         status = statusNotifyingRegistered;
         fullName = registeredName;
     }
+
     public String getQualifiedName() {
-        return registrationType+fullName;        
+        return registrationType + fullName;
     }
+
     public String getFullName() {
         return fullName;
     }
+
     public String getHostName() {
         return hostName;
     }
+
     public int getPort() {
         return port;
     }
+
     public String getRegistrationType() {
         return registrationType;
     }
+
     public String getRegType() {
         return registrationType;
     }
+
     public byte[] getProperty(String key) {
         return properties.get(key);
     }
+
     public String getStringProperty(String key) {
-        return getProperty(key)==null ? null : new String(getProperty(key));
+        return getProperty(key) == null ? null : new String(getProperty(key));
     }
+
     public Iterable<String> getPropertyKeys() {
         return properties.keySet();
     }
+
     public ServiceInformation(String registrationType, String fullName, String hostName, int port, Hashtable<String, byte[]> properties, int status) {
         this.registrationType = registrationType;
         this.fullName = fullName;
@@ -201,6 +220,7 @@ public class ServiceInformation implements Externalizable {
         this.properties = properties;
         this.status = status;
     }
+
     public ServiceInformation(String registrationType, String fullName, int status) {
         this.registrationType = registrationType;
         this.fullName = fullName;

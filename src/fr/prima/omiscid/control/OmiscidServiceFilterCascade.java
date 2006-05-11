@@ -1,38 +1,38 @@
-package fr.prima.omiscid.control ;
+package fr.prima.omiscid.control;
+
+import java.util.Vector;
 
 /**
- * Provide simple test. Enables to combine several tests.
- * @author Sebastien Pesnel refactoring emonet
+ * Enables to combine several tests (with an "and" operator).
  * 
+ * @author Sebastien Pesnel refactoring emonet
  */
-public class OmiscidServiceFilterCascade implements OmiscidServiceFilter{
-    
-    private java.util.LinkedList<OmiscidServiceFilter> listTest = 
-        new java.util.LinkedList<OmiscidServiceFilter>();
-    
-    public OmiscidServiceFilterCascade(){}
-    public OmiscidServiceFilterCascade(OmiscidServiceFilter ...filters){
+public class OmiscidServiceFilterCascade implements OmiscidServiceFilter {
+
+    private final Vector<OmiscidServiceFilter> filtersList = new Vector<OmiscidServiceFilter>();
+
+    public OmiscidServiceFilterCascade() {
+    }
+
+    public OmiscidServiceFilterCascade(OmiscidServiceFilter... filters) {
         for (OmiscidServiceFilter filter : filters) {
             addTest(filter);
         }
     }
-    
-    public void addTest(OmiscidServiceFilter w){
-        synchronized (listTest) {        
-            listTest.add(w);
-        }
+
+    public synchronized void addTest(OmiscidServiceFilter w) {
+        filtersList.add(w);
     }
 
-    public void removeTest(OmiscidServiceFilter w){
-        synchronized (listTest) {        
-            listTest.remove(w);
-        }
+    public synchronized void removeTest(OmiscidServiceFilter w) {
+        filtersList.remove(w);
     }
-   
-    public boolean isAGoodService(OmiscidService s) {
-        java.util.Iterator<OmiscidServiceFilter> it = listTest.iterator();
-        while(it.hasNext()){
-            if(!it.next().isAGoodService(s)) return false;
+
+    public synchronized boolean isAGoodService(OmiscidService s) {
+        for (OmiscidServiceFilter filter : filtersList) {
+            if (!filter.isAGoodService(s)) {
+                return false;
+            }
         }
         return true;
     }

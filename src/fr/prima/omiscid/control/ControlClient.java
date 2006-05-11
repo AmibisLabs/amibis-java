@@ -1,7 +1,9 @@
-package fr.prima.omiscid.control ;
+package fr.prima.omiscid.control;
 
-import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -9,93 +11,106 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import fr.prima.omiscid.com.MsgSocket;
+import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.TcpClient;
+import fr.prima.omiscid.com.XmlMessage;
 import fr.prima.omiscid.com.interf.Message;
-import fr.prima.omiscid.com.interf.OmiscidMessageListener;
+import fr.prima.omiscid.com.interf.BipMessageListener;
 
 /**
- * Communication with a control server of a OMiSCID service. Query data, store answer. Has a local copy of the data. <br> Use: <ul><li> Creates a ControlClient instance </li><li> Connect the control client to a control server </li><li> query a global description of the service : then you have the  names for all variables and in/outputs. </li><li> you can do specific query on variable, or in/output  </li></ul>
- * @author  Sebastien Pesnel  Refactoring by Patrick Reignier
+ * Handles the communication with the control server of a OMiSCID service.
+ * Queries data, stores answers. Keeps a local copy of the data. Example use:
+ * <ul>
+ * <li> Create a ControlClient instance </li>
+ * <li> Connect the control client to a control server </li>
+ * <li> Query a global description of the service, then you have the names for
+ * all variables and in/outputs.</li>
+ * <li> Do specific query on variables or in/output .</li>
+ * </ul>
+ * 
+ * @author Sebastien Pesnel Refactoring by Patrick Reignier and emonet
  */
-public class ControlClient implements OmiscidMessageListener {
+// \REVIEWTASK shouldn't this be a monitor?
+public class ControlClient implements BipMessageListener {
     /** The max time to wait for the answer to a query */
     private final int MaxTimeToWait = 500; // milliseconds
+
+    // \REVIEWTASK should be configurable in a specific way (env variable?)
 
     /** The connection to the control port */
     private TcpClient tcpClient = null;
 
-    /** Id used in OMiSCID exhange */
-    private int serviceId = 0;
+    /** Peer id used in BIP exhange */
+    private int peerId = 0;
 
-    /** Query Id : the answer to a query have the same id that the query */
-    private int msgId = 0;
+    /** Query Id: the answer to a query have the same id that the query */
+    private int messageId = 0;
 
     /** Object used as condition to signal when an answer is available */
     private Object answerEvent = new Object();
 
     /** An available answer */
-    private XmlMessage msgAnswer = null;
+    private XmlMessage messageAnswer = null;
 
     /**
      * Set of listener interested in the control event (Set of object
      * implementing the ControlEventListener interface)
      */
-    private Set<ControlEventListener> ctrlEventListenerSet = new java.util.HashSet<ControlEventListener>();
+    private Set<ControlEventListener> controlEventListenersSet = new HashSet<ControlEventListener>();
 
     /**
-     * Set of variable name (Set of String object)
+     * Set of variable name
      */
-    public final Set<String> variableNameSet = new java.util.TreeSet<String>();
+    private final Set<String> variableNamesSet = new TreeSet<String>();
 
     /**
-     * Set of input name (Set of String object)
+     * Set of input name
      */
-    public final Set<String> inputNameSet = new java.util.TreeSet<String>();
+    private final Set<String> inputNamesSet = new TreeSet<String>();
 
     /**
-     * Set of output name (Set of String object)
+     * Set of output name
      */
-    public final Set<String> outputNameSet = new java.util.TreeSet<String>();
+    private final Set<String> outputNamesSet = new TreeSet<String>();
 
     /**
-     * Set of in/output name (Set of string object)
+     * Set of in/output name
      */
-    public final Set<String> inOutputNameSet = new java.util.TreeSet<String>();
+    private final Set<String> inOutputNamesSet = new TreeSet<String>();
 
     /**
-     * Set of Variables (Set of VariableAttribut objects)
+     * Set of Variables
      */
-    public final Set<VariableAttribut> variableAttrSet = new java.util.HashSet<VariableAttribut>();
+    private final Set<VariableAttribute> variableAttributesSet = new HashSet<VariableAttribute>();
 
     /**
-     * Set of Inputs (Set of InOutputAttribut objects)
+     * Set of Inputs (Set of InOutputAttribute objects)
      */
-    public final Set<InOutputAttribut> inputAttrSet = new java.util.HashSet<InOutputAttribut>();
+    private final Set<InOutputAttribute> inputAttributesSet = new HashSet<InOutputAttribute>();
 
     /**
-     * Set of outputs (Set of InOutputAttribut objects)
+     * Set of outputs (Set of InOutputAttribute objects)
      */
-    public final Set<InOutputAttribut> outputAttrSet = new java.util.HashSet<InOutputAttribut>();
+    private final Set<InOutputAttribute> outputAttributesSet = new HashSet<InOutputAttribute>();
 
     /**
-     * Set of in/outputs (Set of InOutputAttribut objects)
+     * Set of in/outputs (Set of InOutputAttribute objects)
      */
-    public final Set<InOutputAttribut> inOutputAttrSet = new java.util.HashSet<InOutputAttribut>();
+    private final Set<InOutputAttribute> inOutputAttributesSet = new HashSet<InOutputAttribute>();
 
     /**
-     * Create a new instance of ControlClient class
+     * Creates a new instance of ControlClient class.
      * 
-     * @param serviceId
-     *            the id to use to identify peer in OMiSCID exchange
+     * @param peerId
+     *            the peer id to use to identify the local peer in BIP exchanges
      */
-    public ControlClient(int serviceId) {
-        this.serviceId = serviceId;
+    public ControlClient(int peerId) {
+        this.peerId = peerId;
     }
 
     /**
-     * Create the connection to a control server. Instanciate a TCP client. Add
-     * this object as listener on message received by the TCP client
+     * Creates the connection to a control server. Instanciates a TCP client.
+     * Adds this object as listener on message received by the TCP client.
      * 
      * @param host
      *            the host name where find the control server
@@ -105,12 +120,9 @@ public class ControlClient implements OmiscidMessageListener {
      */
     public boolean connectToControlServer(String host, int port) {
         try {
-            //System.out.println("control client : " +host +" "+port);
-            
-            tcpClient = new TcpClient(serviceId);
+            tcpClient = new TcpClient(peerId);
             tcpClient.connectTo(host, port);
             tcpClient.addOmiscidMessageListener(this);
-
             return true;
         } catch (java.io.IOException e) {
             tcpClient = null;
@@ -119,293 +131,289 @@ public class ControlClient implements OmiscidMessageListener {
         }
     }
 
-    /** @return if the connection worked */
+    /**
+     * Tests whether this control client connection is running.
+     * 
+     * @return whether the connection is up
+     */
     public boolean isConnected() {
         return (tcpClient != null) && tcpClient.isConnected();
     }
 
-    /** Close the connection */
+    /**
+     * Closes the connection.
+     */
     public void close() {
-        if (tcpClient != null)
+        if (tcpClient != null) {
             tcpClient.closeConnection();
-    }
-    
-    /** Get Peer id From the TCP connection */
-    public int getPeerId(){
-        if(tcpClient != null)
-            return tcpClient.getPeerId();
-        else return 0;
+        }
     }
 
     /**
-     * Implement the OmiscidMessageListerner interface Test if the message is an
-     * answer to a query or a control event. In case of answer, the reception of
-     * this is signaled, for the control event message, they are given to the
-     * ControlEventListener
-     * 
-     * @param msg a new OMiSCID message received
+     * Gets the remote peer id from the TCP connection.
      */
-    public void receivedOmiscidMessage(Message msg) {
-//         System.out.println("ControlClient:MsgReceived: " +
-//         msg.getBufferAsString());
-        XmlMessage xmlMsg = XmlMessage.changeMessageToXmlTree(msg);
-        if (xmlMsg != null && xmlMsg.getRootNode() != null) {
-            org.w3c.dom.Element root = xmlMsg.getRootNode();
+    public int getPeerId() {
+        if (tcpClient != null) {
+            return tcpClient.getRemotePeerId();
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Implements the OmiscidMessageListerner interface. Tests whether the
+     * message is an answer to a query or a control event. In case of answer,
+     * the reception of this is signaled by a control event message.
+     * {@link ControlEventListener} describes the interface to implement to
+     * receive such control event messages.
+     * 
+     * @param message
+     *            a new OMiSCID message received
+     */
+    public void receivedBipMessage(Message message) {
+        XmlMessage xmlMessage = XmlMessage.newUnchecked(message);
+        if (xmlMessage != null && xmlMessage.getRootElement() != null) {
+            Element root = xmlMessage.getRootElement();
             if (root.getNodeName().equals("controlAnswer")) {
                 synchronized (answerEvent) {
-                    msgAnswer = xmlMsg;
+                    messageAnswer = xmlMessage;
                     answerEvent.notify();
                 }
             } else if (root.getNodeName().equals("controlEvent")) {
-                synchronized (ctrlEventListenerSet) {
-                    java.util.Iterator<ControlEventListener> it = ctrlEventListenerSet.iterator();
-                    while (it.hasNext()) {
-                        it.next().receivedControlEvent(xmlMsg);
+                synchronized (controlEventListenersSet) {
+                    for (ControlEventListener listener : controlEventListenersSet) {
+                        listener.receivedControlEvent(xmlMessage);
                     }
                 }
-            } else{
+            } else {
                 System.err.println("Unknown message kind : " + root.getNodeName());
             }
         }
     }
 
     /**
-     * Add a listener on control event
+     * Adds a listener for control event.
      * 
      * @param l
      *            listener interested in control event
      */
     public void addControlEventListener(ControlEventListener l) {
-        synchronized (ctrlEventListenerSet) {
-            ctrlEventListenerSet.add(l);
+        synchronized (controlEventListenersSet) {
+            controlEventListenersSet.add(l);
         }
     }
 
     /**
-     * Remove a listener on control event
+     * Removes a listener for control event.
      * 
      * @param l
      *            listener no more interested in control event
+     * @return whether the listener was removed
      */
-    public void removeControlEventListener(ControlEventListener l) {
-        synchronized (ctrlEventListenerSet) {
-            ctrlEventListenerSet.remove(l);
+    public boolean removeControlEventListener(ControlEventListener l) {
+        synchronized (controlEventListenersSet) {
+            return controlEventListenersSet.remove(l);
         }
     }
 
     /**
-     * Find an attribute with a particular name
+     * Finds an attribute with a particular name.
      * 
      * @param name
-     *            name of the attribute
-     * @param attributSet
-     *            a set of attribute where looked for the name
-     * @return the Attribut object if found, null otherwise
+     *            the name of the attribute
+     * @param attributesSet
+     *            a set where to look for the name
+     * @return the Attribute object if found, null otherwise
      */
-    private Attribut findAttribute(String name, Set<? extends Attribut> attributSet) {
-        java.util.Iterator<? extends Attribut> it = attributSet.iterator();
-        while (it.hasNext()) {
-            Attribut attr = (Attribut) it.next();
-            if (name.equals(attr.getName()))
-                return attr;
+    private Attribute findAttribute(String name, Set<? extends Attribute> attributesSet) {
+        for (Attribute attribute : attributesSet) {
+            if (name.equals(attribute.getName())) {
+                return attribute;
+            }
         }
         return null;
     }
 
     /**
-     * Find a variable with a particular name
+     * Finds a variable with a particular name.
      * 
      * @param name
      *            the name to look for
-     * @return the VariableAttribut object if found, null otherwise
+     * @return the VariableAttribute object if found, null otherwise
      */
-    public VariableAttribut findVariable(String name) {
-        Attribut attr = findAttribute(name, variableAttrSet);
-        if (attr == null)
-            return null;
-        else
-            return (VariableAttribut) attr;
+    public VariableAttribute findVariable(String name) {
+        return (VariableAttribute) findAttribute(name, variableAttributesSet);
     }
 
     /**
-     * Find an input with a particular name
+     * Finds an input with a particular name.
      * 
      * @param name
      *            the name to look for
-     * @return the InOutputAttribut object if found, null otherwise
+     * @return the InOutputAttribute object if found, null otherwise
      */
-    public InOutputAttribut findInput(String name) {
-        Attribut attr = findAttribute(name, inputAttrSet);
-        if (attr == null)
-            return null;
-        else
-            return (InOutputAttribut) attr;
+    public InOutputAttribute findInput(String name) {
+        return (InOutputAttribute) findAttribute(name, inputAttributesSet);
     }
 
     /**
-     * Find an output with a particular name
+     * Finds an output with a particular name.
      * 
      * @param name
      *            the name to look for
-     * @return the InOutputAttribut object if found, null otherwise
+     * @return the InOutputAttribute object if found, null otherwise
      */
-    public InOutputAttribut findOutput(String name) {
-        Attribut attr = findAttribute(name, outputAttrSet);
-        if (attr == null)
-            return null;
-        else
-            return (InOutputAttribut) attr;
+    public InOutputAttribute findOutput(String name) {
+        return (InOutputAttribute) findAttribute(name, outputAttributesSet);
     }
 
     /**
-     * Find an input/output with a particular name
+     * Finds an input/output with a particular name
      * 
      * @param name
      *            the name to look for
-     * @return the InOutputAttribut object if found, null otherwise
+     * @return the InOutputAttribute object if found, null otherwise
      */
-    public InOutputAttribut findInOutput(String name) {
-        Attribut attr = findAttribute(name, inOutputAttrSet);
-        if (attr == null)
-            return null;
-        else
-            return (InOutputAttribut) attr;
+    public InOutputAttribute findInOutput(String name) {
+        return (InOutputAttribute) findAttribute(name, inOutputAttributesSet);
     }
 
     /**
-     * Query a global description of a service. This description return the name
-     * of all the variables, inputs and outputs
+     * Queries a global description of the remote service. This description
+     * contains the name of all the variables, inputs and outputs.
+     * {@link #queryCompleteDescription()} can then be called to get more
+     * information about the variables and inputs/outputs.
      * 
-     * @return true is the query has received an answer
+     * @return whether the query has received an answer
      */
     public boolean queryGlobalDescription() {
         String request = "";
-        XmlMessage msg = queryToServer(request, true);
-        if (msg != null) {
-            processGlobalDescription(msg);
+        XmlMessage message = queryToServer(request, true);
+        if (message != null) {
+            processGlobalDescription(message);
             return true;
+        } else {
+            return false;
         }
-        return false;
-    }
-    public void queryCompleteDescription() {
-        java.util.Iterator<String> it;
-        it = inputNameSet.iterator();
-        while (it.hasNext()) {
-            queryInputDescription((String) it.next());
-        }
-        it = outputNameSet.iterator();
-        while (it.hasNext()) {
-            queryOutputDescription((String) it.next());
-        }
-        it = inOutputNameSet.iterator();
-        while (it.hasNext()) {
-            queryInOutputDescription((String) it.next());
-        }
-        
-        it = variableNameSet.iterator();
-        while (it.hasNext()) {
-            String name = (String) it.next();
-            VariableAttribut vattr = queryVariableDescription(name);
-            if (vattr == null)
-                System.out.println("Error queryVariableDescription : "
-                        + name);
-        }  
     }
 
     /**
-     * Query a complete description for a variable
+     * Queries a complete description of the remote service. Warning:
+     * {@link #queryGlobalDescription()} must have been called before calling
+     * this method. This description contains the names and descriptions of all
+     * variables and attributes.
+     */
+    // \REVIEWTASK should optimize this process (one network exchange only?)
+    public void queryCompleteDescription() {
+        for (String input : inputNamesSet) {
+            queryInputDescription(input);
+        }
+        for (String output : outputNamesSet) {
+            queryOutputDescription(output);
+        }
+        for (String inoutput : inOutputNamesSet) {
+            queryInOutputDescription(inoutput);
+        }
+        for (String variable : variableNamesSet) {
+            VariableAttribute variableAttribute = queryVariableDescription(variable);
+            if (variableAttribute == null) {
+                System.out.println("Error queryVariableDescription : " + variable);
+            }
+        }
+    }
+
+    /**
+     * Queries a complete description for a variable.
      * 
      * @param name
      *            the variable name
-     * @return a VariableAttribut object that contains the description, null if
+     * @return a VariableAttribute object that contains the description, null if
      *         the request failed
      */
-    public VariableAttribut queryVariableDescription(String name) {
+    public VariableAttribute queryVariableDescription(String name) {
         String request = "<variable name=\"" + name + "\"/>";
-        XmlMessage msg = queryToServer(request, true);
-   //     System.err.println("queryVariableDescription : sent " + request + " and had " + msg) ; //- trace
-        if (msg != null) {
-            VariableAttribut vattr = findVariable(name);
-            Element elt = XmlUtils.firstChild(msg.getRootNode(), "variable");
-            
-            VariableAttribut attr = null;
-            if(elt != null)
-                attr = processVariableDescription(elt, vattr);
-            if (attr == null) {
-                // System.out.println("attr = null");
-                if (vattr != null)
-                    variableAttrSet.remove(vattr);
-                if (variableNameSet.contains(name))
-                    variableNameSet.remove(name);
-            } else {
-                // System.out.println("attr != null");
-                if (vattr == null)
-                    variableAttrSet.add(attr);
-                if (!variableNameSet.contains(name))
-                    variableNameSet.add(name);
+        XmlMessage message = queryToServer(request, true);
+        if (message != null) {
+            VariableAttribute vattr = findVariable(name);
+            Element elt = XmlUtils.firstChild(message.getRootElement(), "variable");
+
+            VariableAttribute attribute = null;
+            if (elt != null) {
+                attribute = processVariableDescription(elt, vattr);
             }
-            return attr;
+            if (attribute == null) {
+                if (vattr != null) {
+                    variableAttributesSet.remove(vattr);
+                }
+                if (variableNamesSet.contains(name)) {
+                    variableNamesSet.remove(name);
+                }
+            } else {
+                if (vattr == null) {
+                    variableAttributesSet.add(attribute);
+                }
+                if (!variableNamesSet.contains(name)) {
+                    variableNamesSet.add(name);
+                }
+            }
+            return attribute;
         }
         return null;
     }
 
     /**
-     * Ask for the modification of the value of a variable
+     * Asks for the modification of the value of a variable.
      * 
      * @param name
      *            the varaible name
      * @param value
      *            the new value for the variable
-     * @return a VariableAttribut object with the value of the variable after
+     * @return a VariableAttribute object with the value of the variable after
      *         the request.
      */
-    public VariableAttribut queryVariableModification(String name, String value) {
-        VariableAttribut vattr = findVariable(name);
+    public VariableAttribute queryVariableModification(String name, String value) {
+        VariableAttribute vattr = findVariable(name);
         if (vattr == null) {
-            System.out
-                    .println("Unknown Variable : Not Available Description : "
-                            + name);
+            System.out.println("Unknown Variable: Description Not Available: " + name);
+            return null;
+        } else {
+            String request = "<variable name=\"" + name + "\">";
+            request += "<value>";
+            request += XmlUtils.generateCDataSection(value);
+            request += "</value></variable>";
+            XmlMessage message = queryToServer(request, true);
+            if (message != null) {
+                VariableAttribute attr = processVariableDescription(XmlUtils.firstChild(message.getRootElement(), "variable"), vattr);
+                return attr;
+            }
             return null;
         }
-        String request = "<variable name=\"" + name + "\">";
-        request += "<value>";
-        request += XmlUtils.generateCDataSection(value);
-        request += "</value></variable>";
-        XmlMessage msg = queryToServer(request, true);
-        if (msg != null) {
-            VariableAttribut attr = processVariableDescription(XmlUtils.firstChild(msg.getRootNode(), "variable"), vattr);
-            return attr;
-        }
-        return null;
     }
 
     /**
-     * Query a complete description for an input
+     * Queries a complete description for an input.
      * 
      * @param name
      *            the input name
-     * @return a InOutputAttribut object that contains the description, null if
+     * @return a InOutputAttribute object that contains the description, null if
      *         the request failed
      */
-    public InOutputAttribut queryInputDescription(String name) {
-        String request = "<" + InOutputAttribut.Input.getXMLTag() + " name=\""
-                + name + "\"/>";
-        XmlMessage msg = queryToServer(request, true);
-        if (msg != null) {
-            InOutputAttribut ioattr = findInput(name);
-            InOutputAttribut attr = processInOutputDescription(
-                    XmlUtils.firstChild(msg.getRootNode(), InOutputAttribut.Input.getXMLTag()),
-                    ioattr);
+    public InOutputAttribute queryInputDescription(String name) {
+        String request = "<" + InOutputAttribute.Input.getXMLTag() + " name=\"" + name + "\"/>";
+        XmlMessage message = queryToServer(request, true);
+        if (message != null) {
+            InOutputAttribute ioattr = findInput(name);
+            InOutputAttribute attr = processInOutputDescription(XmlUtils.firstChild(message.getRootElement(), InOutputAttribute.Input.getXMLTag()), ioattr);
             if (attr == null) {
                 if (ioattr != null)
-                    inputAttrSet.remove(ioattr);
-                if (inputNameSet.contains(name))
-                    inputNameSet.remove(name);
+                    inputAttributesSet.remove(ioattr);
+                if (inputNamesSet.contains(name))
+                    inputNamesSet.remove(name);
             } else {
                 if (ioattr == null)
-                    inputAttrSet.add(attr);
-                if (!inputNameSet.contains(name))
-                    inputNameSet.add(name);
+                    inputAttributesSet.add(attr);
+                if (!inputNamesSet.contains(name))
+                    inputNamesSet.add(name);
             }
             return attr;
         }
@@ -413,32 +421,29 @@ public class ControlClient implements OmiscidMessageListener {
     }
 
     /**
-     * Query a complete description for an output
+     * Queries a complete description for an output.
      * 
      * @param name
      *            the output name
-     * @return a InOutputAttribut object that contains the description, null if
+     * @return a InOutputAttribute object that contains the description, null if
      *         the request failed
      */
-    public InOutputAttribut queryOutputDescription(String name) {
-        String request = "<" + InOutputAttribut.Output.getXMLTag() + " name=\""
-                + name + "\"/>";
-        XmlMessage msg = queryToServer(request, true);
-        if (msg != null) {
-            InOutputAttribut ioattr = findOutput(name);
-            InOutputAttribut attr = processInOutputDescription(
-                    XmlUtils.firstChild(msg.getRootNode(),
-                    InOutputAttribut.Output.getXMLTag()), ioattr);
+    public InOutputAttribute queryOutputDescription(String name) {
+        String request = "<" + InOutputAttribute.Output.getXMLTag() + " name=\"" + name + "\"/>";
+        XmlMessage message = queryToServer(request, true);
+        if (message != null) {
+            InOutputAttribute ioattr = findOutput(name);
+            InOutputAttribute attr = processInOutputDescription(XmlUtils.firstChild(message.getRootElement(), InOutputAttribute.Output.getXMLTag()), ioattr);
             if (attr == null) {
                 if (ioattr != null)
-                    outputAttrSet.remove(ioattr);
-                if (outputNameSet.contains(name))
-                    outputNameSet.remove(name);
+                    outputAttributesSet.remove(ioattr);
+                if (outputNamesSet.contains(name))
+                    outputNamesSet.remove(name);
             } else {
                 if (ioattr == null)
-                    outputAttrSet.add(attr);
-                if (!outputNameSet.contains(name))
-                    outputNameSet.add(name);
+                    outputAttributesSet.add(attr);
+                if (!outputNamesSet.contains(name))
+                    outputNamesSet.add(name);
             }
             return attr;
         }
@@ -446,32 +451,29 @@ public class ControlClient implements OmiscidMessageListener {
     }
 
     /**
-     * Query a complete description for an input/output
+     * Queries a complete description for an input/output.
      * 
      * @param name
      *            the input/output name
-     * @return a InOutputAttribut object that contains the description, null if
+     * @return a InOutputAttribute object that contains the description, null if
      *         the request failed
      */
-    public InOutputAttribut queryInOutputDescription(String name) {
-        String request = "<" + InOutputAttribut.InOutput.getXMLTag()
-                + " name=\"" + name + "\"/>";
-        XmlMessage msg = queryToServer(request, true);
-        if (msg != null) {
-            InOutputAttribut ioattr = findInOutput(name);
-            InOutputAttribut attr = processInOutputDescription(
-                    XmlUtils.firstChild(msg.getRootNode(),
-                            InOutputAttribut.InOutput.getXMLTag()), ioattr);
+    public InOutputAttribute queryInOutputDescription(String name) {
+        String request = "<" + InOutputAttribute.InOutput.getXMLTag() + " name=\"" + name + "\"/>";
+        XmlMessage message = queryToServer(request, true);
+        if (message != null) {
+            InOutputAttribute ioattr = findInOutput(name);
+            InOutputAttribute attr = processInOutputDescription(XmlUtils.firstChild(message.getRootElement(), InOutputAttribute.InOutput.getXMLTag()), ioattr);
             if (attr == null) {
                 if (ioattr != null)
-                    inOutputAttrSet.remove(ioattr);
-                if (inOutputNameSet.contains(name))
-                    inOutputNameSet.remove(name);
+                    inOutputAttributesSet.remove(ioattr);
+                if (inOutputNamesSet.contains(name))
+                    inOutputNamesSet.remove(name);
             } else {
                 if (ioattr == null)
-                    inOutputAttrSet.add(attr);
-                if (inOutputNameSet.contains(name))
-                    inOutputNameSet.add(name);
+                    inOutputAttributesSet.add(attr);
+                if (inOutputNamesSet.contains(name))
+                    inOutputNamesSet.add(name);
             }
             return attr;
         }
@@ -479,16 +481,18 @@ public class ControlClient implements OmiscidMessageListener {
     }
 
     /**
-     * Subscribe to the modification of a particular variable. The modification
-     * wiil be received in ControlEvent. A complete description must have been
-     * queried before calling this method
+     * Subscribes to the modifications of a particular variable. The
+     * modification notifications will be received in ControlEvent. Warning:
+     * before calling this method, a complete description must have been queried
+     * via {@link #queryCompleteDescription()} itself requiring a call to
+     * {@link #queryGlobalDescription()}.
      * 
      * @param varName
      *            the name of the variable
      * @return false if the variable is not known
      */
     public boolean subscribe(String varName) {
-        VariableAttribut va = findVariable(varName);
+        VariableAttribute va = findVariable(varName);
         if (va != null) {
             String request = "<subscribe name=\"" + va.getName() + "\"/>";
             queryToServer(request, false);
@@ -500,16 +504,15 @@ public class ControlClient implements OmiscidMessageListener {
     }
 
     /**
-     * Unsubscribe to the modification of a particular variable. The
-     * modification will not be received in ControlEvent any more. A complete
-     * description must have been queried before calling this method.
+     * Unsubscribes to the modification of a particular variable. The
+     * modification notifications will not be received in ControlEvent any more.
      * 
      * @param varName
      *            the name of the variable
      * @return false if the variable is not known
      */
     public boolean unsubscribe(String varName) {
-        VariableAttribut va = findVariable(varName);
+        VariableAttribute va = findVariable(varName);
         if (va != null) {
             String request = "<unsubscribe name=\"" + va.getName() + "\"/>";
             queryToServer(request, false);
@@ -520,88 +523,89 @@ public class ControlClient implements OmiscidMessageListener {
         }
     }
 
-    /** Ask to lock the control server 
-     * @return if the control server is locked for this service */
+    /**
+     * Asks to lock the control server
+     * 
+     * @return whether the control server was locked for this service
+     */
     public boolean lock() {
         String request = "<lock/>";
-        XmlMessage msg = queryToServer(request, true);
-        if (msg != null) {
-            Element elt = XmlUtils.firstChild(msg.getRootNode(), "lock");
+        XmlMessage message = queryToServer(request, true);
+        if (message != null) {
+            Element elt = XmlUtils.firstChild(message.getRootElement(), "lock");
             String res = elt.getAttribute("result");
-            int peer = MsgSocket.hexStringToInt(elt.getAttribute("peer"));
-            
-            VariableAttribut vattr = findVariable("lock");
-            if(vattr != null){
+            int peer = BipUtils.hexStringToInt(elt.getAttribute("peer"));
+
+            VariableAttribute vattr = findVariable("lock");
+            if (vattr != null) {
                 vattr.setValueStr(Integer.toString(peer));
             }
-            if(res.equals("ok")){
-                if(peer != serviceId){
-                    System.err.println("lock ok, but id different : " + peer +" != "+ serviceId);
+            if (res.equals("ok")) {
+                if (peer != peerId) {
+                    System.err.println("Lock ok, but id different : " + peer + " != " + peerId);
+                    return false;
                 }
                 return true;
             }
         }
         return false;
     }
-    
-    /** Ask to unlock the control server 
-     * @return if the control server is unlocked */
+
+    /**
+     * Asks to unlock the control server.
+     * 
+     * @return whether the control server was unlocked
+     */
     public boolean unlock() {
         String request = "<unlock/>";
-        XmlMessage msg = queryToServer(request, true);
-        if (msg != null) {
-            Element elt = XmlUtils.firstChild(msg.getRootNode(), "unlock");
+        XmlMessage message = queryToServer(request, true);
+        if (message != null) {
+            Element elt = XmlUtils.firstChild(message.getRootElement(), "unlock");
             String res = elt.getAttribute("result");
-            int peer = MsgSocket.hexStringToInt(elt.getAttribute("peer"));
-            
-            VariableAttribut vattr = findVariable("lock");
-            if(vattr != null){
+            int peer = BipUtils.hexStringToInt(elt.getAttribute("peer"));
+
+            VariableAttribute vattr = findVariable("lock");
+            if (vattr != null) {
                 vattr.setValueStr(Integer.toString(peer));
             }
-            if(res.equals("ok")){
-                if(peer != 0){
-                    System.err.println("unlock ok, but id no null : " + peer );
+            if (res.equals("ok")) {
+                if (peer != 0) {
+                    System.err.println("unlock ok, but id no null : " + peer);
                 }
                 return true;
             }
         }
         return false;
     }
-    
+
     /**
-     * Process the query to the control server
+     * Processes the query to the control server.
      * 
      * @param request
      *            request to send to the server
      * @param waitAnswer
-     *            indicate if the methods must wait for an answer from the
+     *            indicate whether the method must wait for an answer from the
      *            control server
      * @return the control answer or null if we do not wait for the answer or if
      *         the query failed
      */
     private XmlMessage queryToServer(String request, boolean waitAnswer) {
-
         synchronized (answerEvent) {
             if (isConnected()) {
-                int theMsgId = msgId++;
-                String str = fr.prima.omiscid.com.MsgSocket.intTo8HexString(theMsgId);
-                str = "<controlQuery id=\"" + str + "\">" + request
-                        + "</controlQuery>";
-
-                // System.out.println("queryToServer ["+str+"]");
-                tcpClient.send(str.getBytes());
+                int theMsgId = messageId++;
+                String str = BipUtils.intTo8HexString(theMsgId);
+                str = "<controlQuery id=\"" + str + "\">" + request + "</controlQuery>";
+                tcpClient.send(str);
                 if (waitAnswer) {
                     try {
-//                        System.out.println("queryToServer : before wait " + Calendar.getInstance().getTime()); //- trace
                         answerEvent.wait(MaxTimeToWait);
-//                        System.out.println("queryToServer : after wait " +  Calendar.getInstance().getTime()); //- trace
-                        
-                        if (msgAnswer != null){
-                            XmlMessage m = msgAnswer;
-                            msgAnswer = null;
-                            if (checkMessage(m, theMsgId)) return m;
-                        }else{
-                            System.out.println("answer null to request " + request + " from "+Integer.toHexString(getPeerId()));
+                        if (messageAnswer != null) {
+                            XmlMessage m = messageAnswer;
+                            messageAnswer = null;
+                            if (checkMessage(m, theMsgId))
+                                return m;
+                        } else {
+                            System.err.println("answer null to request " + request + " from " + Integer.toHexString(getPeerId()));
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -613,189 +617,190 @@ public class ControlClient implements OmiscidMessageListener {
     }
 
     /**
-     * Check if the answer id has the waited value (the same value as the query
-     * id)
+     * Checks whether the answer id has the awaited value (the same value as the
+     * query id).
      * 
-     * @param msg
+     * @param message
      *            answer from the control server
-     * @param msgId
+     * @param messageId
      *            id of the query
-     * @return if the answer has the good id, that is to say the value 'msgId'
+     * @return whether the answer has the good id, that is to say the value
+     *         'messageId'
      */
-    private boolean checkMessage(XmlMessage msg, int msgId) {
-        //System.out.println("in check message");
-        if (msg != null && msg.getRootNode() != null) {
-            Attr attr = msg.getRootNode().getAttributeNode("id");
-            if (attr != null
-                    && MsgSocket.hexStringToInt(attr.getValue()) == msgId)
+    private boolean checkMessage(XmlMessage message, int messageId) {
+        if (message != null && message.getRootElement() != null) {
+            Attr attr = message.getRootElement().getAttributeNode("id");
+            if (attr != null && BipUtils.hexStringToInt(attr.getValue()) == messageId) {
                 return true;
+            }
         }
         return false;
     }
 
     /**
-     * Process the answer to a query for global description
+     * Processes the answer to a query for global description.
      * 
-     * @param msg
+     * @param message
      *            the answer to a query for global description
      */
-    private void processGlobalDescription(XmlMessage msg) {
-        variableNameSet.clear();
-        inOutputNameSet.clear();
-        inputNameSet.clear();
-        outputNameSet.clear();
-        variableAttrSet.clear();
-        inputAttrSet.clear();
-        outputAttrSet.clear();
-        inOutputAttrSet.clear();
+    private void processGlobalDescription(XmlMessage message) {
+        variableNamesSet.clear();
+        inOutputNamesSet.clear();
+        inputNamesSet.clear();
+        outputNamesSet.clear();
+        variableAttributesSet.clear();
+        inputAttributesSet.clear();
+        outputAttributesSet.clear();
+        inOutputAttributesSet.clear();
 
-        NodeList nodeList = msg.getRootNode().getChildNodes();
-        for(int i = 0; i<nodeList.getLength(); i++){            
+        NodeList nodeList = message.getRootElement().getChildNodes();
+        for (int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
             String nodeName = node.getNodeName();
             if (nodeName.equals("variable")) {
-                variableNameSet.add(((Element)node).getAttribute("name"));
-            } else if (nodeName.equals(InOutputAttribut.Input.getXMLTag())) {
-                inputNameSet.add(((Element)node).getAttribute("name"));
-            } else if (nodeName
-                    .equals(InOutputAttribut.Output.getXMLTag())) {
-                outputNameSet.add(((Element)node).getAttribute("name"));
-            } else if (nodeName.equals(
-                    InOutputAttribut.InOutput.getXMLTag())) {
-                inOutputNameSet.add(((Element)node).getAttribute("name"));
-            } else
+                variableNamesSet.add(((Element) node).getAttribute("name"));
+            } else if (nodeName.equals(InOutputAttribute.Input.getXMLTag())) {
+                inputNamesSet.add(((Element) node).getAttribute("name"));
+            } else if (nodeName.equals(InOutputAttribute.Output.getXMLTag())) {
+                outputNamesSet.add(((Element) node).getAttribute("name"));
+            } else if (nodeName.equals(InOutputAttribute.InOutput.getXMLTag())) {
+                inOutputNamesSet.add(((Element) node).getAttribute("name"));
+            } else {
                 System.out.println("Unknown kind " + nodeName);
+            }
         }
     }
 
     /**
-     * Process the answer to a query for complete variable description
+     * Processes the answer to a query for complete variable description.
      * 
-     * @param msg
+     * @param elt
      *            the answer to a query for complete variable description
      * @param vattr
-     *            a VariableAttribut object that already exists, then this
-     *            description will be update. can be null.
-     * @return a VariableAttribut object with the description, null if the query
-     *         failed. If 'vattr' is non null, it is this object that is
-     *         returned
+     *            null or a VariableAttribute object that already exists, then
+     *            this description will be update
+     * @return a VariableAttribute object (vattr if non null) with the
+     *         description, null if the query failed.
      */
-    private VariableAttribut processVariableDescription(
-            Element elt,
-            VariableAttribut vattr) {
+    private VariableAttribute processVariableDescription(Element elt, VariableAttribute vattr) {
         Attr nameAttr = elt.getAttributeNode("name");
         if (nameAttr != null) {
-            VariableAttribut attr = vattr;
-            if (vattr == null)
-                attr = new VariableAttribut(nameAttr.getValue());
-
+            VariableAttribute attr = vattr;
+            if (vattr == null) {
+                attr = new VariableAttribute(nameAttr.getValue());
+            }
             attr.extractInfoFromXML(elt);
-            
             return attr;
         }
         return null;
     }
 
     /**
-     * Process the answer to a query for complete in/output description
+     * Processes the answer to a query for complete in/output description.
      * 
-     * @param msg
+     * @param elt
      *            the answer to a query for complete in/output description
      * @param ioattr
-     *            a VariableAttribut object that already exists, then this
-     *            description will be update. can be null.
-     * @return a VariableAttribut object with the description, null if the query
-     *         failed. If 'ioattr' is non null, it is this object that is
-     *         returned
+     *            null or a VariableAttribute object that already exists, then
+     *            this description will be update.
+     * @return a VariableAttribute object (ioattr if non null) with the
+     *         description
      */
-    private InOutputAttribut processInOutputDescription(
-            Element elt,
-            InOutputAttribut ioattr) {
-
+    private InOutputAttribute processInOutputDescription(Element elt, InOutputAttribute ioattr) {
         Attr nameAttr = elt.getAttributeNode("name");
         if (nameAttr != null) {
-            InOutputAttribut attr = ioattr;
-            if (ioattr == null)
-                attr = new InOutputAttribut(nameAttr.getValue());
-
-            attr.setKind(InOutputAttribut.IOKindFromName(elt.getNodeName()));            
+            InOutputAttribute attr = ioattr;
+            if (ioattr == null) {
+                attr = new InOutputAttribute(nameAttr.getValue());
+            }
+            attr.setKind(InOutputAttribute.IOKindFromName(elt.getNodeName()));
             attr.extractInfoFromXML(elt);
-            
             return attr;
         }
         return null;
     }
-    
-    public Element createXmlElement(Document doc){
+
+    /**
+     * Creates an XML DOM node containing the variables and inputs/outputse of
+     * the remote service. The created node is created using the given
+     * {@link Document} and is returned.
+     * 
+     * @param doc
+     *            the {@link Document} used for the creation of the returned
+     *            {@link Element}
+     * @return
+     */
+    public Element createXmlElement(Document doc) {
         Element eltService = doc.createElement("service");
-        
-        Element elt = null;
-        java.util.Iterator<VariableAttribut> itVa = null;
-        itVa = variableAttrSet.iterator();
-        while(itVa.hasNext()){
-            elt = itVa.next().createXmlElement(doc);
-            eltService.appendChild(elt);
+        for (VariableAttribute variable : variableAttributesSet) {
+            eltService.appendChild(variable.createXmlElement(doc));
         }
-        java.util.Iterator<InOutputAttribut> it = null;
-        it = inputAttrSet.iterator();
-        while(it.hasNext()){
-            elt = ((InOutputAttribut)it.next()).createXmlElement(doc);
-            eltService.appendChild(elt);
+        for (InOutputAttribute inoutput : inputAttributesSet) {
+            eltService.appendChild(inoutput.createXmlElement(doc));
         }
-        it = inOutputAttrSet.iterator();
-        while(it.hasNext()){
-            elt = ((InOutputAttribut)it.next()).createXmlElement(doc);
-            eltService.appendChild(elt);
+        for (InOutputAttribute inoutput : inOutputAttributesSet) {
+            eltService.appendChild(inoutput.createXmlElement(doc));
         }
-        it = outputAttrSet.iterator();
-        while(it.hasNext()){
-            elt = ((InOutputAttribut)it.next()).createXmlElement(doc);
-            eltService.appendChild(elt);
+        for (InOutputAttribute inoutput : outputAttributesSet) {
+            eltService.appendChild(inoutput.createXmlElement(doc));
         }
-        
         return eltService;
     }
 
-//    public static void main(String arg[]) {
-//
-//        WaitForOmiscidServices wfbs = new WaitForOmiscidServices();
-//        int index = wfbs.needService("essai");
-//        wfbs.waitResolve();
-//        OmiscidService service = wfbs.getService(index);
-//
-//        int serviceId = OmiscidService.generateServiceId();
-//        ControlClient client = new ControlClient(serviceId);
-//        if (!client.connectToControlServer(service.getHostName(), service.getPort())) {
-//            System.err.println("error connection");
-//            System.exit(1);
-//        }
-//        System.out.println("query global description");
-//        if (!client.queryGlobalDescription()) {
-//            System.err.println("error global description");
-//            System.exit(1);
-//        } else {
-//            java.util.Iterator<String> it = null;
-//
-//            System.out.println("Variables : ");
-//            it = client.variableNameSet.iterator();
-//            while (it.hasNext()) {
-//                System.out.println(" - " + (String) it.next());
-//            }
-//            System.out.println("Input : ");
-//            it = client.inputNameSet.iterator();
-//            while (it.hasNext()) {
-//                System.out.println(" - " + (String) it.next());
-//            }
-//            System.out.println("Output : ");
-//            it = client.outputNameSet.iterator();
-//            while (it.hasNext()) {
-//                System.out.println(" - " + (String) it.next());
-//            }
-//            System.out.println("In/Output : ");
-//            it = client.inOutputNameSet.iterator();
-//            while (it.hasNext()) {
-//                System.out.println(" - " + (String) it.next());
-//            }
-//        }
-//    }
+    /**
+     * @return a read only version of the desired field
+     */
+    public Set<InOutputAttribute> getInOutputAttributesSet() {
+        return Collections.unmodifiableSet(inOutputAttributesSet);
+    }
+
+    /**
+     * @return a read only version of the desired field
+     */
+    public Set<String> getInOutputNamesSet() {
+        return Collections.unmodifiableSet(inOutputNamesSet);
+    }
+
+    /**
+     * @return a read only version of the desired field
+     */
+    public Set<InOutputAttribute> getInputAttributesSet() {
+        return Collections.unmodifiableSet(inputAttributesSet);
+    }
+
+    /**
+     * @return a read only version of the desired field
+     */
+    public Set<String> getInputNamesSet() {
+        return Collections.unmodifiableSet(inputNamesSet);
+    }
+
+    /**
+     * @return a read only version of the desired field
+     */
+    public Set<InOutputAttribute> getOutputAttributesSet() {
+        return Collections.unmodifiableSet(outputAttributesSet);
+    }
+
+    /**
+     * @return a read only version of the desired field
+     */
+    public Set<String> getOutputNamesSet() {
+        return Collections.unmodifiableSet(outputNamesSet);
+    }
+
+    /**
+     * @return a read only version of the desired field
+     */
+    public Set<VariableAttribute> getVariableAttributesSet() {
+        return Collections.unmodifiableSet(variableAttributesSet);
+    }
+
+    /**
+     * @return a read only version of the desired field
+     */
+    public Set<String> getVariableNamesSet() {
+        return Collections.unmodifiableSet(variableNamesSet);
+    }
+
 }

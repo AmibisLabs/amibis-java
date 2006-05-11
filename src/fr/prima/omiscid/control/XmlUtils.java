@@ -1,4 +1,4 @@
-package fr.prima.omiscid.control ;
+package fr.prima.omiscid.control;
 
 import java.io.File;
 import java.io.InputStream;
@@ -14,27 +14,42 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+/**
+ * Utility class. Provides static methods to do some conversion between string
+ * and xml.
+ */
+// \REVIEWTASK most of this class should to be rewritten or deleted (objective:
+// generate clean xml in any case and move code to ...com.BipUtils )
 public class XmlUtils {
-    static public org.w3c.dom.Element firstChild(org.w3c.dom.Element elt, String name){
-        NodeList nodeList = elt.getChildNodes();
-        for(int i=0; i<nodeList.getLength(); i++){
+
+    /**
+     * Extracts from the given Element the first child having the given name.
+     * 
+     * @param element
+     * @param name
+     * @return the first child with the given name or null if none
+     */
+    public static Element firstChild(Element element, String name) {
+        NodeList nodeList = element.getChildNodes();
+        for (int i = 0; i < nodeList.getLength(); i++) {
             Node current = nodeList.item(i);
-            if(current.getNodeType() == Node.ELEMENT_NODE && current.getNodeName().equals(name)){
-               return (org.w3c.dom.Element)current; 
+            if (current.getNodeType() == Node.ELEMENT_NODE && current.getNodeName().equals(name)) {
+                return (org.w3c.dom.Element) current;
             }
         }
         return null;
     }
-    
-    static public String xmlDocToString(Document doc){        
+
+    public static String xmlDocToString(Document doc) {
         return elementToString(doc.getDocumentElement());
     }
-    static public String elementToString(Element elt){        
+
+    public static String elementToString(Element elt) {
         return elementToString(elt, "");
     }
-    
+
     /**
-     * Add CData tag around a string
+     * Adds a CData tag around a string
      * 
      * @param content
      *            the string to "protect"
@@ -43,103 +58,103 @@ public class XmlUtils {
     public static String generateCDataSection(String content) {
         return "<![CDATA[" + content + "]]>";
     }
-    
-    static public String elementToString(Element elt, String prefix){        
-        String str = prefix+"<" + elt.getNodeName();
-        
+
+    public static String elementToString(Element elt, String prefix) {
+        String str = prefix + "<" + elt.getNodeName();
+
         NamedNodeMap nnm = elt.getAttributes();
-        for(int i=0; i<nnm.getLength(); i++){
-            str += " " + nnm.item(i).getNodeName() + 
-            "=\"" + nnm.item(i).getNodeValue() +"\"";
+        for (int i = 0; i < nnm.getLength(); i++) {
+            str += " " + nnm.item(i).getNodeName() + "=\"" + nnm.item(i).getNodeValue() + "\"";
         }
-        
+
         boolean hasSubElt = false;
-        NodeList nodeList = elt.getChildNodes();                
-        String str2 = "";      
-        for(int i=0; i<nodeList.getLength(); i++){
+        NodeList nodeList = elt.getChildNodes();
+        String str2 = "";
+        for (int i = 0; i < nodeList.getLength(); i++) {
             Node cur = nodeList.item(i);
-            if(cur.getNodeType() == Node.ELEMENT_NODE){
-                str2 += elementToString((Element)cur, prefix+"  ");
+            if (cur.getNodeType() == Node.ELEMENT_NODE) {
+                str2 += elementToString((Element) cur, prefix + "  ");
                 hasSubElt = true;
-            }else if(cur.getNodeType() == Node.CDATA_SECTION_NODE){
-                str2 += prefix+"  " + generateCDataSection(cur.getTextContent());
-                hasSubElt = true;                
+            } else if (cur.getNodeType() == Node.CDATA_SECTION_NODE) {
+                str2 += prefix + "  " + generateCDataSection(cur.getTextContent());
+                hasSubElt = true;
             }
-        }        
-        
-        if(hasSubElt){
-            str += ">\r\n" + str2 + prefix +"</" + elt.getNodeName() + ">\r\n";
-        }else{
+        }
+
+        if (hasSubElt) {
+            str += ">\r\n" + str2 + prefix + "</" + elt.getNodeName() + ">\r\n";
+        } else {
             str2 = elt.getTextContent();
-            if(str2.equals("")){
+            if (str2.equals("")) {
                 str += "/>\r\n";
-            }else{
+            } else {
                 str += ">" + str2 + "</" + elt.getNodeName() + ">\r\n";
             }
         }
         return str;
 
     }
-    
-    
-    /** parser used to change message into XML tree */
-    static public DocumentBuilder parser = null;
-    
-    static synchronized public Document changeStringToXmlTree(InputStream is) {
-        if(parser == null){
-            try{
-                parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            }catch(ParserConfigurationException e){
-                e.printStackTrace();
-                return null;
-            }
-        }
+
+    // /** parser used to change message into XML tree */
+    // private static DocumentBuilder parser = null;
+    //
+    // public static synchronized Document changeStringToXmlTree(InputStream is)
+    // {
+    // if (parser == null){
+    // try{
+    // parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+    // }catch(ParserConfigurationException e){
+    // e.printStackTrace();
+    // return null;
+    // }
+    // }
+    // try {
+    // org.w3c.dom.Document doc = parser.parse(is);
+    // return doc;
+    // } catch (SAXException e) {
+    // e.printStackTrace();
+    // } catch (java.io.IOException e) {
+    // e.printStackTrace();
+    // }
+    // return null;
+    // }
+    // public static Document changeStringToXmlTree(byte[] buffer) {
+    // return changeStringToXmlTree(new java.io.ByteArrayInputStream(buffer));
+    // }
+    // public static Document changeStringToXmlTree(String str) {
+    // return changeStringToXmlTree(new
+    // java.io.ByteArrayInputStream(str.getBytes()));
+    // }
+
+    public static Document parseXMLFile(String fileName) {
+        Document doc = null;
         try {
-            org.w3c.dom.Document doc = parser.parse(is);
-            return doc;
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = dbf.newDocumentBuilder();
+            doc = docBuilder.parse(new File(fileName));
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (java.io.IOException e) {
             e.printStackTrace();
         }
-        return null;
-    }
-    static public Document changeStringToXmlTree(byte[] buffer) {
-        return changeStringToXmlTree(new java.io.ByteArrayInputStream(buffer));
-    }
-    static public Document changeStringToXmlTree(String str) {
-        return changeStringToXmlTree(new java.io.ByteArrayInputStream(str.getBytes()));
-    }
-    
-    static public Document parseXMLFile(String fileName){
-        Document doc = null;
-        try{
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = dbf.newDocumentBuilder();
-            doc = docBuilder.parse(new File(fileName));
-        }catch(ParserConfigurationException e){
-            e.printStackTrace();
-        }catch(SAXException e){
-            e.printStackTrace();
-        }catch(java.io.IOException e){
-            e.printStackTrace();
-        }
         return doc;
     }
-    
-    static public Document parseXMLStream(InputStream stream){
+
+    public static Document parseXMLStream(InputStream stream) {
         Document doc = null;
-        try{
+        try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = dbf.newDocumentBuilder();
             doc = docBuilder.parse(stream);
-        }catch(ParserConfigurationException e){
+        } catch (ParserConfigurationException e) {
             e.printStackTrace();
-        }catch(SAXException e){
+        } catch (SAXException e) {
             e.printStackTrace();
-        }catch(java.io.IOException e){
+        } catch (java.io.IOException e) {
             e.printStackTrace();
         }
         return doc;
-    }   
+    }
 }

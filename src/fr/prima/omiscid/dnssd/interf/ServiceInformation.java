@@ -5,11 +5,9 @@
 package fr.prima.omiscid.dnssd.interf;
 
 /**
- * 
  * Informations describing a service under dnssd.
  * 
  * @author emonet
- *
  */
 public interface ServiceInformation {
 

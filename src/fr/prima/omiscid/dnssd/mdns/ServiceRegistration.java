@@ -11,53 +11,55 @@ import com.apple.dnssd.RegisterListener;
 import com.apple.dnssd.TXTRecord;
 
 /**
- * 
- * @author emonet initial build from RegisterOmiscidService by pesnel and reignier
- *
+ * @author emonet initial build from RegisterOmiscidService by pesnel and
+ *         reignier
  */
-public class ServiceRegistration
-implements RegisterListener,
-fr.prima.omiscid.dnssd.interf.ServiceRegistration {
+public class ServiceRegistration implements RegisterListener, fr.prima.omiscid.dnssd.interf.ServiceRegistration {
 
     /** Flag for the registration */
     private static final int FLAG = 0;
+
     /** IF_INDEX for the registration */
     private static final int IF_INDEX = 0;
+
     /** Domain for the registration */
     private static final String DOMAIN = null;
 
-    
     private String serviceName;
+
     private String registrationType;
+
     private DNSSDRegistration dnssdRegistration;
+
     private String registeredServiceName;
+
     private boolean registered;
+
     private TXTRecord txtRecord = new TXTRecord();
-    
-    /*package*/ ServiceRegistration(String serviceName, String registrationType) {
+
+    /* package */ServiceRegistration(String serviceName, String registrationType) {
         this.serviceName = serviceName;
         this.registrationType = registrationType;
     }
 
     public synchronized void operationFailed(DNSSDService service, int errorCode) {
-//        synchronized (registerEvent) {
-//            // System.err.println("operation failed");
+        // synchronized (registerEvent) {
+        // // System.err.println("operation failed");
         registered = false;
         this.notify();
-//        }
+        // }
     }
-    
-    public synchronized void serviceRegistered(DNSSDRegistration registration, int flags,
-            String serviceName, String regType, String domain) {
+
+    public synchronized void serviceRegistered(DNSSDRegistration registration, int flags, String serviceName, String regType, String domain) {
         if (registration != dnssdRegistration) {
-//            System.out.println(registration);
-//            System.out.println(dnssdRegistration);
+            // System.out.println(registration);
+            // System.out.println(dnssdRegistration);
         }
         registered = true;
         registeredServiceName = serviceName;
         this.notify();
     }
-    
+
     public void addProperty(String name, String value) {
         txtRecord.set(name, value);
     }
@@ -73,8 +75,7 @@ fr.prima.omiscid.dnssd.interf.ServiceRegistration {
     public synchronized boolean register(int port) {
         registered = false;
         try {
-          dnssdRegistration = DNSSD.register(FLAG, IF_INDEX, serviceName,
-          registrationType, DOMAIN, null, port, txtRecord, this);
+            dnssdRegistration = DNSSD.register(FLAG, IF_INDEX, serviceName, registrationType, DOMAIN, null, port, txtRecord, this);
             this.wait();
         } catch (com.apple.dnssd.DNSSDException e) {
             e.printStackTrace();

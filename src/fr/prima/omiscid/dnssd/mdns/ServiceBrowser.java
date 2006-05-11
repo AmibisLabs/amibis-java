@@ -18,21 +18,17 @@ import fr.prima.omiscid.dnssd.interf.ServiceEvent;
 import fr.prima.omiscid.dnssd.interf.ServiceEventListener;
 
 /**
- * 
  * @author emonet build from BrowseForService by pesnel and reignier
- *
  */
-public class ServiceBrowser
-implements BrowseListener,
-fr.prima.omiscid.dnssd.interf.ServiceBrowser {
+public class ServiceBrowser implements BrowseListener, fr.prima.omiscid.dnssd.interf.ServiceBrowser {
 
     private List<ServiceEventListener> listeners = new Vector<ServiceEventListener>();
-    
+
     private String registrationType;
 
     private DNSSDService dnssdService;
-    
-    /*package*/ ServiceBrowser(String registrationType) {
+
+    /* package */ServiceBrowser(String registrationType) {
         this.registrationType = registrationType;
     }
 
@@ -48,7 +44,7 @@ fr.prima.omiscid.dnssd.interf.ServiceBrowser {
         try {
             synchronized (DNSSD.class) {
                 dnssdService = DNSSD.browse(0, 0, registrationType, null, this);
-            }            
+            }
         } catch (DNSSDException e) {
             System.err.println("Error in Start Browse");
             e.printStackTrace();
@@ -66,43 +62,46 @@ fr.prima.omiscid.dnssd.interf.ServiceBrowser {
         }
     }
 
-    public synchronized void serviceLost(DNSSDService browser, int flags, int ifIndex,
-            String serviceName, String regType, String domain) {
+    public synchronized void serviceLost(DNSSDService browser, int flags, int ifIndex, String serviceName, String regType, String domain) {
         notifyListeners(new ServiceInformation(regType, serviceName), ServiceEvent.LOST);
     }
 
     public synchronized void operationFailed(DNSSDService service, int errorCode) {
-        System.err.println(this.getClass().getName()+": operation failed ("+errorCode+")");
+        System.err.println(this.getClass().getName() + ": operation failed (" + errorCode + ")");
     }
 
-    //private Map<DNSSDService, ServiceInformation> serviceInformations = new HashMap<DNSSDService, ServiceInformation>();
-    
+    // private Map<DNSSDService, ServiceInformation> serviceInformations = new
+    // HashMap<DNSSDService, ServiceInformation>();
+
     private class MemoryResolveListener implements ResolveListener {
         String registrationType;
+
         String serviceName;
+
         public MemoryResolveListener(String registrationType, String serviceName) {
             this.registrationType = registrationType;
             this.serviceName = serviceName;
         }
-        public synchronized void serviceResolved(final DNSSDService resolver, int flags, int ifIndex,
-                String fullName, String hostName, int port, TXTRecord txtRecord) {
-            ServiceInformation serviceInformation = new ServiceInformation( this.registrationType, fullName, hostName, port, txtRecord);
+
+        public synchronized void serviceResolved(final DNSSDService resolver, int flags, int ifIndex, String fullName, String hostName, int port,
+                TXTRecord txtRecord) {
+            ServiceInformation serviceInformation = new ServiceInformation(this.registrationType, fullName, hostName, port, txtRecord);
             notifyListeners(serviceInformation, ServiceEvent.FOUND);
-            // it seems to be important to be after that notify listener ... probably a dnssd implementation bug
+            // it seems to be important to be after that notify listener ...
+            // probably a dnssd implementation bug
             resolver.stop();
         }
+
         public synchronized void operationFailed(DNSSDService service, int errorCode) {
-            System.err.println(this.getClass().getName()+": operation failed ("+errorCode+")");
+            System.err.println(this.getClass().getName() + ": operation failed (" + errorCode + ")");
         }
     }
-    
-    public void serviceFound(DNSSDService browser, int flags, int ifIndex,
-            String serviceName, String regType, String domain) {
+
+    public void serviceFound(DNSSDService browser, int flags, int ifIndex, String serviceName, String regType, String domain) {
         try {
             synchronized (DNSSD.class) {
-                DNSSD.resolve(0, ifIndex, serviceName, regType, domain,
-                        new MemoryResolveListener(regType, serviceName));
-            }            
+                DNSSD.resolve(0, ifIndex, serviceName, regType, domain, new MemoryResolveListener(regType, serviceName));
+            }
         } catch (DNSSDException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -1,81 +1,137 @@
-package fr.prima.omiscid.control ;
+package fr.prima.omiscid.control;
 
 import java.io.IOException;
-import java.util.Random;
 
-import fr.prima.omiscid.com.MsgSocket;
-import fr.prima.omiscid.com.interf.OmiscidMessageListener;
+import fr.prima.omiscid.com.BipUtils;
+import fr.prima.omiscid.com.TcpClient;
+import fr.prima.omiscid.com.interf.BipMessageListener;
 import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.dnssd.interf.ServiceInformation;
 
 /**
- * Structure to group the data about a service. Group the data extracted from DNS-SD. Provides also methods to generate id for OMiSCID service  (used in OMiSCID exchange), to manipulate the text records.
- * @author  Sebastien Pesnel  Refactoring by Patrick Reignier and emonet
+ * Encapsulate the data about a remote service. Service instantiation is done by
+ * instantiating the {@link ControlServer} class. Contains the data extracted
+ * from DNS-SD. Provides convenient access to these data. Provides also some
+ * utility methods to generate ids for OMiSCID service (used in BIP exchange)
+ * and to clean the names read from DNS-SD.
+ * 
+ * @author Sebastien Pesnel Refactoring by Patrick Reignier and emonet
  */
+// \REVIEWTASK shouldn't this be a monitor?
 public class OmiscidService {
     /** Type for the registration */
     public static final String REG_TYPE = "_bip._tcp";
+
     public static final String KEY_PEERID = "id";
+
     public static final String KEY_INPUTS = "inputs";
+
     public static final String KEY_OUTPUTS = "outputs";
+
     public static final String KEY_INOUTPUTS = "inoutputs";
-        
+
+    public static final String KEY_OWNER = "owner";
+
     public static DNSSDFactory dnssdFactory = DNSSDFactory.DefaultFactory.instance();
-    
-    /** service id used to create the control client*/
-    private int serviceId = generateServiceId();
-    /** Object used to synchronize the access to the controlClient, 
-     * and the number of user */
+
+    /** service id used to create the control client */
+    private int peerId = 0;
+
+    /**
+     * Object used to synchronize the access to the controlClient, and the
+     * number of user
+     */
     private final Object controlClientSync = new Object();
+
     /** A control client to interrogate the service */
     private ControlClient ctrlClient = null;
+
     /** Number of current user for the control client */
     private int nbUserForControl = 0;
-    
+
+    /** DNS-SD informations about the service */
     private ServiceInformation serviceInformation;
 
-    /** Creates a new instance of OmiscidService with the data of a service.
-     * @param serviceId an id used to create a control client to communicate 
-     * with the service s.
-     * @param s service containing the data from DNS-SD */
-    public OmiscidService(int serviceId, ServiceInformation s){        
-        this.serviceInformation = s;
-        this.serviceId = serviceId;
-    }
-
-    public OmiscidService(ServiceInformation s){        
-        this.serviceInformation = s;
+    /**
+     * Creates a new instance of OmiscidService with the given service
+     * information.
+     * 
+     * @param peerId
+     *            the peer id used to represent the local peer in bip
+     *            connections with the remote service
+     * @param serviceInformation
+     *            service information containing the data from DNS-SD
+     */
+    public OmiscidService(int peerId, ServiceInformation serviceInformation) {
+        this.serviceInformation = serviceInformation;
+        this.peerId = peerId;
     }
 
     /**
-	 * Define the id to use to create the control client and communicate with the control server
-	 * @param serviceId  the id to use
-	 * @see  OmiscidService#initControlClient()
-	 * @uml.property  name="serviceId"
-	 */
-    public void setServiceId(int serviceId){
-        this.serviceId = serviceId;
+     * Creates an instance of OmiscidService with the given service information.
+     * No local peer id is specified (unlike in
+     * {@link #OmiscidService(int, ServiceInformation)), and it must be
+     * specified with {@link #setServiceId(int)} if the OmiscidService is
+     * intended to be used to make connections to the remote peer (explicitly or
+     * implicitly).
+     * 
+     * @param serviceInformation
+     *            service information containing the data from DNS-SD
+     */
+    public OmiscidService(ServiceInformation serviceInformation) {
+        this.serviceInformation = serviceInformation;
     }
-    
-    /** Returns the name of the service (with the bip suffix removed and spaces replaced) */
-    public String toString(){
+
+    /**
+     * Sets the peer id to use to represent the local peer in BIP exchanges with
+     * the remote service.
+     * 
+     * @param peerId
+     *            the id to use
+     * @see OmiscidService#initControlClient()
+     */
+    public void setServiceId(int peerId) {
+        if (this.peerId != 0) {
+            System.err.println("Warning: peer id already set in OmiscidService (was " + this.peerId + "), setting anyway");
+        }
+        this.peerId = peerId;
+    }
+
+    /**
+     * Returns the name of the service (with the bip suffix removed and spaces
+     * replaced).
+     * 
+     * @return {@link #getSimplifiedName()}
+     */
+    public String toString() {
         return getSimplifiedName();
     }
-    
-    /** Extract owner name from the text records 
+
+    /**
+     * Extracts owner name from the text records
+     * 
      * @return the owner name, or "" if the owner property is not defined
      */
-    public String getOwner(){
+    public String getOwner() {
         String str = serviceInformation.getStringProperty("owner");
-        if(str == null) return "";
-        else return str;
+        if (str == null) {
+            return "";
+        } else {
+            return str;
+        }
     }
-    /** Extract peer id from the text record or from message exchange on controlClient */
-    public int getPeerId(){
+
+    /**
+     * Extracts the remote peer id from the text record or by querying the
+     * remote control server.
+     * 
+     * @return the BIP peer id of the remote service
+     */
+    public int getRemotePeerId() {
         String str = serviceInformation.getStringProperty(KEY_PEERID);
-        if(str != null){
-            return MsgSocket.hexStringToInt(str);
-        }else{
+        if (str != null) {
+            return BipUtils.hexStringToInt(str);
+        } else {
             ControlClient ctrlClient = initControlClient();
             int pid = ctrlClient.getPeerId();
             closeControlClient();
@@ -83,84 +139,102 @@ public class OmiscidService {
         }
     }
 
-    /** Initialize a new Control Client if not already existing.
-     * Increment the number of users, this number is used by closeControlClient.
-     * When the user do not use the control client any more, the user must call
+    /**
+     * Initializes a new Control Client if it is not already existing.
+     * <b>Warning:</b> {@link #closeControlClient()} must be called once for
+     * each call to this method that have non-null return value. Increments the
+     * number of users, this number is used by closeControlClient. When the user
+     * do not use the control client any more, the user must call
      * closeControlClient.
-     * @return the control client or null if the creation failed 
+     * 
+     * @return the control client or null if the creation failed
      * @see OmiscidService#closeControlClient()
      */
-    public ControlClient initControlClient(){
-        synchronized (controlClientSync){
-            if(ctrlClient == null || !ctrlClient.isConnected()){
-                ctrlClient = new ControlClient(serviceId);
-                if( ! ctrlClient.connectToControlServer(serviceInformation.getHostName(), serviceInformation.getPort())){                    
+    public ControlClient initControlClient() {
+        synchronized (controlClientSync) {
+            if (peerId == 0) {
+                System.err.println("Warning: no local peer id (service id) set in OmiscidService to access remote control server ... generating a new one");
+                peerId = BipUtils.generateBIPPeerId();
+            }
+            if (ctrlClient == null || !ctrlClient.isConnected()) {
+                ctrlClient = new ControlClient(peerId);
+                if (!ctrlClient.connectToControlServer(serviceInformation.getHostName(), serviceInformation.getPort())) {
                     ctrlClient = null;
-                }/*else{
-                    System.out.println("new control client");
-                }*/
-            }/*else System.out.println("reuse control client");*/
-            if(ctrlClient != null) nbUserForControl++;
+                }
+            }
+            if (ctrlClient != null) {
+                nbUserForControl++;
+            }
             return ctrlClient;
         }
     }
-    /** Close the control client when it is no more used.
-     * (Must be called even if the connection has already been lost)
-     * The number of current user of control client is decremented.
-     * If the number becomes 0, the control client is really closed. 
-     * The control client can be obtained by calling {@link OmiscidService#initControlClient()}
+
+    /**
+     * Closes the control client when it is no more used. (Must be called even
+     * if the connection has already been lost) Decrements the number of current
+     * user of control client. If the number reaches 0, the control client is
+     * really closed. The control client can be obtained by calling
+     * {@link OmiscidService#initControlClient()}
      */
-    public void closeControlClient(){
-        synchronized (controlClientSync){
+    public void closeControlClient() {
+        synchronized (controlClientSync) {
             nbUserForControl--;
-            if(nbUserForControl <= 0){
-                if(ctrlClient != null) ctrlClient.close();
+            if (nbUserForControl == 0) {
+                if (ctrlClient != null) {
+                    ctrlClient.close();
+                }
+            } else if (nbUserForControl < 0) {
+                System.err.println("Warning: in OmiscidService, to many calls to closeControlClient ... ignoring");
                 nbUserForControl = 0;
             }
         }
     }
-    
-    /** Create a TCP connection to a server.
-     * @param ioa description associated to the server
-     * @return a new TcpClient object or null if the connection failed.
-     * */
-    public fr.prima.omiscid.com.TcpClient connectToAServer(InOutputAttribut ioa, OmiscidMessageListener bml){
-        if(ioa != null){
-            try{
-                fr.prima.omiscid.com.TcpClient tcpClient = new fr.prima.omiscid.com.TcpClient(serviceId);
-                if(bml != null) tcpClient.addOmiscidMessageListener(bml);
-                tcpClient.connectTo(serviceInformation.getHostName(), ioa.getTcpPort());            
+
+    /**
+     * Creates a TCP connection to a channel on the remote service.
+     * 
+     * @param ioa
+     *            description associated to the channel on the remote server
+     * @param messageListener
+     *            a listener to add on this connection
+     * @return a new TcpClient object or null if the connection failed
+     */
+    public TcpClient connectToChannel(InOutputAttribute ioa, BipMessageListener messageListener) {
+        if (ioa != null) {
+            try {
+                TcpClient tcpClient = new TcpClient(peerId);
+                if (messageListener != null) {
+                    tcpClient.addOmiscidMessageListener(messageListener);
+                }
+                tcpClient.connectTo(serviceInformation.getHostName(), ioa.getTcpPort());
                 return tcpClient;
-            }catch(IOException e){}
+            } catch (IOException e) {
+            }
         }
         return null;
     }
-    
-    private static Random randomForThisJVM = new Random(System.currentTimeMillis());
+
     /**
-     * Generate an id for a OMiSCID service
-     * based on a random number and the current time.
+     * Utility method. Cleans a dnssd service name by removing trailing
+     * "._bip._tcp.local." and restoring spaces characters. If you have an
+     * {@link OmiscidService} instance, the dedicated method
+     * {@link #getSimplifiedName()} can be used instead.
      * 
-     * Warning !!! If two jvms init their variables at the same currentTimeMillis
-     * and call generateServiceId at the same currentTimeMillis there *will* be a problem.
-     * 
-     * Note that it is virtually not guaranteed that this id is unique.
-     *  
-     * @return a new id for a service
+     * @param fullName
+     *            the service fullname to process
+     * @return the cleaned service name
      */
-    public static int generateServiceId() {
-        //System.out.println(Thread.currentThread().getId() + " , "+ Thread.currentThread().getName() + " , "+ Thread.currentThread().getThreadGroup().getName() + ": " + randomForThisJVM);
-        int partTime = (int) (System.currentTimeMillis() & 0x0000FFFF);
-        double r = randomForThisJVM.nextDouble();
-        int partRandom = (int)((int)( r * 0xEFFFFFFF) & 0xFFFF0000);
-        return partTime + partRandom;
-        //return (int) (System.currentTimeMillis() & 0xFFFFFFFF);
+    public static String cleanName(String fullName) {
+        return fullName.replaceAll(("." + OmiscidService.REG_TYPE + ".local.$").replaceAll("[.]", "\\."), "").replaceAll("\\\\032", " ");
     }
 
     public ServiceInformation getServiceInformation() {
         return serviceInformation;
     }
 
+    /**
+     * Gets the host name as expressed in the DNS-SD service information.
+     */
     public String getHostName() {
         return serviceInformation.getHostName();
     }
@@ -169,17 +243,16 @@ public class OmiscidService {
         return serviceInformation.getPort();
     }
 
+    /**
+     * Gets the full service name as expressed in the DNS-SD service
+     * information.
+     */
     public String getFullName() {
         return serviceInformation.getFullName();
     }
-    
+
     public String getSimplifiedName() {
         return cleanName(getFullName());
     }
 
-    public static String cleanName(String fullName) {
-        return fullName
-        .replaceAll( ("."+OmiscidService.REG_TYPE+".local.$").replaceAll("[.]", "\\."), "")
-        .replaceAll("\\\\032", " ");
-    }
 }

@@ -9,9 +9,7 @@ import fr.prima.omiscid.dnssd.interf.ServiceBrowser;
 import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
 
 /**
- * 
  * @author emonet
- *
  */
 public class DNSSDFactoryMdns implements DNSSDFactory {
 
@@ -23,9 +21,9 @@ public class DNSSDFactoryMdns implements DNSSDFactory {
         return new fr.prima.omiscid.dnssd.mdns.ServiceRegistration(serviceName, registrationType);
     }
 
-//    public ServiceInformation createServiceInformation() {
-//        // TODO Auto-generated method stub
-//        return null;
-//    }
+    // public ServiceInformation createServiceInformation() {
+    // // TODO Auto-generated method stub
+    // return null;
+    // }
 
 }

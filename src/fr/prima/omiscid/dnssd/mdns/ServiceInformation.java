@@ -9,12 +9,9 @@ import java.util.Vector;
 import com.apple.dnssd.TXTRecord;
 
 /**
- * 
  * @author emonet initial build from Service by pesnel
- *
  */
-public class ServiceInformation
-implements fr.prima.omiscid.dnssd.interf.ServiceInformation {
+public class ServiceInformation implements fr.prima.omiscid.dnssd.interf.ServiceInformation {
 
     /** name of the service */
     public String fullName = null;
@@ -34,13 +31,12 @@ implements fr.prima.omiscid.dnssd.interf.ServiceInformation {
     /** domain name */
     public String domain = null;
 
-    
-    /*package*/ ServiceInformation(String registrationType, String serviceName) {
+    /* package */ServiceInformation(String registrationType, String serviceName) {
         this.fullName = serviceName;
         this.registrationType = registrationType;
     }
 
-    /*package*/ ServiceInformation(String registrationType, String fullName, String hostName, int port, TXTRecord txtRecord) {
+    /* package */ServiceInformation(String registrationType, String fullName, String hostName, int port, TXTRecord txtRecord) {
         this.fullName = fullName;
         this.registrationType = registrationType;
         this.hostName = hostName;

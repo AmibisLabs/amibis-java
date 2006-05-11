@@ -1,0 +1,13 @@
+when COM
+//\REVIEW should provide a standard header for all files (and remove existing ones containing creation date)
+//\REVIEW choose a formatter (at least for indentation stuffs) and refactor all accordingly
+//\REVIEW @author policy
+//\REVIEW remove all main methods
+//\REVIEW replace all " ;" by ";"
+//\REVIEW strip trailing spaces
+//\REVIEW formatting conventions
+
+when CONTROL
+//\REVIEW shouldn't it be a omiscid conf file or something to choose implem, to tune timings, to DNSSD_RES...
+//\REVIEW remove all manual generation of xml strings?
+//\REVIEW all getBytes without parameters are dirty
