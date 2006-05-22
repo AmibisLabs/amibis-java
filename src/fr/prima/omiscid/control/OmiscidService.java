@@ -9,15 +9,16 @@ import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.dnssd.interf.ServiceInformation;
 
 /**
- * Encapsulate the data about a remote service. Service instantiation is done by
+ * Encapsulates the data about a <b>remote</b> service. Service instantiation is done by
  * instantiating the {@link ControlServer} class. Contains the data extracted
  * from DNS-SD. Provides convenient access to these data. Provides also some
  * utility methods to generate ids for OMiSCID service (used in BIP exchange)
  * and to clean the names read from DNS-SD.
- * 
+ *
  * @author Sebastien Pesnel Refactoring by Patrick Reignier and emonet
  */
 // \REVIEWTASK shouldn't this be a monitor?
+// \REVIEWTASK should add some delegate to the control client class
 public class OmiscidService {
     /** Type for the registration */
     public static final String REG_TYPE = "_bip._tcp";
@@ -55,7 +56,7 @@ public class OmiscidService {
     /**
      * Creates a new instance of OmiscidService with the given service
      * information.
-     * 
+     *
      * @param peerId
      *            the peer id used to represent the local peer in bip
      *            connections with the remote service
@@ -74,7 +75,7 @@ public class OmiscidService {
      * specified with {@link #setServiceId(int)} if the OmiscidService is
      * intended to be used to make connections to the remote peer (explicitly or
      * implicitly).
-     * 
+     *
      * @param serviceInformation
      *            service information containing the data from DNS-SD
      */
@@ -85,7 +86,7 @@ public class OmiscidService {
     /**
      * Sets the peer id to use to represent the local peer in BIP exchanges with
      * the remote service.
-     * 
+     *
      * @param peerId
      *            the id to use
      * @see OmiscidService#initControlClient()
@@ -100,7 +101,7 @@ public class OmiscidService {
     /**
      * Returns the name of the service (with the bip suffix removed and spaces
      * replaced).
-     * 
+     *
      * @return {@link #getSimplifiedName()}
      */
     public String toString() {
@@ -109,7 +110,7 @@ public class OmiscidService {
 
     /**
      * Extracts owner name from the text records
-     * 
+     *
      * @return the owner name, or "" if the owner property is not defined
      */
     public String getOwner() {
@@ -124,7 +125,7 @@ public class OmiscidService {
     /**
      * Extracts the remote peer id from the text record or by querying the
      * remote control server.
-     * 
+     *
      * @return the BIP peer id of the remote service
      */
     public int getRemotePeerId() {
@@ -146,7 +147,7 @@ public class OmiscidService {
      * number of users, this number is used by closeControlClient. When the user
      * do not use the control client any more, the user must call
      * closeControlClient.
-     * 
+     *
      * @return the control client or null if the creation failed
      * @see OmiscidService#closeControlClient()
      */
@@ -192,7 +193,7 @@ public class OmiscidService {
 
     /**
      * Creates a TCP connection to a channel on the remote service.
-     * 
+     *
      * @param ioa
      *            description associated to the channel on the remote server
      * @param messageListener
@@ -219,7 +220,7 @@ public class OmiscidService {
      * "._bip._tcp.local." and restoring spaces characters. If you have an
      * {@link OmiscidService} instance, the dedicated method
      * {@link #getSimplifiedName()} can be used instead.
-     * 
+     *
      * @param fullName
      *            the service fullname to process
      * @return the cleaned service name

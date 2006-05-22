@@ -37,7 +37,7 @@ public class OmiscidServicesRepository implements ServiceEventListener {
 
     /**
      * Creates and starts a new OMiSCID services repository.
-     * 
+     *
      * @param peerId
      *            the peerId that this database will be using
      */
@@ -52,6 +52,7 @@ public class OmiscidServicesRepository implements ServiceEventListener {
      * given delay before returning. The delay could be useful to let the
      * repository be filled by the dnssd service browser before use.
      */
+    //\REVIEWTASK close signatures warning
     public OmiscidServicesRepository(long sleepTime) {
         this();
         try {
@@ -80,7 +81,7 @@ public class OmiscidServicesRepository implements ServiceEventListener {
 
     /**
      * Adds all services matching the given filter to the provided list.
-     * 
+     *
      * @param filter
      * @param into
      *            a list to add the matching services into
@@ -99,7 +100,7 @@ public class OmiscidServicesRepository implements ServiceEventListener {
 
     /**
      * Creates a list containing all the services matching the provided filter.
-     * 
+     *
      * @param filter
      * @return the number of matching services
      */
@@ -111,7 +112,7 @@ public class OmiscidServicesRepository implements ServiceEventListener {
 
     /**
      * Creates and returns a copy of the current services list.
-     * 
+     *
      * @return a modifiable copy of the current vector containing all the
      *         services
      */

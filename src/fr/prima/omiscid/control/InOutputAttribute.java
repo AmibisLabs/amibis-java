@@ -18,10 +18,10 @@ import fr.prima.omiscid.control.interf.InOutputKind;
  * Stores an in/output description. The in/output description is composed of a
  * tcp port, udp port, a textual description, a description of the format, an
  * access kind (input, output, or inoutput) and a {@link CommunicationServer}
- * instance that can provide a list of the connected peer. The class exposese
+ * instance that can provide a list of the connected peer. The class exposes
  * methods to generate xml string with the description. Theses strings are used
  * in exhange with the Control Server.
- * 
+ *
  * @see fr.prima.omiscid.control.ControlServer
  * @author Sebastien Pesnel Refactoring by Patrick Reignier and emonet
  */
@@ -58,7 +58,7 @@ public class InOutputAttribute extends Attribute {
 
     /**
      * Creates a new instance of InOutputAttribute.
-     * 
+     *
      * @param aName
      *            name for the in/output
      */
@@ -68,7 +68,7 @@ public class InOutputAttribute extends Attribute {
 
     /**
      * Creates a new instance of InOutputAttribute.
-     * 
+     *
      * @param aName
      *            name for the in/output
      * @param ct
@@ -81,7 +81,7 @@ public class InOutputAttribute extends Attribute {
 
     /**
      * Sets the kind of in/output.
-     * 
+     *
      * @param aKind
      *            kind of in/output
      */
@@ -91,7 +91,7 @@ public class InOutputAttribute extends Attribute {
 
     /**
      * Gets the kind of in/output
-     * 
+     *
      * @return the kind of in/output
      */
     public InOutputKind getKind() {
@@ -100,7 +100,7 @@ public class InOutputAttribute extends Attribute {
 
     /**
      * Tests whether this attribute represents exactly an input channel.
-     * 
+     *
      * @return whether it is an input channel
      */
     public boolean isInput() {
@@ -109,7 +109,7 @@ public class InOutputAttribute extends Attribute {
 
     /**
      * Tests whether this attribute represents exactly an output channel.
-     * 
+     *
      * @return whether it is an output channel
      */
     public boolean isOutput() {
@@ -118,7 +118,7 @@ public class InOutputAttribute extends Attribute {
 
     /**
      * Tests whether this attribute represents exactly an inoutput channel.
-     * 
+     *
      * @return whether it is an inoutput channel
      */
     public boolean isInOutput() {
@@ -128,7 +128,7 @@ public class InOutputAttribute extends Attribute {
     /**
      * Sets the TCP port value. Used by the ControlClient when it receives an
      * in/output description
-     * 
+     *
      * @param tcp
      *            the port number
      */
@@ -139,7 +139,7 @@ public class InOutputAttribute extends Attribute {
     /**
      * Sets the UDP port value. Used by the ControlClient when it receives an
      * in/output description
-     * 
+     *
      * @param udp
      *            the port number
      */
@@ -149,7 +149,7 @@ public class InOutputAttribute extends Attribute {
 
     /**
      * Accesses the TCP port.
-     * 
+     *
      * @return the tcp port, 0 if it does not exist.
      */
     public int getTcpPort() {
@@ -162,7 +162,7 @@ public class InOutputAttribute extends Attribute {
 
     /**
      * Accesses the UDP port
-     * 
+     *
      * @return the udp port, 0 if it does not exist.
      */
     public int getUdpPort() {
@@ -175,7 +175,7 @@ public class InOutputAttribute extends Attribute {
 
     /**
      * Generates a short XML description of the in/output.
-     * 
+     *
      * @return the name of the in/output as &lt;inoutput_kind
      *         name=&quot;inoutput_name&quot;/&gt;
      */
@@ -185,7 +185,7 @@ public class InOutputAttribute extends Attribute {
 
     /**
      * Accesses the list of the id of the connected peer
-     * 
+     *
      * @return the list of id of connected peer
      */
     public List<Integer> getPeerVector() {
@@ -199,7 +199,7 @@ public class InOutputAttribute extends Attribute {
     /**
      * Adds a peer id to list of connected peer. Used by ControlClient when it
      * receives a description for an in/output
-     * 
+     *
      * @param peer
      *            id of a connected peer
      */
@@ -209,7 +209,7 @@ public class InOutputAttribute extends Attribute {
 
     /**
      * Generates a long XML description of the in/output.
-     * 
+     *
      * @return the XML description as a String
      */
     public String generateLongDescription() {
@@ -231,7 +231,7 @@ public class InOutputAttribute extends Attribute {
 
     /**
      * Generates a string containing the answer to a connect query.
-     * 
+     *
      * @return the answer to a connect query
      */
     public String generateConnectAnswer() {
@@ -240,7 +240,7 @@ public class InOutputAttribute extends Attribute {
 
     /**
      * Generates a string with port number.
-     * 
+     *
      * @return a string with the TCP port following by "/" and the udp port
      */
     public String generateRecordData() {
@@ -258,7 +258,7 @@ public class InOutputAttribute extends Attribute {
 
     /**
      * Returns the name for the in/output.
-     * 
+     *
      * @return the name for the in/output
      */
     public String toString() {
@@ -268,7 +268,7 @@ public class InOutputAttribute extends Attribute {
     /**
      * Extracts the information to initialize the field of the input/output
      * description from a XML document.
-     * 
+     *
      * @param elt
      *            the element of the XML description
      */

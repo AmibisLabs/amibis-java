@@ -92,8 +92,8 @@ public class TcpClientServer extends TcpServer {
      * @see fr.prima.omiscid.com.TcpServer#addOmiscidMessageListener(fr.prima.omiscid.com.interf.OmiscidMessageListener)
      */
     @Override
-    public void addOmiscidMessageListener(BipMessageListener listener) {
-        super.addOmiscidMessageListener(listener);
+    public void addBIPMessageListener(BipMessageListener listener) {
+        super.addBIPMessageListener(listener);
         synchronized (this) {
             cleanListOfClients();
             for (TcpClient client : clientsList.values()) {
@@ -154,9 +154,9 @@ public class TcpClientServer extends TcpServer {
      * @see fr.prima.omiscid.com.TcpServer#removeOmiscidMessageListener(fr.prima.omiscid.com.interf.OmiscidMessageListener)
      */
     @Override
-    public void removeOmiscidMessageListener(BipMessageListener listener) {
+    public void removeBIPMessageListener(BipMessageListener listener) {
         cleanListOfClients();
-        super.removeOmiscidMessageListener(listener);
+        super.removeBIPMessageListener(listener);
         synchronized (this) {
             for (TcpClient client : clientsList.values()) {
                 client.removeOmiscidMessageListener(listener);

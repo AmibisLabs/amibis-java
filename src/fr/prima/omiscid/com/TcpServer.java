@@ -12,6 +12,9 @@ import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import fr.prima.omiscid.com.interf.BipMessageListener;
 import fr.prima.omiscid.com.interf.Message;
 
@@ -19,7 +22,7 @@ import fr.prima.omiscid.com.interf.Message;
  * TCP Server. Accept multiple connections. Enables sending messages to one or
  * all clients. Receives message from client identified by their ids. Manages a
  * set of MessageSocketTcp.
- * 
+ *
  * @author Sebastien Pesnel Refactoring by Patrick Reignier and emonet
  */
 // \REVIEWTASK shouldn't this be a monitor?
@@ -41,7 +44,7 @@ public class TcpServer implements CommunicationServer {
 
     /**
      * Creates a new instance of TcpServer.
-     * 
+     *
      * @param peerId
      *            the BIP peer id to use in BIP exchange to represent the local
      *            peer
@@ -109,7 +112,7 @@ public class TcpServer implements CommunicationServer {
 
     /**
      * Sends a message to all still connected clients.
-     * 
+     *
      * @param buffer
      *            the message to send
      */
@@ -132,7 +135,7 @@ public class TcpServer implements CommunicationServer {
      * encoded using the BIP encoding. To check that the encoding process went
      * right, you must do it yourself using
      * {@link BipUtils#stringToByteArray(String)}.
-     * 
+     *
      * @param message
      *            the message to send
      */
@@ -142,16 +145,16 @@ public class TcpServer implements CommunicationServer {
 
     /**
      * Sends a message to a particular client.
-     * 
+     *
      * @param buffer
      *            the message to send
-     * @param peerid
+     * @param peerId
      *            identify the client to contact
      * @return whether the client to contact has been found and the message was
      *         delivered to it
      */
-    public boolean sendToOneClient(byte[] buffer, int peerid) {
-        MessageSocket client = findConnection(peerid);
+    public boolean sendToOneClient(byte[] buffer, int peerId) {
+        MessageSocket client = findConnection(peerId);
         if (client != null) {
             client.send(buffer);
             // \REVIEWTASK what if ! client.isConnected() ? to be though of when
@@ -163,10 +166,38 @@ public class TcpServer implements CommunicationServer {
     }
 
     /**
+     * Sends an XML DOM message to a particular client.
+     *
+     * @param message
+     *            the XML message to send
+     * @param peerid
+     *            identify the client to contact
+     * @return whether the client to contact has been found and the message was
+     *         delivered to it
+     */
+    public void sendToOneClient(Element message, int peerId) {
+        sendToOneClient(BipUtils.elementToByteArray(message), peerId);
+    }
+
+    /**
+     * Sends an XML DOM message to a particular client.
+     *
+     * @param message
+     *            the XML message to send
+     * @param peerid
+     *            identify the client to contact
+     * @return whether the client to contact has been found and the message was
+     *         delivered to it
+     */
+    public void sendToOneClient(Document message, int peerId) {
+        sendToOneClient(message.getDocumentElement(), peerId);
+    }
+
+    /**
      * Sends a String message to a given client. The string is encoded using the
      * BIP encoding. To check that the encoding process went right, you must do
      * it yourself using {@link BipUtils#stringToByteArray(String)}.
-     * 
+     *
      * @param buffer
      *            the message to send
      * @param peerid
@@ -178,12 +209,12 @@ public class TcpServer implements CommunicationServer {
 
     /**
      * Adds a listener for the received BIP messages.
-     * 
+     *
      * @param listener
      *            a listener interested in the message received by the TCP
      *            server
      */
-    public void addOmiscidMessageListener(BipMessageListener listener) {
+    public void addBIPMessageListener(BipMessageListener listener) {
         synchronized (listenersSet) {
             listenersSet.add(listener);
             synchronized (connectionsSet) {
@@ -202,11 +233,11 @@ public class TcpServer implements CommunicationServer {
 
     /**
      * Removes a listener for the received OMiSCID messages.
-     * 
+     *
      * @param listener
      *            the listener to remove
      */
-    public void removeOmiscidMessageListener(BipMessageListener listener) {
+    public void removeBIPMessageListener(BipMessageListener listener) {
         synchronized (listenersSet) {
             if (listenersSet.remove(listener)) {
                 // the listener was actually in the listeners list
@@ -227,7 +258,7 @@ public class TcpServer implements CommunicationServer {
 
     /**
      * Finds a connection using a peer id.
-     * 
+     *
      * @param peerId
      * @return the connection found or null if none
      */
@@ -253,7 +284,7 @@ public class TcpServer implements CommunicationServer {
 
     /**
      * Tests whether a peer is still connected to the server.
-     * 
+     *
      * @param peerId
      *            the id of the peer
      * @return if the peer is connected
@@ -265,7 +296,7 @@ public class TcpServer implements CommunicationServer {
 
     /**
      * Accesses the port the server is listening to new connections.
-     * 
+     *
      * @return the port the server is listening to.
      */
     public int getTcpPort() {
@@ -279,7 +310,7 @@ public class TcpServer implements CommunicationServer {
 
     /**
      * Accesses the host name of the server.
-     * 
+     *
      * @return the host name
      */
     public String getHost() {
@@ -294,7 +325,7 @@ public class TcpServer implements CommunicationServer {
 
     /**
      * Queries the number of connections.
-     * 
+     *
      * @return number of connected client
      */
     public int getNbConnections() {

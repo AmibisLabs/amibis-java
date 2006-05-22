@@ -190,7 +190,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     public boolean startServer(int port) {
         try {
             tcpServer = new TcpServer(getPeerId(), port);
-            tcpServer.addOmiscidMessageListener(this);
+            tcpServer.addBIPMessageListener(this);
             tcpServer.start();
 
             // register the service
@@ -792,7 +792,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         try {
             tcpServer = new fr.prima.omiscid.com.TcpServer(ctrl.getPeerId(), 0);
             tcpServer.start();
-            tcpServer.addOmiscidMessageListener(new fr.prima.omiscid.com.interf.BipMessageListener() {
+            tcpServer.addBIPMessageListener(new fr.prima.omiscid.com.interf.BipMessageListener() {
                 public void receivedBipMessage(fr.prima.omiscid.com.interf.Message m) {
                     System.out.println("received OMiSCID message");
                 }

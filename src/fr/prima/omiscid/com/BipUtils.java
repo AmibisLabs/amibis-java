@@ -5,6 +5,7 @@
 package fr.prima.omiscid.com;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -13,6 +14,13 @@ import java.util.Random;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -37,7 +45,7 @@ public final class BipUtils {
     /**
      * Create a string with an hexadecimal representation of an integer. The
      * representation has 8 characters completed by 0.
-     * 
+     *
      * @param i
      *            the value to change into string
      */
@@ -53,7 +61,7 @@ public final class BipUtils {
     /**
      * Change a string with an hexadecimal representation of an integer into the
      * integer value
-     * 
+     *
      * @param str
      *            the string to transform
      * @return the integer value associated to the string
@@ -91,7 +99,7 @@ public final class BipUtils {
      * currentTimeMillis and call generateServiceId at the same
      * currentTimeMillis there *will* be a problem. Note that this is virtually
      * not guaranteed that this id is unique.
-     * 
+     *
      * @return a new id for a BIP peer
      */
     public static int generateBIPPeerId() {
@@ -107,27 +115,46 @@ public final class BipUtils {
     }
 
     /**
-     * The shared parser used to change messages into DOM trees.
+     * The shared parser and writer used to change messages into DOM trees and vice-versa.
      */
-    private static DocumentBuilder parser = null;
+    private static DocumentBuilder documentBuilder = null;
+    private static Transformer transformer = null;
 
-    private static synchronized Document streamToDomDocument(InputStream is) throws SAXException, IOException {
-        if (parser == null) {
+    private static DocumentBuilder getDocumentBuilder() {
+        if (documentBuilder == null) {
             try {
-                parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+                documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             } catch (ParserConfigurationException e) {
                 e.printStackTrace();
-                return null;
             }
         }
-        Document doc = parser.parse(is);
+        return documentBuilder;
+    }
+
+    private static Transformer getTransformer() {
+        if (transformer == null) {
+            try {
+                transformer = TransformerFactory.newInstance().newTransformer();
+            } catch (TransformerConfigurationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (TransformerFactoryConfigurationError e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        return transformer;
+    }
+
+    private static synchronized Document streamToDomDocument(InputStream is) throws SAXException, IOException {
+        Document doc = getDocumentBuilder().parse(is);
         return doc;
     }
 
     /**
      * Builds a XML DOM document using the given byte array and returns its root
      * element.
-     * 
+     *
      * @param buffer
      * @return the root element of the built document
      * @throws SAXException
@@ -143,7 +170,7 @@ public final class BipUtils {
 
     /**
      * Builds a XML DOM document using the given byte array and returns it.
-     * 
+     *
      * @param buffer
      * @return the document built
      * @throws SAXException
@@ -157,9 +184,44 @@ public final class BipUtils {
         }
     }
 
+    public synchronized static byte[] elementToByteArray(Element element) {
+        DOMSource source = new DOMSource(element);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        StreamResult streamResult = new StreamResult(byteArrayOutputStream);
+        try {
+            getTransformer().transform(source, streamResult);
+        } catch (TransformerException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    public synchronized static Document createDocument() {
+        return getDocumentBuilder().newDocument();
+    }
+
+    public static Document createDocument(String rootTag, String...attributeNameValuePairs) {
+        return createDocumentWithTextContent(rootTag, null, attributeNameValuePairs);
+    }
+
+    public static Document createDocumentWithTextContent(String rootTag, String content, String...attributeNameValuePairs) {
+        Document document = createDocument();
+        Element root = document.createElement(rootTag);
+        for (int i = 0; i < attributeNameValuePairs.length; i+=2) {
+            root.setAttribute(attributeNameValuePairs[i], attributeNameValuePairs[i+1]);
+        }
+        if (content != null) {
+            root.setTextContent(content);
+        }
+        document.appendChild(root);
+        return document;
+    }
+
+
     /**
      * Builds a String from the given byte array using BIP encoding.
-     * 
+     *
      * @param buffer
      *            the data buffer to decode as a string
      * @return the decoded String or null if the BIP encoding couldn't be found
@@ -174,7 +236,7 @@ public final class BipUtils {
 
     /**
      * Builds a byte array from the given string using BIP encoding.
-     * 
+     *
      * @param string
      *            the string data to encode as a byte array
      * @return the encoded byte array or null if the BIP encoding couldn't be
@@ -191,5 +253,6 @@ public final class BipUtils {
             }
         }
     }
+
 
 }
