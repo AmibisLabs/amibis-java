@@ -13,5 +13,6 @@ dist: prepare
 prepare:
 	rm -rf ,,build
 	cp -r $(CLASSDIR) ,,build
+	cd src && find . -name \*.java -exec cp {} ../,,build/{} \;
 	cd ,,build && jar cvf ../$(BASEJAR) .
 
