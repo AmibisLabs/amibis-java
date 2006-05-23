@@ -342,7 +342,7 @@ public abstract class MessageSocket {
      * @param listener
      *            the listener interested in the received message
      */
-    public void addOmiscidMessageListener(BipMessageListener listener) {
+    public void addBipMessageListener(BipMessageListener listener) {
         synchronized (listenersSet) {
             listenersSet.add(listener);
         }
@@ -354,7 +354,7 @@ public abstract class MessageSocket {
      * @param listener
      *            the listener no more interested in the received message
      */
-    public void removeOmiscidMessageListener(BipMessageListener listener) {
+    public void removeBipMessageListener(BipMessageListener listener) {
         synchronized (listenersSet) {
             listenersSet.remove(listener);
         }

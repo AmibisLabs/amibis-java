@@ -205,7 +205,7 @@ public class OmiscidService {
             try {
                 TcpClient tcpClient = new TcpClient(peerId);
                 if (messageListener != null) {
-                    tcpClient.addOmiscidMessageListener(messageListener);
+                    tcpClient.addBipMessageListener(messageListener);
                 }
                 tcpClient.connectTo(serviceInformation.getHostName(), ioa.getTcpPort());
                 return tcpClient;

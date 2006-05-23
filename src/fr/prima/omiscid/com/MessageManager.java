@@ -11,7 +11,7 @@ import fr.prima.omiscid.com.interf.BipMessageListener;
  * the method processMessage who calls a particular method processAMessage on
  * each message. This methods can be overidden to define the appropriate
  * processing.
- * 
+ *
  * @author Sebastien Pesnel Refactoring by Patrick Reignier and emonet
  */
 public abstract class MessageManager implements BipMessageListener {
@@ -20,8 +20,8 @@ public abstract class MessageManager implements BipMessageListener {
 
     /*
      * (non-Javadoc)
-     * 
-     * @see fr.prima.omiscid.com.interf.OmiscidMessageListener#receivedOmiscidMessage(fr.prima.omiscid.com.interf.Message)
+     *
+     * @see fr.prima.omiscid.com.interf.BipMessageListener#receivedBipMessage(fr.prima.omiscid.com.interf.Message)
      */
     public void receivedBipMessage(Message message) {
         synchronized (messagesQueue) {
@@ -32,7 +32,7 @@ public abstract class MessageManager implements BipMessageListener {
 
     /**
      * Tests whether there are available messages to process.
-     * 
+     *
      * @return whether there is at least one available message
      */
     public boolean hasMessage() {
@@ -43,7 +43,7 @@ public abstract class MessageManager implements BipMessageListener {
 
     /**
      * Number of stored messages.
-     * 
+     *
      * @return the number of message
      */
     public int getNbMessage() {
@@ -55,7 +55,7 @@ public abstract class MessageManager implements BipMessageListener {
     /**
      * Processes the stored message. Calls on each message the method
      * ProcessAMessage
-     * 
+     *
      * @return the number of message processed
      */
     public final int processMessages() {
@@ -73,7 +73,7 @@ public abstract class MessageManager implements BipMessageListener {
      * Waits for the arrival of new message(s). There is no guaranty that
      * hasMessage() will be true after waitForMessage() returns (whatever the
      * return value).
-     * 
+     *
      * @return an indicative boolean, the value return by hasMessage() after the
      *         waiting time
      */
@@ -95,7 +95,7 @@ public abstract class MessageManager implements BipMessageListener {
     /**
      * Processes a message. This method must be implemented to process the
      * received messages.
-     * 
+     *
      * @param message
      *            the message to process
      */

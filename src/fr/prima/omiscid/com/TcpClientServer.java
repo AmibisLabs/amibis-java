@@ -26,7 +26,7 @@ public class TcpClientServer extends TcpServer {
 
     /**
      * Connects to a remote server.
-     * 
+     *
      * @param host
      *            the host address
      * @param port
@@ -54,7 +54,7 @@ public class TcpClientServer extends TcpServer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see fr.prima.omiscid.com.TcpServer#sendToClients(byte[])
      */
     @Override
@@ -69,7 +69,7 @@ public class TcpClientServer extends TcpServer {
 
     /**
      * Sends a buffer to a particular client.
-     * 
+     *
      * @param buffer
      *            the buffer to send
      * @param pid
@@ -88,17 +88,17 @@ public class TcpClientServer extends TcpServer {
 
     /*
      * (non-Javadoc)
-     * 
-     * @see fr.prima.omiscid.com.TcpServer#addOmiscidMessageListener(fr.prima.omiscid.com.interf.OmiscidMessageListener)
+     *
+     * @see fr.prima.omiscid.com.TcpServer#addBipMessageListener(fr.prima.omiscid.com.interf.BipMessageListener)
      */
     @Override
-    public void addBIPMessageListener(BipMessageListener listener) {
-        super.addBIPMessageListener(listener);
+    public void addBipMessageListener(BipMessageListener listener) {
+        super.addBipMessageListener(listener);
         synchronized (this) {
             cleanListOfClients();
             for (TcpClient client : clientsList.values()) {
                 if (client.isConnected()) {
-                    client.addOmiscidMessageListener(listener);
+                    client.addBipMessageListener(listener);
                 }
             }
         }
@@ -106,7 +106,7 @@ public class TcpClientServer extends TcpServer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see fr.prima.omiscid.com.TcpServer#getNbConnections()
      */
     @Override
@@ -132,7 +132,7 @@ public class TcpClientServer extends TcpServer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see fr.prima.omiscid.com.TcpServer#getPeerId(java.util.Vector)
      */
     @Override
@@ -150,8 +150,8 @@ public class TcpClientServer extends TcpServer {
 
     /*
      * (non-Javadoc)
-     * 
-     * @see fr.prima.omiscid.com.TcpServer#removeOmiscidMessageListener(fr.prima.omiscid.com.interf.OmiscidMessageListener)
+     *
+     * @see fr.prima.omiscid.com.TcpServer#removeBipMessageListener(fr.prima.omiscid.com.interf.BipMessageListener)
      */
     @Override
     public void removeBIPMessageListener(BipMessageListener listener) {
@@ -159,14 +159,14 @@ public class TcpClientServer extends TcpServer {
         super.removeBIPMessageListener(listener);
         synchronized (this) {
             for (TcpClient client : clientsList.values()) {
-                client.removeOmiscidMessageListener(listener);
+                client.removeBipMessageListener(listener);
             }
         }
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see fr.prima.omiscid.com.TcpServer#isStillConnected(int)
      */
     @Override
@@ -188,7 +188,7 @@ public class TcpClientServer extends TcpServer {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see fr.prima.omiscid.com.TcpServer#close()
      */
     @Override

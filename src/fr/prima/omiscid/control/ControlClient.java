@@ -27,7 +27,7 @@ import fr.prima.omiscid.com.interf.BipMessageListener;
  * all variables and in/outputs.</li>
  * <li> Do specific query on variables or in/output .</li>
  * </ul>
- * 
+ *
  * @author Sebastien Pesnel Refactoring by Patrick Reignier and emonet
  */
 // \REVIEWTASK shouldn't this be a monitor?
@@ -100,7 +100,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Creates a new instance of ControlClient class.
-     * 
+     *
      * @param peerId
      *            the peer id to use to identify the local peer in BIP exchanges
      */
@@ -111,7 +111,7 @@ public class ControlClient implements BipMessageListener {
     /**
      * Creates the connection to a control server. Instanciates a TCP client.
      * Adds this object as listener on message received by the TCP client.
-     * 
+     *
      * @param host
      *            the host name where find the control server
      * @param port
@@ -122,7 +122,7 @@ public class ControlClient implements BipMessageListener {
         try {
             tcpClient = new TcpClient(peerId);
             tcpClient.connectTo(host, port);
-            tcpClient.addOmiscidMessageListener(this);
+            tcpClient.addBipMessageListener(this);
             return true;
         } catch (java.io.IOException e) {
             tcpClient = null;
@@ -133,7 +133,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Tests whether this control client connection is running.
-     * 
+     *
      * @return whether the connection is up
      */
     public boolean isConnected() {
@@ -161,14 +161,14 @@ public class ControlClient implements BipMessageListener {
     }
 
     /**
-     * Implements the OmiscidMessageListerner interface. Tests whether the
+     * Implements the BipMessageListerner interface. Tests whether the
      * message is an answer to a query or a control event. In case of answer,
      * the reception of this is signaled by a control event message.
      * {@link ControlEventListener} describes the interface to implement to
      * receive such control event messages.
-     * 
+     *
      * @param message
-     *            a new OMiSCID message received
+     *            a new BIP message received
      */
     public void receivedBipMessage(Message message) {
         XmlMessage xmlMessage = XmlMessage.newUnchecked(message);
@@ -193,7 +193,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Adds a listener for control event.
-     * 
+     *
      * @param l
      *            listener interested in control event
      */
@@ -205,7 +205,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Removes a listener for control event.
-     * 
+     *
      * @param l
      *            listener no more interested in control event
      * @return whether the listener was removed
@@ -218,7 +218,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Finds an attribute with a particular name.
-     * 
+     *
      * @param name
      *            the name of the attribute
      * @param attributesSet
@@ -236,7 +236,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Finds a variable with a particular name.
-     * 
+     *
      * @param name
      *            the name to look for
      * @return the VariableAttribute object if found, null otherwise
@@ -247,7 +247,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Finds an input with a particular name.
-     * 
+     *
      * @param name
      *            the name to look for
      * @return the InOutputAttribute object if found, null otherwise
@@ -258,7 +258,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Finds an output with a particular name.
-     * 
+     *
      * @param name
      *            the name to look for
      * @return the InOutputAttribute object if found, null otherwise
@@ -269,7 +269,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Finds an input/output with a particular name
-     * 
+     *
      * @param name
      *            the name to look for
      * @return the InOutputAttribute object if found, null otherwise
@@ -283,7 +283,7 @@ public class ControlClient implements BipMessageListener {
      * contains the name of all the variables, inputs and outputs.
      * {@link #queryCompleteDescription()} can then be called to get more
      * information about the variables and inputs/outputs.
-     * 
+     *
      * @return whether the query has received an answer
      */
     public boolean queryGlobalDescription() {
@@ -324,7 +324,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Queries a complete description for a variable.
-     * 
+     *
      * @param name
      *            the variable name
      * @return a VariableAttribute object that contains the description, null if
@@ -363,7 +363,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Asks for the modification of the value of a variable.
-     * 
+     *
      * @param name
      *            the varaible name
      * @param value
@@ -392,7 +392,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Queries a complete description for an input.
-     * 
+     *
      * @param name
      *            the input name
      * @return a InOutputAttribute object that contains the description, null if
@@ -422,7 +422,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Queries a complete description for an output.
-     * 
+     *
      * @param name
      *            the output name
      * @return a InOutputAttribute object that contains the description, null if
@@ -452,7 +452,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Queries a complete description for an input/output.
-     * 
+     *
      * @param name
      *            the input/output name
      * @return a InOutputAttribute object that contains the description, null if
@@ -486,7 +486,7 @@ public class ControlClient implements BipMessageListener {
      * before calling this method, a complete description must have been queried
      * via {@link #queryCompleteDescription()} itself requiring a call to
      * {@link #queryGlobalDescription()}.
-     * 
+     *
      * @param varName
      *            the name of the variable
      * @return false if the variable is not known
@@ -506,7 +506,7 @@ public class ControlClient implements BipMessageListener {
     /**
      * Unsubscribes to the modification of a particular variable. The
      * modification notifications will not be received in ControlEvent any more.
-     * 
+     *
      * @param varName
      *            the name of the variable
      * @return false if the variable is not known
@@ -525,7 +525,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Asks to lock the control server
-     * 
+     *
      * @return whether the control server was locked for this service
      */
     public boolean lock() {
@@ -553,7 +553,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Asks to unlock the control server.
-     * 
+     *
      * @return whether the control server was unlocked
      */
     public boolean unlock() {
@@ -580,7 +580,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Processes the query to the control server.
-     * 
+     *
      * @param request
      *            request to send to the server
      * @param waitAnswer
@@ -619,7 +619,7 @@ public class ControlClient implements BipMessageListener {
     /**
      * Checks whether the answer id has the awaited value (the same value as the
      * query id).
-     * 
+     *
      * @param message
      *            answer from the control server
      * @param messageId
@@ -639,7 +639,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Processes the answer to a query for global description.
-     * 
+     *
      * @param message
      *            the answer to a query for global description
      */
@@ -673,7 +673,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Processes the answer to a query for complete variable description.
-     * 
+     *
      * @param elt
      *            the answer to a query for complete variable description
      * @param vattr
@@ -697,7 +697,7 @@ public class ControlClient implements BipMessageListener {
 
     /**
      * Processes the answer to a query for complete in/output description.
-     * 
+     *
      * @param elt
      *            the answer to a query for complete in/output description
      * @param ioattr
@@ -724,7 +724,7 @@ public class ControlClient implements BipMessageListener {
      * Creates an XML DOM node containing the variables and inputs/outputse of
      * the remote service. The created node is created using the given
      * {@link Document} and is returned.
-     * 
+     *
      * @param doc
      *            the {@link Document} used for the creation of the returned
      *            {@link Element}

@@ -88,7 +88,7 @@ public class TcpServer implements CommunicationServer {
                 MessageSocketTCP messageSocket = new MessageSocketTCP(peerId, socket);
                 synchronized (listenersSet) {
                     for (BipMessageListener listener : listenersSet) {
-                        messageSocket.addOmiscidMessageListener(listener);
+                        messageSocket.addBipMessageListener(listener);
                     }
                 }
                 messageSocket.start();
@@ -214,14 +214,14 @@ public class TcpServer implements CommunicationServer {
      *            a listener interested in the message received by the TCP
      *            server
      */
-    public void addBIPMessageListener(BipMessageListener listener) {
+    public void addBipMessageListener(BipMessageListener listener) {
         synchronized (listenersSet) {
             listenersSet.add(listener);
             synchronized (connectionsSet) {
                 Set<MessageSocketTCP> disconnectedClients = new HashSet<MessageSocketTCP>();
                 for (MessageSocketTCP client : connectionsSet) {
                     if (client.isConnected()) {
-                        client.addOmiscidMessageListener(listener);
+                        client.addBipMessageListener(listener);
                     } else {
                         disconnectedClients.add(client);
                     }
@@ -245,7 +245,7 @@ public class TcpServer implements CommunicationServer {
                     Set<MessageSocketTCP> disconnectedClients = new HashSet<MessageSocketTCP>();
                     for (MessageSocketTCP client : connectionsSet) {
                         if (client.isConnected()) {
-                            client.removeOmiscidMessageListener(listener);
+                            client.removeBipMessageListener(listener);
                         } else {
                             disconnectedClients.add(client);
                         }
@@ -385,7 +385,7 @@ public class TcpServer implements CommunicationServer {
                     }
                 }
             };
-            tcpClient.addOmiscidMessageListener(messageManager);
+            tcpClient.addBipMessageListener(messageManager);
 
             while (true) {
                 messageManager.waitForMessages();
