@@ -14,7 +14,7 @@ import java.io.IOException;
 
 /**
  * BIP Communication based on UDP protocol
- * 
+ *
  * @author Sebastien Pesnel Refactoring by Patrick Reignier and emonet
  */
 public class MessageSocketUDP extends MessageSocket {
@@ -35,7 +35,7 @@ public class MessageSocketUDP extends MessageSocket {
 
     /**
      * Creates a new instance of MessageSocketUDP.
-     * 
+     *
      * @param peerId
      *            the local BIP peer id used in BIP exchanges
      * @throws SocketException
@@ -50,7 +50,7 @@ public class MessageSocketUDP extends MessageSocket {
 
     /**
      * Creates a new instance of MessageSocketUDP.
-     * 
+     *
      * @param peerId
      *            the local BIP peer id used in BIP exchanges
      * @param port
@@ -68,7 +68,7 @@ public class MessageSocketUDP extends MessageSocket {
 
     /**
      * Sets the destination where send data.
-     * 
+     *
      * @param host
      *            name of the host
      * @param port
@@ -82,12 +82,11 @@ public class MessageSocketUDP extends MessageSocket {
     /**
      * Send an array of byte on a datagram socket. Send the data to the
      * destination specify by setDestination
-     * 
+     *
      * @param buffer
      *            the array of bytes to send
      */
-    public synchronized void send(byte[] buffer) {
-        // System.out.println("in MessageSocketUDP::Send");
+    public synchronized void sendExplicit(byte[] buffer) throws IOException {
         try {
             byte header[] = generateHeaderByte(buffer.length);
             int offset = 0;
@@ -103,10 +102,12 @@ public class MessageSocketUDP extends MessageSocket {
             DatagramPacket p = new DatagramPacket(bufferSent, 0, offset, InetAddress.getByName(host), port);
             datagramSocket.send(p);
         } catch (IOException e) {
-            System.out.println("MessageSocketUDP::send \n");
-            e.printStackTrace();
+//            System.out.println("MessageSocketUDP::send \n");
+//            e.printStackTrace();
             connected = false;
+            throw e;
         }
+
     }
 
     /** Receive byte on a datagram socket */

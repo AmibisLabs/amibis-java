@@ -11,13 +11,13 @@ import java.net.Socket;
 
 /**
  * Client for exchanges of BIP messages over TCP connexion.
- * 
+ *
  * @author Sebastien Pesnel Refactoring by Patick Reignier
  */
 public class TcpClient extends MessageSocketTCP {
     /**
      * Creates a new instance of TcpClient.
-     * 
+     *
      * @param peerId
      *            BIP peer id of the local peer
      */
@@ -39,7 +39,7 @@ public class TcpClient extends MessageSocketTCP {
 
     /**
      * Connects to a server.
-     * 
+     *
      * @param host
      *            host name where listens the server
      * @param port

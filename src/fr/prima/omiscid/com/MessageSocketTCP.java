@@ -14,7 +14,7 @@ import java.net.Socket;
 
 /**
  * BIP Communication based on TCP protocol.
- * 
+ *
  * @author Sebastien Pesnel Refactoring by Patrick Reignier and emonet
  */
 public class MessageSocketTCP extends MessageSocket {
@@ -24,7 +24,7 @@ public class MessageSocketTCP extends MessageSocket {
 
     /**
      * Creates a new instance of MessageSocketTCP.
-     * 
+     *
      * @param peerId
      *            the local BIP peer id used in BIP exchanges
      */
@@ -34,7 +34,7 @@ public class MessageSocketTCP extends MessageSocket {
 
     /**
      * Creates a new instance of MessageSocketTCP.
-     * 
+     *
      * @param peerId
      *            the local BIP peer id used in OMiSCID exchanges
      * @param aSocket
@@ -48,7 +48,7 @@ public class MessageSocketTCP extends MessageSocket {
 
     /**
      * Sets the socket associate to a TCP connection.
-     * 
+     *
      * @param aSocket
      *            the socket associate to a TCP connection
      */
@@ -59,11 +59,11 @@ public class MessageSocketTCP extends MessageSocket {
 
     /**
      * Sends an array of byte with a BIP header.
-     * 
+     *
      * @param buffer
      *            the array of byte to send
      */
-    public synchronized void send(byte[] buffer) {
+    public synchronized void sendExplicit(byte[] buffer) throws IOException {
         try {
             OutputStream output = new BufferedOutputStream(socket.getOutputStream());
             if (buffer == null) {
@@ -76,17 +76,8 @@ public class MessageSocketTCP extends MessageSocket {
             output.flush();
         } catch (IOException e) {
             connected = false;
+            throw e;
         }
-    }
-
-    /**
-     * Sends a String message with a BIP header.
-     * 
-     * @param messageBody
-     *            the message to send once completed with the OMiSCID header
-     */
-    public void send(String messageBody) {
-        send(BipUtils.stringToByteArray(messageBody));
     }
 
     /**
@@ -122,7 +113,7 @@ public class MessageSocketTCP extends MessageSocket {
 
     /**
      * Accesses the port of the TCP socket.
-     * 
+     *
      * @return the port of the TCP socket
      */
     public int getTcpPort() {
@@ -134,7 +125,7 @@ public class MessageSocketTCP extends MessageSocket {
 
     /**
      * No UDP port.
-     * 
+     *
      * @return 0
      */
     public int getUdpPort() {

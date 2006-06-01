@@ -224,7 +224,8 @@ public final class BipUtils {
      *
      * @param buffer
      *            the data buffer to decode as a string
-     * @return the decoded String or null if the BIP encoding couldn't be found
+     * @return the decoded String or null if the BIP encoding couldn't be found or
+     * if the given byte array could not be decoded.
      */
     public static String byteArrayToString(byte[] buffer) {
         try {
@@ -236,6 +237,9 @@ public final class BipUtils {
 
     /**
      * Builds a byte array from the given string using BIP encoding.
+     *
+     * BIP encoding should be available on any platform and should allow
+     * the encoding of any String.
      *
      * @param string
      *            the string data to encode as a byte array

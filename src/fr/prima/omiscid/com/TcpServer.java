@@ -131,6 +131,27 @@ public class TcpServer implements CommunicationServer {
     }
 
     /**
+     * Sends an XML DOM message to all still connected clients.
+     *
+     * @param message
+     *            the XML message to send
+     */
+    public void sendToAllClients(Element message) {
+        sendToAllClients(BipUtils.elementToByteArray(message));
+    }
+
+    /**
+     * Sends an XML DOM message to all still connected clients.
+     *
+     * @param message
+     *            the XML message to send
+     */
+    public void sendToAllClients(Document message) {
+        sendToAllClients(message.getDocumentElement());
+    }
+
+
+    /**
      * Sends a String message to all still connected clients. The string is
      * encoded using the BIP encoding. To check that the encoding process went
      * right, you must do it yourself using
@@ -175,8 +196,8 @@ public class TcpServer implements CommunicationServer {
      * @return whether the client to contact has been found and the message was
      *         delivered to it
      */
-    public void sendToOneClient(Element message, int peerId) {
-        sendToOneClient(BipUtils.elementToByteArray(message), peerId);
+    public boolean sendToOneClient(Element message, int peerId) {
+        return sendToOneClient(BipUtils.elementToByteArray(message), peerId);
     }
 
     /**
@@ -189,8 +210,8 @@ public class TcpServer implements CommunicationServer {
      * @return whether the client to contact has been found and the message was
      *         delivered to it
      */
-    public void sendToOneClient(Document message, int peerId) {
-        sendToOneClient(message.getDocumentElement(), peerId);
+    public boolean sendToOneClient(Document message, int peerId) {
+        return sendToOneClient(message.getDocumentElement(), peerId);
     }
 
     /**
