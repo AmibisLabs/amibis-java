@@ -12,7 +12,7 @@ import fr.prima.omiscid.com.BipUtils;
  * Waits for several OMiSCID services at the same time. Allows to search in the
  * same time several OMiSCID services matching the specified services. Allows to
  * wait that they are all found.
- * 
+ *
  * @author Sebastien Pesnel refactoring emonet
  */
 public class WaitForOmiscidServices {
@@ -31,7 +31,7 @@ public class WaitForOmiscidServices {
      * application has already a BIP peer id, you can pass it to this
      * constructor to have it used through all subsequent BIP connections. BIP
      * peer ids can be generated using {@link BipUtils#generateBIPPeerId()}.
-     * 
+     *
      * @param peerId
      *            the peer id representing the local BIP peer
      */
@@ -42,7 +42,7 @@ public class WaitForOmiscidServices {
     /**
      * Adds a new service to the required services. The service is only
      * specified by its name, no specific filter is given.
-     * 
+     *
      * @param name
      *            the name of the desired service ({@link OmiscidServiceWaiter#OmiscidServiceWaiter(String, OmiscidServiceFilter)})
      * @return the index to retrieve the desired service via
@@ -55,7 +55,7 @@ public class WaitForOmiscidServices {
 
     /**
      * Adds a new service to the required services.
-     * 
+     *
      * @param name
      *            the name of the wanted service
      * @param filter
@@ -72,7 +72,7 @@ public class WaitForOmiscidServices {
 
     /**
      * Tests whether all the required services have been found.
-     * 
+     *
      * @return whether all the required services have been found
      */
     private synchronized boolean areAllResolved() {
@@ -98,8 +98,25 @@ public class WaitForOmiscidServices {
     }
 
     /**
+     * Waits until all the required services have been found.
+     *
+     * @return whether the resolution has been complete
+     */
+    public synchronized boolean waitResolve(long timeoutInMilliseconds) {
+        long timeout = System.currentTimeMillis() + timeoutInMilliseconds;
+        while (!areAllResolved() && System.currentTimeMillis() < timeout) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return areAllResolved();
+    }
+
+    /**
      * Tests whether a given awaited service has been found.
-     * 
+     *
      * @param index
      *            the index associated to the needed service (returned for
      *            example by {@link #needService(String, OmiscidServiceFilter)})
@@ -111,7 +128,7 @@ public class WaitForOmiscidServices {
 
     /**
      * Accesses the found service associated to the search given index.
-     * 
+     *
      * @param index
      *            the index associated to the required service
      * @return the required service or null if not found yet
