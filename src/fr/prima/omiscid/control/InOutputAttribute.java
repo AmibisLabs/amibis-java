@@ -355,4 +355,12 @@ public class InOutputAttribute extends Attribute {
         return eltIo;
     }
 
+    public CommunicationServer getCommunicationServer() {
+        return communicationServer;
+    }
+
+    public void setCommunicationServer(CommunicationServer communicationServer) {
+        this.communicationServer = communicationServer;
+    }
+
 }
