@@ -1,6 +1,8 @@
-package fr.prima.omiscid.control;
+package fr.prima.omiscid.control.filter;
 
 import java.util.Vector;
+
+import fr.prima.omiscid.control.OmiscidService;
 
 /**
  * Enables to combine several tests (with an "and" operator).

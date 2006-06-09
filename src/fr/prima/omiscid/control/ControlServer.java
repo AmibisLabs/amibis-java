@@ -54,7 +54,7 @@ import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
  * <li> Wait for data or other service. When you are ready, set the status value
  * to RUNNING and start processing </li>
  * </ul>
- * 
+ *
  * @see fr.prima.omiscid.control.ControlClient
  * @see fr.prima.omiscid.control.VariableAttribute
  * @see fr.prima.omiscid.control.InOutputAttribute
@@ -114,7 +114,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      * only on subsequent call to {@link #startServer(int)}. A BIP peer id is
      * automatically generated and associated to this service. The peer id can
      * be retrieved using {@link #getPeerId()}.
-     * 
+     *
      * @param serviceName
      *            name for the service
      */
@@ -170,7 +170,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     /**
      * Accesses the TCP server.
-     * 
+     *
      * @return tcpServer: the control server over TCP
      */
     public TcpServer getTcpServer() {
@@ -180,7 +180,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     /**
      * Starts the control server and register the service to DNS-SD. If all went
      * fine, the status become INIT.
-     * 
+     *
      * @param port
      *            the port number where the control server should be listening
      *            (0 to choose automatically an available port).
@@ -210,7 +210,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     /**
      * Registers the service to DNS-SD. Creates the text containing: owner,
      * peerId, list of input/output.
-     * 
+     *
      * @param host
      *            the host where the service is started
      * @param port
@@ -252,7 +252,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see fr.prima.omiscid.control.interf.VariableChangeListener#variableChanged(fr.prima.omiscid.control.VariableAttribute)
      */
     public void variableChanged(VariableAttribute variable) {
@@ -279,7 +279,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     /**
      * Launches a thread to process the messages, to answer to ControlQuery
-     * 
+     *
      * @return whether the thread has been launched (false if a thread is
      *         already launched to process messages)
      * @deprecated Use {@link #startProcessMessagesThread()} instead
@@ -290,7 +290,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     /**
      * Launches a thread to process the messages, to answer to ControlQuery
-     * 
+     *
      * @return whether the thread has been launched (false if a thread is
      *         already launched to process messages)
      */
@@ -316,7 +316,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     /**
      * Accesses the BIP peer id of this service. This peer id is automatically
      * generated when the ControlServer object is instantiated.
-     * 
+     *
      * @return the BIP peer id associated to this service
      */
     public int getPeerId() {
@@ -327,7 +327,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      * Accesses the desired service name provided when constructing this
      * service. After registration, an unique name is affected to the service
      * and can be accessed using {@link #getRegisteredServiceName()}.
-     * 
+     *
      * @return the service name
      */
     public String getServiceName() {
@@ -337,7 +337,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     /**
      * Accesses the name created during registration: available only after
      * registration.
-     * 
+     *
      * @return the service name after registration
      */
     public String getRegisteredServiceName() {
@@ -346,7 +346,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     /**
      * Accesses the service status
-     * 
+     *
      * @return the status value
      */
     public int getStatus() {
@@ -355,7 +355,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     /**
      * Changes the service status.
-     * 
+     *
      * @param status
      *            the new value for the status
      */
@@ -365,7 +365,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     /**
      * Adds a variable to this service.
-     * 
+     *
      * @param name
      *            name of the variable
      * @return a new VariableAttribute associated to this variable. This return
@@ -384,7 +384,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     /**
      * Adds an input/output to this service.
-     * 
+     *
      * @param name
      *            name of the input / output
      * @param communicationServer
@@ -407,7 +407,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     /**
      * Generates a short global description for the service. Used to answer to
      * global description query.
-     * 
+     *
      * @return short global description for the service
      */
     protected String generateShortGlobalDescription() {
@@ -425,7 +425,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      * Processes connection query received through the control channel. This
      * implementation just prints some info. You can either overide it or
      * implement it.
-     * 
+     *
      * @param host
      *            the host to connect to
      * @param port
@@ -443,7 +443,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     /**
      * Processes a variable modification query received through the control
      * channnel.
-     * 
+     *
      * @param buffer
      *            the new value for the variable
      * @param status
@@ -461,14 +461,14 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         try {
             processXMLMessage(new XmlMessage(message));
         } catch (BipMessageInterpretationException e) {
-            System.err.println("Warning: wrong xml received on control server, the exception stack follows");
-            e.printStackTrace();
+//            System.err.println("Warning: wrong xml received on control server, the exception stack follows");
+//            e.printStackTrace();
         }
     }
 
     /**
      * Processes a message received by the control server.
-     * 
+     *
      * @param message
      *            a message received by the control server
      */
@@ -526,7 +526,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     /**
      * Processes the subcribe/unsubscribe queries.
-     * 
+     *
      * @param elt
      *            piece of XML tree for the subcribe/unsubscribe query
      * @param pid
@@ -551,7 +551,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     /**
      * Processes the queries about in/outputs.
-     * 
+     *
      * @param elt
      *            part of the XML tree contained between tag about in/output :
      *            "input", "output", or "inOutput".
@@ -571,7 +571,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     /**
      * Processes the queries about variables.
-     * 
+     *
      * @param elt
      *            part of the xml tree contained between tag "variable"
      * @param pid
@@ -607,7 +607,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     /**
      * Processes a query for connection.
-     * 
+     *
      * @param elt
      *            the part of xml tree between tag "connect"
      */
@@ -652,7 +652,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     /**
      * Processes queries to lock the control server.
-     * 
+     *
      * @param elt
      *            part of XML containing the query
      * @param pid
@@ -674,7 +674,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     /**
      * Processes a query to unlock the control server.
-     * 
+     *
      * @param elt
      *            part of XML containing the query
      * @param pid
@@ -697,7 +697,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     /**
      * Finds a variable of the service using its name.
-     * 
+     *
      * @param name
      *            name of the variable to look for
      * @return the VariableAttribute object associated to the variable name or
@@ -714,7 +714,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     /**
      * Finds an in/output of the service using its name.
-     * 
+     *
      * @param name
      *            name of the in/output to find
      * @param k
@@ -746,7 +746,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     /**
      * Tests if the lock allows to do modification from a particular peer.
-     * 
+     *
      * @param peer
      *            the BIP peer id of the peer to test
      */

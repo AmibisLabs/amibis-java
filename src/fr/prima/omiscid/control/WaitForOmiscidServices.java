@@ -7,6 +7,7 @@ package fr.prima.omiscid.control;
 import java.util.Vector;
 
 import fr.prima.omiscid.com.BipUtils;
+import fr.prima.omiscid.control.filter.OmiscidServiceFilter;
 
 /**
  * Waits for several OMiSCID services at the same time. Allows to search in the

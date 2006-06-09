@@ -1,4 +1,6 @@
-package fr.prima.omiscid.control;
+package fr.prima.omiscid.control.filter;
+
+import fr.prima.omiscid.control.OmiscidService;
 
 /**
  * Interface to implement to test whether a service has the desired properties.

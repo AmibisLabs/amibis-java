@@ -5,6 +5,8 @@
 package fr.prima.omiscid.control;
 
 import fr.prima.omiscid.com.BipUtils;
+import fr.prima.omiscid.control.filter.OmiscidServiceFilter;
+import fr.prima.omiscid.control.filter.OmiscidServiceFilters;
 import fr.prima.omiscid.dnssd.interf.ServiceBrowser;
 import fr.prima.omiscid.dnssd.interf.ServiceEvent;
 import fr.prima.omiscid.dnssd.interf.ServiceEventListener;

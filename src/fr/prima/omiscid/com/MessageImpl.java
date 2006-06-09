@@ -12,7 +12,7 @@ import fr.prima.omiscid.com.interf.Message;
 
 /**
  * Contains the data about a BIP Message.
- * 
+ *
  * @see Message The content of the message are basically stored in a byte array.
  * @author Sebastien Pesnel Refactoring by Patrick Reignier and emonet
  */
@@ -31,7 +31,7 @@ public class MessageImpl implements Message {
 
     /**
      * Create a new instance with the data in parameter.
-     * 
+     *
      * @param source
      *            a buffer that contains the bytes of the message
      * @param offset
@@ -54,7 +54,7 @@ public class MessageImpl implements Message {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see fr.prima.omiscid.com.Message#getBufferAsString()
      */
     public String getBufferAsString() throws BipMessageInterpretationException {
@@ -92,7 +92,7 @@ public class MessageImpl implements Message {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see fr.prima.omiscid.com.Message#getBuffer()
      */
     /**
@@ -104,7 +104,7 @@ public class MessageImpl implements Message {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see fr.prima.omiscid.com.Message#getPeerId()
      */
     public int getPeerId() {
@@ -113,7 +113,7 @@ public class MessageImpl implements Message {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see fr.prima.omiscid.com.Message#getMessageId()
      */
     public int getMessageId() {
@@ -122,7 +122,7 @@ public class MessageImpl implements Message {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see fr.prima.omiscid.com.Message#toString()
      */
     public String toString() {

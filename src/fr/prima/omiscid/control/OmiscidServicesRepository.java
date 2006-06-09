@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Vector;
 
 import fr.prima.omiscid.com.BipUtils;
+import fr.prima.omiscid.control.filter.OmiscidServiceFilter;
 import fr.prima.omiscid.dnssd.interf.ServiceBrowser;
 import fr.prima.omiscid.dnssd.interf.ServiceEvent;
 import fr.prima.omiscid.dnssd.interf.ServiceEventListener;

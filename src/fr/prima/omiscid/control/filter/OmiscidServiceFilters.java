@@ -2,7 +2,9 @@
  * Created on Mar 29, 2006
  *
  */
-package fr.prima.omiscid.control;
+package fr.prima.omiscid.control.filter;
+
+import fr.prima.omiscid.control.OmiscidService;
 
 /**
  * Utility class. Provides some {@link OmiscidServiceFilter} creators for
