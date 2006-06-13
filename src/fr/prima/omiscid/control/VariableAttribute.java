@@ -26,7 +26,7 @@ import fr.prima.omiscid.control.interf.VariableChangeListener;
  * description for an int variable and its integer value. It provides accessors
  * that maintains the coherence between the description and the integer when the
  * integer is modified.
- * 
+ *
  * @see fr.prima.omiscid.control.ControlServer
  * @see fr.prima.omiscid.control.IntVariableAttribute
  * @author Sebastien Pesnel Refactoring by Patrick Reignier and emonet
@@ -38,8 +38,8 @@ public class VariableAttribute extends Attribute {
      * values are :
      * <ul>
      * <li> read </li>
-     * <li> read_write </li>
-     * <li> read_write_before_init </li>
+     * <li> readWrite </li>
+     * <li> readWriteBeforeInit </li>
      * </ul>
      * The string that are above are the symbol used in xml message.
      */
@@ -49,7 +49,7 @@ public class VariableAttribute extends Attribute {
 
         /***********************************************************************
          * Constructor only used in the VariableAttribute class
-         * 
+         *
          * @param s
          *            the string associated to this kind of access.
          */
@@ -67,10 +67,10 @@ public class VariableAttribute extends Attribute {
     public static final AccessKind READ = new AccessKind("read");
 
     /** Object for Read-Write Access */
-    public static final AccessKind READ_WRITE = new AccessKind("read_write");
+    public static final AccessKind READ_WRITE = new AccessKind("readWrite");
 
     /** Object for Read-Write Access before init */
-    public static final AccessKind READ_WRITE_BEFORE_INIT = new AccessKind("read_write_before_init");
+    public static final AccessKind READ_WRITE_BEFORE_INIT = new AccessKind("readWriteBeforeInit");
 
     /** the value for the variable (string representation) */
     private String valueStr = null;
@@ -98,7 +98,7 @@ public class VariableAttribute extends Attribute {
 
     /**
      * Creates a new instance of VariableAttribute
-     * 
+     *
      * @param name
      *            the name of the variable
      */
@@ -108,7 +108,7 @@ public class VariableAttribute extends Attribute {
 
     /**
      * Accesses the string value of the variable.
-     * 
+     *
      * @return the value contained in this VariableAttribute object
      */
     public String getValueStr() {
@@ -117,7 +117,7 @@ public class VariableAttribute extends Attribute {
 
     /**
      * Accesses the type of the variable.
-     * 
+     *
      * @return the type
      */
     public String getType() {
@@ -126,7 +126,7 @@ public class VariableAttribute extends Attribute {
 
     /**
      * Accesses the default value of the variable
-     * 
+     *
      * @return the default value
      */
     public String getDefaultValue() {
@@ -135,7 +135,7 @@ public class VariableAttribute extends Attribute {
 
     /**
      * Accesses the access rights set for the variable.
-     * 
+     *
      * @return the kind of access rights
      */
     public AccessKind getAccess() {
@@ -144,7 +144,7 @@ public class VariableAttribute extends Attribute {
 
     /**
      * Accesses the string representation of the access rights.
-     * 
+     *
      * @return the string associated to the kind of access
      */
     public String getAccessString() {
@@ -156,16 +156,17 @@ public class VariableAttribute extends Attribute {
      * rights. A variable can be modified if its kind of access is Read-Write,
      * or Read-Write-before-init if the service is not running (that is to say
      * that the service has a current status different of 2).
-     * 
+     *
      * @return whether the variable can be modified
      */
     public boolean canBeModified(int status) {
+        System.out.println(accessKind);
         return (accessKind == READ_WRITE) || (accessKind == READ_WRITE_BEFORE_INIT && status != ControlServer.STATUS_RUNNING);
     }
 
     /**
      * Sets the value for the variable and notifies the listeners.
-     * 
+     *
      * @param str
      *            the new value for the variable
      */
@@ -176,7 +177,7 @@ public class VariableAttribute extends Attribute {
 
     /**
      * Defines the type for the variable
-     * 
+     *
      * @param type
      *            the new type for the variable
      */
@@ -186,7 +187,7 @@ public class VariableAttribute extends Attribute {
 
     /**
      * Sets the default value for the variable.
-     * 
+     *
      * @param dv
      *            the new default value
      */
@@ -196,7 +197,7 @@ public class VariableAttribute extends Attribute {
 
     /**
      * Sets the access rights for the variable.
-     * 
+     *
      * @param a
      *            the new kind of access
      */
@@ -206,7 +207,7 @@ public class VariableAttribute extends Attribute {
 
     /**
      * Adds a listener interested in variable modification
-     * 
+     *
      * @param l
      *            the new listener
      */
@@ -218,7 +219,7 @@ public class VariableAttribute extends Attribute {
 
     /**
      * Removes a listener no more interested in variable modification.
-     * 
+     *
      * @param l
      *            the listener to remove
      */
@@ -242,7 +243,7 @@ public class VariableAttribute extends Attribute {
 
     /**
      * Adds the id of a peer interested in variable modification.
-     * 
+     *
      * @param pid
      *            the id of the peer
      */
@@ -252,7 +253,7 @@ public class VariableAttribute extends Attribute {
 
     /**
      * Removes an id of a peer no more interested in variable modification.
-     * 
+     *
      * @param pid
      *            the id of the peer to remove
      */
@@ -262,7 +263,7 @@ public class VariableAttribute extends Attribute {
 
     /**
      * Removes an id of a peer no more interested in variable modification.
-     * 
+     *
      * @param p
      *            contains the id of the peer to remove
      */
@@ -273,7 +274,7 @@ public class VariableAttribute extends Attribute {
     /**
      * Removes all specified ids of a peer no more interested in variable
      * modification.
-     * 
+     *
      * @param p
      *            contains the ids of the peers to remove
      */
@@ -284,7 +285,7 @@ public class VariableAttribute extends Attribute {
     /**
      * Accesses to a read only list of peer interested in the variable
      * modification.
-     * 
+     *
      * @return a read only set of Integer object. Their value are the ids of
      *         peers.
      */
@@ -296,7 +297,7 @@ public class VariableAttribute extends Attribute {
      * Generates a short description of the variable. The description has an XML
      * format, and contains only the name of the variable. It is used in control
      * server to generate a short global description of the service.
-     * 
+     *
      * @return &lt;variable name=&quot;variable_name&quot;/&gt;
      */
     public String generateShortDescription() {
@@ -307,7 +308,7 @@ public class VariableAttribute extends Attribute {
      * Generates a long description of the variable. The description has an XML
      * format, and contains all the information available about the variable. It
      * is used by the control server to answer to query about variable
-     * 
+     *
      * @return the XML description of the variable
      * @see ControlServer
      */
@@ -329,7 +330,7 @@ public class VariableAttribute extends Attribute {
      * &lt;variable name=&quot;variable_name&quot;&gt;<br>
      * &lt;value&gt;&lt;![CDATA[variable_value]]&gt;&lt;/value&gt;<br>
      * &lt;/variable&gt;
-     * 
+     *
      * @return the generated XML message
      */
     public String generateValueMessage() {
@@ -342,7 +343,7 @@ public class VariableAttribute extends Attribute {
     /**
      * Returns the name of the variable. To get a more complete description to
      * display, {@link VariableAttribute#generateLongDescription()} can be used.
-     * 
+     *
      * @return the name of the variable
      */
     public String toString() {
@@ -352,7 +353,7 @@ public class VariableAttribute extends Attribute {
     /**
      * Extracts the information to initialize the field of the variable from a
      * XML document.
-     * 
+     *
      * @param elt
      *            the element of the XML description
      */
