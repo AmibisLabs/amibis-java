@@ -28,7 +28,7 @@ public class TcpClient extends MessageSocketTCP {
     public static boolean stripTrailingDotLocalDot = true;
     static {
         try {
-            stripTrailingDotLocalDot = null == System.getenv("OMISCIDNS_USE_MSDN_NAME_SOLVING");
+            stripTrailingDotLocalDot = null == System.getenv("OMISCIDNS_USE_MDNS_NAME_SOLVING");
             // \REVIEWTASK this variable name should be documented somewhere
         } catch (SecurityException e) {
             // Access to environment variable is forbidden
