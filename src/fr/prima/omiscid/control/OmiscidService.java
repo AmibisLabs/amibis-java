@@ -93,7 +93,7 @@ public class OmiscidService {
      */
     public void setServiceId(int peerId) {
         if (this.peerId != 0) {
-            System.err.println("Warning: peer id already set in OmiscidService (was " + this.peerId + "), setting anyway");
+            System.err.println("Warning: peer id already set in OmiscidService (was " + BipUtils.intTo8HexString(this.peerId) + "), setting anyway");
         }
         this.peerId = peerId;
     }
