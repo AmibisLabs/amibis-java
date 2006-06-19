@@ -23,7 +23,7 @@ public class OmiscidServicesRepository implements ServiceEventListener {
 
     private final Vector<OmiscidService> servicesList = new Vector<OmiscidService>();
 
-    private final ServiceBrowser serviceBrowser = OmiscidService.dnssdFactory.createServiceBrowser(OmiscidService.REG_TYPE);
+    private final ServiceBrowser serviceBrowser = OmiscidService.dnssdFactory.createServiceBrowser(OmiscidService.REG_TYPE());
 
     private int peerId;
 

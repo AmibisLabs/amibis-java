@@ -120,7 +120,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      */
     public ControlServer(String serviceName) {
         initDefaultVar();
-        serviceRegistration = OmiscidService.dnssdFactory.createServiceRegistration(serviceName, OmiscidService.REG_TYPE);
+        serviceRegistration = OmiscidService.dnssdFactory.createServiceRegistration(serviceName, OmiscidService.REG_TYPE());
     }
 
     /**
@@ -132,7 +132,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      */
     public ControlServer() {
         initDefaultVar();
-        serviceRegistration = OmiscidService.dnssdFactory.createServiceRegistration("O3MiSCID_default_name", OmiscidService.REG_TYPE);
+        serviceRegistration = OmiscidService.dnssdFactory.createServiceRegistration("O3MiSCID_default_name", OmiscidService.REG_TYPE());
     }
 
     /**

@@ -20,8 +20,22 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
 // \REVIEWTASK shouldn't this be a monitor?
 // \REVIEWTASK should add some delegate to the control client class
 public class OmiscidService {
+
     /** Type for the registration */
-    public static final String REG_TYPE = "_bip._tcp";
+    public static String REG_TYPE() { return REG_TYPE; }
+    private static String REG_TYPE = "_bip._tcp";
+    static {
+        try {
+            // \REVIEWTASK this variable name should be documented somewhere
+            if (null != System.getenv("OMISCID_WORKING_DOMAIN")) {
+                REG_TYPE = System.getenv("OMISCID_WORKING_DOMAIN");
+            }
+        } catch (SecurityException e) {
+            // Access to environment variable is forbidden
+            System.err.println("Warning: access to environment variables is forbidden.");
+        }
+
+    };
 
     public static final String KEY_PEERID = "id";
 

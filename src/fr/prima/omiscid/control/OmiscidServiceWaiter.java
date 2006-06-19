@@ -37,7 +37,7 @@ public class OmiscidServiceWaiter implements ServiceEventListener {
      * provided as a parameter will be propagated to the created services. If
      * your application has no BIP peer id, {@link BipUtils#generateBIPPeerId()}
      * can be used to get one.
-     * 
+     *
      * @param baseServiceNameRegexp
      * @param omiscidServiceFilter
      * @param localPeerId
@@ -56,14 +56,14 @@ public class OmiscidServiceWaiter implements ServiceEventListener {
      * using {@link #getOmiscidService()}.
      */
     public void startSearch() {
-        this.serviceBrowser = OmiscidService.dnssdFactory.createServiceBrowser(OmiscidService.REG_TYPE);
+        this.serviceBrowser = OmiscidService.dnssdFactory.createServiceBrowser(OmiscidService.REG_TYPE());
         this.serviceBrowser.addListener(this);
         this.serviceBrowser.start();
     }
 
     /**
      * Tests whether a service matching the given filter has been found.
-     * 
+     *
      * @return whether a service has been found
      */
     public synchronized boolean isResolved() {
@@ -73,7 +73,7 @@ public class OmiscidServiceWaiter implements ServiceEventListener {
     /**
      * Waits for up to the given timeout for {@link #isResolved()} to become
      * true.
-     * 
+     *
      * @param timeout
      *            maximum time in milliseconds to wait before returning
      * @return the value returned by {@link #isResolved()}
@@ -93,7 +93,7 @@ public class OmiscidServiceWaiter implements ServiceEventListener {
 
     /**
      * Accesses the service found.
-     * 
+     *
      * @return the service found by the search process if {@link #isResolved()},
      *         null otherwise
      */
