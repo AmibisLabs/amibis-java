@@ -6,7 +6,7 @@ import fr.prima.omiscid.control.OmiscidService;
 
 /**
  * Enables to combine several tests (with an "and" operator).
- * 
+ *
  * @author Sebastien Pesnel refactoring emonet
  */
 public class OmiscidServiceFilterCascade implements OmiscidServiceFilter {
@@ -18,15 +18,15 @@ public class OmiscidServiceFilterCascade implements OmiscidServiceFilter {
 
     public OmiscidServiceFilterCascade(OmiscidServiceFilter... filters) {
         for (OmiscidServiceFilter filter : filters) {
-            addTest(filter);
+            addFilter(filter);
         }
     }
 
-    public synchronized void addTest(OmiscidServiceFilter w) {
+    public synchronized void addFilter(OmiscidServiceFilter w) {
         filtersList.add(w);
     }
 
-    public synchronized void removeTest(OmiscidServiceFilter w) {
+    public synchronized void removeFilter(OmiscidServiceFilter w) {
         filtersList.remove(w);
     }
 

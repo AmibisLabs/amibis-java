@@ -73,7 +73,7 @@ public final class OmiscidServiceFilters {
     /**
      * Tests whether the service name (with possible trailing dnssd number
      * removed).
-     * 
+     *
      * @param nameRegexp
      * @return
      */
