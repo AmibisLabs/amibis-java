@@ -14,8 +14,8 @@ import org.w3c.dom.NodeList;
 import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.TcpClient;
 import fr.prima.omiscid.com.XmlMessage;
-import fr.prima.omiscid.com.interf.Message;
 import fr.prima.omiscid.com.interf.BipMessageListener;
+import fr.prima.omiscid.com.interf.Message;
 import fr.prima.omiscid.control.interf.ChannelType;
 
 /**
@@ -190,6 +190,10 @@ public class ControlClient implements BipMessageListener {
                 System.err.println("Unknown message kind : " + root.getNodeName());
             }
         }
+    }
+
+
+    public void disconnected() {
     }
 
     /**
@@ -803,5 +807,6 @@ public class ControlClient implements BipMessageListener {
     public Set<String> getVariableNamesSet() {
         return Collections.unmodifiableSet(variableNamesSet);
     }
+
 
 }

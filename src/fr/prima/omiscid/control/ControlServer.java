@@ -741,7 +741,10 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             tcpServer.start();
             tcpServer.addBipMessageListener(new fr.prima.omiscid.com.interf.BipMessageListener() {
                 public void receivedBipMessage(fr.prima.omiscid.com.interf.Message m) {
-                    System.out.println("received OMiSCID message");
+                    System.out.println("received message");
+                }
+                public void disconnected() {
+                    System.out.println("received disconnection notification");
                 }
             });
         } catch (java.io.IOException e) {

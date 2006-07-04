@@ -7,8 +7,8 @@ import java.util.Set;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import fr.prima.omiscid.com.interf.Message;
 import fr.prima.omiscid.com.interf.BipMessageListener;
+import fr.prima.omiscid.com.interf.Message;
 
 /**
  * Manages the buffer to store bytes and parsed BIP messages. The buffer can
@@ -376,6 +376,7 @@ public abstract class MessageSocket {
         while (connected) {
             receive();
         }
+
     }
 
     /**

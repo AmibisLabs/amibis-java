@@ -19,5 +19,10 @@ public interface BipMessageListener extends EventListener {
      * @param message
      *            the BIP message to process
      */
-    public void receivedBipMessage(Message message);
+    void receivedBipMessage(Message message);
+
+    /**
+     *
+     */
+    void disconnected();
 }
