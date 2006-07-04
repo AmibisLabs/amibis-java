@@ -16,6 +16,7 @@ import fr.prima.omiscid.com.TcpClient;
 import fr.prima.omiscid.com.XmlMessage;
 import fr.prima.omiscid.com.interf.Message;
 import fr.prima.omiscid.com.interf.BipMessageListener;
+import fr.prima.omiscid.control.interf.ChannelType;
 
 /**
  * Handles the communication with the control server of a OMiSCID service.
@@ -399,11 +400,11 @@ public class ControlClient implements BipMessageListener {
      *         the request failed
      */
     public InOutputAttribute queryInputDescription(String name) {
-        String request = "<" + InOutputAttribute.Input.getXMLTag() + " name=\"" + name + "\"/>";
+        String request = "<" + ChannelType.INPUT.getXMLTag() + " name=\"" + name + "\"/>";
         XmlMessage message = queryToServer(request, true);
         if (message != null) {
             InOutputAttribute ioattr = findInput(name);
-            InOutputAttribute attr = processInOutputDescription(XmlUtils.firstChild(message.getRootElement(), InOutputAttribute.Input.getXMLTag()), ioattr);
+            InOutputAttribute attr = processInOutputDescription(XmlUtils.firstChild(message.getRootElement(), ChannelType.INPUT.getXMLTag()), ioattr);
             if (attr == null) {
                 if (ioattr != null)
                     inputAttributesSet.remove(ioattr);
@@ -429,11 +430,11 @@ public class ControlClient implements BipMessageListener {
      *         the request failed
      */
     public InOutputAttribute queryOutputDescription(String name) {
-        String request = "<" + InOutputAttribute.Output.getXMLTag() + " name=\"" + name + "\"/>";
+        String request = "<" + ChannelType.OUTPUT.getXMLTag() + " name=\"" + name + "\"/>";
         XmlMessage message = queryToServer(request, true);
         if (message != null) {
             InOutputAttribute ioattr = findOutput(name);
-            InOutputAttribute attr = processInOutputDescription(XmlUtils.firstChild(message.getRootElement(), InOutputAttribute.Output.getXMLTag()), ioattr);
+            InOutputAttribute attr = processInOutputDescription(XmlUtils.firstChild(message.getRootElement(), ChannelType.OUTPUT.getXMLTag()), ioattr);
             if (attr == null) {
                 if (ioattr != null)
                     outputAttributesSet.remove(ioattr);
@@ -459,11 +460,11 @@ public class ControlClient implements BipMessageListener {
      *         the request failed
      */
     public InOutputAttribute queryInOutputDescription(String name) {
-        String request = "<" + InOutputAttribute.InOutput.getXMLTag() + " name=\"" + name + "\"/>";
+        String request = "<" + ChannelType.INOUTPUT.getXMLTag() + " name=\"" + name + "\"/>";
         XmlMessage message = queryToServer(request, true);
         if (message != null) {
             InOutputAttribute ioattr = findInOutput(name);
-            InOutputAttribute attr = processInOutputDescription(XmlUtils.firstChild(message.getRootElement(), InOutputAttribute.InOutput.getXMLTag()), ioattr);
+            InOutputAttribute attr = processInOutputDescription(XmlUtils.firstChild(message.getRootElement(), ChannelType.INOUTPUT.getXMLTag()), ioattr);
             if (attr == null) {
                 if (ioattr != null)
                     inOutputAttributesSet.remove(ioattr);
@@ -659,11 +660,11 @@ public class ControlClient implements BipMessageListener {
             String nodeName = node.getNodeName();
             if (nodeName.equals("variable")) {
                 variableNamesSet.add(((Element) node).getAttribute("name"));
-            } else if (nodeName.equals(InOutputAttribute.Input.getXMLTag())) {
+            } else if (nodeName.equals(ChannelType.INPUT.getXMLTag())) {
                 inputNamesSet.add(((Element) node).getAttribute("name"));
-            } else if (nodeName.equals(InOutputAttribute.Output.getXMLTag())) {
+            } else if (nodeName.equals(ChannelType.OUTPUT.getXMLTag())) {
                 outputNamesSet.add(((Element) node).getAttribute("name"));
-            } else if (nodeName.equals(InOutputAttribute.InOutput.getXMLTag())) {
+            } else if (nodeName.equals(ChannelType.INOUTPUT.getXMLTag())) {
                 inOutputNamesSet.add(((Element) node).getAttribute("name"));
             } else {
                 System.out.println("Unknown kind " + nodeName);

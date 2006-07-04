@@ -10,6 +10,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import fr.prima.omiscid.control.interf.VariableAccessType;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 
 /**
@@ -33,45 +34,6 @@ import fr.prima.omiscid.control.interf.VariableChangeListener;
  */
 public class VariableAttribute extends Attribute {
 
-    /**
-     * Manages an enumerated type for the kind of access on a variable. The
-     * values are :
-     * <ul>
-     * <li> read </li>
-     * <li> readWrite </li>
-     * <li> readWriteBeforeInit </li>
-     * </ul>
-     * The string that are above are the symbol used in xml message.
-     */
-    static final public class AccessKind {
-        /** The string used in the XML messages */
-        private String str;
-
-        /***********************************************************************
-         * Constructor only used in the VariableAttribute class
-         *
-         * @param s
-         *            the string associated to this kind of access.
-         */
-        private AccessKind(String s) {
-            str = s;
-        };
-
-        /** @return the string ssociated to this kind of access */
-        public String toString() {
-            return str;
-        }
-    };
-
-    /** Object for Read Access */
-    public static final AccessKind READ = new AccessKind("read");
-
-    /** Object for Read-Write Access */
-    public static final AccessKind READ_WRITE = new AccessKind("readWrite");
-
-    /** Object for Read-Write Access before init */
-    public static final AccessKind READ_WRITE_BEFORE_INIT = new AccessKind("readWriteBeforeInit");
-
     /** the value for the variable (string representation) */
     private String valueStr = null;
 
@@ -82,7 +44,7 @@ public class VariableAttribute extends Attribute {
     private String defaultValue = null;
 
     /** the kind of access on the variable */
-    private AccessKind accessKind = READ;
+    private VariableAccessType accessKind = VariableAccessType.READ;
 
     /**
      * A set of listener interested in variable modification. A set of object
@@ -138,7 +100,7 @@ public class VariableAttribute extends Attribute {
      *
      * @return the kind of access rights
      */
-    public AccessKind getAccess() {
+    public VariableAccessType getAccess() {
         return accessKind;
     }
 
@@ -161,7 +123,8 @@ public class VariableAttribute extends Attribute {
      */
     public boolean canBeModified(int status) {
         System.out.println(accessKind);
-        return (accessKind == READ_WRITE) || (accessKind == READ_WRITE_BEFORE_INIT && status != ControlServer.STATUS_RUNNING);
+        return (accessKind == VariableAccessType.READ_WRITE);
+        //|| (accessKind == READ_WRITE_BEFORE_INIT && status != ControlServer.STATUS_RUNNING);
     }
 
     /**
@@ -201,7 +164,7 @@ public class VariableAttribute extends Attribute {
      * @param a
      *            the new kind of access
      */
-    public void setAccess(AccessKind a) {
+    public void setAccess(VariableAccessType a) {
         accessKind = a;
     }
 
@@ -390,12 +353,12 @@ public class VariableAttribute extends Attribute {
      * Defines the kind of access according to the string representation.
      */
     protected void setAccess(String accessStr) {
-        if (accessStr.equals(VariableAttribute.READ.toString())) {
-            setAccess(VariableAttribute.READ);
-        } else if (accessStr.equals(VariableAttribute.READ_WRITE.toString())) {
-            setAccess(VariableAttribute.READ_WRITE);
-        } else if (accessStr.equals(VariableAttribute.READ_WRITE_BEFORE_INIT.toString())) {
-            setAccess(VariableAttribute.READ_WRITE_BEFORE_INIT);
+        if (accessStr.equals(VariableAccessType.READ.toString())) {
+            setAccess(VariableAccessType.READ);
+        } else if (accessStr.equals(VariableAccessType.READ_WRITE.toString())) {
+            setAccess(VariableAccessType.READ_WRITE);
+        } else if (accessStr.equals(VariableAccessType.CONSTANT.toString())) {
+            setAccess(VariableAccessType.CONSTANT);
         }
     }
 

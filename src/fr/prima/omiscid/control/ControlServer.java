@@ -16,7 +16,8 @@ import fr.prima.omiscid.com.MessageManager;
 import fr.prima.omiscid.com.TcpServer;
 import fr.prima.omiscid.com.XmlMessage;
 import fr.prima.omiscid.com.interf.Message;
-import fr.prima.omiscid.control.interf.InOutputKind;
+import fr.prima.omiscid.control.interf.ChannelType;
+import fr.prima.omiscid.control.interf.VariableAccessType;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
 
@@ -396,7 +397,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      *         object can be manipulate to specify the in/output description for
      *         example.
      */
-    public InOutputAttribute addInOutput(String name, CommunicationServer communicationServer, InOutputKind ioKind) {
+    public InOutputAttribute addInOutput(String name, CommunicationServer communicationServer, ChannelType ioKind) {
         InOutputAttribute ioa = new InOutputAttribute(name, communicationServer);
         ioa.setKind(ioKind);
         inoutputsSet.add(ioa);
@@ -489,12 +490,12 @@ public class ControlServer extends MessageManager implements VariableChangeListe
                         Node cur = nodeList.item(i);
                         if (cur.getNodeType() == Node.ELEMENT_NODE) {
                             String curName = cur.getNodeName();
-                            if (curName.equals(InOutputAttribute.Input.getXMLTag())) {
-                                str += processInOutputQuery((Element) cur, InOutputAttribute.Input);
-                            } else if (curName.equals(InOutputAttribute.Output.getXMLTag())) {
-                                str += processInOutputQuery((Element) cur, InOutputAttribute.Output);
-                            } else if (curName.equals(InOutputAttribute.InOutput.getXMLTag())) {
-                                str += processInOutputQuery((Element) cur, InOutputAttribute.InOutput);
+                            if (curName.equals(ChannelType.INPUT.getXMLTag())) {
+                                str += processInOutputQuery((Element) cur, ChannelType.INPUT);
+                            } else if (curName.equals(ChannelType.OUTPUT.getXMLTag())) {
+                                str += processInOutputQuery((Element) cur, ChannelType.OUTPUT);
+                            } else if (curName.equals(ChannelType.INOUTPUT.getXMLTag())) {
+                                str += processInOutputQuery((Element) cur, ChannelType.INOUTPUT);
                             } else if (curName.equals("variable")) {
                                 str += processVariableQuery((Element) cur, message.getPeerId());
                             } else if (curName.equals("connect")) {
@@ -559,7 +560,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      *            input, output, or inOutput
      * @return the answer to the query
      */
-    protected String processInOutputQuery(Element elt, InOutputKind kind) {
+    protected String processInOutputQuery(Element elt, ChannelType kind) {
         Attr attrName = elt.getAttributeNode("name");
         InOutputAttribute ioa = findInOutput(attrName.getValue(), kind);
         if (ioa != null) {
@@ -722,7 +723,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      * @return the InOutputAttribute object associated to the name or null if
      *         not found
      */
-    public InOutputAttribute findInOutput(String name, InOutputKind k) {
+    public InOutputAttribute findInOutput(String name, ChannelType k) {
         for (InOutputAttribute ioa : inoutputsSet) {
             if (ioa.getName().equals(name) && (k == null || k == ioa.getKind())) {
                 return ioa;
@@ -775,7 +776,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         System.out.println("add variable");
         VariableAttribute va = null;
         va = ctrl.addVariable("var_1");
-        va.setAccess(VariableAttribute.READ_WRITE);
+        va.setAccess(VariableAccessType.READ_WRITE);
         va.setType("integer");
         va.setDefaultValue("0");
         va.setDescription("a variable to modify for test");
@@ -800,7 +801,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         } catch (java.io.IOException e) {
             e.printStackTrace();
         }
-        ioa = ctrl.addInOutput("my output", tcpServer, InOutputAttribute.Output);
+        ioa = ctrl.addInOutput("my output", tcpServer, ChannelType.OUTPUT);
         ioa.setDescription("output for test");
 
         System.out.println("Register, creation control port");

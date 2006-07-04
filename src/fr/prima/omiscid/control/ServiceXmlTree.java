@@ -19,7 +19,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import fr.prima.omiscid.com.BipUtils;
-import fr.prima.omiscid.control.interf.InOutputKind;
+import fr.prima.omiscid.control.interf.ChannelType;
 import fr.prima.omiscid.dnssd.interf.ServiceEvent;
 import fr.prima.omiscid.dnssd.interf.ServiceEventListener;
 
@@ -278,16 +278,16 @@ public class ServiceXmlTree implements ServiceEventListener {
                         }
                     }
                 }
-                addElementFromIOSet(elt, ctrlClient.getInOutputAttributesSet(), InOutputKind.InOutput);
-                addElementFromIOSet(elt, ctrlClient.getInputAttributesSet(), InOutputKind.Input);
-                addElementFromIOSet(elt, ctrlClient.getOutputAttributesSet(), InOutputKind.Output);
+                addElementFromIOSet(elt, ctrlClient.getInOutputAttributesSet(), ChannelType.INOUTPUT);
+                addElementFromIOSet(elt, ctrlClient.getInputAttributesSet(), ChannelType.INPUT);
+                addElementFromIOSet(elt, ctrlClient.getOutputAttributesSet(), ChannelType.OUTPUT);
             }
             s.closeControlClient();
         }
         return elt;
     }
 
-    private void addElementFromIOSet(Element elt, java.util.Set<InOutputAttribute> set, InOutputKind kind) {
+    private void addElementFromIOSet(Element elt, java.util.Set<InOutputAttribute> set, ChannelType kind) {
         java.util.Iterator<InOutputAttribute> it = set.iterator();
         while (it.hasNext()) {
             InOutputAttribute ioa = it.next();

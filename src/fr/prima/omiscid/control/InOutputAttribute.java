@@ -12,7 +12,7 @@ import org.w3c.dom.NodeList;
 
 import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.CommunicationServer;
-import fr.prima.omiscid.control.interf.InOutputKind;
+import fr.prima.omiscid.control.interf.ChannelType;
 
 /**
  * Stores an in/output description. The in/output description is composed of a
@@ -26,17 +26,9 @@ import fr.prima.omiscid.control.interf.InOutputKind;
  * @author Sebastien Pesnel Refactoring by Patrick Reignier and emonet
  */
 public class InOutputAttribute extends Attribute {
-    /** Kind input */
-    public static final InOutputKind Input = InOutputKind.Input;
-
-    /** Kind output */
-    public static final InOutputKind Output = InOutputKind.Output;
-
-    /** Kind inoutput */
-    public static final InOutputKind InOutput = InOutputKind.InOutput;
 
     /** Kind of in/output */
-    private InOutputKind kind = Input;
+    private ChannelType kind = ChannelType.INPUT;
 
     /**
      * Object used on the ControlServer side to provide data as TCP/UDP port,
@@ -85,7 +77,7 @@ public class InOutputAttribute extends Attribute {
      * @param aKind
      *            kind of in/output
      */
-    public void setKind(InOutputKind aKind) {
+    public void setKind(ChannelType aKind) {
         kind = aKind;
     }
 
@@ -94,7 +86,7 @@ public class InOutputAttribute extends Attribute {
      *
      * @return the kind of in/output
      */
-    public InOutputKind getKind() {
+    public ChannelType getKind() {
         return kind;
     }
 
@@ -104,7 +96,7 @@ public class InOutputAttribute extends Attribute {
      * @return whether it is an input channel
      */
     public boolean isInput() {
-        return kind == Input;
+        return kind == ChannelType.INPUT;
     }
 
     /**
@@ -113,7 +105,7 @@ public class InOutputAttribute extends Attribute {
      * @return whether it is an output channel
      */
     public boolean isOutput() {
-        return kind == Output;
+        return kind == ChannelType.OUTPUT;
     }
 
     /**
@@ -122,7 +114,7 @@ public class InOutputAttribute extends Attribute {
      * @return whether it is an inoutput channel
      */
     public boolean isInOutput() {
-        return kind == InOutput;
+        return kind == ChannelType.INOUTPUT;
     }
 
     /**
@@ -301,13 +293,13 @@ public class InOutputAttribute extends Attribute {
         }
     }
 
-    static public InOutputKind IOKindFromName(String str) {
-        if (str.equals(InOutput.getXMLTag())) {
-            return InOutput;
-        } else if (str.equals(Output.getXMLTag())) {
-            return Output;
-        } else if (str.equals(Input.getXMLTag())) {
-            return Input;
+    static public ChannelType IOKindFromName(String str) {
+        if (str.equals(ChannelType.INOUTPUT.getXMLTag())) {
+            return ChannelType.INOUTPUT;
+        } else if (str.equals(ChannelType.OUTPUT.getXMLTag())) {
+            return ChannelType.OUTPUT;
+        } else if (str.equals(ChannelType.INPUT.getXMLTag())) {
+            return ChannelType.INPUT;
         } else {
             return null;
         }
