@@ -109,4 +109,8 @@ public final class OmiscidServiceFilters {
         return new OmiscidServiceFilterCascade(filters);
     }
 
+    public static OmiscidServiceFilter or(OmiscidServiceFilter... filters) {
+        return new OmiscidServiceFilterCascade(false, filters);
+    }
+
 }

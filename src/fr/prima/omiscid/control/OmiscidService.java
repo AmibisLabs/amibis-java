@@ -123,7 +123,7 @@ public class OmiscidService {
         if (str == null) {
             return "";
         } else {
-            return str;
+            return str.replaceFirst(GlobalConstants.prefixForConstantInDnssd, "");
         }
     }
 
@@ -136,7 +136,7 @@ public class OmiscidService {
     public int getRemotePeerId() {
         String str = serviceInformation.getStringProperty(GlobalConstants.constantNameForPeerId);
         if (str != null) {
-            return BipUtils.hexStringToInt(str);
+            return BipUtils.hexStringToInt(str.replaceFirst(GlobalConstants.prefixForConstantInDnssd, ""));
         } else {
             ControlClient ctrlClient = initControlClient();
             int pid = ctrlClient.getPeerId();
