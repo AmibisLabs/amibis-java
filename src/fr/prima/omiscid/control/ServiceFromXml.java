@@ -39,7 +39,7 @@ public class ServiceFromXml extends fr.prima.omiscid.control.ControlServer {
         String path = "src/OmiscidSearch/xml/";
         String fileName = path + "generatedfile.xml";
         ServiceFromXml sfx = new ServiceFromXml(fileName) {
-            protected void variableModificationQuery(byte[] buffer, int status, VariableAttribute va) {
+            protected void variableModificationQuery(byte[] buffer, VariableAttribute va) {
                 va.setValueStr(new String(buffer));
             }
         };

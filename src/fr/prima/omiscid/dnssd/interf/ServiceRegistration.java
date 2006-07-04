@@ -7,7 +7,7 @@ package fr.prima.omiscid.dnssd.interf;
 /**
  * Represents the registration under dnssd. It is used to register and
  * unregister a service.
- * 
+ *
  * @author emonet
  */
 public interface ServiceRegistration {
@@ -15,8 +15,9 @@ public interface ServiceRegistration {
     /**
      * Adds a property to the property set under dnssd. The properties must be
      * set before registrating the service (before calling
-     * {@link #register(int)})
-     * 
+     * {@link #register(int)}). If the property is already set, its value is replaced by the
+     * given value.
+     *
      * @param name
      *            the name of the property
      * @param value
@@ -29,7 +30,7 @@ public interface ServiceRegistration {
      * before registrating the service (before calling {@link #register(int)})
      * This name will be decorated by dnssd (to avoid name clashes and make a
      * unique name) and will be accessible through {@link #getRegisteredName()}.
-     * 
+     *
      * @param serviceName
      */
     void setName(String serviceName);
@@ -37,7 +38,7 @@ public interface ServiceRegistration {
     /**
      * Gets the desired base name for the service. After registration, the
      * registered name is accessible through {@link #getRegisteredName()}.
-     * 
+     *
      * @return
      */
     String getName();
@@ -46,7 +47,7 @@ public interface ServiceRegistration {
      * Registers the service under dnssd. If the registration succeeds, the
      * registered service name is accessible through
      * {@link #getRegisteredName()}.
-     * 
+     *
      * @param port
      * @return whether the registration was successful
      */
@@ -62,7 +63,7 @@ public interface ServiceRegistration {
     /**
      * Gets the name which the service is registered under dnssd with. The
      * service must have been successfully registered beforehand.
-     * 
+     *
      * @return
      */
     String getRegisteredName();

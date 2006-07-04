@@ -17,6 +17,7 @@ import fr.prima.omiscid.com.TcpServer;
 import fr.prima.omiscid.com.XmlMessage;
 import fr.prima.omiscid.com.interf.Message;
 import fr.prima.omiscid.control.interf.ChannelType;
+import fr.prima.omiscid.control.interf.GlobalConstants;
 import fr.prima.omiscid.control.interf.VariableAccessType;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
@@ -63,14 +64,6 @@ import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
  */
 // \REVIEWTASK should externalize some strings to the OmiscidService class
 public class ControlServer extends MessageManager implements VariableChangeListener {
-    /** value for the variable status : when the service begins */
-    public static final int STATUS_BEGIN = 0;
-
-    /** value for the variable status : when the service is registered */
-    public static final int STATUS_INIT = 1;
-
-    /** value for the variable status : when the service is running */
-    public static final int STATUS_RUNNING = 2;
 
     /** the service id used OMiSCID exchange */
     private final int peerId = BipUtils.generateBIPPeerId();
@@ -88,17 +81,8 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      */
     private Set<InOutputAttribute> inoutputsSet = new HashSet<InOutputAttribute>();
 
-    /** the variable for the service status */
-    private IntVariableAttribute statusIntegerVariable = null;
-
     /** the variable for the lock attribute */
     private IntVariableAttribute lockIntegerVar = null;
-
-    /** the variable for the number of variable in the service */
-    private IntVariableAttribute variablesCountIntegerVariable = null;
-
-    /** the variable for the number of variable in the service */
-    private IntVariableAttribute inoutputsCountIntegerVariable = null;
 
     /** Thread where the message are processed */
     private Thread threadProcessMessages = null;
@@ -156,17 +140,20 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      * Creates the default variables for a service
      */
     private void initDefaultVar() {
-        VariableAttribute nbvarVar = addVariable("number of variables");
-        variablesCountIntegerVariable = new IntVariableAttribute(nbvarVar, 1);
-
-        VariableAttribute nbinoutVar = addVariable("number of inoutputs");
-        inoutputsCountIntegerVariable = new IntVariableAttribute(nbinoutVar, 0);
-
-        VariableAttribute lockVar = addVariable("lock");
+        VariableAttribute lockVar = addVariable(GlobalConstants.variableNameForLock);
         lockIntegerVar = new IntVariableAttribute(lockVar, 0);
 
-        VariableAttribute statusVar = addVariable("status");
-        statusIntegerVariable = new IntVariableAttribute(statusVar, STATUS_BEGIN);
+        VariableAttribute peerIdVariable = addVariable(GlobalConstants.constantNameForPeerId);
+        peerIdVariable.setValueStr(BipUtils.intTo8HexString(peerId));
+        peerIdVariable.setAccess(VariableAccessType.CONSTANT);
+
+        VariableAttribute ownerVariable = addVariable(GlobalConstants.constantNameForOwner);
+        ownerVariable.setValueStr(System.getProperty("user.name"));
+        ownerVariable.setAccess(VariableAccessType.CONSTANT);
+
+        VariableAttribute classVariable = addVariable(GlobalConstants.constantNameForClass);
+        classVariable.setValueStr(GlobalConstants.defaultServiceClassValue);
+        classVariable.setAccess(VariableAccessType.CONSTANT);
     }
 
     /**
@@ -196,7 +183,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
             // register the service
             if (registerTheService(tcpServer.getTcpPort())) {
-                setStatus(STATUS_INIT);
+//                setStatus(STATUS_INIT);
                 return true;
             } else {
                 return false;
@@ -219,35 +206,35 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      * @return whether the service was correctly registered
      */
     private boolean registerTheService(int port) {
-        String inputRecord = "";
-        String outputRecord = "";
-        String inOutputRecord = "";
-
-        for (InOutputAttribute ioa : inoutputsSet) {
-            serviceRegistration.addProperty(ioa.getName(), ioa.generateRecordData());
-            if (ioa.isInput()) {
-                inputRecord = inputRecord + ioa.getName() + ",";
-            } else if (ioa.isOutput()) {
-                outputRecord = outputRecord + ioa.getName() + ",";
-            } else if (ioa.isInOutput()) {
-                inOutputRecord = inOutputRecord + ioa.getName() + ",";
+        serviceRegistration.addProperty(GlobalConstants.keyForFullTextRecord, GlobalConstants.keyForFullTextRecordFull);
+        try {
+            for (VariableAttribute variable: variablesSet) {
+                if (variable.getAccess() == VariableAccessType.CONSTANT) {
+                    serviceRegistration.addProperty(variable.getName(), GlobalConstants.prefixForConstantInDnssd + variable.getValueStr());
+                }
             }
+            for (InOutputAttribute channel : inoutputsSet) {
+                String prefix = "";
+                switch (channel.getChannelType()) {
+                case INPUT: prefix = GlobalConstants.prefixForInputInDnssd; break;
+                case OUTPUT: prefix = GlobalConstants.prefixForOutputInDnssd; break;
+                case INOUTPUT: prefix = GlobalConstants.prefixForInoutputInDnssd; break;
+                }
+                serviceRegistration.addProperty(channel.getName(), prefix + channel.getTcpPort());
+            }
+            for (VariableAttribute variable: variablesSet) {
+                if (variable.getAccess() != VariableAccessType.CONSTANT) {
+                    String prefix = "?/";
+                    switch (variable.getAccess()) {
+                    case READ: prefix = GlobalConstants.prefixForReadOnlyVariableInDnssd; break;
+                    case READ_WRITE: prefix = GlobalConstants.prefixForReadWriteVariableInDnssd; break;
+                    }
+                    serviceRegistration.addProperty(variable.getName(), prefix);
+                }
+            }
+        } catch (Exception e) {
+            serviceRegistration.addProperty(GlobalConstants.keyForFullTextRecord, GlobalConstants.keyForFullTextRecordNonFull);
         }
-        if (inputRecord.length() > 0) {
-            inputRecord = inputRecord.substring(0, inputRecord.length() - 1);
-        }
-        if (outputRecord.length() > 0) {
-            outputRecord = outputRecord.substring(0, outputRecord.length() - 1);
-        }
-        if (inOutputRecord.length() > 0) {
-            inOutputRecord = inOutputRecord.substring(0, inOutputRecord.length() - 1);
-        }
-        serviceRegistration.addProperty(OmiscidService.KEY_OWNER, System.getProperty("user.name"));
-        serviceRegistration.addProperty(OmiscidService.KEY_PEERID, fr.prima.omiscid.com.BipUtils.intTo8HexString(peerId));
-        serviceRegistration.addProperty(OmiscidService.KEY_INPUTS, inputRecord);
-        serviceRegistration.addProperty(OmiscidService.KEY_OUTPUTS, outputRecord);
-        serviceRegistration.addProperty(OmiscidService.KEY_INOUTPUTS, inOutputRecord);
-
         return serviceRegistration.register(port);
     }
 
@@ -268,25 +255,6 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             }
         }
         variable.removeAllPeers(unreachablePeers);
-    }
-
-    /**
-     * @deprecated Use {@link #startProcessMessagesThread()} instead
-     */
-    @Deprecated
-    public boolean startThreadProcessMessage() {
-        return startProcessMessagesThread();
-    }
-
-    /**
-     * Launches a thread to process the messages, to answer to ControlQuery
-     *
-     * @return whether the thread has been launched (false if a thread is
-     *         already launched to process messages)
-     * @deprecated Use {@link #startProcessMessagesThread()} instead
-     */
-    public boolean startProcessMessageThread() {
-        return startProcessMessagesThread();
     }
 
     /**
@@ -346,25 +314,6 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     }
 
     /**
-     * Accesses the service status
-     *
-     * @return the status value
-     */
-    public int getStatus() {
-        return statusIntegerVariable.getIntValue();
-    }
-
-    /**
-     * Changes the service status.
-     *
-     * @param status
-     *            the new value for the status
-     */
-    public void setStatus(int status) {
-        statusIntegerVariable.setIntValue(status);
-    }
-
-    /**
      * Adds a variable to this service.
      *
      * @param name
@@ -377,9 +326,6 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         VariableAttribute v = new VariableAttribute(name);
         v.addListenerChange(this);
         variablesSet.add(v);
-        if (variablesCountIntegerVariable != null) {
-            variablesCountIntegerVariable.increment();
-        }
         return v;
     }
 
@@ -399,9 +345,8 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      */
     public InOutputAttribute addInOutput(String name, CommunicationServer communicationServer, ChannelType ioKind) {
         InOutputAttribute ioa = new InOutputAttribute(name, communicationServer);
-        ioa.setKind(ioKind);
+        ioa.setChannelType(ioKind);
         inoutputsSet.add(ioa);
-        inoutputsCountIntegerVariable.increment();
         return ioa;
     }
 
@@ -453,7 +398,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      *            the VaraibleAttribute object associated to the variable to
      *            modify
      */
-    protected void variableModificationQuery(byte[] buffer, int status, VariableAttribute va) {
+    protected void variableModificationQuery(byte[] buffer, VariableAttribute va) {
         System.out.println("in modifVariable : " + va.getName());
         // \REVIEWTASK shouldn't this be implemented (or abstract)
     }
@@ -595,8 +540,9 @@ public class ControlServer extends MessageManager implements VariableChangeListe
                 } else {
                     Element eltVal = XmlUtils.firstChild(elt, "value");
                     if (eltVal != null) {
-                        if (lockOk(pid) && va.canBeModified(statusIntegerVariable.getIntValue())) {
-                            variableModificationQuery(eltVal.getFirstChild().getNodeValue().getBytes(), statusIntegerVariable.getIntValue(), va);
+                        if (lockOk(pid) ) {
+//                            && va.canBeModified(statusIntegerVariable.getIntValue())
+                            variableModificationQuery(eltVal.getFirstChild().getNodeValue().getBytes(), va);
                         }
                         return va.generateValueMessage();
                     }
@@ -725,7 +671,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      */
     public InOutputAttribute findInOutput(String name, ChannelType k) {
         for (InOutputAttribute ioa : inoutputsSet) {
-            if (ioa.getName().equals(name) && (k == null || k == ioa.getKind())) {
+            if (ioa.getName().equals(name) && (k == null || k == ioa.getChannelType())) {
                 return ioa;
             }
         }
@@ -766,7 +712,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         String serviceName = "essai";
         System.out.println("ControlServer creation");
         ControlServer ctrl = new ControlServer(serviceName) {
-            protected void variableModificationQuery(byte[] buffer, int status, VariableAttribute va) {
+            protected void variableModificationQuery(byte[] buffer, VariableAttribute va) {
                 String valueStr = new String(buffer);
                 System.out.println("modif variable " + va.getName() + " <- " + valueStr);
                 va.setValueStr(valueStr);
@@ -808,8 +754,6 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         ctrl.startServer(controlPort);
         System.out.println("Thread process message");
         ctrl.startProcessMessagesThread();
-
-        ctrl.setStatus(ControlServer.STATUS_RUNNING);
 
         System.out.println("Control Server Launched : " + ctrl.getTcpServer().getHost() + ":" + ctrl.getTcpServer().getTcpPort());
         System.out.println("Service registered as " + ctrl.getRegisteredServiceName());

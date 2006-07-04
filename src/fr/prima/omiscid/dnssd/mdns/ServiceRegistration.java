@@ -97,4 +97,5 @@ public class ServiceRegistration implements RegisterListener, fr.prima.omiscid.d
         return registeredServiceName;
     }
 
+
 }

@@ -28,7 +28,7 @@ import fr.prima.omiscid.control.interf.ChannelType;
 public class InOutputAttribute extends Attribute {
 
     /** Kind of in/output */
-    private ChannelType kind = ChannelType.INPUT;
+    private ChannelType channelType = ChannelType.INPUT;
 
     /**
      * Object used on the ControlServer side to provide data as TCP/UDP port,
@@ -77,8 +77,8 @@ public class InOutputAttribute extends Attribute {
      * @param aKind
      *            kind of in/output
      */
-    public void setKind(ChannelType aKind) {
-        kind = aKind;
+    public void setChannelType(ChannelType channelType) {
+        this.channelType = channelType;
     }
 
     /**
@@ -86,8 +86,8 @@ public class InOutputAttribute extends Attribute {
      *
      * @return the kind of in/output
      */
-    public ChannelType getKind() {
-        return kind;
+    public ChannelType getChannelType() {
+        return channelType;
     }
 
     /**
@@ -96,7 +96,7 @@ public class InOutputAttribute extends Attribute {
      * @return whether it is an input channel
      */
     public boolean isInput() {
-        return kind == ChannelType.INPUT;
+        return channelType == ChannelType.INPUT;
     }
 
     /**
@@ -105,7 +105,7 @@ public class InOutputAttribute extends Attribute {
      * @return whether it is an output channel
      */
     public boolean isOutput() {
-        return kind == ChannelType.OUTPUT;
+        return channelType == ChannelType.OUTPUT;
     }
 
     /**
@@ -114,7 +114,7 @@ public class InOutputAttribute extends Attribute {
      * @return whether it is an inoutput channel
      */
     public boolean isInOutput() {
-        return kind == ChannelType.INOUTPUT;
+        return channelType == ChannelType.INOUTPUT;
     }
 
     /**
@@ -172,7 +172,7 @@ public class InOutputAttribute extends Attribute {
      *         name=&quot;inoutput_name&quot;/&gt;
      */
     public String generateShortDescription() {
-        return generateHeaderDescription(kind.getXMLTag(), true);
+        return generateHeaderDescription(channelType.getXMLTag(), true);
     }
 
     /**
@@ -205,7 +205,7 @@ public class InOutputAttribute extends Attribute {
      * @return the XML description as a String
      */
     public String generateLongDescription() {
-        String str = generateHeaderDescription(kind.getXMLTag(), false);
+        String str = generateHeaderDescription(channelType.getXMLTag(), false);
         if (getTcpPort() != 0) {
             str += "<tcp>" + getTcpPort() + "</tcp>";
         }
@@ -217,7 +217,7 @@ public class InOutputAttribute extends Attribute {
         for (Integer peerId : getPeerVector()) {
             str += "<peer>" + BipUtils.intTo8HexString(peerId) + "</peer>";
         }
-        str += "</peers></" + kind.getXMLTag() + ">";
+        str += "</peers></" + channelType.getXMLTag() + ">";
         return str;
     }
 
@@ -306,7 +306,7 @@ public class InOutputAttribute extends Attribute {
     }
 
     public Element createXmlElement(Document doc) {
-        Element eltIo = doc.createElement(kind.getXMLTag());
+        Element eltIo = doc.createElement(channelType.getXMLTag());
         eltIo.setAttribute("name", getName());
 
         Element elt = null;

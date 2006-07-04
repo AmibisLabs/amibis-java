@@ -5,6 +5,7 @@ import java.io.IOException;
 import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.TcpClient;
 import fr.prima.omiscid.com.interf.BipMessageListener;
+import fr.prima.omiscid.control.interf.GlobalConstants;
 import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.dnssd.interf.ServiceInformation;
 
@@ -23,12 +24,12 @@ public class OmiscidService {
 
     /** Type for the registration */
     public static String REG_TYPE() { return REG_TYPE; }
-    private static String REG_TYPE = "_bip._tcp";
+    private static String REG_TYPE = GlobalConstants.dnssdDefaultWorkingDomain;
     static {
         try {
             // \REVIEWTASK this variable name should be documented somewhere
-            if (null != System.getenv("OMISCID_WORKING_DOMAIN")) {
-                REG_TYPE = System.getenv("OMISCID_WORKING_DOMAIN");
+            if (null != System.getenv(GlobalConstants.dnssdWorkingDomainEnvironmentVariableName)) {
+                REG_TYPE = System.getenv(GlobalConstants.dnssdWorkingDomainEnvironmentVariableName);
             }
         } catch (SecurityException e) {
             // Access to environment variable is forbidden
@@ -36,16 +37,6 @@ public class OmiscidService {
         }
 
     };
-
-    public static final String KEY_PEERID = "id";
-
-    public static final String KEY_INPUTS = "inputs";
-
-    public static final String KEY_OUTPUTS = "outputs";
-
-    public static final String KEY_INOUTPUTS = "inoutputs";
-
-    public static final String KEY_OWNER = "owner";
 
     public static DNSSDFactory dnssdFactory = DNSSDFactory.DefaultFactory.instance();
 
@@ -143,7 +134,7 @@ public class OmiscidService {
      * @return the BIP peer id of the remote service
      */
     public int getRemotePeerId() {
-        String str = serviceInformation.getStringProperty(KEY_PEERID);
+        String str = serviceInformation.getStringProperty(GlobalConstants.constantNameForPeerId);
         if (str != null) {
             return BipUtils.hexStringToInt(str);
         } else {
