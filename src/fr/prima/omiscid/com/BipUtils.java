@@ -107,7 +107,8 @@ public final class BipUtils {
         // Thread.currentThread().getName() + " , "+
         // Thread.currentThread().getThreadGroup().getName() + ": " +
         // randomForThisJVM);
-        int partTime = (int) (System.currentTimeMillis() & 0x0000FFFF);
+        int partTime = (int) (System.currentTimeMillis() & 0x0000FF00);
+        // The last byte is reserved for connector index while in the context of a service
         double r = randomForThisJVM.nextDouble();
         int partRandom = ((int) (r * 0xEFFFFFFF) & 0xFFFF0000);
         return partTime + partRandom;

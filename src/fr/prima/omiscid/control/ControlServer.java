@@ -382,7 +382,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      *            the local input/output channel to connect
      */
     protected void connectionQuery(String host, int port, boolean tcp, InOutputAttribute ioa) {
-        System.out.println("in connect : " + ioa.getName() + " on " + host + ":" + port);
+        System.err.println("in connect : " + ioa.getName() + " on " + host + ":" + port);
         // \REVIEWTASK shouldn't this be implemented (or abstract)
     }
 
@@ -399,7 +399,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      *            modify
      */
     protected void variableModificationQuery(byte[] buffer, VariableAttribute va) {
-        System.out.println("in modifVariable : " + va.getName());
+        System.err.println("in modifVariable : " + va.getName());
         // \REVIEWTASK shouldn't this be implemented (or abstract)
     }
 

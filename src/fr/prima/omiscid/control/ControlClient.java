@@ -322,7 +322,7 @@ public class ControlClient implements BipMessageListener {
         for (String variable : variableNamesSet) {
             VariableAttribute variableAttribute = queryVariableDescription(variable);
             if (variableAttribute == null) {
-                System.out.println("Error queryVariableDescription : " + variable);
+                System.err.println("Error queryVariableDescription : " + variable);
             }
         }
     }
@@ -379,7 +379,7 @@ public class ControlClient implements BipMessageListener {
     public VariableAttribute queryVariableModification(String name, String value) {
         VariableAttribute vattr = findVariable(name);
         if (vattr == null) {
-            System.out.println("Unknown Variable: Description Not Available: " + name);
+            System.err.println("Unknown Variable: Description Not Available: " + name);
             return null;
         } else {
             String request = "<variable name=\"" + name + "\">";
@@ -523,7 +523,7 @@ public class ControlClient implements BipMessageListener {
             queryToServer(request, false);
             return true;
         } else {
-            System.out.println("variable unknown by client\n");
+            System.err.println("variable unknown by client\n");
             return false;
         }
     }
@@ -671,7 +671,7 @@ public class ControlClient implements BipMessageListener {
             } else if (nodeName.equals(ChannelType.INOUTPUT.getXMLTag())) {
                 inOutputNamesSet.add(((Element) node).getAttribute("name"));
             } else {
-                System.out.println("Unknown kind " + nodeName);
+                System.err.println("Unknown kind " + nodeName);
             }
         }
     }

@@ -114,16 +114,17 @@ public class OmiscidService {
     }
 
     /**
-     * Extracts owner name from the text records
+     * Extracts owner name from the text record
      *
      * @return the owner name, or "" if the owner property is not defined
      */
     public String getOwner() {
         String str = serviceInformation.getStringProperty("owner");
-        if (str == null) {
-            return "";
-        } else {
+        if (str != null) {
             return str.replaceFirst(GlobalConstants.prefixForConstantInDnssd, "");
+        } else {
+            // should do as getRemotePeerId does
+            return "";
         }
     }
 

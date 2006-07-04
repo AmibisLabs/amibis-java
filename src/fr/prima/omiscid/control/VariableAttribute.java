@@ -116,14 +116,12 @@ public class VariableAttribute extends Attribute {
 
     /**
      * Tests whether the variable can be modified according to its access
-     * rights. A variable can be modified if its kind of access is Read-Write,
-     * or Read-Write-before-init if the service is not running (that is to say
-     * that the service has a current status different of 2).
+     * rights. A variable can be modified if its kind of access is Read-Write.
+     *
      *
      * @return whether the variable can be modified
      */
-    public boolean canBeModified(int status) {
-        System.out.println(accessKind);
+    public boolean canBeModified() {
         return (accessKind == VariableAccessType.READ_WRITE);
         //|| (accessKind == READ_WRITE_BEFORE_INIT && status != ControlServer.STATUS_RUNNING);
     }
