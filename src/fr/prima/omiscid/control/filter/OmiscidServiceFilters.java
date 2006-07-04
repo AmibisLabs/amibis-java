@@ -5,6 +5,7 @@
 package fr.prima.omiscid.control.filter;
 
 import fr.prima.omiscid.control.OmiscidService;
+import fr.prima.omiscid.control.interf.GlobalConstants;
 
 /**
  * Utility class. Provides some {@link OmiscidServiceFilter} creators for
@@ -94,7 +95,7 @@ public final class OmiscidServiceFilters {
     }
 
     public static OmiscidServiceFilter ownerIs(String ownerRegexp) {
-        return new KeyValue("owner", "^" + ownerRegexp + "$");
+        return new KeyValue("owner", "^" + GlobalConstants.prefixForConstantInDnssd + ownerRegexp + "$");
     }
 
     public static OmiscidServiceFilter keyPresent(String txtRecordKey) {
