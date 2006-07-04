@@ -376,7 +376,11 @@ public abstract class MessageSocket {
         while (connected) {
             receive();
         }
-
+        synchronized (listenersSet) {
+            for (BipMessageListener listener : listenersSet) {
+                listener.disconnected();
+            }
+        }
     }
 
     /**
