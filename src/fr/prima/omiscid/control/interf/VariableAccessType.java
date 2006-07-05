@@ -28,4 +28,21 @@ public enum VariableAccessType {
     public String getPrefixInDnssd() {
         return prefixInDnssd;
     }
+
+    public static VariableAccessType fromDnssdValue(String propertyValue) {
+        if (propertyValue.startsWith(CONSTANT.prefixInDnssd)) {
+            return CONSTANT;
+        } else if (propertyValue.startsWith(READ.prefixInDnssd)) {
+            return READ;
+        } else if (propertyValue.startsWith(READ_WRITE.prefixInDnssd)) {
+            return READ_WRITE;
+        }
+        return null;
+    }
+
+    public static String realValueFromDnssdValue(String propertyValue) {
+        VariableAccessType variableAccessType = fromDnssdValue(propertyValue);
+        return variableAccessType == null ?
+                null : propertyValue.replaceFirst(variableAccessType.getPrefixInDnssd(), "");
+    }
 }

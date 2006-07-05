@@ -59,5 +59,21 @@ public enum ChannelType {
         return prefixInDnssd;
     }
 
+    public static ChannelType fromDnssdValue(String propertyValue) {
+        if (propertyValue.startsWith(OUTPUT.prefixInDnssd)) {
+            return OUTPUT;
+        } else if (propertyValue.startsWith(INPUT.prefixInDnssd)) {
+            return INPUT;
+        } else if (propertyValue.startsWith(INOUTPUT.prefixInDnssd)) {
+            return INOUTPUT;
+        }
+        return null;
+    }
+
+    public static String realValueFromDnssdValue(String propertyValue) {
+        ChannelType connectorType = fromDnssdValue(propertyValue);
+        return connectorType == null ?
+                null : propertyValue.replaceFirst(connectorType.getPrefixInDnssd(), "");
+    }
 
 }

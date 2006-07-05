@@ -5,7 +5,9 @@ import java.io.IOException;
 import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.TcpClient;
 import fr.prima.omiscid.com.interf.BipMessageListener;
+import fr.prima.omiscid.control.interf.ChannelType;
 import fr.prima.omiscid.control.interf.GlobalConstants;
+import fr.prima.omiscid.control.interf.VariableAccessType;
 import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.dnssd.interf.ServiceInformation;
 
@@ -260,6 +262,57 @@ public class OmiscidService {
 
     public String getSimplifiedName() {
         return cleanName(getFullName());
+    }
+
+    private boolean isServiceInformationDescriptionFull() {
+        return GlobalConstants.keyForFullTextRecordFull.equals(serviceInformation.getStringProperty(GlobalConstants.keyForFullTextRecord));
+    }
+
+    /**
+     *
+     * @param variableName
+     * @param variableAccessType null or a required access type for the variable
+     * @param variableValueRegexp null or a regular expression that the value of the variable must match
+     * @return
+     */
+    public boolean hasVariable(String variableName, VariableAccessType variableAccessType, String variableValueRegexp) {
+        if (!isServiceInformationDescriptionFull()) {
+            System.err.println("hasVariable not implemented completely, trying to find what we can anyway (service is "+getSimplifiedName()+" )");
+        }
+        {
+            String property = serviceInformation.getStringProperty(variableName);
+            return property != null
+            && VariableAccessType.realValueFromDnssdValue(property) != null
+            &&
+            (
+                    variableAccessType == null
+                    ||
+                    variableAccessType == VariableAccessType.fromDnssdValue(property)
+            )
+            &&
+            (
+                    variableValueRegexp == null
+                    ||
+                    VariableAccessType.realValueFromDnssdValue(property).matches(variableValueRegexp)
+            );
+        }
+    }
+
+    public boolean hasConnector(String connectorName, ChannelType connectorType) {
+        if (!isServiceInformationDescriptionFull()) {
+            System.err.println("hasConnector not implemented completely, trying to find what we can anyway (service is "+getSimplifiedName()+" )");
+        }
+        {
+            String property = serviceInformation.getStringProperty(connectorName);
+            return property != null
+            && ChannelType.realValueFromDnssdValue(property) != null
+            &&
+            (
+                    connectorType == null
+                    ||
+                    connectorType == ChannelType.fromDnssdValue(property)
+            );
+        }
     }
 
 }

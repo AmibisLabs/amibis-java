@@ -65,7 +65,8 @@ public class ServiceInformation implements fr.prima.omiscid.dnssd.interf.Service
     }
 
     public String getStringProperty(String key) {
-        return new String(getProperty(key));
+        byte[] property = getProperty(key);
+        return property != null ? new String(property) : null;
     }
 
     public Iterable<String> getPropertyKeys() {

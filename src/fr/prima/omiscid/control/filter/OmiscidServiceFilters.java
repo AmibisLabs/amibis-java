@@ -5,6 +5,8 @@
 package fr.prima.omiscid.control.filter;
 
 import fr.prima.omiscid.control.OmiscidService;
+import fr.prima.omiscid.control.interf.ChannelType;
+import fr.prima.omiscid.control.interf.VariableAccessType;
 
 /**
  * Utility class. Provides some {@link OmiscidServiceFilter} creators for
@@ -55,6 +57,58 @@ public final class OmiscidServiceFilters {
         public boolean isAGoodService(OmiscidService s) {
             return s.getOwner().matches(ownerRegexp);
         }
+    }
+
+    /**
+     * Tests whether the given service has a given variable,
+     * with a particular access type and a value matching the given regexp.
+     */
+    private static final class Variable implements OmiscidServiceFilter {
+        private String variableName = null;
+        private VariableAccessType variableAccessType = null;
+        private String variableValueRegexp = null;
+
+        public Variable(String variableName, VariableAccessType variableAccessType, String variableValueRegexp) {
+            this.variableName = variableName;
+            this.variableAccessType = variableAccessType;
+            this.variableValueRegexp = variableValueRegexp;
+        }
+
+        public boolean isAGoodService(OmiscidService s) {
+            return s.hasVariable(variableName, variableAccessType, variableValueRegexp);
+        }
+    }
+
+    /**
+     * Tests whether the given service has a given connector,
+     * with a particular type.
+     */
+    private static final class Connector implements OmiscidServiceFilter {
+        private String connectorName = null;
+        private ChannelType connectorType = null;
+        public Connector(String connectorName, ChannelType connectorType) {
+            super();
+            this.connectorName = connectorName;
+            this.connectorType = connectorType;
+        }
+        public boolean isAGoodService(OmiscidService s) {
+            return s.hasConnector(connectorName, connectorType);
+        }
+    }
+
+    /**
+     * Do not test anything, just return a constant boolean value.
+     */
+    private static final class Boolean implements OmiscidServiceFilter {
+        private boolean value;
+        public Boolean(boolean value) {
+            super();
+            this.value = value;
+        }
+        public boolean isAGoodService(OmiscidService s) {
+            return value;
+        }
+
     }
 
 //    /**
@@ -109,6 +163,32 @@ public final class OmiscidServiceFilters {
 
     public static OmiscidServiceFilter ownerIs(String ownerRegexp) {
         return new Owner("^" + ownerRegexp + "$");
+    }
+
+    public static OmiscidServiceFilter hasVariable(String variableName) {
+        return new Variable(variableName, null, null);
+    }
+    public static OmiscidServiceFilter hasVariable(String variableName, VariableAccessType variableAccessType) {
+        return new Variable(variableName, variableAccessType, null);
+    }
+    public static OmiscidServiceFilter hasVariable(String variableName, String variableValueRegexp) {
+        return new Variable(variableName, null, variableValueRegexp);
+    }
+    public static OmiscidServiceFilter hasVariable(String variableName, VariableAccessType variableAccessType, String variableValueRegexp) {
+        return new Variable(variableName, variableAccessType, variableValueRegexp);
+    }
+    public static OmiscidServiceFilter hasConnector(String connectorName, ChannelType connectorType) {
+        return new Connector(connectorName, connectorType);
+    }
+    public static OmiscidServiceFilter hasConnector(String connectorName) {
+        return new Connector(connectorName, null);
+    }
+
+    public static OmiscidServiceFilter yes() {
+        return new Boolean(true);
+    }
+    public static OmiscidServiceFilter no() {
+        return new Boolean(false);
     }
 
 //    public static OmiscidServiceFilter keyPresent(String txtRecordKey) {
