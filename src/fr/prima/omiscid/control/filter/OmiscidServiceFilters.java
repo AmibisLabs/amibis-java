@@ -57,28 +57,28 @@ public final class OmiscidServiceFilters {
         }
     }
 
-    /**
-     * Tests whether a value in the TXT record is ok
-     */
-    private static final class KeyValue implements OmiscidServiceFilter {
-        private String key;
-
-        private String valueRegexp;
-
-        public KeyValue(String key, String valueRegexp) {
-            this.key = key;
-            this.valueRegexp = valueRegexp;
-        }
-
-        public boolean isAGoodService(OmiscidService s) {
-            byte[] b = s.getServiceInformation().getProperty(key);
-            if (valueRegexp == null) {
-                return b == null;
-            } else {
-                return (b != null && (new String(b)).matches(valueRegexp));
-            }
-        }
-    }
+//    /**
+//     * Tests whether a value in the TXT record is ok
+//     */
+//    private static final class KeyValue implements OmiscidServiceFilter {
+//        private String key;
+//
+//        private String valueRegexp;
+//
+//        public KeyValue(String key, String valueRegexp) {
+//            this.key = key;
+//            this.valueRegexp = valueRegexp;
+//        }
+//
+//        public boolean isAGoodService(OmiscidService s) {
+//            byte[] b = s.getServiceInformation().getProperty(key);
+//            if (valueRegexp == null) {
+//                return b == null;
+//            } else {
+//                return (b != null && (new String(b)).matches(valueRegexp));
+//            }
+//        }
+//    }
 
     public static String baseNameRegexp(String nameRegexp) {
         return "^" + nameRegexp + "( \\(\\d+\\))?" + "$";
@@ -111,13 +111,13 @@ public final class OmiscidServiceFilters {
         return new Owner("^" + ownerRegexp + "$");
     }
 
-    public static OmiscidServiceFilter keyPresent(String txtRecordKey) {
-        return new KeyValue(txtRecordKey, ".*");
-    }
-
-    public static OmiscidServiceFilter keyValue(String txtRecordKey, String regexp) {
-        return new KeyValue(txtRecordKey, regexp);
-    }
+//    public static OmiscidServiceFilter keyPresent(String txtRecordKey) {
+//        return new KeyValue(txtRecordKey, ".*");
+//    }
+//
+//    public static OmiscidServiceFilter keyValue(String txtRecordKey, String regexp) {
+//        return new KeyValue(txtRecordKey, regexp);
+//    }
 
     public static OmiscidServiceFilter and(OmiscidServiceFilter... filters) {
         return new OmiscidServiceFilterCascade(filters);

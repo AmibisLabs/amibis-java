@@ -210,25 +210,17 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         try {
             for (VariableAttribute variable: variablesSet) {
                 if (variable.getAccess() == VariableAccessType.CONSTANT) {
-                    serviceRegistration.addProperty(variable.getName(), GlobalConstants.prefixForConstantInDnssd + variable.getValueStr());
+                    String prefix = variable.getAccess().getPrefixInDnssd();
+                    serviceRegistration.addProperty(variable.getName(), prefix + variable.getValueStr());
                 }
             }
             for (InOutputAttribute channel : inoutputsSet) {
-                String prefix = "";
-                switch (channel.getChannelType()) {
-                case INPUT: prefix = GlobalConstants.prefixForInputInDnssd; break;
-                case OUTPUT: prefix = GlobalConstants.prefixForOutputInDnssd; break;
-                case INOUTPUT: prefix = GlobalConstants.prefixForInoutputInDnssd; break;
-                }
+                String prefix = channel.getChannelType().getPrefixInDnssd();
                 serviceRegistration.addProperty(channel.getName(), prefix + channel.getTcpPort());
             }
             for (VariableAttribute variable: variablesSet) {
                 if (variable.getAccess() != VariableAccessType.CONSTANT) {
-                    String prefix = "?/";
-                    switch (variable.getAccess()) {
-                    case READ: prefix = GlobalConstants.prefixForReadOnlyVariableInDnssd; break;
-                    case READ_WRITE: prefix = GlobalConstants.prefixForReadWriteVariableInDnssd; break;
-                    }
+                    String prefix = variable.getAccess().getPrefixInDnssd();
                     serviceRegistration.addProperty(variable.getName(), prefix);
                 }
             }
