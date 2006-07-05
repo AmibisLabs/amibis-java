@@ -200,15 +200,15 @@ public class OmiscidService {
     }
 
     /**
-     * Creates a TCP connection to a channel on the remote service.
+     * Creates a TCP connection to a connector on the remote service.
      *
      * @param ioa
-     *            description associated to the channel on the remote server
+     *            description associated to the connector on the remote server
      * @param messageListener
      *            a listener to add on this connection
      * @return a new TcpClient object or null if the connection failed
      */
-    public TcpClient connectToChannel(InOutputAttribute ioa, BipMessageListener messageListener) {
+    public TcpClient connectToConnector(InOutputAttribute ioa, BipMessageListener messageListener) {
         if (ioa != null) {
             try {
                 TcpClient tcpClient = new TcpClient(peerId);

@@ -7,15 +7,15 @@ package fr.prima.omiscid.control.interf;
  */
 public enum ConnectorType {
     INPUT("Input",
-            GlobalConstants.channelTypeInputXMLTag,
+            GlobalConstants.connectorTypeInputXMLTag,
             GlobalConstants.prefixForInputInDnssd
             ),
     OUTPUT("Output",
-            GlobalConstants.channelTypeOutputXMLTag,
+            GlobalConstants.connectorTypeOutputXMLTag,
             GlobalConstants.prefixForOutputInDnssd
             ),
     INOUTPUT("InOutput",
-            GlobalConstants.channelTypeInOutputXMLTag,
+            GlobalConstants.connectorTypeInOutputXMLTag,
             GlobalConstants.prefixForInoutputInDnssd
             );
 

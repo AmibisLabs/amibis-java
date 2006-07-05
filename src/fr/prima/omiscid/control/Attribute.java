@@ -1,9 +1,9 @@
 package fr.prima.omiscid.control;
 
 /**
- * Represents a service attribute: input/output channels and variables. Abstract
- * base class for all services attributes (channels and variables).
- * 
+ * Represents a service attribute: input/output connectors and variables. Abstract
+ * base class for all services attributes (connectors and variables).
+ *
  * @author Sebastien Pesnel Refactoring by Patrick Reignier and emonet
  */
 public abstract class Attribute {
@@ -18,7 +18,7 @@ public abstract class Attribute {
 
     /**
      * Creates a new instance of Attribute.
-     * 
+     *
      * @param name
      *            name for the attribute
      */
@@ -28,7 +28,7 @@ public abstract class Attribute {
 
     /**
      * Sets the description of the attribute
-     * 
+     *
      * @param description
      *            the new description to affect to the attribute
      */
@@ -38,7 +38,7 @@ public abstract class Attribute {
 
     /**
      * Sets the format description of the attribute.
-     * 
+     *
      * @param formatDescription
      *            the description to affect to the format
      */
@@ -48,7 +48,7 @@ public abstract class Attribute {
 
     /**
      * Accesses to the attribute name.
-     * 
+     *
      * @return name
      */
     public String getName() {
@@ -57,7 +57,7 @@ public abstract class Attribute {
 
     /**
      * Accesses to the attribute description.
-     * 
+     *
      * @return description
      */
     public String getDescription() {
@@ -66,7 +66,7 @@ public abstract class Attribute {
 
     /**
      * Accesses to the format description of the attribute.
-     * 
+     *
      * @return formatDescription
      */
     public String getFormatDescription() {
@@ -75,14 +75,14 @@ public abstract class Attribute {
 
     /**
      * Generates a brief description for the attribute (in XML string).
-     * 
+     *
      * @return a short XML description of the attribute
      */
     public abstract String generateShortDescription();
 
     /**
      * Generates a complete description for the attribute (in XML string).
-     * 
+     *
      * @return a long XML description of the attribute
      */
     public abstract String generateLongDescription();
@@ -90,9 +90,9 @@ public abstract class Attribute {
     /**
      * Generates the tags about the description and format description for the
      * XML description. Generates tags only when the descriptions are not empty.
-     * 
+     *
      * @return
-     * 
+     *
      * <pre>
      * &lt;description&gt;+ getDescription() +&lt;/description&gt; +
      *          &lt;formatDescription&gt;+ getFormatDescription() +&lt;/formatDescription&gt;
@@ -111,7 +111,7 @@ public abstract class Attribute {
 
     /**
      * Generates the topmost tag of the XML description.
-     * 
+     *
      * @param kind
      *            the kind of attribute
      * @param childless
@@ -132,7 +132,7 @@ public abstract class Attribute {
 
     /**
      * String representation of the object.
-     * 
+     *
      * @return "Name : " + name +"\nDescr : " + description +"\n"
      */
     public String toString() {
@@ -141,7 +141,7 @@ public abstract class Attribute {
 
     /**
      * Compares two attributes.
-     * 
+     *
      * @return true if they have the same name
      */
     public boolean equals(Object o) {

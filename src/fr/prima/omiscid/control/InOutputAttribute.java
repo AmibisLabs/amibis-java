@@ -28,7 +28,7 @@ import fr.prima.omiscid.control.interf.ConnectorType;
 public class InOutputAttribute extends Attribute {
 
     /** Kind of in/output */
-    private ConnectorType channelType = ConnectorType.INPUT;
+    private ConnectorType connectorType = ConnectorType.INPUT;
 
     /**
      * Object used on the ControlServer side to provide data as TCP/UDP port,
@@ -77,8 +77,8 @@ public class InOutputAttribute extends Attribute {
      * @param aKind
      *            kind of in/output
      */
-    public void setChannelType(ConnectorType channelType) {
-        this.channelType = channelType;
+    public void setConnectorType(ConnectorType connectorType) {
+        this.connectorType = connectorType;
     }
 
     /**
@@ -86,35 +86,35 @@ public class InOutputAttribute extends Attribute {
      *
      * @return the kind of in/output
      */
-    public ConnectorType getChannelType() {
-        return channelType;
+    public ConnectorType getConnectorType() {
+        return connectorType;
     }
 
     /**
-     * Tests whether this attribute represents exactly an input channel.
+     * Tests whether this attribute represents exactly an input connector.
      *
-     * @return whether it is an input channel
+     * @return whether it is an input connector
      */
     public boolean isInput() {
-        return channelType == ConnectorType.INPUT;
+        return connectorType == ConnectorType.INPUT;
     }
 
     /**
-     * Tests whether this attribute represents exactly an output channel.
+     * Tests whether this attribute represents exactly an output connector.
      *
-     * @return whether it is an output channel
+     * @return whether it is an output connector
      */
     public boolean isOutput() {
-        return channelType == ConnectorType.OUTPUT;
+        return connectorType == ConnectorType.OUTPUT;
     }
 
     /**
-     * Tests whether this attribute represents exactly an inoutput channel.
+     * Tests whether this attribute represents exactly an inoutput connector.
      *
-     * @return whether it is an inoutput channel
+     * @return whether it is an inoutput connector
      */
     public boolean isInOutput() {
-        return channelType == ConnectorType.INOUTPUT;
+        return connectorType == ConnectorType.INOUTPUT;
     }
 
     /**
@@ -172,7 +172,7 @@ public class InOutputAttribute extends Attribute {
      *         name=&quot;inoutput_name&quot;/&gt;
      */
     public String generateShortDescription() {
-        return generateHeaderDescription(channelType.getXMLTag(), true);
+        return generateHeaderDescription(connectorType.getXMLTag(), true);
     }
 
     /**
@@ -205,7 +205,7 @@ public class InOutputAttribute extends Attribute {
      * @return the XML description as a String
      */
     public String generateLongDescription() {
-        String str = generateHeaderDescription(channelType.getXMLTag(), false);
+        String str = generateHeaderDescription(connectorType.getXMLTag(), false);
         if (getTcpPort() != 0) {
             str += "<tcp>" + getTcpPort() + "</tcp>";
         }
@@ -217,7 +217,7 @@ public class InOutputAttribute extends Attribute {
         for (Integer peerId : getPeerVector()) {
             str += "<peer>" + BipUtils.intTo8HexString(peerId) + "</peer>";
         }
-        str += "</peers></" + channelType.getXMLTag() + ">";
+        str += "</peers></" + connectorType.getXMLTag() + ">";
         return str;
     }
 
@@ -306,7 +306,7 @@ public class InOutputAttribute extends Attribute {
     }
 
     public Element createXmlElement(Document doc) {
-        Element eltIo = doc.createElement(channelType.getXMLTag());
+        Element eltIo = doc.createElement(connectorType.getXMLTag());
         eltIo.setAttribute("name", getName());
 
         Element elt = null;

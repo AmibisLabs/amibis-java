@@ -24,10 +24,10 @@ import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
 
 /**
  * Represents a "local" OmiscidService. To access remote service, use the
- * {@link OmiscidService} class. Creates a control channel and register the
+ * {@link OmiscidService} class. Creates a control connector and register the
  * service as a OMiSCID service on DNS-SD. The service has a variable to give
  * its state, the number of variable, the number of inputs/outputs. The control
- * channel exposes the list of variables and the list of in/outputs of the
+ * connector exposes the list of variables and the list of in/outputs of the
  * service. The descriptions of variables and inputs are stored in object called
  * VariableAttribute and InOutputAttribute. These data can be consulted by xml
  * query on the control port (through {@link OmiscidService}). The control
@@ -214,9 +214,9 @@ public class ControlServer extends MessageManager implements VariableChangeListe
                     serviceRegistration.addProperty(variable.getName(), prefix + variable.getValueStr());
                 }
             }
-            for (InOutputAttribute channel : inoutputsSet) {
-                String prefix = channel.getChannelType().getPrefixInDnssd();
-                serviceRegistration.addProperty(channel.getName(), prefix + channel.getTcpPort());
+            for (InOutputAttribute connector : inoutputsSet) {
+                String prefix = connector.getConnectorType().getPrefixInDnssd();
+                serviceRegistration.addProperty(connector.getName(), prefix + connector.getTcpPort());
             }
             for (VariableAttribute variable: variablesSet) {
                 if (variable.getAccess() != VariableAccessType.CONSTANT) {
@@ -337,7 +337,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      */
     public InOutputAttribute addInOutput(String name, CommunicationServer communicationServer, ConnectorType ioKind) {
         InOutputAttribute ioa = new InOutputAttribute(name, communicationServer);
-        ioa.setChannelType(ioKind);
+        ioa.setConnectorType(ioKind);
         inoutputsSet.add(ioa);
         return ioa;
     }
@@ -360,7 +360,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     }
 
     /**
-     * Processes connection query received through the control channel. This
+     * Processes connection query received through the control connector. This
      * implementation just prints some info. You can either overide it or
      * implement it.
      *
@@ -371,7 +371,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      * @param tcp
      *            whether to connect using tcp
      * @param ioa
-     *            the local input/output channel to connect
+     *            the local input/output connector to connect
      */
     protected void connectionQuery(String host, int port, boolean tcp, InOutputAttribute ioa) {
         System.err.println("in connect : " + ioa.getName() + " on " + host + ":" + port);
@@ -663,7 +663,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      */
     public InOutputAttribute findInOutput(String name, ConnectorType k) {
         for (InOutputAttribute ioa : inoutputsSet) {
-            if (ioa.getName().equals(name) && (k == null || k == ioa.getChannelType())) {
+            if (ioa.getName().equals(name) && (k == null || k == ioa.getConnectorType())) {
                 return ioa;
             }
         }

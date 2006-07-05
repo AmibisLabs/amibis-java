@@ -718,7 +718,7 @@ public class ControlClient implements BipMessageListener {
             if (ioattr == null) {
                 attr = new InOutputAttribute(nameAttr.getValue());
             }
-            attr.setChannelType(InOutputAttribute.IOKindFromName(elt.getNodeName()));
+            attr.setConnectorType(InOutputAttribute.IOKindFromName(elt.getNodeName()));
             attr.extractInfoFromXML(elt);
             return attr;
         }
