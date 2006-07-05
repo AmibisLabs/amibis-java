@@ -12,7 +12,7 @@ import org.w3c.dom.NodeList;
 
 import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.CommunicationServer;
-import fr.prima.omiscid.control.interf.ChannelType;
+import fr.prima.omiscid.control.interf.ConnectorType;
 
 /**
  * Stores an in/output description. The in/output description is composed of a
@@ -28,7 +28,7 @@ import fr.prima.omiscid.control.interf.ChannelType;
 public class InOutputAttribute extends Attribute {
 
     /** Kind of in/output */
-    private ChannelType channelType = ChannelType.INPUT;
+    private ConnectorType channelType = ConnectorType.INPUT;
 
     /**
      * Object used on the ControlServer side to provide data as TCP/UDP port,
@@ -77,7 +77,7 @@ public class InOutputAttribute extends Attribute {
      * @param aKind
      *            kind of in/output
      */
-    public void setChannelType(ChannelType channelType) {
+    public void setChannelType(ConnectorType channelType) {
         this.channelType = channelType;
     }
 
@@ -86,7 +86,7 @@ public class InOutputAttribute extends Attribute {
      *
      * @return the kind of in/output
      */
-    public ChannelType getChannelType() {
+    public ConnectorType getChannelType() {
         return channelType;
     }
 
@@ -96,7 +96,7 @@ public class InOutputAttribute extends Attribute {
      * @return whether it is an input channel
      */
     public boolean isInput() {
-        return channelType == ChannelType.INPUT;
+        return channelType == ConnectorType.INPUT;
     }
 
     /**
@@ -105,7 +105,7 @@ public class InOutputAttribute extends Attribute {
      * @return whether it is an output channel
      */
     public boolean isOutput() {
-        return channelType == ChannelType.OUTPUT;
+        return channelType == ConnectorType.OUTPUT;
     }
 
     /**
@@ -114,7 +114,7 @@ public class InOutputAttribute extends Attribute {
      * @return whether it is an inoutput channel
      */
     public boolean isInOutput() {
-        return channelType == ChannelType.INOUTPUT;
+        return channelType == ConnectorType.INOUTPUT;
     }
 
     /**
@@ -293,13 +293,13 @@ public class InOutputAttribute extends Attribute {
         }
     }
 
-    static public ChannelType IOKindFromName(String str) {
-        if (str.equals(ChannelType.INOUTPUT.getXMLTag())) {
-            return ChannelType.INOUTPUT;
-        } else if (str.equals(ChannelType.OUTPUT.getXMLTag())) {
-            return ChannelType.OUTPUT;
-        } else if (str.equals(ChannelType.INPUT.getXMLTag())) {
-            return ChannelType.INPUT;
+    static public ConnectorType IOKindFromName(String str) {
+        if (str.equals(ConnectorType.INOUTPUT.getXMLTag())) {
+            return ConnectorType.INOUTPUT;
+        } else if (str.equals(ConnectorType.OUTPUT.getXMLTag())) {
+            return ConnectorType.OUTPUT;
+        } else if (str.equals(ConnectorType.INPUT.getXMLTag())) {
+            return ConnectorType.INPUT;
         } else {
             return null;
         }

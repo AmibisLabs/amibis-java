@@ -16,7 +16,7 @@ import fr.prima.omiscid.com.MessageManager;
 import fr.prima.omiscid.com.TcpServer;
 import fr.prima.omiscid.com.XmlMessage;
 import fr.prima.omiscid.com.interf.Message;
-import fr.prima.omiscid.control.interf.ChannelType;
+import fr.prima.omiscid.control.interf.ConnectorType;
 import fr.prima.omiscid.control.interf.GlobalConstants;
 import fr.prima.omiscid.control.interf.VariableAccessType;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
@@ -335,7 +335,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      *         object can be manipulate to specify the in/output description for
      *         example.
      */
-    public InOutputAttribute addInOutput(String name, CommunicationServer communicationServer, ChannelType ioKind) {
+    public InOutputAttribute addInOutput(String name, CommunicationServer communicationServer, ConnectorType ioKind) {
         InOutputAttribute ioa = new InOutputAttribute(name, communicationServer);
         ioa.setChannelType(ioKind);
         inoutputsSet.add(ioa);
@@ -427,12 +427,12 @@ public class ControlServer extends MessageManager implements VariableChangeListe
                         Node cur = nodeList.item(i);
                         if (cur.getNodeType() == Node.ELEMENT_NODE) {
                             String curName = cur.getNodeName();
-                            if (curName.equals(ChannelType.INPUT.getXMLTag())) {
-                                str += processInOutputQuery((Element) cur, ChannelType.INPUT);
-                            } else if (curName.equals(ChannelType.OUTPUT.getXMLTag())) {
-                                str += processInOutputQuery((Element) cur, ChannelType.OUTPUT);
-                            } else if (curName.equals(ChannelType.INOUTPUT.getXMLTag())) {
-                                str += processInOutputQuery((Element) cur, ChannelType.INOUTPUT);
+                            if (curName.equals(ConnectorType.INPUT.getXMLTag())) {
+                                str += processInOutputQuery((Element) cur, ConnectorType.INPUT);
+                            } else if (curName.equals(ConnectorType.OUTPUT.getXMLTag())) {
+                                str += processInOutputQuery((Element) cur, ConnectorType.OUTPUT);
+                            } else if (curName.equals(ConnectorType.INOUTPUT.getXMLTag())) {
+                                str += processInOutputQuery((Element) cur, ConnectorType.INOUTPUT);
                             } else if (curName.equals("variable")) {
                                 str += processVariableQuery((Element) cur, message.getPeerId());
                             } else if (curName.equals("connect")) {
@@ -497,7 +497,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      *            input, output, or inOutput
      * @return the answer to the query
      */
-    protected String processInOutputQuery(Element elt, ChannelType kind) {
+    protected String processInOutputQuery(Element elt, ConnectorType kind) {
         Attr attrName = elt.getAttributeNode("name");
         InOutputAttribute ioa = findInOutput(attrName.getValue(), kind);
         if (ioa != null) {
@@ -661,7 +661,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      * @return the InOutputAttribute object associated to the name or null if
      *         not found
      */
-    public InOutputAttribute findInOutput(String name, ChannelType k) {
+    public InOutputAttribute findInOutput(String name, ConnectorType k) {
         for (InOutputAttribute ioa : inoutputsSet) {
             if (ioa.getName().equals(name) && (k == null || k == ioa.getChannelType())) {
                 return ioa;
@@ -742,7 +742,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         } catch (java.io.IOException e) {
             e.printStackTrace();
         }
-        ioa = ctrl.addInOutput("my output", tcpServer, ChannelType.OUTPUT);
+        ioa = ctrl.addInOutput("my output", tcpServer, ConnectorType.OUTPUT);
         ioa.setDescription("output for test");
 
         System.out.println("Register, creation control port");

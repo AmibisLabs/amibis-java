@@ -4,7 +4,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import fr.prima.omiscid.control.interf.ChannelType;
+import fr.prima.omiscid.control.interf.ConnectorType;
 
 /**
  * Group methods to initialize service from an XML file. The XML file contains
@@ -28,8 +28,8 @@ public class XmlToService {
                 String nodeName = node.getNodeName();
                 if (nodeName.equals("variable")) {
                     createVariableFromXml(ctrlServer, (Element) node);
-                } else if (nodeName.equals(ChannelType.INPUT.getXMLTag()) || nodeName.equals(ChannelType.OUTPUT.getXMLTag())
-                        || nodeName.equals(ChannelType.INOUTPUT.getXMLTag())) {
+                } else if (nodeName.equals(ConnectorType.INPUT.getXMLTag()) || nodeName.equals(ConnectorType.OUTPUT.getXMLTag())
+                        || nodeName.equals(ConnectorType.INOUTPUT.getXMLTag())) {
                     createIOFromXml(ctrlServer, (Element) node);
                 }
             }
@@ -46,7 +46,7 @@ public class XmlToService {
 
     public static void createIOFromXml(ControlServer ctrlServer, Element elt) {
         String ioName = elt.getAttribute("name");
-        ChannelType iok = InOutputAttribute.IOKindFromName(elt.getNodeName());
+        ConnectorType iok = InOutputAttribute.IOKindFromName(elt.getNodeName());
         InOutputAttribute ioa = ctrlServer.findInOutput(ioName, iok);
         if (ioa == null)
             ioa = ctrlServer.addInOutput(ioName, null, iok);

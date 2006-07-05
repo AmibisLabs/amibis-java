@@ -5,7 +5,7 @@ package fr.prima.omiscid.control.interf;
  *
  * @author Sebastien Pesnel refactoring emonet
  */
-public enum ChannelType {
+public enum ConnectorType {
     INPUT("Input",
             GlobalConstants.channelTypeInputXMLTag,
             GlobalConstants.prefixForInputInDnssd
@@ -35,7 +35,7 @@ public enum ChannelType {
      * @param xml
      *            string representation in xml for the kind
      */
-    private ChannelType(String k, String xml, String prefixInDnssd) {
+    private ConnectorType(String k, String xml, String prefixInDnssd) {
         this.stringRepresentation = k;
         this.xmlTagName = xml;
         this.prefixInDnssd = prefixInDnssd;
@@ -59,7 +59,7 @@ public enum ChannelType {
         return prefixInDnssd;
     }
 
-    public static ChannelType fromDnssdValue(String propertyValue) {
+    public static ConnectorType fromDnssdValue(String propertyValue) {
         if (propertyValue.startsWith(OUTPUT.prefixInDnssd)) {
             return OUTPUT;
         } else if (propertyValue.startsWith(INPUT.prefixInDnssd)) {
@@ -71,7 +71,7 @@ public enum ChannelType {
     }
 
     public static String realValueFromDnssdValue(String propertyValue) {
-        ChannelType connectorType = fromDnssdValue(propertyValue);
+        ConnectorType connectorType = fromDnssdValue(propertyValue);
         return connectorType == null ?
                 null : propertyValue.replaceFirst(connectorType.getPrefixInDnssd(), "");
     }

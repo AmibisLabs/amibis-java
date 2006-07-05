@@ -5,7 +5,7 @@
 package fr.prima.omiscid.control.filter;
 
 import fr.prima.omiscid.control.OmiscidService;
-import fr.prima.omiscid.control.interf.ChannelType;
+import fr.prima.omiscid.control.interf.ConnectorType;
 import fr.prima.omiscid.control.interf.VariableAccessType;
 
 /**
@@ -85,8 +85,8 @@ public final class OmiscidServiceFilters {
      */
     private static final class Connector implements OmiscidServiceFilter {
         private String connectorName = null;
-        private ChannelType connectorType = null;
-        public Connector(String connectorName, ChannelType connectorType) {
+        private ConnectorType connectorType = null;
+        public Connector(String connectorName, ConnectorType connectorType) {
             super();
             this.connectorName = connectorName;
             this.connectorType = connectorType;
@@ -177,7 +177,7 @@ public final class OmiscidServiceFilters {
     public static OmiscidServiceFilter hasVariable(String variableName, VariableAccessType variableAccessType, String variableValueRegexp) {
         return new Variable(variableName, variableAccessType, variableValueRegexp);
     }
-    public static OmiscidServiceFilter hasConnector(String connectorName, ChannelType connectorType) {
+    public static OmiscidServiceFilter hasConnector(String connectorName, ConnectorType connectorType) {
         return new Connector(connectorName, connectorType);
     }
     public static OmiscidServiceFilter hasConnector(String connectorName) {
