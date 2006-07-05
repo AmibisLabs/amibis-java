@@ -3,6 +3,7 @@ package fr.prima.omiscid.control;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Vector;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
@@ -20,6 +21,7 @@ import fr.prima.omiscid.control.interf.ConnectorType;
 import fr.prima.omiscid.control.interf.GlobalConstants;
 import fr.prima.omiscid.control.interf.VariableAccessType;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
+import fr.prima.omiscid.control.interf.VariableChangeQueryListener;
 import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
 
 /**
@@ -92,6 +94,8 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     /** Tells the listening thread when to stop */
     private boolean processMessagesThreadRunning;
+
+    private Vector<VariableChangeQueryListener> variableChangeQueryListeners = new Vector<VariableChangeQueryListener>();
 
     /**
      * Creates a new instance of ControlServer. Its status is BEGIN and its base
@@ -391,8 +395,16 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      *            modify
      */
     protected void variableModificationQuery(byte[] buffer, VariableAttribute va) {
-        System.err.println("in modifVariable : " + va.getName());
-        // \REVIEWTASK shouldn't this be implemented (or abstract)
+        boolean doModification = true;
+        for (VariableChangeQueryListener listener : variableChangeQueryListeners) {
+            if (! listener.isAccepted(va, new String(buffer))) {
+                doModification = false;
+                break;
+            }
+        }
+        if (doModification) {
+            va.setValueStr(new String(buffer));
+        }
     }
 
     protected void processMessage(Message message) {
@@ -522,7 +534,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     protected String processVariableQuery(Element elt, int pid) {
         Attr attrName = elt.getAttributeNode("name");
         if (attrName == null) {
-            System.err.println("Warning: understood query (name requested)");
+            System.err.println("Warning: ununderstood query (name requested)");
         } else {
             String name = attrName.getValue();
             VariableAttribute va = findVariable(name);
@@ -761,5 +773,13 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             } catch (InterruptedException e) {
             }
         }
+    }
+
+    public boolean addVariableChangeQueryListener(VariableChangeQueryListener o) {
+        return variableChangeQueryListeners.add(o);
+    }
+
+    public boolean removeVariableChangeQueryListener(VariableChangeQueryListener o) {
+        return variableChangeQueryListeners.remove(o);
     }
 }

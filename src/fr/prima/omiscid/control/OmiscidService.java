@@ -37,7 +37,6 @@ public class OmiscidService {
             // Access to environment variable is forbidden
             System.err.println("Warning: access to environment variables is forbidden.");
         }
-
     };
 
     public static DNSSDFactory dnssdFactory = DNSSDFactory.DefaultFactory.instance();
@@ -293,7 +292,13 @@ public class OmiscidService {
             (
                     variableValueRegexp == null
                     ||
-                    VariableAccessType.realValueFromDnssdValue(property).matches(variableValueRegexp)
+                    (
+                            VariableAccessType.CONSTANT == VariableAccessType.fromDnssdValue(property)
+                            // FIXME if not constant should query control ...
+                            &&
+                            VariableAccessType.realValueFromDnssdValue(property).matches(variableValueRegexp)
+
+                    )
             );
         }
     }
