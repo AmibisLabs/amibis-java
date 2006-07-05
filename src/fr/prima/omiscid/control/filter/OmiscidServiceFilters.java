@@ -5,7 +5,6 @@
 package fr.prima.omiscid.control.filter;
 
 import fr.prima.omiscid.control.OmiscidService;
-import fr.prima.omiscid.control.interf.GlobalConstants;
 
 /**
  * Utility class. Provides some {@link OmiscidServiceFilter} creators for
@@ -35,12 +34,26 @@ public final class OmiscidServiceFilters {
         private String hostNameRegexp = null;
 
         public Host(String hostnameRegexp) {
-            hostNameRegexp = hostnameRegexp;
+            this.hostNameRegexp = hostnameRegexp;
         }
 
         public boolean isAGoodService(OmiscidService s) {
-            System.out.println(s.getHostName());
             return s.getHostName().matches(hostNameRegexp);
+        }
+    }
+
+    /**
+     * Tests whether the owner of the service is matching a given regexp
+     */
+    private static final class Owner implements OmiscidServiceFilter {
+        private String ownerRegexp = null;
+
+        public Owner(String ownerRegexp) {
+            this.ownerRegexp = ownerRegexp;
+        }
+
+        public boolean isAGoodService(OmiscidService s) {
+            return s.getOwner().matches(ownerRegexp);
         }
     }
 
@@ -95,7 +108,7 @@ public final class OmiscidServiceFilters {
     }
 
     public static OmiscidServiceFilter ownerIs(String ownerRegexp) {
-        return new KeyValue("owner", "^" + GlobalConstants.prefixForConstantInDnssd + ownerRegexp + "$");
+        return new Owner("^" + ownerRegexp + "$");
     }
 
     public static OmiscidServiceFilter keyPresent(String txtRecordKey) {
