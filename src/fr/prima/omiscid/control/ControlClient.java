@@ -1,22 +1,34 @@
 package fr.prima.omiscid.control;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
+import fr.prima.omiscid.com.BipMessageInterpretationException;
 import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.TcpClient;
 import fr.prima.omiscid.com.XmlMessage;
 import fr.prima.omiscid.com.interf.BipMessageListener;
 import fr.prima.omiscid.com.interf.Message;
-import fr.prima.omiscid.control.interf.ConnectorType;
+import fr.prima.omiscid.control.message.answer.ControlAnswer;
+import fr.prima.omiscid.control.message.answer.ControlAnswerItem;
+import fr.prima.omiscid.control.message.query.Variable;
+import fr.prima.omiscid.control.message.query.ControlQuery;
+import fr.prima.omiscid.control.message.query.ControlQueryItem;
+import fr.prima.omiscid.control.message.query.Inoutput;
+import fr.prima.omiscid.control.message.query.Input;
+import fr.prima.omiscid.control.message.query.Output;
 
 /**
  * Handles the communication with the control server of a OMiSCID service.
@@ -51,7 +63,7 @@ public class ControlClient implements BipMessageListener {
     private Object answerEvent = new Object();
 
     /** An available answer */
-    private XmlMessage messageAnswer = null;
+    private Message messageAnswer = null;
 
     /**
      * Set of listener interested in the control event (Set of object
@@ -192,8 +204,8 @@ public class ControlClient implements BipMessageListener {
         }
     }
 
-
-    public void disconnected() {
+    public void disconnected(int remotePeerId) {
+        //TODO
     }
 
     /**
@@ -292,14 +304,23 @@ public class ControlClient implements BipMessageListener {
      * @return whether the query has received an answer
      */
     public boolean queryGlobalDescription() {
-        String request = "";
-        XmlMessage message = queryToServer(request, true);
-        if (message != null) {
-            processGlobalDescription(message);
-            return true;
-        } else {
-            return false;
+        try {
+            ControlQuery controlQuery = new ControlQuery();
+            ControlAnswer controlAnswer = queryToServer(controlQuery, true);
+            if (controlAnswer != null) {
+                processGlobalDescription(controlAnswer);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (MarshalException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
+        return false;
     }
 
     /**
@@ -336,32 +357,42 @@ public class ControlClient implements BipMessageListener {
      *         the request failed
      */
     public VariableAttribute queryVariableDescription(String name) {
-        String request = "<variable name=\"" + name + "\"/>";
-        XmlMessage message = queryToServer(request, true);
-        if (message != null) {
-            VariableAttribute vattr = findVariable(name);
-            Element elt = XmlUtils.firstChild(message.getRootElement(), "variable");
+        ControlQuery controlQuery = new ControlQuery();
+        Variable variable = new Variable();
+        variable.setName(name);
+        System.out.println(name);
+        ControlQueryItem controlQueryItem = new ControlQueryItem();
+        controlQueryItem.setVariable(variable);
+        controlQuery.addControlQueryItem(controlQueryItem);
 
-            VariableAttribute attribute = null;
-            if (elt != null) {
-                attribute = processVariableDescription(elt, vattr);
+        try {
+            ControlAnswer controlAnswer = queryToServer(controlQuery, true);
+            if (controlAnswer != null && controlAnswer.getControlAnswerItemCount() != 0) {
+                VariableAttribute vattr = findVariable(name);
+                VariableAttribute attr = processVariableDescription(controlAnswer.getControlAnswerItem(0), vattr);
+                if (attr == null) {
+                    if (vattr != null) {
+                        variableAttributesSet.remove(vattr);
+                    }
+                    if (variableNamesSet.contains(name)) {
+                        variableNamesSet.remove(name);
+                    }
+                } else {
+                    if (vattr == null) {
+                        variableAttributesSet.add(attr);
+                    }
+                    if (!variableNamesSet.contains(name)) {
+                        variableNamesSet.add(name);
+                    }
+                }
+                return attr;
             }
-            if (attribute == null) {
-                if (vattr != null) {
-                    variableAttributesSet.remove(vattr);
-                }
-                if (variableNamesSet.contains(name)) {
-                    variableNamesSet.remove(name);
-                }
-            } else {
-                if (vattr == null) {
-                    variableAttributesSet.add(attribute);
-                }
-                if (!variableNamesSet.contains(name)) {
-                    variableNamesSet.add(name);
-                }
-            }
-            return attribute;
+        } catch (MarshalException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         return null;
     }
@@ -382,14 +413,31 @@ public class ControlClient implements BipMessageListener {
             System.err.println("Unknown Variable: Description Not Available: " + name);
             return null;
         } else {
-            String request = "<variable name=\"" + name + "\">";
-            request += "<value>";
-            request += XmlUtils.generateCDataSection(value);
-            request += "</value></variable>";
-            XmlMessage message = queryToServer(request, true);
-            if (message != null) {
-                VariableAttribute attr = processVariableDescription(XmlUtils.firstChild(message.getRootElement(), "variable"), vattr);
-                return attr;
+            ControlQuery controlQuery = new ControlQuery();
+            Variable variable = new Variable();
+            variable.setName(name);
+            variable.setValue(value);
+            ControlQueryItem controlQueryItem = new ControlQueryItem();
+            controlQueryItem.setVariable(variable);
+            controlQuery.addControlQueryItem(controlQueryItem);
+//            String request = "<variable name=\"" + name + "\">";
+//            request += "<value>";
+//            request += XmlUtils.generateCDataSection(value);
+//            request += "</value></variable>";
+//            XmlMessage message = queryToServer(request, true);
+//            if (message != null) {
+            try {
+                ControlAnswer controlAnswer = queryToServer(controlQuery, true);
+                if (controlAnswer != null) {
+                    VariableAttribute attr = processVariableDescription(controlAnswer.getControlAnswerItem(0), vattr);
+                    return attr;
+                }
+            } catch (MarshalException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (ValidationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
             return null;
         }
@@ -404,23 +452,37 @@ public class ControlClient implements BipMessageListener {
      *         the request failed
      */
     public InOutputAttribute queryInputDescription(String name) {
-        String request = "<" + ConnectorType.INPUT.getXMLTag() + " name=\"" + name + "\"/>";
-        XmlMessage message = queryToServer(request, true);
-        if (message != null) {
-            InOutputAttribute ioattr = findInput(name);
-            InOutputAttribute attr = processInOutputDescription(XmlUtils.firstChild(message.getRootElement(), ConnectorType.INPUT.getXMLTag()), ioattr);
-            if (attr == null) {
-                if (ioattr != null)
-                    inputAttributesSet.remove(ioattr);
-                if (inputNamesSet.contains(name))
-                    inputNamesSet.remove(name);
-            } else {
-                if (ioattr == null)
-                    inputAttributesSet.add(attr);
-                if (!inputNamesSet.contains(name))
-                    inputNamesSet.add(name);
+        ControlQuery controlQuery = new ControlQuery();
+        Input input = new Input();
+        input.setName(name);
+        ControlQueryItem controlQueryItem = new ControlQueryItem();
+        controlQueryItem.setInput(input);
+        controlQuery.addControlQueryItem(controlQueryItem);
+
+        try {
+            ControlAnswer controlAnswer = queryToServer(controlQuery, true);
+            if (controlAnswer != null) {
+                InOutputAttribute ioattr = findInput(name);
+                InOutputAttribute attr = processInOutputDescription(controlAnswer.getControlAnswerItem(0), ioattr);
+                if (attr == null) {
+                    if (ioattr != null)
+                        inputAttributesSet.remove(ioattr);
+                    if (inputNamesSet.contains(name))
+                        inputNamesSet.remove(name);
+                } else {
+                    if (ioattr == null)
+                        inputAttributesSet.add(attr);
+                    if (!inputNamesSet.contains(name))
+                        inputNamesSet.add(name);
+                }
+                return attr;
             }
-            return attr;
+        } catch (MarshalException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         return null;
     }
@@ -434,25 +496,60 @@ public class ControlClient implements BipMessageListener {
      *         the request failed
      */
     public InOutputAttribute queryOutputDescription(String name) {
-        String request = "<" + ConnectorType.OUTPUT.getXMLTag() + " name=\"" + name + "\"/>";
-        XmlMessage message = queryToServer(request, true);
-        if (message != null) {
-            InOutputAttribute ioattr = findOutput(name);
-            InOutputAttribute attr = processInOutputDescription(XmlUtils.firstChild(message.getRootElement(), ConnectorType.OUTPUT.getXMLTag()), ioattr);
-            if (attr == null) {
-                if (ioattr != null)
-                    outputAttributesSet.remove(ioattr);
-                if (outputNamesSet.contains(name))
-                    outputNamesSet.remove(name);
-            } else {
-                if (ioattr == null)
-                    outputAttributesSet.add(attr);
-                if (!outputNamesSet.contains(name))
-                    outputNamesSet.add(name);
+        ControlQuery controlQuery = new ControlQuery();
+        Output output = new Output();
+        output.setName(name);
+        ControlQueryItem controlQueryItem = new ControlQueryItem();
+        controlQueryItem.setOutput(output);
+        controlQuery.addControlQueryItem(controlQueryItem);
+
+        try {
+            ControlAnswer controlAnswer = queryToServer(controlQuery, true);
+            if (controlAnswer != null) {
+                InOutputAttribute ioattr = findOutput(name);
+                InOutputAttribute attr = processInOutputDescription(controlAnswer.getControlAnswerItem(0), ioattr);
+                if (attr == null) {
+                    if (ioattr != null)
+                        outputAttributesSet.remove(ioattr);
+                    if (outputNamesSet.contains(name))
+                        outputNamesSet.remove(name);
+                } else {
+                    if (ioattr == null)
+                        outputAttributesSet.add(attr);
+                    if (!outputNamesSet.contains(name))
+                        outputNamesSet.add(name);
+                }
+                return attr;
             }
-            return attr;
+        } catch (MarshalException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         return null;
+
+
+//        String request = "<" + ConnectorType.OUTPUT.getXMLTag() + " name=\"" + name + "\"/>";
+//        XmlMessage message = queryToServer(request, true);
+//        if (message != null) {
+//            InOutputAttribute ioattr = findOutput(name);
+//            InOutputAttribute attr = processInOutputDescription(XmlUtils.firstChild(message.getRootElement(), ConnectorType.OUTPUT.getXMLTag()), ioattr);
+//            if (attr == null) {
+//                if (ioattr != null)
+//                    outputAttributesSet.remove(ioattr);
+//                if (outputNamesSet.contains(name))
+//                    outputNamesSet.remove(name);
+//            } else {
+//                if (ioattr == null)
+//                    outputAttributesSet.add(attr);
+//                if (!outputNamesSet.contains(name))
+//                    outputNamesSet.add(name);
+//            }
+//            return attr;
+//        }
+//        return null;
     }
 
     /**
@@ -464,23 +561,37 @@ public class ControlClient implements BipMessageListener {
      *         the request failed
      */
     public InOutputAttribute queryInOutputDescription(String name) {
-        String request = "<" + ConnectorType.INOUTPUT.getXMLTag() + " name=\"" + name + "\"/>";
-        XmlMessage message = queryToServer(request, true);
-        if (message != null) {
-            InOutputAttribute ioattr = findInOutput(name);
-            InOutputAttribute attr = processInOutputDescription(XmlUtils.firstChild(message.getRootElement(), ConnectorType.INOUTPUT.getXMLTag()), ioattr);
-            if (attr == null) {
-                if (ioattr != null)
-                    inOutputAttributesSet.remove(ioattr);
-                if (inOutputNamesSet.contains(name))
-                    inOutputNamesSet.remove(name);
-            } else {
-                if (ioattr == null)
-                    inOutputAttributesSet.add(attr);
-                if (inOutputNamesSet.contains(name))
-                    inOutputNamesSet.add(name);
+        ControlQuery controlQuery = new ControlQuery();
+        Inoutput inoutput = new Inoutput();
+        inoutput.setName(name);
+        ControlQueryItem controlQueryItem = new ControlQueryItem();
+        controlQueryItem.setInoutput(inoutput);
+        controlQuery.addControlQueryItem(controlQueryItem);
+
+        try {
+            ControlAnswer controlAnswer = queryToServer(controlQuery, true);
+            if (controlAnswer != null) {
+                InOutputAttribute ioattr = findInOutput(name);
+                InOutputAttribute attr = processInOutputDescription(controlAnswer.getControlAnswerItem(0), ioattr);
+                if (attr == null) {
+                    if (ioattr != null)
+                        inOutputAttributesSet.remove(ioattr);
+                    if (inOutputNamesSet.contains(name))
+                        inOutputNamesSet.remove(name);
+                } else {
+                    if (ioattr == null)
+                        inOutputAttributesSet.add(attr);
+                    if (inOutputNamesSet.contains(name))
+                        inOutputNamesSet.add(name);
+                }
+                return attr;
             }
-            return attr;
+        } catch (MarshalException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         return null;
     }
@@ -605,12 +716,49 @@ public class ControlClient implements BipMessageListener {
                     try {
                         answerEvent.wait(MaxTimeToWait);
                         if (messageAnswer != null) {
-                            XmlMessage m = messageAnswer;
+                            XmlMessage m = null;
+                            try {
+                                m = new XmlMessage(messageAnswer);
+                            } catch (BipMessageInterpretationException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
                             messageAnswer = null;
                             if (checkMessage(m, theMsgId))
                                 return m;
                         } else {
                             System.err.println("answer null to request " + request + " from " + Integer.toHexString(getPeerId()));
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return null;
+        }
+    }
+
+    private ControlAnswer queryToServer(ControlQuery controlQuery, boolean waitAnswer) throws MarshalException, ValidationException {
+        synchronized (answerEvent) {
+            if (isConnected()) {
+                int theMsgId = messageId++;
+                String strId = BipUtils.intTo8HexString(theMsgId);
+                controlQuery.setId(strId);
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                controlQuery.marshal(new OutputStreamWriter(byteArrayOutputStream));
+                tcpClient.send(byteArrayOutputStream.toByteArray());
+                if (waitAnswer) {
+                    try {
+                        answerEvent.wait(MaxTimeToWait);
+                        if (messageAnswer != null) {
+                            Message m = messageAnswer;
+                            messageAnswer = null;
+                            ControlAnswer controlAnswer = ControlAnswer.unmarshal(new InputStreamReader(new ByteArrayInputStream(m.getBuffer())));
+                            if (controlAnswer.getId().equals(strId)) {
+                                return controlAnswer;
+                            }
+                        } else {
+                            System.err.println("answer null from " + Integer.toHexString(getPeerId()));
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -648,7 +796,7 @@ public class ControlClient implements BipMessageListener {
      * @param message
      *            the answer to a query for global description
      */
-    private void processGlobalDescription(XmlMessage message) {
+    private void processGlobalDescription(ControlAnswer controlAnswer) {
         variableNamesSet.clear();
         inOutputNamesSet.clear();
         inputNamesSet.clear();
@@ -658,28 +806,42 @@ public class ControlClient implements BipMessageListener {
         outputAttributesSet.clear();
         inOutputAttributesSet.clear();
 
-        NodeList nodeList = message.getRootElement().getChildNodes();
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Node node = nodeList.item(i);
-            String nodeName = node.getNodeName();
-            if (nodeName.equals("variable")) {
-                variableNamesSet.add(((Element) node).getAttribute("name"));
-            } else if (nodeName.equals(ConnectorType.INPUT.getXMLTag())) {
-                inputNamesSet.add(((Element) node).getAttribute("name"));
-            } else if (nodeName.equals(ConnectorType.OUTPUT.getXMLTag())) {
-                outputNamesSet.add(((Element) node).getAttribute("name"));
-            } else if (nodeName.equals(ConnectorType.INOUTPUT.getXMLTag())) {
-                inOutputNamesSet.add(((Element) node).getAttribute("name"));
+        for (ControlAnswerItem item : controlAnswer.getControlAnswerItem()) {
+            Object choice = item.getChoiceValue();
+            if (choice instanceof fr.prima.omiscid.control.message.answer.Variable) {
+                variableNamesSet.add(item.getVariable().getName());
+            } else if (choice instanceof fr.prima.omiscid.control.message.answer.Input) {
+                inputNamesSet.add(item.getInput().getName());
+            } else if (choice instanceof fr.prima.omiscid.control.message.answer.Output) {
+                outputNamesSet.add(item.getOutput().getName());
+            } else if (choice instanceof fr.prima.omiscid.control.message.answer.Inoutput) {
+                inOutputNamesSet.add(item.getInoutput().getName());
             } else {
-                System.err.println("Unknown kind " + nodeName);
+                System.err.println("unhandled element "+choice);
             }
         }
+//        NodeList nodeList = message.getRootElement().getChildNodes();
+//        for (int i = 0; i < nodeList.getLength(); i++) {
+//            Node node = nodeList.item(i);
+//            String nodeName = node.getNodeName();
+//            if (nodeName.equals("variable")) {
+//                variableNamesSet.add(((Element) node).getAttribute("name"));
+//            } else if (nodeName.equals(ConnectorType.INPUT.getXMLTag())) {
+//                inputNamesSet.add(((Element) node).getAttribute("name"));
+//            } else if (nodeName.equals(ConnectorType.OUTPUT.getXMLTag())) {
+//                outputNamesSet.add(((Element) node).getAttribute("name"));
+//            } else if (nodeName.equals(ConnectorType.INOUTPUT.getXMLTag())) {
+//                inOutputNamesSet.add(((Element) node).getAttribute("name"));
+//            } else {
+//                System.err.println("Unknown kind " + nodeName);
+//            }
+//        }
     }
 
     /**
      * Processes the answer to a query for complete variable description.
      *
-     * @param elt
+     * @param item
      *            the answer to a query for complete variable description
      * @param vattr
      *            null or a VariableAttribute object that already exists, then
@@ -687,17 +849,13 @@ public class ControlClient implements BipMessageListener {
      * @return a VariableAttribute object (vattr if non null) with the
      *         description, null if the query failed.
      */
-    private VariableAttribute processVariableDescription(Element elt, VariableAttribute vattr) {
-        Attr nameAttr = elt.getAttributeNode("name");
-        if (nameAttr != null) {
-            VariableAttribute attr = vattr;
-            if (vattr == null) {
-                attr = new VariableAttribute(nameAttr.getValue());
-            }
-            attr.extractInfoFromXML(elt);
-            return attr;
+    private VariableAttribute processVariableDescription(ControlAnswerItem item, VariableAttribute vattr) {
+        if (vattr == null) {
+            return new VariableAttribute(item.getVariable());
+        } else {
+            vattr.init(item.getVariable());
+            return vattr;
         }
-        return null;
     }
 
     /**
@@ -711,18 +869,45 @@ public class ControlClient implements BipMessageListener {
      * @return a VariableAttribute object (ioattr if non null) with the
      *         description
      */
-    private InOutputAttribute processInOutputDescription(Element elt, InOutputAttribute ioattr) {
-        Attr nameAttr = elt.getAttributeNode("name");
-        if (nameAttr != null) {
-            InOutputAttribute attr = ioattr;
-            if (ioattr == null) {
-                attr = new InOutputAttribute(nameAttr.getValue());
-            }
-            attr.setConnectorType(InOutputAttribute.IOKindFromName(elt.getNodeName()));
-            attr.extractInfoFromXML(elt);
-            return attr;
+    private InOutputAttribute processInOutputDescription(ControlAnswerItem item, InOutputAttribute ioattr) {
+        if (ioattr == null) {
+            return new InOutputAttribute(item);
+        } else {
+            ioattr.init(item);
+            return ioattr;
         }
-        return null;
+
+//        String name = null;
+//        ConnectorType connectorType;
+//        if (item.getChoiceValue() instanceof Input) {
+//            name = item.getInput().getName();
+//            connectorType = ConnectorType.INPUT;
+//        } else if (item.getChoiceValue() instanceof Output) {
+//            name = item.getOutput().getName();
+//            connectorType = ConnectorType.OUTPUT;
+//        } else if (item.getChoiceValue() instanceof InOutputAttribute) {
+//            name = item.getInoutput().getName();
+//            connectorType = ConnectorType.INOUTPUT;
+//        }
+//        if (name != null) {
+//            if (ioattr == null) {
+//                ioattr = new InOutputAttribute(name);
+//            }
+//            ioattr.setConnectorType(connectorType)
+//            return ioattr;
+//        }
+//        return null;
+//        Attr nameAttr = elt.getAttributeNode("name");
+//        if (nameAttr != null) {
+//            InOutputAttribute attr = ioattr;
+//            if (ioattr == null) {
+//                attr = new InOutputAttribute(nameAttr.getValue());
+//            }
+//            attr.setConnectorType(InOutputAttribute.IOKindFromName(elt.getNodeName()));
+//            attr.extractInfoFromXML(elt);
+//            return attr;
+//        }
+//        return null;
     }
 
     /**

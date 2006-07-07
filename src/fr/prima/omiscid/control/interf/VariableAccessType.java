@@ -45,4 +45,15 @@ public enum VariableAccessType {
         return variableAccessType == null ?
                 null : propertyValue.replaceFirst(variableAccessType.getPrefixInDnssd(), "");
     }
+
+//    public static VariableAccessType fromControlString(String accessTypeName) {
+//        if (CONSTANT.stringDescription.equals(accessTypeName)) {
+//            return CONSTANT;
+//        } else if (READ.stringDescription.equals(accessTypeName)) {
+//            return READ;
+//        } else if (READ_WRITE.stringDescription.equals(accessTypeName)) {
+//            return READ_WRITE;
+//        }
+//        return null;
+//    }
 }

@@ -30,7 +30,7 @@ public abstract class MessageManager implements BipMessageListener {
         }
     }
 
-    public void disconnected() {
+    public void disconnected(int peerId) {
 
     }
 

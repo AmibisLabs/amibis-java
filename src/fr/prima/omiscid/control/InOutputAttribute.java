@@ -4,15 +4,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
-import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.CommunicationServer;
 import fr.prima.omiscid.control.interf.ConnectorType;
+import fr.prima.omiscid.control.message.answer.CA_InOutputType;
+import fr.prima.omiscid.control.message.answer.ControlAnswerItem;
+import fr.prima.omiscid.control.message.answer.Inoutput;
+import fr.prima.omiscid.control.message.answer.Input;
+import fr.prima.omiscid.control.message.answer.Output;
 
 /**
  * Stores an in/output description. The in/output description is composed of a
@@ -42,6 +44,8 @@ public class InOutputAttribute extends Attribute {
     /** the udp port: used on the ControlClient side to store the udp port */
     private int udpPort = 0;
 
+    private int peerId = -1;
+
     /**
      * Used on the ControlClient side to store the id of connected peers.
      * (vector of Integer objects)
@@ -69,6 +73,37 @@ public class InOutputAttribute extends Attribute {
     public InOutputAttribute(String aName, fr.prima.omiscid.com.CommunicationServer ct) {
         super(aName);
         communicationServer = ct;
+    }
+
+    public InOutputAttribute(ControlAnswerItem item) {
+        super("");
+        init(item);
+    }
+
+    public void init(ControlAnswerItem item) {
+        CA_InOutputType inoutput = null;
+        if (item.getChoiceValue() instanceof Input) {
+            this.connectorType = ConnectorType.INPUT;
+            inoutput = item.getInput();
+        } else if (item.getChoiceValue() instanceof Output) {
+            connectorType = ConnectorType.OUTPUT;
+            inoutput = item.getOutput();
+        } else if (item.getChoiceValue() instanceof Inoutput) {
+            connectorType = ConnectorType.INOUTPUT;
+            inoutput = item.getInoutput();
+        } else {
+            System.err.println("unhandled ControlAnswerItem type in InOutputAttribute "+item.getChoiceValue());
+        }
+        if (inoutput.getName() != null) this.setName(inoutput.getName());
+        if (inoutput.getDescription() != null) this.setDescription(inoutput.getDescription());
+        if (inoutput.getFormatDescription() != null) this.setFormatDescription(inoutput.getFormatDescription());
+        if (inoutput.getPeerId() != null) this.setPeerId(BipUtils.hexStringToInt(inoutput.getPeerId()));
+        this.setTcpPort(inoutput.getTcp());
+        this.setUdpPort(inoutput.getUdp());
+        this.peerVector.clear();
+        for (String peer : inoutput.getPeers().getPeer()) {
+            addPeer(BipUtils.hexStringToInt(peer));
+        }
     }
 
     /**
@@ -265,32 +300,33 @@ public class InOutputAttribute extends Attribute {
      *            the element of the XML description
      */
     public void extractInfoFromXML(Element elt) {
-        NodeList nodeList = elt.getChildNodes();
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Node current = nodeList.item(i);
-            if (current.getNodeType() == Node.ELEMENT_NODE) {
-                String currentName = current.getNodeName();
-                if (currentName.equals("description")) {
-                    setDescription(current.getTextContent());
-                } else if (currentName.equals("formatDescription")) {
-                    setFormatDescription(current.getTextContent());
-                } else if (currentName.equals("tcp")) {
-                    setTcpPort(Integer.parseInt(current.getTextContent()));
-                } else if (currentName.equals("udp")) {
-                    setUdpPort(Integer.parseInt(current.getTextContent()));
-                } else if (currentName.equals("peers")) {
-                    NodeList listPeer = current.getChildNodes();
-                    for (int p = 0; p < listPeer.getLength(); p++) {
-                        Node peerNode = listPeer.item(p);
-                        if (peerNode.getNodeName().equals("peer")) {
-                            addPeer(BipUtils.hexStringToInt(peerNode.getTextContent()));
-                        }
-                    }
-                } else {
-                    System.err.println("InOutputAttribute::extractInfoFromXML : Unexpected Tag : " + currentName);
-                }
-            }
-        }
+//      XERCES
+//        NodeList nodeList = elt.getChildNodes();
+//        for (int i = 0; i < nodeList.getLength(); i++) {
+//            Node current = nodeList.item(i);
+//            if (current.getNodeType() == Node.ELEMENT_NODE) {
+//                String currentName = current.getNodeName();
+//                if (currentName.equals("description")) {
+//                    setDescription(current.getTextContent());
+//                } else if (currentName.equals("formatDescription")) {
+//                    setFormatDescription(current.getTextContent());
+//                } else if (currentName.equals("tcp")) {
+//                    setTcpPort(Integer.parseInt(current.getTextContent()));
+//                } else if (currentName.equals("udp")) {
+//                    setUdpPort(Integer.parseInt(current.getTextContent()));
+//                } else if (currentName.equals("peers")) {
+//                    NodeList listPeer = current.getChildNodes();
+//                    for (int p = 0; p < listPeer.getLength(); p++) {
+//                        Node peerNode = listPeer.item(p);
+//                        if (peerNode.getNodeName().equals("peer")) {
+//                            addPeer(BipUtils.hexStringToInt(peerNode.getTextContent()));
+//                        }
+//                    }
+//                } else {
+//                    System.err.println("InOutputAttribute::extractInfoFromXML : Unexpected Tag : " + currentName);
+//                }
+//            }
+//        }
     }
 
     static public ConnectorType IOKindFromName(String str) {
@@ -306,43 +342,45 @@ public class InOutputAttribute extends Attribute {
     }
 
     public Element createXmlElement(Document doc) {
+
         Element eltIo = doc.createElement(connectorType.getXMLTag());
-        eltIo.setAttribute("name", getName());
-
-        Element elt = null;
-        CDATASection cdata = null;
-
-        elt = doc.createElement("tcp");
-        elt.setTextContent(Integer.toString(getTcpPort()));
-        eltIo.appendChild(elt);
-
-        elt = doc.createElement("udp");
-        elt.setTextContent(Integer.toString(getUdpPort()));
-        eltIo.appendChild(elt);
-
-        if (getDescription() != null && !getDescription().equals("")) {
-            elt = doc.createElement("description");
-            cdata = doc.createCDATASection(getDescription());
-            elt.appendChild(cdata);
-            eltIo.appendChild(elt);
-        }
-        if (getFormatDescription() != null && !getFormatDescription().equals("")) {
-            elt = doc.createElement("formatDescription");
-            cdata = doc.createCDATASection(getFormatDescription());
-            elt.appendChild(cdata);
-            eltIo.appendChild(elt);
-        }
-
-        List<Integer> v = getPeerVector();
-        if (!v.isEmpty()) {
-            Element eltPeers = doc.createElement("peers");
-            for (Integer peerId : v) {
-                elt = doc.createElement("peer");
-                elt.setTextContent(BipUtils.intTo8HexString(peerId));
-                eltPeers.appendChild(elt);
-            }
-            eltIo.appendChild(eltPeers);
-        }
+//      XERCES
+//        eltIo.setAttribute("name", getName());
+//
+//        Element elt = null;
+//        CDATASection cdata = null;
+//
+//        elt = doc.createElement("tcp");
+//        elt.setTextContent(Integer.toString(getTcpPort()));
+//        eltIo.appendChild(elt);
+//
+//        elt = doc.createElement("udp");
+//        elt.setTextContent(Integer.toString(getUdpPort()));
+//        eltIo.appendChild(elt);
+//
+//        if (getDescription() != null && !getDescription().equals("")) {
+//            elt = doc.createElement("description");
+//            cdata = doc.createCDATASection(getDescription());
+//            elt.appendChild(cdata);
+//            eltIo.appendChild(elt);
+//        }
+//        if (getFormatDescription() != null && !getFormatDescription().equals("")) {
+//            elt = doc.createElement("formatDescription");
+//            cdata = doc.createCDATASection(getFormatDescription());
+//            elt.appendChild(cdata);
+//            eltIo.appendChild(elt);
+//        }
+//
+//        List<Integer> v = getPeerVector();
+//        if (!v.isEmpty()) {
+//            Element eltPeers = doc.createElement("peers");
+//            for (Integer peerId : v) {
+//                elt = doc.createElement("peer");
+//                elt.setTextContent(BipUtils.intTo8HexString(peerId));
+//                eltPeers.appendChild(elt);
+//            }
+//            eltIo.appendChild(eltPeers);
+//        }
 
         return eltIo;
     }
@@ -353,6 +391,14 @@ public class InOutputAttribute extends Attribute {
 
     public void setCommunicationServer(CommunicationServer communicationServer) {
         this.communicationServer = communicationServer;
+    }
+
+    public int getPeerId() {
+        return peerId;
+    }
+
+    private void setPeerId(int peerId) {
+        this.peerId = peerId;
     }
 
 }

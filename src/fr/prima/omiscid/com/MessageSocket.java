@@ -378,7 +378,7 @@ public abstract class MessageSocket {
         }
         synchronized (listenersSet) {
             for (BipMessageListener listener : listenersSet) {
-                listener.disconnected();
+                listener.disconnected(remotePeerId);
             }
         }
     }

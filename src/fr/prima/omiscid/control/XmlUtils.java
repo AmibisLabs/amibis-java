@@ -9,7 +9,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -24,7 +23,7 @@ public class XmlUtils {
 
     /**
      * Extracts from the given Element the first child having the given name.
-     * 
+     *
      * @param element
      * @param name
      * @return the first child with the given name or null if none
@@ -50,7 +49,7 @@ public class XmlUtils {
 
     /**
      * Adds a CData tag around a string
-     * 
+     *
      * @param content
      *            the string to "protect"
      * @return "&lt;![CDATA[" + content + "]]&gt;"
@@ -62,35 +61,36 @@ public class XmlUtils {
     public static String elementToString(Element elt, String prefix) {
         String str = prefix + "<" + elt.getNodeName();
 
-        NamedNodeMap nnm = elt.getAttributes();
-        for (int i = 0; i < nnm.getLength(); i++) {
-            str += " " + nnm.item(i).getNodeName() + "=\"" + nnm.item(i).getNodeValue() + "\"";
-        }
-
-        boolean hasSubElt = false;
-        NodeList nodeList = elt.getChildNodes();
-        String str2 = "";
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Node cur = nodeList.item(i);
-            if (cur.getNodeType() == Node.ELEMENT_NODE) {
-                str2 += elementToString((Element) cur, prefix + "  ");
-                hasSubElt = true;
-            } else if (cur.getNodeType() == Node.CDATA_SECTION_NODE) {
-                str2 += prefix + "  " + generateCDataSection(cur.getTextContent());
-                hasSubElt = true;
-            }
-        }
-
-        if (hasSubElt) {
-            str += ">\r\n" + str2 + prefix + "</" + elt.getNodeName() + ">\r\n";
-        } else {
-            str2 = elt.getTextContent();
-            if (str2.equals("")) {
-                str += "/>\r\n";
-            } else {
-                str += ">" + str2 + "</" + elt.getNodeName() + ">\r\n";
-            }
-        }
+//      XERCES
+//        NamedNodeMap nnm = elt.getAttributes();
+//        for (int i = 0; i < nnm.getLength(); i++) {
+//            str += " " + nnm.item(i).getNodeName() + "=\"" + nnm.item(i).getNodeValue() + "\"";
+//        }
+//
+//        boolean hasSubElt = false;
+//        NodeList nodeList = elt.getChildNodes();
+//        String str2 = "";
+//        for (int i = 0; i < nodeList.getLength(); i++) {
+//            Node cur = nodeList.item(i);
+//            if (cur.getNodeType() == Node.ELEMENT_NODE) {
+//                str2 += elementToString((Element) cur, prefix + "  ");
+//                hasSubElt = true;
+//            } else if (cur.getNodeType() == Node.CDATA_SECTION_NODE) {
+//                str2 += prefix + "  " + generateCDataSection(cur.getTextContent());
+//                hasSubElt = true;
+//            }
+//        }
+//
+//        if (hasSubElt) {
+//            str += ">\r\n" + str2 + prefix + "</" + elt.getNodeName() + ">\r\n";
+//        } else {
+//            str2 = elt.getTextContent();
+//            if (str2.equals("")) {
+//                str += "/>\r\n";
+//            } else {
+//                str += ">" + str2 + "</" + elt.getNodeName() + ">\r\n";
+//            }
+//        }
         return str;
 
     }

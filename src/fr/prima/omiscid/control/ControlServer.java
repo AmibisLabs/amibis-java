@@ -149,15 +149,15 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
         VariableAttribute peerIdVariable = addVariable(GlobalConstants.constantNameForPeerId);
         peerIdVariable.setValueStr(BipUtils.intTo8HexString(peerId));
-        peerIdVariable.setAccess(VariableAccessType.CONSTANT);
+        peerIdVariable.setAccessType(VariableAccessType.CONSTANT);
 
         VariableAttribute ownerVariable = addVariable(GlobalConstants.constantNameForOwner);
         ownerVariable.setValueStr(System.getProperty("user.name"));
-        ownerVariable.setAccess(VariableAccessType.CONSTANT);
+        ownerVariable.setAccessType(VariableAccessType.CONSTANT);
 
         VariableAttribute classVariable = addVariable(GlobalConstants.constantNameForClass);
         classVariable.setValueStr(GlobalConstants.defaultServiceClassValue);
-        classVariable.setAccess(VariableAccessType.CONSTANT);
+        classVariable.setAccessType(VariableAccessType.CONSTANT);
     }
 
     /**
@@ -726,7 +726,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         System.out.println("add variable");
         VariableAttribute va = null;
         va = ctrl.addVariable("var_1");
-        va.setAccess(VariableAccessType.READ_WRITE);
+        va.setAccessType(VariableAccessType.READ_WRITE);
         va.setType("integer");
         va.setDefaultValue("0");
         va.setDescription("a variable to modify for test");
@@ -747,7 +747,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
                 public void receivedBipMessage(fr.prima.omiscid.com.interf.Message m) {
                     System.out.println("received message");
                 }
-                public void disconnected() {
+                public void disconnected(int peerId) {
                     System.out.println("received disconnection notification");
                 }
             });
@@ -782,4 +782,5 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     public boolean removeVariableChangeQueryListener(VariableChangeQueryListener o) {
         return variableChangeQueryListeners.remove(o);
     }
+
 }

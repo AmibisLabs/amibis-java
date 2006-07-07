@@ -5,14 +5,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import fr.prima.omiscid.control.interf.VariableAccessType;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
+import fr.prima.omiscid.control.message.answer.Variable;
+import fr.prima.omiscid.control.message.answer.types.AccessType;
 
 /**
  * Stores a variable description. The variable description is composed of a
@@ -69,6 +68,27 @@ public class VariableAttribute extends Attribute {
         super(name);
     }
 
+    public VariableAttribute(Variable variable) {
+        super(variable.getName());
+        init(variable);
+    }
+
+    public void init(Variable variable) {
+        this.setName(variable.getName());
+        switch (variable.getAccess().getType()) {
+        case AccessType.CONSTANT_TYPE: this.setAccessType(VariableAccessType.CONSTANT); break;
+        case AccessType.READ_TYPE: this.setAccessType(VariableAccessType.READ); break;
+        case AccessType.READWRITE_TYPE: this.setAccessType(VariableAccessType.READ_WRITE); break;
+        default: System.err.println("unhandled variable type in VariableAttribute.init "+variable.getAccess());
+        }
+        this.setValueStr(variable.getValue());
+        this.setDescription(variable.getDescription());
+        this.setType(variable.getType());
+        this.setDefaultValue(variable.getDefault());
+        this.setFormatDescription(variable.getFormatDescription());
+    }
+
+
     /**
      * Accesses the string value of the variable.
      *
@@ -111,7 +131,7 @@ public class VariableAttribute extends Attribute {
      * @return the string associated to the kind of access
      */
     public String getAccessString() {
-        return accessKind.toString();
+        return accessKind.getStringDescription();
     }
 
     /**
@@ -150,11 +170,11 @@ public class VariableAttribute extends Attribute {
     /**
      * Sets the default value for the variable.
      *
-     * @param dv
+     * @param defaultValue
      *            the new default value
      */
-    public void setDefaultValue(String dv) {
-        defaultValue = dv;
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
     /**
@@ -163,7 +183,7 @@ public class VariableAttribute extends Attribute {
      * @param a
      *            the new kind of access
      */
-    public void setAccess(VariableAccessType a) {
+    public void setAccessType(VariableAccessType a) {
         accessKind = a;
     }
 
@@ -320,32 +340,33 @@ public class VariableAttribute extends Attribute {
      *            the element of the XML description
      */
     public void extractInfoFromXML(Element elt) {
-        String tmpValue = null;
-        NodeList nodeList = elt.getChildNodes();
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            Node current = nodeList.item(i);
-            if (current.getNodeType() == Node.ELEMENT_NODE) {
-                String currentName = current.getNodeName();
-                if (currentName.equals("description")) {
-                    setDescription(current.getTextContent());
-                } else if (currentName.equals("formatDescription")) {
-                    setFormatDescription(current.getTextContent());
-                } else if (currentName.equals("value")) {
-                    tmpValue = current.getTextContent();
-                } else if (currentName.equals("default")) {
-                    setDefaultValue(current.getTextContent());
-                } else if (currentName.equals("type")) {
-                    setType(current.getTextContent());
-                } else if (currentName.equals("access")) {
-                    setAccess(current.getTextContent());
-                } else {
-                    System.err.println("Warning: VariableAttribute#extractInfoFromXml: Unexpected Tag : " + currentName);
-                }
-            }
-        }
-        if (tmpValue != null) {
-            setValueStr(tmpValue);
-        }
+//      XERCES
+//        String tmpValue = null;
+//        NodeList nodeList = elt.getChildNodes();
+//        for (int i = 0; i < nodeList.getLength(); i++) {
+//            Node current = nodeList.item(i);
+//            if (current.getNodeType() == Node.ELEMENT_NODE) {
+//                String currentName = current.getNodeName();
+//                if (currentName.equals("description")) {
+//                    setDescription(current.getTextContent());
+//                } else if (currentName.equals("formatDescription")) {
+//                    setFormatDescription(current.getTextContent());
+//                } else if (currentName.equals("value")) {
+//                    tmpValue = current.getTextContent();
+//                } else if (currentName.equals("default")) {
+//                    setDefaultValue(current.getTextContent());
+//                } else if (currentName.equals("type")) {
+//                    setType(current.getTextContent());
+//                } else if (currentName.equals("access")) {
+//                    setAccess(current.getTextContent());
+//                } else {
+//                    System.err.println("Warning: VariableAttribute#extractInfoFromXml: Unexpected Tag : " + currentName);
+//                }
+//            }
+//        }
+//        if (tmpValue != null) {
+//            setValueStr(tmpValue);
+//        }
     }
 
     /**
@@ -353,53 +374,54 @@ public class VariableAttribute extends Attribute {
      */
     protected void setAccess(String accessStr) {
         if (accessStr.equals(VariableAccessType.READ.toString())) {
-            setAccess(VariableAccessType.READ);
+            setAccessType(VariableAccessType.READ);
         } else if (accessStr.equals(VariableAccessType.READ_WRITE.toString())) {
-            setAccess(VariableAccessType.READ_WRITE);
+            setAccessType(VariableAccessType.READ_WRITE);
         } else if (accessStr.equals(VariableAccessType.CONSTANT.toString())) {
-            setAccess(VariableAccessType.CONSTANT);
+            setAccessType(VariableAccessType.CONSTANT);
         }
     }
 
     public Element createXmlElement(Document doc) {
+//      XERCES
         Element eltVar = doc.createElement("variable");
-        eltVar.setAttribute("name", getName());
-
-        Element elt = null;
-        CDATASection cdata = null;
-
-        elt = doc.createElement("access");
-        elt.setTextContent(getAccessString());
-        eltVar.appendChild(elt);
-
-        elt = doc.createElement("value");
-        cdata = doc.createCDATASection(getValueStr());
-        elt.appendChild(cdata);
-        eltVar.appendChild(elt);
-
-        if (defaultValue != null && !defaultValue.equals("")) {
-            elt = doc.createElement("default");
-            cdata = doc.createCDATASection(defaultValue);
-            elt.appendChild(cdata);
-            eltVar.appendChild(elt);
-        }
-
-        elt = doc.createElement("type");
-        elt.setTextContent(getType());
-        eltVar.appendChild(elt);
-
-        if (getDescription() != null && !getDescription().equals("")) {
-            elt = doc.createElement("description");
-            cdata = doc.createCDATASection(getDescription());
-            elt.appendChild(cdata);
-            eltVar.appendChild(elt);
-        }
-        if (getFormatDescription() != null && !getFormatDescription().equals("")) {
-            elt = doc.createElement("formatDescription");
-            cdata = doc.createCDATASection(getFormatDescription());
-            elt.appendChild(cdata);
-            eltVar.appendChild(elt);
-        }
+//        eltVar.setAttribute("name", getName());
+//
+//        Element elt = null;
+//        CDATASection cdata = null;
+//
+//        elt = doc.createElement("access");
+//        elt.setTextContent(getAccessString());
+//        eltVar.appendChild(elt);
+//
+//        elt = doc.createElement("value");
+//        cdata = doc.createCDATASection(getValueStr());
+//        elt.appendChild(cdata);
+//        eltVar.appendChild(elt);
+//
+//        if (defaultValue != null && !defaultValue.equals("")) {
+//            elt = doc.createElement("default");
+//            cdata = doc.createCDATASection(defaultValue);
+//            elt.appendChild(cdata);
+//            eltVar.appendChild(elt);
+//        }
+//
+//        elt = doc.createElement("type");
+//        elt.setTextContent(getType());
+//        eltVar.appendChild(elt);
+//
+//        if (getDescription() != null && !getDescription().equals("")) {
+//            elt = doc.createElement("description");
+//            cdata = doc.createCDATASection(getDescription());
+//            elt.appendChild(cdata);
+//            eltVar.appendChild(elt);
+//        }
+//        if (getFormatDescription() != null && !getFormatDescription().equals("")) {
+//            elt = doc.createElement("formatDescription");
+//            cdata = doc.createCDATASection(getFormatDescription());
+//            elt.appendChild(cdata);
+//            eltVar.appendChild(elt);
+//        }
         return eltVar;
     }
 }

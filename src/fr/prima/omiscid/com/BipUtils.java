@@ -213,7 +213,7 @@ public final class BipUtils {
             root.setAttribute(attributeNameValuePairs[i], attributeNameValuePairs[i+1]);
         }
         if (content != null) {
-            root.setTextContent(content);
+            root.appendChild(document.createTextNode(content));
         }
         document.appendChild(root);
         return document;

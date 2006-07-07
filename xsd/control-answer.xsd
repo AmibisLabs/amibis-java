@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="1.0">
+
+  <xs:simpleType name="IDType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9]" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="NameType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[a-zA-Z0-9_]*" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="VariableNameType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[a-zA-Z0-9_ ]*" />
+    </xs:restriction>
+  </xs:simpleType>
+
+
+  <xs:simpleType name="AccessType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="constant" />
+      <xs:enumeration value="read" />
+      <xs:enumeration value="readWrite" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="PeersType">
+    <xs:sequence>
+      <xs:element name="peer" type="IDType" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CA_InOutputType">
+    <xs:all>
+      <xs:element name="tcp" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+      <xs:element name="udp" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+      <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
+      <xs:element name="formatDescription" type="xs:string" minOccurs="0" maxOccurs="1" />
+      <xs:element name="require" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
+      <xs:element name="peers" type="PeersType" minOccurs="0" maxOccurs="1" />
+      <xs:element name="peerId" type="IDType" minOccurs="0" maxOccurs="1" />
+    </xs:all>
+    <xs:attribute name="name" type="NameType" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="CA_VariableType">
+    <xs:all>
+      <xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="1" />
+      <xs:element name="default" type="xs:string" minOccurs="0" maxOccurs="1" />
+      <xs:element name="type" type="xs:string" minOccurs="0" maxOccurs="1" />
+      <xs:element name="access" type="AccessType" minOccurs="0" maxOccurs="1" />
+      <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
+      <xs:element name="formatDescription" type="xs:string" minOccurs="0" maxOccurs="1" />
+    </xs:all>
+    <xs:attribute name="name" type="VariableNameType" use="required" />
+  </xs:complexType>
+
+
+  <xs:element name="controlAnswer">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="input" type="CA_InOutputType" />
+        <xs:element name="output" type="CA_InOutputType" />
+        <xs:element name="inoutput" type="CA_InOutputType" />
+        <xs:element name="variable" type="CA_VariableType" />
+      </xs:choice>
+      <xs:attribute name="id" type="IDType" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="controlEvent">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="variable" type="CA_VariableType" />
+      </xs:choice>
+      <xs:attribute name="id" type="IDType" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+
+</xs:schema>

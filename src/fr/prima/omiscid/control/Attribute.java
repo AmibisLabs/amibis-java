@@ -147,4 +147,8 @@ public abstract class Attribute {
     public boolean equals(Object o) {
         return (o == this) || (o instanceof Attribute && (getName().equals(((Attribute) o).getName())));
     }
+
+    protected void setName(String name) {
+        this.name = name;
+    }
 }
