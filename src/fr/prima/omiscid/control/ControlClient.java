@@ -11,24 +11,26 @@ import java.util.TreeSet;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import fr.prima.omiscid.com.BipMessageInterpretationException;
 import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.TcpClient;
-import fr.prima.omiscid.com.XmlMessage;
 import fr.prima.omiscid.com.interf.BipMessageListener;
 import fr.prima.omiscid.com.interf.Message;
 import fr.prima.omiscid.control.message.answer.ControlAnswer;
 import fr.prima.omiscid.control.message.answer.ControlAnswerItem;
-import fr.prima.omiscid.control.message.query.Variable;
+import fr.prima.omiscid.control.message.answer.ControlEvent;
+import fr.prima.omiscid.control.message.answer.types.CA_LockResultType;
 import fr.prima.omiscid.control.message.query.ControlQuery;
 import fr.prima.omiscid.control.message.query.ControlQueryItem;
 import fr.prima.omiscid.control.message.query.Inoutput;
 import fr.prima.omiscid.control.message.query.Input;
+import fr.prima.omiscid.control.message.query.Lock;
 import fr.prima.omiscid.control.message.query.Output;
+import fr.prima.omiscid.control.message.query.Unlock;
+import fr.prima.omiscid.control.message.query.Unsubscribe;
+import fr.prima.omiscid.control.message.query.Variable;
 
 /**
  * Handles the communication with the control server of a OMiSCID service.
@@ -63,7 +65,7 @@ public class ControlClient implements BipMessageListener {
     private Object answerEvent = new Object();
 
     /** An available answer */
-    private Message messageAnswer = null;
+    private ControlAnswer messageAnswer = null;
 
     /**
      * Set of listener interested in the control event (Set of object
@@ -184,24 +186,54 @@ public class ControlClient implements BipMessageListener {
      *            a new BIP message received
      */
     public void receivedBipMessage(Message message) {
-        XmlMessage xmlMessage = XmlMessage.newUnchecked(message);
-        if (xmlMessage != null && xmlMessage.getRootElement() != null) {
-            Element root = xmlMessage.getRootElement();
-            if (root.getNodeName().equals("controlAnswer")) {
-                synchronized (answerEvent) {
-                    messageAnswer = xmlMessage;
-                    answerEvent.notify();
-                }
-            } else if (root.getNodeName().equals("controlEvent")) {
-                synchronized (controlEventListenersSet) {
-                    for (ControlEventListener listener : controlEventListenersSet) {
-                        listener.receivedControlEvent(xmlMessage);
-                    }
-                }
-            } else {
-                System.err.println("Unknown message kind : " + root.getNodeName());
+        try {
+            ControlAnswer answer = ControlAnswer.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())));
+            synchronized (answerEvent) {
+                messageAnswer = answer;
+                answerEvent.notify();
             }
+            return;
+        } catch (MarshalException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
+        try {
+            ControlEvent event = ControlEvent.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())));
+            synchronized (controlEventListenersSet) {
+                for (ControlEventListener listener : controlEventListenersSet) {
+//                    listener.receivedControlEvent(xmlMessage);
+                    //FIXME
+                }
+            }
+            return;
+        } catch (MarshalException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+//        XmlMessage xmlMessage = XmlMessage.newUnchecked(message);
+//        if (xmlMessage != null && xmlMessage.getRootElement() != null) {
+//            Element root = xmlMessage.getRootElement();
+//            if (root.getNodeName().equals("controlAnswer")) {
+//                synchronized (answerEvent) {
+//                    messageAnswer = xmlMessage;
+//                    answerEvent.notify();
+//                }
+//            } else if (root.getNodeName().equals("controlEvent")) {
+//                synchronized (controlEventListenersSet) {
+//                    for (ControlEventListener listener : controlEventListenersSet) {
+//                        listener.receivedControlEvent(xmlMessage);
+//                    }
+//                }
+//            } else {
+//                System.err.println("Unknown message kind : " + root.getNodeName());
+//            }
+//        }
     }
 
     public void disconnected(int remotePeerId) {
@@ -360,7 +392,6 @@ public class ControlClient implements BipMessageListener {
         ControlQuery controlQuery = new ControlQuery();
         Variable variable = new Variable();
         variable.setName(name);
-        System.out.println(name);
         ControlQueryItem controlQueryItem = new ControlQueryItem();
         controlQueryItem.setVariable(variable);
         controlQuery.addControlQueryItem(controlQueryItem);
@@ -610,8 +641,23 @@ public class ControlClient implements BipMessageListener {
     public boolean subscribe(String varName) {
         VariableAttribute va = findVariable(varName);
         if (va != null) {
-            String request = "<subscribe name=\"" + va.getName() + "\"/>";
-            queryToServer(request, false);
+            ControlQuery controlQuery = new ControlQuery();
+            ControlQueryItem controlQueryItem = new ControlQueryItem();
+            Variable variable = new Variable();
+            variable.setName(varName);
+            controlQueryItem.setVariable(variable);
+            controlQuery.addControlQueryItem(controlQueryItem);
+//            String request = "<subscribe name=\"" + va.getName() + "\"/>";
+//            queryToServer(request, false);
+            try {
+                queryToServer(controlQuery, false);
+            } catch (MarshalException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (ValidationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             return true;
         } else {
             System.err.println("variable unknown by client\n");
@@ -630,8 +676,23 @@ public class ControlClient implements BipMessageListener {
     public boolean unsubscribe(String varName) {
         VariableAttribute va = findVariable(varName);
         if (va != null) {
-            String request = "<unsubscribe name=\"" + va.getName() + "\"/>";
-            queryToServer(request, false);
+            ControlQuery controlQuery = new ControlQuery();
+            ControlQueryItem controlQueryItem = new ControlQueryItem();
+            Unsubscribe unsubscribe = new Unsubscribe();
+            unsubscribe.setName(varName);
+            controlQueryItem.setUnsubscribe(unsubscribe );
+            controlQuery.addControlQueryItem(controlQueryItem );
+//            String request = "<unsubscribe name=\"" + va.getName() + "\"/>";
+//            queryToServer(request, false);
+            try {
+                queryToServer(controlQuery, false);
+            } catch (MarshalException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (ValidationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             return true;
         } else {
             System.err.println("variable unknown by client\n");
@@ -645,26 +706,54 @@ public class ControlClient implements BipMessageListener {
      * @return whether the control server was locked for this service
      */
     public boolean lock() {
-        String request = "<lock/>";
-        XmlMessage message = queryToServer(request, true);
-        if (message != null) {
-            Element elt = XmlUtils.firstChild(message.getRootElement(), "lock");
-            String res = elt.getAttribute("result");
-            int peer = BipUtils.hexStringToInt(elt.getAttribute("peer"));
-
-            VariableAttribute vattr = findVariable("lock");
-            if (vattr != null) {
-                vattr.setValueStr(Integer.toString(peer));
+        ControlQuery controlQuery = new ControlQuery();
+        ControlQueryItem controlQueryItem = new ControlQueryItem();
+        controlQueryItem.setLock(new Lock());
+        controlQuery.addControlQueryItem(controlQueryItem);
+        try {
+            ControlAnswer controlAnswer = queryToServer(controlQuery, true);
+            if (controlAnswer != null) {
+              int peer = BipUtils.hexStringToInt(controlAnswer.getControlAnswerItem(0).getLock().getPeer());
+              VariableAttribute vattr = findVariable("lock");
+              if (vattr != null) {
+                  vattr.setValueStr(Integer.toString(peer));
+              }
+              if (controlAnswer.getControlAnswerItem(0).getLock().getResult().getType() == CA_LockResultType.OK_TYPE) {
+                  if (peer != peerId) {
+                      System.err.println("Lock ok, but id different : " + peer + " != " + peerId);
+                      return false;
+                  }
+                  return true;
+              }
             }
-            if (res.equals("ok")) {
-                if (peer != peerId) {
-                    System.err.println("Lock ok, but id different : " + peer + " != " + peerId);
-                    return false;
-                }
-                return true;
-            }
+        } catch (MarshalException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         return false;
+//        String request = "<lock/>";
+//        XmlMessage message = queryToServer(request, true);
+//        if (message != null) {
+//            Element elt = XmlUtils.firstChild(message.getRootElement(), "lock");
+//            String res = elt.getAttribute("result");
+//            int peer = BipUtils.hexStringToInt(elt.getAttribute("peer"));
+//
+//            VariableAttribute vattr = findVariable("lock");
+//            if (vattr != null) {
+//                vattr.setValueStr(Integer.toString(peer));
+//            }
+//            if (res.equals("ok")) {
+//                if (peer != peerId) {
+//                    System.err.println("Lock ok, but id different : " + peer + " != " + peerId);
+//                    return false;
+//                }
+//                return true;
+//            }
+//        }
+//        return false;
     }
 
     /**
@@ -673,70 +762,98 @@ public class ControlClient implements BipMessageListener {
      * @return whether the control server was unlocked
      */
     public boolean unlock() {
-        String request = "<unlock/>";
-        XmlMessage message = queryToServer(request, true);
-        if (message != null) {
-            Element elt = XmlUtils.firstChild(message.getRootElement(), "unlock");
-            String res = elt.getAttribute("result");
-            int peer = BipUtils.hexStringToInt(elt.getAttribute("peer"));
+        ControlQuery controlQuery = new ControlQuery();
+        ControlQueryItem controlQueryItem = new ControlQueryItem();
+        controlQueryItem.setUnlock(new Unlock());
+        controlQuery.addControlQueryItem(controlQueryItem);
+        try {
+            ControlAnswer controlAnswer = queryToServer(controlQuery, true);
+            if (controlAnswer != null) {
+              int peer = BipUtils.hexStringToInt(controlAnswer.getControlAnswerItem(0).getUnlock().getPeer());
 
-            VariableAttribute vattr = findVariable("lock");
-            if (vattr != null) {
-                vattr.setValueStr(Integer.toString(peer));
+              VariableAttribute vattr = findVariable("lock");
+              if (vattr != null) {
+                  vattr.setValueStr(Integer.toString(peer));
+              }
+              if (controlAnswer.getControlAnswerItem(0).getUnlock().getResult().getType() == CA_LockResultType.OK_TYPE) {
+                  if (peer != 0) {
+                      System.err.println("unlock ok, but id no null : " + peer);
+                  }
+                  return true;
+              }
             }
-            if (res.equals("ok")) {
-                if (peer != 0) {
-                    System.err.println("unlock ok, but id no null : " + peer);
-                }
-                return true;
-            }
+        } catch (MarshalException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         return false;
+//        String request = "<unlock/>";
+//        XmlMessage message = queryToServer(request, true);
+//        if (message != null) {
+//            Element elt = XmlUtils.firstChild(message.getRootElement(), "unlock");
+//            String res = elt.getAttribute("result");
+//            int peer = BipUtils.hexStringToInt(elt.getAttribute("peer"));
+//
+//            VariableAttribute vattr = findVariable("lock");
+//            if (vattr != null) {
+//                vattr.setValueStr(Integer.toString(peer));
+//            }
+//            if (res.equals("ok")) {
+//                if (peer != 0) {
+//                    System.err.println("unlock ok, but id no null : " + peer);
+//                }
+//                return true;
+//            }
+//        }
+//        return false;
     }
 
-    /**
-     * Processes the query to the control server.
-     *
-     * @param request
-     *            request to send to the server
-     * @param waitAnswer
-     *            indicate whether the method must wait for an answer from the
-     *            control server
-     * @return the control answer or null if we do not wait for the answer or if
-     *         the query failed
-     */
-    private XmlMessage queryToServer(String request, boolean waitAnswer) {
-        synchronized (answerEvent) {
-            if (isConnected()) {
-                int theMsgId = messageId++;
-                String str = BipUtils.intTo8HexString(theMsgId);
-                str = "<controlQuery id=\"" + str + "\">" + request + "</controlQuery>";
-                tcpClient.send(str);
-                if (waitAnswer) {
-                    try {
-                        answerEvent.wait(MaxTimeToWait);
-                        if (messageAnswer != null) {
-                            XmlMessage m = null;
-                            try {
-                                m = new XmlMessage(messageAnswer);
-                            } catch (BipMessageInterpretationException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                            messageAnswer = null;
-                            if (checkMessage(m, theMsgId))
-                                return m;
-                        } else {
-                            System.err.println("answer null to request " + request + " from " + Integer.toHexString(getPeerId()));
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            return null;
-        }
-    }
+//    /**
+//     * Processes the query to the control server.
+//     *
+//     * @param request
+//     *            request to send to the server
+//     * @param waitAnswer
+//     *            indicate whether the method must wait for an answer from the
+//     *            control server
+//     * @return the control answer or null if we do not wait for the answer or if
+//     *         the query failed
+//     */
+//    private XmlMessage queryToServer(String request, boolean waitAnswer) {
+//        synchronized (answerEvent) {
+//            if (isConnected()) {
+//                int theMsgId = messageId++;
+//                String str = BipUtils.intTo8HexString(theMsgId);
+//                str = "<controlQuery id=\"" + str + "\">" + request + "</controlQuery>";
+//                tcpClient.send(str);
+//                if (waitAnswer) {
+//                    try {
+//                        answerEvent.wait(MaxTimeToWait);
+//                        if (messageAnswer != null) {
+//                            XmlMessage m = null;
+//                            try {
+//                                m = new XmlMessage(messageAnswer);
+//                            } catch (BipMessageInterpretationException e) {
+//                                // TODO Auto-generated catch block
+//                                e.printStackTrace();
+//                            }
+//                            messageAnswer = null;
+//                            if (checkMessage(m, theMsgId))
+//                                return m;
+//                        } else {
+//                            System.err.println("answer null to request " + request + " from " + Integer.toHexString(getPeerId()));
+//                        }
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//            return null;
+//        }
+//    }
 
     private ControlAnswer queryToServer(ControlQuery controlQuery, boolean waitAnswer) throws MarshalException, ValidationException {
         synchronized (answerEvent) {
@@ -751,9 +868,7 @@ public class ControlClient implements BipMessageListener {
                     try {
                         answerEvent.wait(MaxTimeToWait);
                         if (messageAnswer != null) {
-                            Message m = messageAnswer;
-                            messageAnswer = null;
-                            ControlAnswer controlAnswer = ControlAnswer.unmarshal(new InputStreamReader(new ByteArrayInputStream(m.getBuffer())));
+                            ControlAnswer controlAnswer = messageAnswer;
                             if (controlAnswer.getId().equals(strId)) {
                                 return controlAnswer;
                             }
@@ -769,26 +884,26 @@ public class ControlClient implements BipMessageListener {
         }
     }
 
-    /**
-     * Checks whether the answer id has the awaited value (the same value as the
-     * query id).
-     *
-     * @param message
-     *            answer from the control server
-     * @param messageId
-     *            id of the query
-     * @return whether the answer has the good id, that is to say the value
-     *         'messageId'
-     */
-    private boolean checkMessage(XmlMessage message, int messageId) {
-        if (message != null && message.getRootElement() != null) {
-            Attr attr = message.getRootElement().getAttributeNode("id");
-            if (attr != null && BipUtils.hexStringToInt(attr.getValue()) == messageId) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    /**
+//     * Checks whether the answer id has the awaited value (the same value as the
+//     * query id).
+//     *
+//     * @param message
+//     *            answer from the control server
+//     * @param messageId
+//     *            id of the query
+//     * @return whether the answer has the good id, that is to say the value
+//     *         'messageId'
+//     */
+//    private boolean checkMessage(XmlMessage message, int messageId) {
+//        if (message != null && message.getRootElement() != null) {
+//            Attr attr = message.getRootElement().getAttributeNode("id");
+//            if (attr != null && BipUtils.hexStringToInt(attr.getValue()) == messageId) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     /**
      * Processes the answer to a query for global description.

@@ -331,6 +331,72 @@ public class ControlQueryItemDescriptor extends org.exolab.castor.xml.util.XMLCl
         { //-- local scope
         }
         desc.setValidator(fieldValidator);
+        //-- _lock
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(fr.prima.omiscid.control.message.query.Lock.class, "_lock", "lock", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                ControlQueryItem target = (ControlQueryItem) object;
+                return target.getLock();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    ControlQueryItem target = (ControlQueryItem) object;
+                    target.setLock( (fr.prima.omiscid.control.message.query.Lock) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new fr.prima.omiscid.control.message.query.Lock();
+            }
+        };
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _lock
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
+        //-- _unlock
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(fr.prima.omiscid.control.message.query.Unlock.class, "_unlock", "unlock", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                ControlQueryItem target = (ControlQueryItem) object;
+                return target.getUnlock();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    ControlQueryItem target = (ControlQueryItem) object;
+                    target.setUnlock( (fr.prima.omiscid.control.message.query.Unlock) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new fr.prima.omiscid.control.message.query.Unlock();
+            }
+        };
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _unlock
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
     } //-- fr.prima.omiscid.control.message.query.ControlQueryItemDescriptor()
 
 

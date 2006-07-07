@@ -72,6 +72,16 @@ public class ControlQueryItem implements java.io.Serializable {
      */
     private fr.prima.omiscid.control.message.query.Unsubscribe _unsubscribe;
 
+    /**
+     * Field _lock
+     */
+    private fr.prima.omiscid.control.message.query.Lock _lock;
+
+    /**
+     * Field _unlock
+     */
+    private fr.prima.omiscid.control.message.query.Unlock _unlock;
+
 
       //----------------/
      //- Constructors -/
@@ -145,6 +155,17 @@ public class ControlQueryItem implements java.io.Serializable {
     } //-- fr.prima.omiscid.control.message.query.Input getInput() 
 
     /**
+     * Returns the value of field 'lock'.
+     * 
+     * @return Lock
+     * @return the value of field 'lock'.
+     */
+    public fr.prima.omiscid.control.message.query.Lock getLock()
+    {
+        return this._lock;
+    } //-- fr.prima.omiscid.control.message.query.Lock getLock() 
+
+    /**
      * Returns the value of field 'output'.
      * 
      * @return Output
@@ -165,6 +186,17 @@ public class ControlQueryItem implements java.io.Serializable {
     {
         return this._subscribe;
     } //-- fr.prima.omiscid.control.message.query.Subscribe getSubscribe() 
+
+    /**
+     * Returns the value of field 'unlock'.
+     * 
+     * @return Unlock
+     * @return the value of field 'unlock'.
+     */
+    public fr.prima.omiscid.control.message.query.Unlock getUnlock()
+    {
+        return this._unlock;
+    } //-- fr.prima.omiscid.control.message.query.Unlock getUnlock() 
 
     /**
      * Returns the value of field 'unsubscribe'.
@@ -233,6 +265,17 @@ public class ControlQueryItem implements java.io.Serializable {
     } //-- void setInput(fr.prima.omiscid.control.message.query.Input) 
 
     /**
+     * Sets the value of field 'lock'.
+     * 
+     * @param lock the value of field 'lock'.
+     */
+    public void setLock(fr.prima.omiscid.control.message.query.Lock lock)
+    {
+        this._lock = lock;
+        this._choiceValue = lock;
+    } //-- void setLock(fr.prima.omiscid.control.message.query.Lock) 
+
+    /**
      * Sets the value of field 'output'.
      * 
      * @param output the value of field 'output'.
@@ -253,6 +296,17 @@ public class ControlQueryItem implements java.io.Serializable {
         this._subscribe = subscribe;
         this._choiceValue = subscribe;
     } //-- void setSubscribe(fr.prima.omiscid.control.message.query.Subscribe) 
+
+    /**
+     * Sets the value of field 'unlock'.
+     * 
+     * @param unlock the value of field 'unlock'.
+     */
+    public void setUnlock(fr.prima.omiscid.control.message.query.Unlock unlock)
+    {
+        this._unlock = unlock;
+        this._choiceValue = unlock;
+    } //-- void setUnlock(fr.prima.omiscid.control.message.query.Unlock) 
 
     /**
      * Sets the value of field 'unsubscribe'.

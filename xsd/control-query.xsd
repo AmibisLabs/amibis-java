@@ -75,6 +75,12 @@
             <xs:attribute name="name" type="NameType" use="required" />
           </xs:complexType>
         </xs:element>
+        <xs:element name="lock">
+          <xs:complexType/>
+        </xs:element>
+        <xs:element name="unlock">
+          <xs:complexType/>
+        </xs:element>
       </xs:choice>
       <xs:attribute name="id" type="IDType" use="required" />
     </xs:complexType>

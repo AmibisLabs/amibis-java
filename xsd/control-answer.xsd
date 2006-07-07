@@ -59,6 +59,17 @@
     <xs:attribute name="name" type="VariableNameType" use="required" />
   </xs:complexType>
 
+  <xs:simpleType name="CA_LockResultType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ok" />
+      <xs:enumeration value="failed" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="CA_LockType">
+    <xs:attribute name="result" type="CA_LockResultType"  use="required"/>
+    <xs:attribute name="peer" type="IDType"  use="required"/>
+  </xs:complexType>
 
   <xs:element name="controlAnswer">
     <xs:complexType>
@@ -67,6 +78,8 @@
         <xs:element name="output" type="CA_InOutputType" />
         <xs:element name="inoutput" type="CA_InOutputType" />
         <xs:element name="variable" type="CA_VariableType" />
+        <xs:element name="lock" type="CA_LockType" />
+        <xs:element name="unlock" type="CA_LockType" />
       </xs:choice>
       <xs:attribute name="id" type="IDType" use="required" />
     </xs:complexType>

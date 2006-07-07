@@ -52,6 +52,16 @@ public class ControlAnswerItem implements java.io.Serializable {
      */
     private fr.prima.omiscid.control.message.answer.Variable _variable;
 
+    /**
+     * Field _lock
+     */
+    private fr.prima.omiscid.control.message.answer.Lock _lock;
+
+    /**
+     * Field _unlock
+     */
+    private fr.prima.omiscid.control.message.answer.Unlock _unlock;
+
 
       //----------------/
      //- Constructors -/
@@ -103,6 +113,17 @@ public class ControlAnswerItem implements java.io.Serializable {
     } //-- fr.prima.omiscid.control.message.answer.Input getInput() 
 
     /**
+     * Returns the value of field 'lock'.
+     * 
+     * @return Lock
+     * @return the value of field 'lock'.
+     */
+    public fr.prima.omiscid.control.message.answer.Lock getLock()
+    {
+        return this._lock;
+    } //-- fr.prima.omiscid.control.message.answer.Lock getLock() 
+
+    /**
      * Returns the value of field 'output'.
      * 
      * @return Output
@@ -112,6 +133,17 @@ public class ControlAnswerItem implements java.io.Serializable {
     {
         return this._output;
     } //-- fr.prima.omiscid.control.message.answer.Output getOutput() 
+
+    /**
+     * Returns the value of field 'unlock'.
+     * 
+     * @return Unlock
+     * @return the value of field 'unlock'.
+     */
+    public fr.prima.omiscid.control.message.answer.Unlock getUnlock()
+    {
+        return this._unlock;
+    } //-- fr.prima.omiscid.control.message.answer.Unlock getUnlock() 
 
     /**
      * Returns the value of field 'variable'.
@@ -147,6 +179,17 @@ public class ControlAnswerItem implements java.io.Serializable {
     } //-- void setInput(fr.prima.omiscid.control.message.answer.Input) 
 
     /**
+     * Sets the value of field 'lock'.
+     * 
+     * @param lock the value of field 'lock'.
+     */
+    public void setLock(fr.prima.omiscid.control.message.answer.Lock lock)
+    {
+        this._lock = lock;
+        this._choiceValue = lock;
+    } //-- void setLock(fr.prima.omiscid.control.message.answer.Lock) 
+
+    /**
      * Sets the value of field 'output'.
      * 
      * @param output the value of field 'output'.
@@ -156,6 +199,17 @@ public class ControlAnswerItem implements java.io.Serializable {
         this._output = output;
         this._choiceValue = output;
     } //-- void setOutput(fr.prima.omiscid.control.message.answer.Output) 
+
+    /**
+     * Sets the value of field 'unlock'.
+     * 
+     * @param unlock the value of field 'unlock'.
+     */
+    public void setUnlock(fr.prima.omiscid.control.message.answer.Unlock unlock)
+    {
+        this._unlock = unlock;
+        this._choiceValue = unlock;
+    } //-- void setUnlock(fr.prima.omiscid.control.message.answer.Unlock) 
 
     /**
      * Sets the value of field 'variable'.
