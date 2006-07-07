@@ -203,7 +203,7 @@ public class ControlClient implements BipMessageListener {
             e.printStackTrace();
         }
         try {
-            ControlEvent event = ControlEvent.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())));
+            ControlEvent.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())));
             synchronized (controlEventListenersSet) {
                 for (ControlEventListener listener : controlEventListenersSet) {
                     try {
@@ -212,7 +212,7 @@ public class ControlClient implements BipMessageListener {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-                    //FIXME
+                    //TODO xml message is perhaps not necessary
                 }
             }
             return;
