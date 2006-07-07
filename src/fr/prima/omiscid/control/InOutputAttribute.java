@@ -71,15 +71,17 @@ public class InOutputAttribute extends Attribute {
      * @param ct
      *            object associated to this description.
      */
-    public InOutputAttribute(String aName, fr.prima.omiscid.com.CommunicationServer ct) {
+    public InOutputAttribute(String aName, fr.prima.omiscid.com.CommunicationServer ct, int connectorPeerId) {
         super(aName);
-        communicationServer = ct;
+        this.communicationServer = ct;
+        this.peerId = connectorPeerId;
     }
 
     public InOutputAttribute(ControlAnswerItem item) {
         super("");
         init(item);
     }
+
 
     public void init(ControlAnswerItem item) {
         CA_InOutputType inoutput = null;

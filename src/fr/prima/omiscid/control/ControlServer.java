@@ -111,6 +111,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     private Vector<VariableChangeQueryListener> variableChangeQueryListeners = new Vector<VariableChangeQueryListener>();
 
+    private int inoutputIndexCounter = 1;
     /**
      * Creates a new instance of ControlServer. Its status is BEGIN and its base
      * variables are defined. The service is not registered to DNS-SD. It will
@@ -354,7 +355,12 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      *         example.
      */
     public InOutputAttribute addInOutput(String name, CommunicationServer communicationServer, ConnectorType ioKind) {
-        InOutputAttribute ioa = new InOutputAttribute(name, communicationServer);
+        int connectorPeerId = getPeerId() + inoutputIndexCounter;
+        inoutputIndexCounter++;
+        if (inoutputIndexCounter > 255) {
+            System.err.println("max inoutput count reached");
+        }
+        InOutputAttribute ioa = new InOutputAttribute(name, communicationServer, connectorPeerId);
         ioa.setConnectorType(ioKind);
         inoutputsSet.add(ioa);
         return ioa;
