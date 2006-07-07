@@ -5,7 +5,7 @@
  * $Id$
  */
 
-package fr.prima.omiscid.control.message.answer;
+package fr.prima.omiscid.control.message.servicexml;
 
   //---------------------------------/
  //- Imported classes and packages -/
@@ -17,11 +17,11 @@ import org.exolab.castor.xml.XMLFieldDescriptor;
 import org.exolab.castor.xml.validators.*;
 
 /**
- * Class ControlEventItemDescriptor.
+ * Class InoutputDescriptor.
  * 
  * @version $Revision$ $Date$
  */
-public class ControlEventItemDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class InoutputDescriptor extends ConnectorTypeDescriptor {
 
 
       //--------------------------/
@@ -53,54 +53,13 @@ public class ControlEventItemDescriptor extends org.exolab.castor.xml.util.XMLCl
      //- Constructors -/
     //----------------/
 
-    public ControlEventItemDescriptor() 
+    public InoutputDescriptor() 
      {
         super();
-        xmlName = "controlEvent";
-        
-        //-- set grouping compositor
-        setCompositorAsChoice();
-        org.exolab.castor.xml.util.XMLFieldDescriptorImpl  desc           = null;
-        org.exolab.castor.mapping.FieldHandler             handler        = null;
-        org.exolab.castor.xml.FieldValidator               fieldValidator = null;
-        //-- initialize attribute descriptors
-        
-        //-- initialize element descriptors
-        
-        //-- _variable
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(fr.prima.omiscid.control.message.answer.Variable.class, "_variable", "variable", org.exolab.castor.xml.NodeType.Element);
-        handler = new org.exolab.castor.xml.XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                ControlEventItem target = (ControlEventItem) object;
-                return target.getVariable();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    ControlEventItem target = (ControlEventItem) object;
-                    target.setVariable( (fr.prima.omiscid.control.message.answer.Variable) value);
-                }
-                catch (java.lang.Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new fr.prima.omiscid.control.message.answer.Variable();
-            }
-        };
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _variable
-        fieldValidator = new org.exolab.castor.xml.FieldValidator();
-        { //-- local scope
-        }
-        desc.setValidator(fieldValidator);
-    } //-- fr.prima.omiscid.control.message.answer.ControlEventItemDescriptor()
+        setExtendsWithoutFlatten(new ConnectorTypeDescriptor());
+        nsURI = "http://www-prima.inrialpes.fr/schemas/omiscid/service.xsd";
+        xmlName = "inoutput";
+    } //-- fr.prima.omiscid.control.message.servicexml.InoutputDescriptor()
 
 
       //-----------/
@@ -128,7 +87,7 @@ public class ControlEventItemDescriptor extends org.exolab.castor.xml.util.XMLCl
      */
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
-        return null;
+        return super.getExtends();
     } //-- org.exolab.castor.mapping.ClassDescriptor getExtends() 
 
     /**
@@ -140,6 +99,8 @@ public class ControlEventItemDescriptor extends org.exolab.castor.xml.util.XMLCl
      */
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
+        if (identity == null)
+            return super.getIdentity();
         return identity;
     } //-- org.exolab.castor.mapping.FieldDescriptor getIdentity() 
 
@@ -152,7 +113,7 @@ public class ControlEventItemDescriptor extends org.exolab.castor.xml.util.XMLCl
      */
     public java.lang.Class getJavaClass()
     {
-        return fr.prima.omiscid.control.message.answer.ControlEventItem.class;
+        return fr.prima.omiscid.control.message.servicexml.Inoutput.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

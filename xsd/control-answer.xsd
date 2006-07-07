@@ -87,9 +87,9 @@
 
   <xs:element name="controlEvent">
     <xs:complexType>
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="variable" type="CA_VariableType" />
-      </xs:choice>
+      <xs:all>
+        <xs:element name="variable" type="CA_VariableType" minOccurs="0"/>
+      </xs:all>
       <xs:attribute name="id" type="IDType" use="required" />
     </xs:complexType>
   </xs:element>

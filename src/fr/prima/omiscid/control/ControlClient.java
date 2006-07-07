@@ -30,6 +30,7 @@ import fr.prima.omiscid.control.message.query.Inoutput;
 import fr.prima.omiscid.control.message.query.Input;
 import fr.prima.omiscid.control.message.query.Lock;
 import fr.prima.omiscid.control.message.query.Output;
+import fr.prima.omiscid.control.message.query.Subscribe;
 import fr.prima.omiscid.control.message.query.Unlock;
 import fr.prima.omiscid.control.message.query.Unsubscribe;
 import fr.prima.omiscid.control.message.query.Variable;
@@ -650,9 +651,9 @@ public class ControlClient implements BipMessageListener {
         if (va != null) {
             ControlQuery controlQuery = new ControlQuery();
             ControlQueryItem controlQueryItem = new ControlQueryItem();
-            Variable variable = new Variable();
-            variable.setName(varName);
-            controlQueryItem.setVariable(variable);
+            Subscribe subscribe = new Subscribe();
+            subscribe.setName(varName);
+            controlQueryItem.setSubscribe(subscribe );
             controlQuery.addControlQueryItem(controlQueryItem);
 //            String request = "<subscribe name=\"" + va.getName() + "\"/>";
 //            queryToServer(request, false);

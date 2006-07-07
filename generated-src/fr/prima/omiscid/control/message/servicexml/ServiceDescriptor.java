@@ -5,7 +5,7 @@
  * $Id$
  */
 
-package fr.prima.omiscid.control.message.answer;
+package fr.prima.omiscid.control.message.servicexml;
 
   //---------------------------------/
  //- Imported classes and packages -/
@@ -17,11 +17,11 @@ import org.exolab.castor.xml.XMLFieldDescriptor;
 import org.exolab.castor.xml.validators.*;
 
 /**
- * Class ControlEventDescriptor.
+ * Class ServiceDescriptor.
  * 
  * @version $Revision$ $Date$
  */
-public class ControlEventDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class ServiceDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -53,31 +53,31 @@ public class ControlEventDescriptor extends org.exolab.castor.xml.util.XMLClassD
      //- Constructors -/
     //----------------/
 
-    public ControlEventDescriptor() 
+    public ServiceDescriptor() 
      {
         super();
-        xmlName = "controlEvent";
+        xmlName = "service";
         org.exolab.castor.xml.util.XMLFieldDescriptorImpl  desc           = null;
         org.exolab.castor.mapping.FieldHandler             handler        = null;
         org.exolab.castor.xml.FieldValidator               fieldValidator = null;
         //-- initialize attribute descriptors
         
-        //-- _id
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_id", "id", org.exolab.castor.xml.NodeType.Attribute);
+        //-- _name
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_name", "name", org.exolab.castor.xml.NodeType.Attribute);
         desc.setImmutable(true);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                ControlEvent target = (ControlEvent) object;
-                return target.getId();
+                Service target = (Service) object;
+                return target.getName();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    ControlEvent target = (ControlEvent) object;
-                    target.setId( (java.lang.String) value);
+                    Service target = (Service) object;
+                    target.setName( (java.lang.String) value);
                 }
                 catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
@@ -92,52 +92,128 @@ public class ControlEventDescriptor extends org.exolab.castor.xml.util.XMLClassD
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _id
+        //-- validation code for: _name
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         fieldValidator.setMinOccurs(1);
         { //-- local scope
             StringValidator typeValidator = new StringValidator();
             typeValidator.setWhiteSpace("preserve");
-            typeValidator.setPattern("[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9]");
             fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);
-        //-- initialize element descriptors
-        
-        //-- _variable
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(fr.prima.omiscid.control.message.answer.Variable.class, "_variable", "variable", org.exolab.castor.xml.NodeType.Element);
+        //-- _docURL
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_docURL", "docURL", org.exolab.castor.xml.NodeType.Attribute);
+        desc.setImmutable(true);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
-                ControlEvent target = (ControlEvent) object;
-                return target.getVariable();
+                Service target = (Service) object;
+                return target.getDocURL();
             }
             public void setValue( java.lang.Object object, java.lang.Object value) 
                 throws IllegalStateException, IllegalArgumentException
             {
                 try {
-                    ControlEvent target = (ControlEvent) object;
-                    target.setVariable( (fr.prima.omiscid.control.message.answer.Variable) value);
+                    Service target = (Service) object;
+                    target.setDocURL( (java.lang.String) value);
                 }
                 catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
             }
             public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new fr.prima.omiscid.control.message.answer.Variable();
+                return null;
             }
         };
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
-        //-- validation code for: _variable
+        //-- validation code for: _docURL
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+            StringValidator typeValidator = new StringValidator();
+            typeValidator.setWhiteSpace("preserve");
+            fieldValidator.setValidator(typeValidator);
+        }
+        desc.setValidator(fieldValidator);
+        //-- _clazz
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_clazz", "class", org.exolab.castor.xml.NodeType.Attribute);
+        desc.setImmutable(true);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Service target = (Service) object;
+                return target.getClazz();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Service target = (Service) object;
+                    target.setClazz( (java.lang.String) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        };
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _clazz
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+            StringValidator typeValidator = new StringValidator();
+            typeValidator.setWhiteSpace("preserve");
+            fieldValidator.setValidator(typeValidator);
+        }
+        desc.setValidator(fieldValidator);
+        //-- initialize element descriptors
+        
+        //-- _items
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(fr.prima.omiscid.control.message.servicexml.ServiceItem.class, "_items", (String)null, org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Service target = (Service) object;
+                return target.getServiceItem();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Service target = (Service) object;
+                    target.addServiceItem( (fr.prima.omiscid.control.message.servicexml.ServiceItem) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new fr.prima.omiscid.control.message.servicexml.ServiceItem();
+            }
+        };
+        desc.setHandler(handler);
+        desc.setContainer(true);
+        desc.setClassDescriptor(new fr.prima.omiscid.control.message.servicexml.ServiceItemDescriptor());
+        desc.setMultivalued(true);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _items
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        fieldValidator.setMinOccurs(0);
         { //-- local scope
         }
         desc.setValidator(fieldValidator);
-    } //-- fr.prima.omiscid.control.message.answer.ControlEventDescriptor()
+    } //-- fr.prima.omiscid.control.message.servicexml.ServiceDescriptor()
 
 
       //-----------/
@@ -189,7 +265,7 @@ public class ControlEventDescriptor extends org.exolab.castor.xml.util.XMLClassD
      */
     public java.lang.Class getJavaClass()
     {
-        return fr.prima.omiscid.control.message.answer.ControlEvent.class;
+        return fr.prima.omiscid.control.message.servicexml.Service.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

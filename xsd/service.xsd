@@ -1,59 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www-prima.inrialpes.fr/schemas/omiscid/service.xsd" xmlns:omiscid="http://www-prima.inrialpes.fr/schemas/omiscid/service.xsd">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www-prima.inrialpes.fr/schemas/omiscid/service.xsd" xmlns:omiscid="http://www-prima.inrialpes.fr/schemas/omiscid/service.xsd">
 
 	<element name="service">
 		<complexType>
 			<choice maxOccurs="unbounded" minOccurs="0">
-				<element ref="omiscid:variable"></element>
-				<element ref="omiscid:input"></element>
-				<element ref="omiscid:output"></element>
-				<element ref="omiscid:inoutput"></element>
+				<element ref="omiscid:variable" />
+				<element ref="omiscid:input" />
+				<element ref="omiscid:output" />
+				<element ref="omiscid:inoutput" />
 			</choice>
-			<attribute name="name" type="string" use="required"></attribute>
-			<attribute name="docURL" type="string" use="optional"></attribute>
-			<attribute name="class" type="string" use="optional"></attribute>
+			<attribute name="name" type="string" use="required" />
+			<attribute name="docURL" type="string" use="optional" />
+			<attribute name="class" type="string" use="optional" />
 		</complexType>
 	</element>
 
 	<element name="variable">
 		<complexType>
-			<choice  maxOccurs="unbounded" minOccurs="0">
-				<element name="description" type="string"></element>
-				<element name="formatDescription" type="string"></element>
-				<element name="value" type="string"></element>
-				<element name="default" type="string"></element>
-				<element name="type" type="string"></element>
-				<element name="access" type="omiscid:accessType"></element>
-			</choice>
+			<xs:all>
+				<xs:element name="description" type="string" minOccurs="0" />
+				<xs:element name="formatDescription" type="string" minOccurs="0" />
+				<xs:element name="value" type="string" minOccurs="0" />
+				<xs:element name="default" type="string" minOccurs="0" />
+				<xs:element name="type" type="string" minOccurs="0" />
+				<xs:element name="access" type="omiscid:accessType" minOccurs="0" />
+			</xs:all>
 			<attribute name="name" type="string" use="required"></attribute>
 		</complexType>
 	</element>
 
 	<simpleType name="accessType">
 		<restriction base="string">
+			<enumeration value="constant"></enumeration>
 			<enumeration value="read"></enumeration>
-			<enumeration value="write"></enumeration>
 			<enumeration value="readWrite"></enumeration>
 		</restriction>
 	</simpleType>
 
 	<complexType name="connectorType">
-		<choice maxOccurs="unbounded" minOccurs="0">
-			<element name="description" type="string"></element>
-			<element name="formatDescription" type="string"></element>
-			<element name="tcp" type="int"></element>
-			<element name="udp" type="int"></element>
-			<element name="peers">
-				<complexType>
-					<sequence maxOccurs="unbounded" minOccurs="0">
-						<element name="peer" type="hexBinary"></element>
-					</sequence>
-				</complexType>
-			</element>
-			<element name="schemaURL" type="string"></element>
-			<element name="messageExample" type="string"></element>
-			<element name="peerId" type="hexBinary"></element>
-		</choice>
+		<xs:all>
+			<xs:element name="description" type="string" minOccurs="0" />
+			<xs:element name="formatDescription" type="string" minOccurs="0" />
+			<xs:element name="schemaURL" type="string" minOccurs="0" />
+			<xs:element name="messageExample" type="string" minOccurs="0" />
+		</xs:all>
 		<attribute name="name" type="string" use="required"></attribute>
 	</complexType>
 
@@ -64,5 +54,5 @@
 	<element name="inoutput" type="omiscid:connectorType"></element>
 
 
-    
+
 </schema>

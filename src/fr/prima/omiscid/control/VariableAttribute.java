@@ -108,6 +108,22 @@ public class VariableAttribute extends Attribute {
         return controlAnswerItem;
     }
 
+    public void init(fr.prima.omiscid.control.message.servicexml.Variable variable) {
+        this.setName(variable.getName());
+        switch (variable.getAccess().getType()) {
+        case fr.prima.omiscid.control.message.servicexml.types.AccessType.CONSTANT_TYPE: this.setAccessType(VariableAccessType.CONSTANT); break;
+        case fr.prima.omiscid.control.message.servicexml.types.AccessType.READ_TYPE: this.setAccessType(VariableAccessType.READ); break;
+        case fr.prima.omiscid.control.message.servicexml.types.AccessType.READWRITE_TYPE: this.setAccessType(VariableAccessType.READ_WRITE); break;
+        default: System.err.println("unhandled variable type in VariableAttribute.init "+variable.getAccess());
+        }
+        this.setDefaultValue(variable.getDefault());
+        this.setDescription(variable.getDescription());
+        this.setFormatDescription(variable.getFormatDescription());
+        this.setType(variable.getType());
+        this.setValueStr(variable.getValue());
+    }
+
+
     public ControlAnswerItem generateShortControlAnswer() {
         ControlAnswerItem controlAnswerItem = new ControlAnswerItem();
         Variable variable = new Variable();
@@ -451,5 +467,6 @@ public class VariableAttribute extends Attribute {
 //        }
         return eltVar;
     }
+
 
 }

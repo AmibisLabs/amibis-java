@@ -5,7 +5,7 @@
  * $Id$
  */
 
-package fr.prima.omiscid.control.message.answer;
+package fr.prima.omiscid.control.message.servicexml;
 
   //---------------------------------/
  //- Imported classes and packages -/
@@ -22,63 +22,28 @@ import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.ContentHandler;
 
 /**
- * Class ControlEvent.
+ * Class Inoutput.
  * 
  * @version $Revision$ $Date$
  */
-public class ControlEvent implements java.io.Serializable {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    /**
-     * Field _id
-     */
-    private java.lang.String _id;
-
-    /**
-     * Field _variable
-     */
-    private fr.prima.omiscid.control.message.answer.Variable _variable;
+public class Inoutput extends ConnectorType 
+implements java.io.Serializable
+{
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public ControlEvent() 
+    public Inoutput() 
      {
         super();
-    } //-- fr.prima.omiscid.control.message.answer.ControlEvent()
+    } //-- fr.prima.omiscid.control.message.servicexml.Inoutput()
 
 
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-     * Returns the value of field 'id'.
-     * 
-     * @return String
-     * @return the value of field 'id'.
-     */
-    public java.lang.String getId()
-    {
-        return this._id;
-    } //-- java.lang.String getId() 
-
-    /**
-     * Returns the value of field 'variable'.
-     * 
-     * @return Variable
-     * @return the value of field 'variable'.
-     */
-    public fr.prima.omiscid.control.message.answer.Variable getVariable()
-    {
-        return this._variable;
-    } //-- fr.prima.omiscid.control.message.answer.Variable getVariable() 
 
     /**
      * Method isValid
@@ -127,38 +92,18 @@ public class ControlEvent implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'id'.
-     * 
-     * @param id the value of field 'id'.
-     */
-    public void setId(java.lang.String id)
-    {
-        this._id = id;
-    } //-- void setId(java.lang.String) 
-
-    /**
-     * Sets the value of field 'variable'.
-     * 
-     * @param variable the value of field 'variable'.
-     */
-    public void setVariable(fr.prima.omiscid.control.message.answer.Variable variable)
-    {
-        this._variable = variable;
-    } //-- void setVariable(fr.prima.omiscid.control.message.answer.Variable) 
-
-    /**
      * Method unmarshal
      * 
      * 
      * 
      * @param reader
-     * @return ControlEvent
+     * @return ConnectorType
      */
-    public static fr.prima.omiscid.control.message.answer.ControlEvent unmarshal(java.io.Reader reader)
+    public static fr.prima.omiscid.control.message.servicexml.ConnectorType unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (fr.prima.omiscid.control.message.answer.ControlEvent) Unmarshaller.unmarshal(fr.prima.omiscid.control.message.answer.ControlEvent.class, reader);
-    } //-- fr.prima.omiscid.control.message.answer.ControlEvent unmarshal(java.io.Reader) 
+        return (fr.prima.omiscid.control.message.servicexml.ConnectorType) Unmarshaller.unmarshal(fr.prima.omiscid.control.message.servicexml.Inoutput.class, reader);
+    } //-- fr.prima.omiscid.control.message.servicexml.ConnectorType unmarshal(java.io.Reader) 
 
     /**
      * Method validate

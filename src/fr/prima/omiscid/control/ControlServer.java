@@ -24,6 +24,7 @@ import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.control.interf.VariableChangeQueryListener;
 import fr.prima.omiscid.control.message.answer.ControlAnswer;
 import fr.prima.omiscid.control.message.answer.ControlAnswerItem;
+import fr.prima.omiscid.control.message.answer.ControlEvent;
 import fr.prima.omiscid.control.message.answer.types.CA_LockResultType;
 import fr.prima.omiscid.control.message.query.Connect;
 import fr.prima.omiscid.control.message.query.ControlQuery;
@@ -254,18 +255,45 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      *
      * @see fr.prima.omiscid.control.interf.VariableChangeListener#variableChanged(fr.prima.omiscid.control.VariableAttribute)
      */
-    public void variableChanged(VariableAttribute variable) {
-        Set<Integer> peersSet = variable.getPeerInterestedIn();
+    public void variableChanged(VariableAttribute variableAttribute) {
+        Set<Integer> peersSet = variableAttribute.getPeerInterestedIn();
 
         Set<Integer> unreachablePeers = new java.util.HashSet<Integer>();
-        String message = "<controlEvent>" + variable.generateValueMessage() + "</controlEvent>";
+        ControlEvent controlEvent = new ControlEvent();
+        controlEvent.setId(BipUtils.intTo8HexString(getPeerId()));
+        fr.prima.omiscid.control.message.answer.Variable variable = new fr.prima.omiscid.control.message.answer.Variable();
+        variable.setValue(variableAttribute.getValueStr());
+        variable.setName(variableAttribute.getName());
+        controlEvent.setVariable(variable);
 
-        for (Integer peer : peersSet) {
-            if (!tcpServer.sendToOneClient(message.getBytes(), peer.intValue())) {
-                unreachablePeers.add(peer);
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            controlEvent.marshal(new OutputStreamWriter(byteArrayOutputStream));
+            byte[] message = byteArrayOutputStream.toByteArray();
+
+            System.out.println(new String(message));
+            for (Integer peer : peersSet) {
+                System.out.println("send");
+                if (!tcpServer.sendToOneClient(message, peer.intValue())) {
+                    unreachablePeers.add(peer);
+                }
             }
+            variableAttribute.removeAllPeers(unreachablePeers);
+        } catch (MarshalException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        variable.removeAllPeers(unreachablePeers);
+
+        //        String message = "<controlEvent>" + variableAttribute.generateValueMessage() + "</controlEvent>";
+//        for (Integer peer : peersSet) {
+//            if (!tcpServer.sendToOneClient(message.getBytes(), peer.intValue())) {
+//                unreachablePeers.add(peer);
+//            }
+//        }
+//        variableAttribute.removeAllPeers(unreachablePeers);
     }
 
     /**
@@ -887,73 +915,73 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         return (lockIntegerVar.getIntValue() == 0) || (lockIntegerVar.getIntValue() == peer);
     }
 
-    /**
-     * Service example. A service named essai, with 2 variables (var_1, var_2)
-     * and an output (my_output). var_1 can be modified by the user. var_2 is
-     * regularly modified by the service.
-     */
-    public static void main(String[] args) {
-        int controlPort = 0;
-        String serviceName = "essai";
-        System.out.println("ControlServer creation");
-        ControlServer ctrl = new ControlServer(serviceName) {
-            protected void variableModificationQuery(String newValue, VariableAttribute va) {
-                System.out.println("modif variable " + va.getName() + " <- " + newValue);
-                va.setValueStr(newValue);
-            }
-        };
-
-        System.out.println("add variable");
-        VariableAttribute va = null;
-        va = ctrl.addVariable("var_1");
-        va.setAccessType(VariableAccessType.READ_WRITE);
-        va.setType("integer");
-        va.setDefaultValue("0");
-        va.setDescription("a variable to modify for test");
-        va.setFormatDescription("decimal representation");
-        va.setValueStr("0");
-
-        va = ctrl.addVariable("var_2");
-        va.setDescription("automatically incremented");
-        IntVariableAttribute var2 = new IntVariableAttribute(va, 0);
-
-        System.out.println("add an output");
-        InOutputAttribute ioa = null;
-        fr.prima.omiscid.com.TcpServer tcpServer = null;
-        try {
-            tcpServer = new fr.prima.omiscid.com.TcpServer(ctrl.getPeerId(), 0);
-            tcpServer.start();
-            tcpServer.addBipMessageListener(new fr.prima.omiscid.com.interf.BipMessageListener() {
-                public void receivedBipMessage(fr.prima.omiscid.com.interf.Message m) {
-                    System.out.println("received message");
-                }
-                public void disconnected(int peerId) {
-                    System.out.println("received disconnection notification");
-                }
-            });
-        } catch (java.io.IOException e) {
-            e.printStackTrace();
-        }
-        ioa = ctrl.addInOutput("my output", tcpServer, ConnectorType.OUTPUT);
-        ioa.setDescription("output for test");
-
-        System.out.println("Register, creation control port");
-        ctrl.startServer(controlPort);
-        System.out.println("Thread process message");
-        ctrl.startProcessMessagesThread();
-
-        System.out.println("Control Server Launched : " + ctrl.getTcpServer().getHost() + ":" + ctrl.getTcpServer().getTcpPort());
-        System.out.println("Service registered as " + ctrl.getRegisteredServiceName());
-        String str = "hello";
-        while (true) {
-            try {
-                tcpServer.sendToAllClientsUnchecked(str);
-                var2.increment();
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
-        }
-    }
+//    /**
+//     * Service example. A service named essai, with 2 variables (var_1, var_2)
+//     * and an output (my_output). var_1 can be modified by the user. var_2 is
+//     * regularly modified by the service.
+//     */
+//    public static void main(String[] args) {
+//        int controlPort = 0;
+//        String serviceName = "essai";
+//        System.out.println("ControlServer creation");
+//        ControlServer ctrl = new ControlServer(serviceName) {
+//            protected void variableModificationQuery(String newValue, VariableAttribute va) {
+//                System.out.println("modif variable " + va.getName() + " <- " + newValue);
+//                va.setValueStr(newValue);
+//            }
+//        };
+//
+//        System.out.println("add variable");
+//        VariableAttribute va = null;
+//        va = ctrl.addVariable("var_1");
+//        va.setAccessType(VariableAccessType.READ_WRITE);
+//        va.setType("integer");
+//        va.setDefaultValue("0");
+//        va.setDescription("a variable to modify for test");
+//        va.setFormatDescription("decimal representation");
+//        va.setValueStr("0");
+//
+//        va = ctrl.addVariable("var_2");
+//        va.setDescription("automatically incremented");
+//        IntVariableAttribute var2 = new IntVariableAttribute(va, 0);
+//
+//        System.out.println("add an output");
+//        InOutputAttribute ioa = null;
+//        fr.prima.omiscid.com.TcpServer tcpServer = null;
+//        try {
+//            tcpServer = new fr.prima.omiscid.com.TcpServer(ctrl.getPeerId(), 0);
+//            tcpServer.start();
+//            tcpServer.addBipMessageListener(new fr.prima.omiscid.com.interf.BipMessageListener() {
+//                public void receivedBipMessage(fr.prima.omiscid.com.interf.Message m) {
+//                    System.out.println("received message");
+//                }
+//                public void disconnected(int peerId) {
+//                    System.out.println("received disconnection notification");
+//                }
+//            });
+//        } catch (java.io.IOException e) {
+//            e.printStackTrace();
+//        }
+//        ioa = ctrl.addInOutput("my output", tcpServer, ConnectorType.OUTPUT);
+//        ioa.setDescription("output for test");
+//
+//        System.out.println("Register, creation control port");
+//        ctrl.startServer(controlPort);
+//        System.out.println("Thread process message");
+//        ctrl.startProcessMessagesThread();
+//
+//        System.out.println("Control Server Launched : " + ctrl.getTcpServer().getHost() + ":" + ctrl.getTcpServer().getTcpPort());
+//        System.out.println("Service registered as " + ctrl.getRegisteredServiceName());
+//        String str = "hello";
+//        while (true) {
+//            try {
+//                tcpServer.sendToAllClientsUnchecked(str);
+//                var2.increment();
+//                Thread.sleep(1000);
+//            } catch (InterruptedException e) {
+//            }
+//        }
+//    }
 
     public boolean addVariableChangeQueryListener(VariableChangeQueryListener o) {
         return variableChangeQueryListeners.add(o);

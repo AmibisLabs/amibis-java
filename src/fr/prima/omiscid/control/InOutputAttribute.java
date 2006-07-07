@@ -109,6 +109,11 @@ public class InOutputAttribute extends Attribute {
         }
     }
 
+    public void init(fr.prima.omiscid.control.message.servicexml.ConnectorType inoutput) {
+        // TODO Auto-generated method stub
+
+    }
+
     public ControlAnswerItem generateControlAnswer() {
         CA_InOutputType inoutput = null;
         switch (getConnectorType()) {
