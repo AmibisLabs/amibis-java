@@ -14,8 +14,10 @@ import org.exolab.castor.xml.ValidationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import fr.prima.omiscid.com.BipMessageInterpretationException;
 import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.TcpClient;
+import fr.prima.omiscid.com.XmlMessage;
 import fr.prima.omiscid.com.interf.BipMessageListener;
 import fr.prima.omiscid.com.interf.Message;
 import fr.prima.omiscid.control.message.answer.ControlAnswer;
@@ -48,7 +50,7 @@ import fr.prima.omiscid.control.message.query.Variable;
 // \REVIEWTASK shouldn't this be a monitor?
 public class ControlClient implements BipMessageListener {
     /** The max time to wait for the answer to a query */
-    private final int MaxTimeToWait = 500; // milliseconds
+    private final int maxTimeToWait = 500; // milliseconds
 
     // \REVIEWTASK should be configurable in a specific way (env variable?)
 
@@ -204,7 +206,12 @@ public class ControlClient implements BipMessageListener {
             ControlEvent event = ControlEvent.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())));
             synchronized (controlEventListenersSet) {
                 for (ControlEventListener listener : controlEventListenersSet) {
-//                    listener.receivedControlEvent(xmlMessage);
+                    try {
+                        listener.receivedControlEvent(new XmlMessage(message));
+                    } catch (BipMessageInterpretationException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                     //FIXME
                 }
             }
@@ -859,17 +866,17 @@ public class ControlClient implements BipMessageListener {
         synchronized (answerEvent) {
             if (isConnected()) {
                 int theMsgId = messageId++;
-                String strId = BipUtils.intTo8HexString(theMsgId);
-                controlQuery.setId(strId);
+                String strMessageId = BipUtils.intTo8HexString(theMsgId);
+                controlQuery.setId(strMessageId);
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 controlQuery.marshal(new OutputStreamWriter(byteArrayOutputStream));
                 tcpClient.send(byteArrayOutputStream.toByteArray());
                 if (waitAnswer) {
                     try {
-                        answerEvent.wait(MaxTimeToWait);
+                        answerEvent.wait(maxTimeToWait);
                         if (messageAnswer != null) {
                             ControlAnswer controlAnswer = messageAnswer;
-                            if (controlAnswer.getId().equals(strId)) {
+                            if (controlAnswer.getId().equals(strMessageId)) {
                                 return controlAnswer;
                             }
                         } else {

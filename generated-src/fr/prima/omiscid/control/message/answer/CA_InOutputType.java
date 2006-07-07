@@ -69,16 +69,6 @@ public class CA_InOutputType implements java.io.Serializable {
     private java.lang.String _formatDescription;
 
     /**
-     * Field _require
-     */
-    private int _require;
-
-    /**
-     * keeps track of state for field: _require
-     */
-    private boolean _has_require;
-
-    /**
      * Field _peers
      */
     private fr.prima.omiscid.control.message.answer.Peers _peers;
@@ -87,6 +77,16 @@ public class CA_InOutputType implements java.io.Serializable {
      * Field _peerId
      */
     private java.lang.String _peerId;
+
+    /**
+     * Field _require
+     */
+    private int _require;
+
+    /**
+     * keeps track of state for field: _require
+     */
+    private boolean _has_require;
 
 
       //----------------/

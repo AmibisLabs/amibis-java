@@ -15,6 +15,7 @@ import fr.prima.omiscid.control.message.answer.ControlAnswerItem;
 import fr.prima.omiscid.control.message.answer.Inoutput;
 import fr.prima.omiscid.control.message.answer.Input;
 import fr.prima.omiscid.control.message.answer.Output;
+import fr.prima.omiscid.control.message.answer.Peers;
 
 /**
  * Stores an in/output description. The in/output description is composed of a
@@ -105,6 +106,56 @@ public class InOutputAttribute extends Attribute {
             addPeer(BipUtils.hexStringToInt(peer));
         }
     }
+
+    public ControlAnswerItem generateControlAnswer() {
+        CA_InOutputType inoutput = null;
+        switch (getConnectorType()) {
+        case INPUT: inoutput = new Input(); break;
+        case OUTPUT: inoutput = new Output(); break;
+        case INOUTPUT: inoutput = new Inoutput(); break;
+        default: System.err.println("unhandled connector type in InOutputAttribute generateControlAnswer");
+        }
+        inoutput.setDescription(getDescription());
+        inoutput.setFormatDescription(getFormatDescription());
+        inoutput.setName(getName());
+        inoutput.setPeerId(BipUtils.intTo8HexString(getPeerId()));
+        inoutput.setTcp(getTcpPort());
+        if (getUdpPort() != 0) inoutput.setTcp(getTcpPort());
+        inoutput.setUdp(getUdpPort());
+        Peers peers = new Peers();
+        for (int peerId : getPeerVector()) {
+            peers.addPeer(BipUtils.intTo8HexString(peerId));
+        }
+        inoutput.setPeers(peers);
+        ControlAnswerItem controlAnswerItem = new ControlAnswerItem();
+        switch (getConnectorType()) {
+        case INPUT: controlAnswerItem.setInput((Input) inoutput); break;
+        case OUTPUT: controlAnswerItem.setOutput((Output) inoutput); break;
+        case INOUTPUT: controlAnswerItem.setInoutput((Inoutput) inoutput); break;
+        default: System.err.println("unhandled connector type in InOutputAttribute generateControlAnswer");
+        }
+        return controlAnswerItem;
+    }
+
+    public ControlAnswerItem generateShortControlAnswer() {
+        CA_InOutputType inoutput = null;
+        switch (getConnectorType()) {
+        case INPUT: inoutput = new Input(); break;
+        case OUTPUT: inoutput = new Output(); break;
+        case INOUTPUT: inoutput = new Inoutput(); break;
+        default: System.err.println("unhandled connector type in InOutputAttribute generateShortControlAnswer");
+        }
+        inoutput.setName(getName());
+        ControlAnswerItem controlAnswerItem = new ControlAnswerItem();
+        switch (getConnectorType()) {
+        case INPUT: controlAnswerItem.setInput((Input) inoutput); break;
+        case OUTPUT: controlAnswerItem.setOutput((Output) inoutput); break;
+        case INOUTPUT: controlAnswerItem.setInoutput((Inoutput) inoutput); break;
+        default: System.err.println("unhandled connector type in InOutputAttribute generateShortControlAnswer");
+        }
+        return controlAnswerItem;
+    }
+
 
     /**
      * Sets the kind of in/output.

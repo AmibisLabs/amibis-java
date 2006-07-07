@@ -143,7 +143,7 @@ public class CA_InOutputTypeDescriptor extends org.exolab.castor.xml.util.XMLCla
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
             IntegerValidator typeValidator = new IntegerValidator();
-            typeValidator.setMinInclusive(1);
+            typeValidator.setMinInclusive(0);
             fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);
@@ -186,7 +186,7 @@ public class CA_InOutputTypeDescriptor extends org.exolab.castor.xml.util.XMLCla
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
             IntegerValidator typeValidator = new IntegerValidator();
-            typeValidator.setMinInclusive(1);
+            typeValidator.setMinInclusive(0);
             fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);
@@ -264,49 +264,6 @@ public class CA_InOutputTypeDescriptor extends org.exolab.castor.xml.util.XMLCla
             fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);
-        //-- _require
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_require", "require", org.exolab.castor.xml.NodeType.Element);
-        handler = new org.exolab.castor.xml.XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                CA_InOutputType target = (CA_InOutputType) object;
-                if(!target.hasRequire())
-                    return null;
-                return new java.lang.Integer(target.getRequire());
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    CA_InOutputType target = (CA_InOutputType) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteRequire();
-                        return;
-                    }
-                    target.setRequire( ((java.lang.Integer)value).intValue());
-                }
-                catch (java.lang.Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        };
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _require
-        fieldValidator = new org.exolab.castor.xml.FieldValidator();
-        { //-- local scope
-            IntegerValidator typeValidator = new IntegerValidator();
-            typeValidator.setMinInclusive(1);
-            fieldValidator.setValidator(typeValidator);
-        }
-        desc.setValidator(fieldValidator);
         //-- _peers
         desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(fr.prima.omiscid.control.message.answer.Peers.class, "_peers", "peers", org.exolab.castor.xml.NodeType.Element);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
@@ -375,6 +332,49 @@ public class CA_InOutputTypeDescriptor extends org.exolab.castor.xml.util.XMLCla
             StringValidator typeValidator = new StringValidator();
             typeValidator.setWhiteSpace("preserve");
             typeValidator.setPattern("[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9]");
+            fieldValidator.setValidator(typeValidator);
+        }
+        desc.setValidator(fieldValidator);
+        //-- _require
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Integer.TYPE, "_require", "require", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                CA_InOutputType target = (CA_InOutputType) object;
+                if(!target.hasRequire())
+                    return null;
+                return new java.lang.Integer(target.getRequire());
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    CA_InOutputType target = (CA_InOutputType) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteRequire();
+                        return;
+                    }
+                    target.setRequire( ((java.lang.Integer)value).intValue());
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        };
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _require
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+            IntegerValidator typeValidator = new IntegerValidator();
+            typeValidator.setMinInclusive(1);
             fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);

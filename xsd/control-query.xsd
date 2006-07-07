@@ -101,20 +101,4 @@
   </xs:complexType>
 
 
-  <xs:complexType name="CA_VariableType">
-    <xs:all>
-      <xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="1" />
-      <xs:element name="default" type="xs:string" minOccurs="0" maxOccurs="1" />
-      <xs:element name="type" type="xs:string" minOccurs="0" maxOccurs="1" />
-      <xs:element name="access" type="AccessType" minOccurs="0" maxOccurs="1" />
-      <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
-      <xs:element name="formatDescription" type="xs:string" minOccurs="0" maxOccurs="1" />
-    </xs:all>
-    <xs:attribute name="name" type="NameType" use="required" />
-  </xs:complexType>
-
-
-
-
-
 </xs:schema>

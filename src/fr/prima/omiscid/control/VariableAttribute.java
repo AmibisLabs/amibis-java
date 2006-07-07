@@ -10,6 +10,7 @@ import org.w3c.dom.Element;
 
 import fr.prima.omiscid.control.interf.VariableAccessType;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
+import fr.prima.omiscid.control.message.answer.ControlAnswerItem;
 import fr.prima.omiscid.control.message.answer.Variable;
 import fr.prima.omiscid.control.message.answer.types.AccessType;
 
@@ -88,6 +89,32 @@ public class VariableAttribute extends Attribute {
         this.setFormatDescription(variable.getFormatDescription());
     }
 
+    public ControlAnswerItem generateControlAnswer() {
+        ControlAnswerItem controlAnswerItem = new ControlAnswerItem();
+        Variable variable = new Variable();
+        switch (getAccess()) {
+        case CONSTANT: variable.setAccess(AccessType.CONSTANT); break;
+        case READ: variable.setAccess(AccessType.READ); break;
+        case READ_WRITE: variable.setAccess(AccessType.READWRITE); break;
+        default: System.err.println("unhandled access type in VariableAttribute.generateControlAnswer "+getAccess());
+        }
+        variable.setDefault(getDefaultValue());
+        variable.setDescription(getDescription());
+        variable.setFormatDescription(getFormatDescription());
+        variable.setName(getName());
+        variable.setType(getType());
+        variable.setValue(getValueStr());
+        controlAnswerItem.setVariable(variable);
+        return controlAnswerItem;
+    }
+
+    public ControlAnswerItem generateShortControlAnswer() {
+        ControlAnswerItem controlAnswerItem = new ControlAnswerItem();
+        Variable variable = new Variable();
+        variable.setName(getName());
+        controlAnswerItem.setVariable(variable);
+        return controlAnswerItem;
+    }
 
     /**
      * Accesses the string value of the variable.
@@ -424,4 +451,5 @@ public class VariableAttribute extends Attribute {
 //        }
         return eltVar;
     }
+
 }

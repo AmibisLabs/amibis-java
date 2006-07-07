@@ -104,6 +104,41 @@ public class CA_VariableTypeDescriptor extends org.exolab.castor.xml.util.XMLCla
         desc.setValidator(fieldValidator);
         //-- initialize element descriptors
         
+        //-- _access
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(fr.prima.omiscid.control.message.answer.types.AccessType.class, "_access", "access", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                CA_VariableType target = (CA_VariableType) object;
+                return target.getAccess();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    CA_VariableType target = (CA_VariableType) object;
+                    target.setAccess( (fr.prima.omiscid.control.message.answer.types.AccessType) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        };
+        handler = new org.exolab.castor.xml.handlers.EnumFieldHandler(fr.prima.omiscid.control.message.answer.types.AccessType.class, handler);
+        desc.setImmutable(true);
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _access
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
         //-- _value
         desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_value", "value", org.exolab.castor.xml.NodeType.Element);
         desc.setImmutable(true);
@@ -213,41 +248,6 @@ public class CA_VariableTypeDescriptor extends org.exolab.castor.xml.util.XMLCla
             StringValidator typeValidator = new StringValidator();
             typeValidator.setWhiteSpace("preserve");
             fieldValidator.setValidator(typeValidator);
-        }
-        desc.setValidator(fieldValidator);
-        //-- _access
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(fr.prima.omiscid.control.message.answer.types.AccessType.class, "_access", "access", org.exolab.castor.xml.NodeType.Element);
-        handler = new org.exolab.castor.xml.XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                CA_VariableType target = (CA_VariableType) object;
-                return target.getAccess();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    CA_VariableType target = (CA_VariableType) object;
-                    target.setAccess( (fr.prima.omiscid.control.message.answer.types.AccessType) value);
-                }
-                catch (java.lang.Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return null;
-            }
-        };
-        handler = new org.exolab.castor.xml.handlers.EnumFieldHandler(fr.prima.omiscid.control.message.answer.types.AccessType.class, handler);
-        desc.setImmutable(true);
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _access
-        fieldValidator = new org.exolab.castor.xml.FieldValidator();
-        { //-- local scope
         }
         desc.setValidator(fieldValidator);
         //-- _description

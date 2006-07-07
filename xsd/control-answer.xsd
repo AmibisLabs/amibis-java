@@ -36,25 +36,25 @@
 
   <xs:complexType name="CA_InOutputType">
     <xs:all>
-      <xs:element name="tcp" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
-      <xs:element name="udp" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
-      <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
-      <xs:element name="formatDescription" type="xs:string" minOccurs="0" maxOccurs="1" />
-      <xs:element name="require" type="xs:positiveInteger" minOccurs="0" maxOccurs="1" />
-      <xs:element name="peers" type="PeersType" minOccurs="0" maxOccurs="1" />
-      <xs:element name="peerId" type="IDType" minOccurs="0" maxOccurs="1" />
+      <xs:element name="tcp" type="xs:nonNegativeInteger" minOccurs="0" />
+      <xs:element name="udp" type="xs:nonNegativeInteger" minOccurs="0" />
+      <xs:element name="description" type="xs:string" minOccurs="0" />
+      <xs:element name="formatDescription" type="xs:string" minOccurs="0" />
+      <xs:element name="peers" type="PeersType" minOccurs="0" />
+      <xs:element name="peerId" type="IDType" minOccurs="0" />
+      <xs:element name="require" type="xs:positiveInteger" minOccurs="0" />
     </xs:all>
     <xs:attribute name="name" type="NameType" use="required" />
   </xs:complexType>
 
   <xs:complexType name="CA_VariableType">
     <xs:all>
-      <xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="1" />
-      <xs:element name="default" type="xs:string" minOccurs="0" maxOccurs="1" />
-      <xs:element name="type" type="xs:string" minOccurs="0" maxOccurs="1" />
-      <xs:element name="access" type="AccessType" minOccurs="0" maxOccurs="1" />
-      <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
-      <xs:element name="formatDescription" type="xs:string" minOccurs="0" maxOccurs="1" />
+      <xs:element name="access" type="AccessType" minOccurs="0" />
+      <xs:element name="value" type="xs:string" minOccurs="0" />
+      <xs:element name="default" type="xs:string" minOccurs="0" />
+      <xs:element name="type" type="xs:string" minOccurs="0" />
+      <xs:element name="description" type="xs:string" minOccurs="0" />
+      <xs:element name="formatDescription" type="xs:string" minOccurs="0" />
     </xs:all>
     <xs:attribute name="name" type="VariableNameType" use="required" />
   </xs:complexType>

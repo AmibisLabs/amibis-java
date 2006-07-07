@@ -40,6 +40,11 @@ public class CA_VariableType implements java.io.Serializable {
     private java.lang.String _name;
 
     /**
+     * Field _access
+     */
+    private fr.prima.omiscid.control.message.answer.types.AccessType _access;
+
+    /**
      * Field _value
      */
     private java.lang.String _value;
@@ -53,11 +58,6 @@ public class CA_VariableType implements java.io.Serializable {
      * Field _type
      */
     private java.lang.String _type;
-
-    /**
-     * Field _access
-     */
-    private fr.prima.omiscid.control.message.answer.types.AccessType _access;
 
     /**
      * Field _description

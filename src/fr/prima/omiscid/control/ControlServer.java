@@ -1,27 +1,41 @@
 package fr.prima.omiscid.control;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 
-import fr.prima.omiscid.com.BipMessageInterpretationException;
 import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.CommunicationServer;
 import fr.prima.omiscid.com.MessageManager;
 import fr.prima.omiscid.com.TcpServer;
-import fr.prima.omiscid.com.XmlMessage;
 import fr.prima.omiscid.com.interf.Message;
 import fr.prima.omiscid.control.interf.ConnectorType;
 import fr.prima.omiscid.control.interf.GlobalConstants;
 import fr.prima.omiscid.control.interf.VariableAccessType;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.control.interf.VariableChangeQueryListener;
+import fr.prima.omiscid.control.message.answer.ControlAnswer;
+import fr.prima.omiscid.control.message.answer.ControlAnswerItem;
+import fr.prima.omiscid.control.message.answer.types.CA_LockResultType;
+import fr.prima.omiscid.control.message.query.Connect;
+import fr.prima.omiscid.control.message.query.ControlQuery;
+import fr.prima.omiscid.control.message.query.ControlQueryItem;
+import fr.prima.omiscid.control.message.query.Inoutput;
+import fr.prima.omiscid.control.message.query.Input;
+import fr.prima.omiscid.control.message.query.Lock;
+import fr.prima.omiscid.control.message.query.Output;
+import fr.prima.omiscid.control.message.query.Subscribe;
+import fr.prima.omiscid.control.message.query.Unlock;
+import fr.prima.omiscid.control.message.query.Unsubscribe;
+import fr.prima.omiscid.control.message.query.Variable;
 import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
 
 /**
@@ -346,22 +360,22 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         return ioa;
     }
 
-    /**
-     * Generates a short global description for the service. Used to answer to
-     * global description query.
-     *
-     * @return short global description for the service
-     */
-    protected String generateShortGlobalDescription() {
-        String str = "";
-        for (VariableAttribute variable : variablesSet) {
-            str += variable.generateShortDescription();
-        }
-        for (InOutputAttribute inoutput : inoutputsSet) {
-            str += inoutput.generateShortDescription();
-        }
-        return str;
-    }
+//    /**
+//     * Generates a short global description for the service. Used to answer to
+//     * global description query.
+//     *
+//     * @return short global description for the service
+//     */
+//    protected String generateShortGlobalDescription() {
+//        String str = "";
+//        for (VariableAttribute variable : variablesSet) {
+//            str += variable.generateShortDescription();
+//        }
+//        for (InOutputAttribute inoutput : inoutputsSet) {
+//            str += inoutput.generateShortDescription();
+//        }
+//        return str;
+//    }
 
     /**
      * Processes connection query received through the control connector. This
@@ -394,257 +408,418 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      *            the VaraibleAttribute object associated to the variable to
      *            modify
      */
-    protected void variableModificationQuery(byte[] buffer, VariableAttribute va) {
+    protected void variableModificationQuery(String newValue, VariableAttribute va) {
         boolean doModification = true;
         for (VariableChangeQueryListener listener : variableChangeQueryListeners) {
-            if (! listener.isAccepted(va, new String(buffer))) {
+            if (! listener.isAccepted(va, newValue)) {
                 doModification = false;
                 break;
             }
         }
         if (doModification) {
-            va.setValueStr(new String(buffer));
+            va.setValueStr(newValue);
         }
     }
+
+//    protected void processMessage(Message message) {
+//        try {
+//            processXMLMessage(new XmlMessage(message));
+//        } catch (BipMessageInterpretationException e) {
+////            System.err.println("Warning: wrong xml received on control server, the exception stack follows");
+////            e.printStackTrace();
+//        }
+//    }
 
     protected void processMessage(Message message) {
         try {
-            processXMLMessage(new XmlMessage(message));
-        } catch (BipMessageInterpretationException e) {
-//            System.err.println("Warning: wrong xml received on control server, the exception stack follows");
-//            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Processes a message received by the control server.
-     *
-     * @param message
-     *            a message received by the control server
-     */
-    protected void processXMLMessage(XmlMessage message) {
-        // System.out.println("in ControlServer::processAMessage");
-        if (message.getRootElement() != null) {
-            Element root = message.getRootElement();
-            if (root.getNodeName().equals("controlQuery")) {
-                Attr attrId = root.getAttributeNode("id");
-
-                String str = "";
-                NodeList nodeList = root.getChildNodes();
-                if (nodeList.getLength() == 0) {
-                    // global description
-                    str = generateShortGlobalDescription();
-                } else {
-                    for (int i = 0; i < nodeList.getLength(); i++) {
-                        Node cur = nodeList.item(i);
-                        if (cur.getNodeType() == Node.ELEMENT_NODE) {
-                            String curName = cur.getNodeName();
-                            if (curName.equals(ConnectorType.INPUT.getXMLTag())) {
-                                str += processInOutputQuery((Element) cur, ConnectorType.INPUT);
-                            } else if (curName.equals(ConnectorType.OUTPUT.getXMLTag())) {
-                                str += processInOutputQuery((Element) cur, ConnectorType.OUTPUT);
-                            } else if (curName.equals(ConnectorType.INOUTPUT.getXMLTag())) {
-                                str += processInOutputQuery((Element) cur, ConnectorType.INOUTPUT);
-                            } else if (curName.equals("variable")) {
-                                str += processVariableQuery((Element) cur, message.getPeerId());
-                            } else if (curName.equals("connect")) {
-                                str += processConnectQuery((Element) cur);
-                            } else if (curName.equals("subscribe")) {
-                                str += processSubscribeQuery((Element) cur, message.getPeerId(), true);
-                            } else if (curName.equals("unsubscribe")) {
-                                str += processSubscribeQuery((Element) cur, message.getPeerId(), false);
-                            } else if (curName.equals("lock")) {
-                                str += processLockQuery((Element) cur, message.getPeerId());
-                            } else if (curName.equals("unlock")) {
-                                str += processUnlockQuery((Element) cur, message.getPeerId());
-                            } else
-                                System.err.println("unknow tag : " + curName);
+            ControlQuery controlQuery = ControlQuery.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())));
+            int remoteId = message.getPeerId();
+            ControlAnswer controlAnswer = new ControlAnswer();
+            controlAnswer.setId(controlQuery.getId());
+            if (controlQuery.getControlQueryItemCount() == 0) {
+                generateShortGlobalDescription(controlAnswer);
+            } else {
+                for (ControlQueryItem item : controlQuery.getControlQueryItem()) {
+                    if (item.getChoiceValue() instanceof Input) {
+                        ControlAnswerItem answerItem = generateInoutputAnswer(item.getInput().getName(), ConnectorType.INPUT);
+                        if (answerItem != null) {
+                            controlAnswer.addControlAnswerItem(answerItem);
+                        }
+                    } else if (item.getChoiceValue() instanceof Output) {
+                        ControlAnswerItem answerItem = generateInoutputAnswer(item.getOutput().getName(), ConnectorType.OUTPUT);
+                        if (answerItem != null) {
+                            controlAnswer.addControlAnswerItem(answerItem);
+                        }
+                    } else if (item.getChoiceValue() instanceof Inoutput) {
+                        ControlAnswerItem answerItem = generateInoutputAnswer(item.getInoutput().getName(), ConnectorType.INOUTPUT);
+                        if (answerItem != null) {
+                            controlAnswer.addControlAnswerItem(answerItem);
+                        }
+                    } else if (item.getChoiceValue() instanceof Variable) {
+                        ControlAnswerItem answerItem = generateVariableAnswer(item.getVariable(), remoteId);
+                        if (answerItem != null) {
+                            controlAnswer.addControlAnswerItem(answerItem);
+                        }
+                    } else if (item.getChoiceValue() instanceof Connect) {
+                        ControlAnswerItem answerItem = generateConnectAnswer(item.getConnect());
+                        if (answerItem != null) {
+                            controlAnswer.addControlAnswerItem(answerItem);
+                        }
+                    } else if (item.getChoiceValue() instanceof Subscribe) {
+                        ControlAnswerItem answerItem = generateSubscribeAnswer(item.getSubscribe().getName(), remoteId, true);
+                        if (answerItem != null) {
+                            controlAnswer.addControlAnswerItem(answerItem);
+                        }
+                    } else if (item.getChoiceValue() instanceof Unsubscribe) {
+                        ControlAnswerItem answerItem = generateSubscribeAnswer(item.getUnsubscribe().getName(), remoteId, false);
+                        if (answerItem != null) {
+                            controlAnswer.addControlAnswerItem(answerItem);
+                        }
+                    } else if (item.getChoiceValue() instanceof Lock) {
+                        ControlAnswerItem answerItem = generateLockAnswer( remoteId);
+                        if (answerItem != null) {
+                            controlAnswer.addControlAnswerItem(answerItem);
+                        }
+                    } else if (item.getChoiceValue() instanceof Unlock) {
+                        ControlAnswerItem answerItem = generateUnlockAnswer( remoteId);
+                        if (answerItem != null) {
+                            controlAnswer.addControlAnswerItem(answerItem);
                         }
                     }
                 }
-
-                str = "<controlAnswer id=\"" + attrId.getValue() + "\">" + str + "</controlAnswer>";
-
-                if (!tcpServer.sendToOneClient(str.getBytes(), message.getPeerId())) {
-                    System.err.println("Warning: ControlServer: Send failed: peer not found : " + BipUtils.intTo8HexString(message.getPeerId()));
-                }
-            } else {
-                System.err.println("Warning: in ControlServer#processAMessage, Unknown Tag: " + message.getRootElement().getNodeName());
             }
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            controlAnswer.marshal(new OutputStreamWriter(byteArrayOutputStream));
+            if (!tcpServer.sendToOneClient(byteArrayOutputStream.toByteArray(), message.getPeerId())) {
+                System.err.println("Warning: ControlServer: Send failed: peer not found : " + BipUtils.intTo8HexString(message.getPeerId()));
+            }
+        } catch (MarshalException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
-    /**
-     * Processes the subcribe/unsubscribe queries.
-     *
-     * @param elt
-     *            piece of XML tree for the subcribe/unsubscribe query
-     * @param pid
-     *            the service id that ask for subscribe
-     * @param subscribe
-     *            true if subscribe query, false if unsubscribe query
-     * @return answer to the query (empty string for no answer)
-     */
-    protected String processSubscribeQuery(Element elt, int pid, boolean subscribe) {
-        Attr attrName = elt.getAttributeNode("name");
 
-        VariableAttribute va = findVariable(attrName.getValue());
+//    /**
+//     * Processes a message received by the control server.
+//     *
+//     * @param message
+//     *            a message received by the control server
+//     */
+//    protected void processXMLMessage(XmlMessage message) {
+//        // System.out.println("in ControlServer::processAMessage");
+//        if (message.getRootElement() != null) {
+//            Element root = message.getRootElement();
+//            if (root.getNodeName().equals("controlQuery")) {
+//                Attr attrId = root.getAttributeNode("id");
+//
+//                String str = "";
+//                NodeList nodeList = root.getChildNodes();
+//                if (nodeList.getLength() == 0) {
+//                    // global description
+//                    str = generateShortGlobalDescription();
+//                } else {
+//                    for (int i = 0; i < nodeList.getLength(); i++) {
+//                        Node cur = nodeList.item(i);
+//                        if (cur.getNodeType() == Node.ELEMENT_NODE) {
+//                            String curName = cur.getNodeName();
+//                            if (curName.equals(ConnectorType.INPUT.getXMLTag())) {
+//                                str += processInOutputQuery((Element) cur, ConnectorType.INPUT);
+//                            } else if (curName.equals(ConnectorType.OUTPUT.getXMLTag())) {
+//                                str += processInOutputQuery((Element) cur, ConnectorType.OUTPUT);
+//                            } else if (curName.equals(ConnectorType.INOUTPUT.getXMLTag())) {
+//                                str += processInOutputQuery((Element) cur, ConnectorType.INOUTPUT);
+//                            } else if (curName.equals("variable")) {
+//                                str += processVariableQuery((Element) cur, message.getPeerId());
+//                            } else if (curName.equals("connect")) {
+//                                str += processConnectQuery((Element) cur);
+//                            } else if (curName.equals("subscribe")) {
+//                                str += processSubscribeQuery((Element) cur, message.getPeerId(), true);
+//                            } else if (curName.equals("unsubscribe")) {
+//                                str += processSubscribeQuery((Element) cur, message.getPeerId(), false);
+//                            } else if (curName.equals("lock")) {
+//                                str += processLockQuery((Element) cur, message.getPeerId());
+//                            } else if (curName.equals("unlock")) {
+//                                str += processUnlockQuery((Element) cur, message.getPeerId());
+//                            } else
+//                                System.err.println("unknow tag : " + curName);
+//                        }
+//                    }
+//                }
+//
+//                str = "<controlAnswer id=\"" + attrId.getValue() + "\">" + str + "</controlAnswer>";
+//
+//                if (!tcpServer.sendToOneClient(str.getBytes(), message.getPeerId())) {
+//                    System.err.println("Warning: ControlServer: Send failed: peer not found : " + BipUtils.intTo8HexString(message.getPeerId()));
+//                }
+//            } else {
+//                System.err.println("Warning: in ControlServer#processAMessage, Unknown Tag: " + message.getRootElement().getNodeName());
+//            }
+//        }
+//    }
+
+
+    private void generateShortGlobalDescription(ControlAnswer controlAnswer) {
+        for (VariableAttribute variable : variablesSet) {
+            controlAnswer.addControlAnswerItem(variable.generateShortControlAnswer());
+        }
+        for (InOutputAttribute inoutput : inoutputsSet) {
+            controlAnswer.addControlAnswerItem(inoutput.generateShortControlAnswer());
+        }
+    }
+
+    private ControlAnswerItem generateInoutputAnswer(String name, ConnectorType input) {
+        InOutputAttribute ioa = findInOutput(name, input);
+        if (ioa != null) {
+            return ioa.generateControlAnswer();
+        }
+        return null;
+    }
+    private ControlAnswerItem generateVariableAnswer(Variable variable, int peerId) {
+        VariableAttribute va = findVariable(variable.getName());
+        if (va != null) {
+            if (variable.getValue() == null) {
+                return va.generateControlAnswer();
+            } else {
+                if (lockOk(peerId) ) {
+//                  && va.canBeModified(statusIntegerVariable.getIntValue())
+                    variableModificationQuery(variable.getValue(), va);
+                }
+                return va.generateControlAnswer();
+            }
+        }
+        return null;
+    }
+
+    private ControlAnswerItem generateConnectAnswer(Connect connect) {
+        InOutputAttribute ioa = findInOutput(connect.getName(), null);
+        if (ioa != null) {
+            if (connect.getConnectChoice().hasTcp()) {
+                connectionQuery(connect.getHost(), connect.getConnectChoice().getTcp(), true, ioa);
+                return ioa.generateControlAnswer();
+            } else {
+                System.err.println("unhandled connection query using udp");
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private ControlAnswerItem generateSubscribeAnswer(String name, int peerId, boolean subscribe) {
+        VariableAttribute va = findVariable(name);
         if (va != null) {
             if (subscribe) {
-                va.addPeer(pid);
+                va.addPeer(peerId);
             } else {
-                va.removePeer(pid);
+                va.removePeer(peerId);
             }
         }
-        return "";
+        return null;
     }
 
-    /**
-     * Processes the queries about in/outputs.
-     *
-     * @param elt
-     *            part of the XML tree contained between tag about in/output :
-     *            "input", "output", or "inOutput".
-     * @param kind
-     *            input, output, or inOutput
-     * @return the answer to the query
-     */
-    protected String processInOutputQuery(Element elt, ConnectorType kind) {
-        Attr attrName = elt.getAttributeNode("name");
-        InOutputAttribute ioa = findInOutput(attrName.getValue(), kind);
-        if (ioa != null) {
-            return ioa.generateLongDescription();
+    private ControlAnswerItem generateLockAnswer(int peerId) {
+        ControlAnswerItem controlAnswerItem = new ControlAnswerItem();
+        fr.prima.omiscid.control.message.answer.Lock lock = new fr.prima.omiscid.control.message.answer.Lock();
+        if (lockOk(peerId)) {
+            lockIntegerVar.setIntValue(peerId);
+            lock.setResult(CA_LockResultType.OK);
         } else {
-            return "";
+            lock.setResult(CA_LockResultType.FAILED);
         }
+        lock.setPeer(BipUtils.intTo8HexString(lockIntegerVar.getIntValue()));
+        controlAnswerItem.setLock(lock);
+        return controlAnswerItem;
     }
 
-    /**
-     * Processes the queries about variables.
-     *
-     * @param elt
-     *            part of the xml tree contained between tag "variable"
-     * @param pid
-     *            id of the peer (origin of the query). Used in case of
-     *            modification to enable or not the modification according to
-     *            the lock attribute
-     * @return the answer to the query, "" if the variable concerner is not
-     *         found
-     */
-    protected String processVariableQuery(Element elt, int pid) {
-        Attr attrName = elt.getAttributeNode("name");
-        if (attrName == null) {
-            System.err.println("Warning: ununderstood query (name requested)");
-        } else {
-            String name = attrName.getValue();
-            VariableAttribute va = findVariable(name);
-            if (va != null) {
-                if (elt.getChildNodes().getLength() == 0) {
-                    return va.generateLongDescription();
-                } else {
-                    Element eltVal = XmlUtils.firstChild(elt, "value");
-                    if (eltVal != null) {
-                        if (lockOk(pid) ) {
-//                            && va.canBeModified(statusIntegerVariable.getIntValue())
-                            variableModificationQuery(eltVal.getFirstChild().getNodeValue().getBytes(), va);
-                        }
-                        return va.generateValueMessage();
-                    }
-                }
-            }
-        }
-        return "";
-    }
-
-    /**
-     * Processes a query for connection.
-     *
-     * @param elt
-     *            the part of xml tree between tag "connect"
-     */
-    protected String processConnectQuery(Element elt) {
-        Attr attrName = elt.getAttributeNode("name");
-
-        if (attrName == null) {
-            System.err.println("Warning: understood query (name requested)\n");
-        } else {
-            String name = attrName.getValue();
-            InOutputAttribute ioa = findInOutput(name, null);
-            if (ioa != null) {
-                boolean foundHost = false;
-                boolean foundPort = false;
-                boolean tcp = true;
-                int port = 0;
-                String host = null;
-
-                NodeList nodeList = elt.getChildNodes();
-                for (int i = 0; i < nodeList.getLength(); i++) {
-                    Node cur = nodeList.item(i);
-                    String curName = cur.getNodeName();
-                    if (curName.equals("host")) {
-                        host = cur.getFirstChild().getNodeValue();
-                        foundHost = true;
-                    } else if (curName.equals("tcp") || curName.equals("udp")) {
-                        tcp = curName.equals("tcp");
-                        foundPort = true;
-                        port = Integer.parseInt(cur.getFirstChild().getNodeValue());
-                    } else {
-                        System.out.println("Warning: in connect query: ignored tag : " + curName);
-                    }
-                }
-                if (foundPort && foundHost) {
-                    connectionQuery(host, port, tcp, ioa);
-                    return ioa.generateConnectAnswer();
-                }
-            }
-        }
-        return "";
-    }
-
-    /**
-     * Processes queries to lock the control server.
-     *
-     * @param elt
-     *            part of XML containing the query
-     * @param pid
-     *            id of peer that asks to lock the control server
-     * @return the result of the query : &lt;lock result="res" peer="id" /&gt;
-     *         where res has the value ok or failed and id the id of the peer
-     *         thats currently lock the server.
-     */
-    protected String processLockQuery(Element elt, int pid) {
-        String res = null;
-        if (lockOk(pid)) {
-            lockIntegerVar.setIntValue(pid);
-            res = "ok";
-        } else {
-            res = "failed";
-        }
-        return "<lock result=\"" + res + "\" peer=\"" + BipUtils.intTo8HexString(lockIntegerVar.getIntValue()) + "\"/>";
-    }
-
-    /**
-     * Processes a query to unlock the control server.
-     *
-     * @param elt
-     *            part of XML containing the query
-     * @param pid
-     *            id of peer that asks to unlock the control server
-     * @return the result of the query : &lt;unlock result="res" peer="id" /&gt;
-     *         where res has the value ok or failed and id the id of the peer
-     *         thats currently lock the server. If the query succeeds, the id
-     *         value is 0.
-     */
-    protected String processUnlockQuery(Element elt, int pid) {
-        String res = null;
-        if (lockOk(pid)) {
-            res = "ok";
+    private ControlAnswerItem generateUnlockAnswer(int peerId) {
+        ControlAnswerItem controlAnswerItem = new ControlAnswerItem();
+        fr.prima.omiscid.control.message.answer.Unlock unlock = new fr.prima.omiscid.control.message.answer.Unlock();
+        if (lockOk(peerId)) {
             lockIntegerVar.setIntValue(0);
+            unlock.setResult(CA_LockResultType.OK);
         } else {
-            res = "failed";
+            unlock.setResult(CA_LockResultType.OK);
         }
-        return "<unlock result=\"" + res + "\" peer=\"" + BipUtils.intTo8HexString(lockIntegerVar.getIntValue()) + "\"/>";
+        unlock.setPeer(BipUtils.intTo8HexString(lockIntegerVar.getIntValue()));
+        controlAnswerItem.setUnlock(unlock);
+        return controlAnswerItem;
     }
+
+
+//    /**
+//     * Processes the subcribe/unsubscribe queries.
+//     *
+//     * @param elt
+//     *            piece of XML tree for the subcribe/unsubscribe query
+//     * @param pid
+//     *            the service id that ask for subscribe
+//     * @param subscribe
+//     *            true if subscribe query, false if unsubscribe query
+//     * @return answer to the query (empty string for no answer)
+//     */
+//    protected String processSubscribeQuery(Element elt, int pid, boolean subscribe) {
+//        Attr attrName = elt.getAttributeNode("name");
+//
+//        VariableAttribute va = findVariable(attrName.getValue());
+//        if (va != null) {
+//            if (subscribe) {
+//                va.addPeer(pid);
+//            } else {
+//                va.removePeer(pid);
+//            }
+//        }
+//        return "";
+//    }
+
+//    /**
+//     * Processes the queries about in/outputs.
+//     *
+//     * @param elt
+//     *            part of the XML tree contained between tag about in/output :
+//     *            "input", "output", or "inOutput".
+//     * @param connectorType
+//     *            input, output, or inOutput
+//     * @return the answer to the query
+//     */
+//    protected String processInOutputQuery(Element elt, ConnectorType connectorType) {
+//        Attr attrName = elt.getAttributeNode("name");
+//        InOutputAttribute ioa = findInOutput(attrName.getValue(), connectorType);
+//        if (ioa != null) {
+//            return ioa.generateLongDescription();
+//        } else {
+//            return "";
+//        }
+//    }
+
+//    /**
+//     * Processes the queries about variables.
+//     *
+//     * @param elt
+//     *            part of the xml tree contained between tag "variable"
+//     * @param pid
+//     *            id of the peer (origin of the query). Used in case of
+//     *            modification to enable or not the modification according to
+//     *            the lock attribute
+//     * @return the answer to the query, "" if the variable concerner is not
+//     *         found
+//     */
+//    protected String processVariableQuery(Element elt, int pid) {
+//        Attr attrName = elt.getAttributeNode("name");
+//        if (attrName == null) {
+//            System.err.println("Warning: ununderstood query (name requested)");
+//        } else {
+//            String name = attrName.getValue();
+//            VariableAttribute va = findVariable(name);
+//            if (va != null) {
+//                if (elt.getChildNodes().getLength() == 0) {
+//                    return va.generateLongDescription();
+//                } else {
+//                    Element eltVal = XmlUtils.firstChild(elt, "value");
+//                    if (eltVal != null) {
+//                        if (lockOk(pid) ) {
+////                            && va.canBeModified(statusIntegerVariable.getIntValue())
+//                            variableModificationQuery(eltVal.getFirstChild().getNodeValue().getBytes(), va);
+//                        }
+//                        return va.generateValueMessage();
+//                    }
+//                }
+//            }
+//        }
+//        return "";
+//    }
+
+//    /**
+//     * Processes a query for connection.
+//     *
+//     * @param elt
+//     *            the part of xml tree between tag "connect"
+//     */
+//    protected String processConnectQuery(Element elt) {
+//        Attr attrName = elt.getAttributeNode("name");
+//
+//        if (attrName == null) {
+//            System.err.println("Warning: understood query (name requested)\n");
+//        } else {
+//            String name = attrName.getValue();
+//            InOutputAttribute ioa = findInOutput(name, null);
+//            if (ioa != null) {
+//                boolean foundHost = false;
+//                boolean foundPort = false;
+//                boolean tcp = true;
+//                int port = 0;
+//                String host = null;
+//
+//                NodeList nodeList = elt.getChildNodes();
+//                for (int i = 0; i < nodeList.getLength(); i++) {
+//                    Node cur = nodeList.item(i);
+//                    String curName = cur.getNodeName();
+//                    if (curName.equals("host")) {
+//                        host = cur.getFirstChild().getNodeValue();
+//                        foundHost = true;
+//                    } else if (curName.equals("tcp") || curName.equals("udp")) {
+//                        tcp = curName.equals("tcp");
+//                        foundPort = true;
+//                        port = Integer.parseInt(cur.getFirstChild().getNodeValue());
+//                    } else {
+//                        System.out.println("Warning: in connect query: ignored tag : " + curName);
+//                    }
+//                }
+//                if (foundPort && foundHost) {
+//                    connectionQuery(host, port, tcp, ioa);
+//                    return ioa.generateConnectAnswer();
+//                }
+//            }
+//        }
+//        return "";
+//    }
+
+//    /**
+//     * Processes queries to lock the control server.
+//     *
+//     * @param elt
+//     *            part of XML containing the query
+//     * @param pid
+//     *            id of peer that asks to lock the control server
+//     * @return the result of the query : &lt;lock result="res" peer="id" /&gt;
+//     *         where res has the value ok or failed and id the id of the peer
+//     *         thats currently lock the server.
+//     */
+//    protected String processLockQuery(Element elt, int pid) {
+//        String res = null;
+//        if (lockOk(pid)) {
+//            lockIntegerVar.setIntValue(pid);
+//            res = "ok";
+//        } else {
+//            res = "failed";
+//        }
+//        return "<lock result=\"" + res + "\" peer=\"" + BipUtils.intTo8HexString(lockIntegerVar.getIntValue()) + "\"/>";
+//    }
+
+//    /**
+//     * Processes a query to unlock the control server.
+//     *
+//     * @param elt
+//     *            part of XML containing the query
+//     * @param pid
+//     *            id of peer that asks to unlock the control server
+//     * @return the result of the query : &lt;unlock result="res" peer="id" /&gt;
+//     *         where res has the value ok or failed and id the id of the peer
+//     *         thats currently lock the server. If the query succeeds, the id
+//     *         value is 0.
+//     */
+//    protected String processUnlockQuery(Element elt, int pid) {
+//        String res = null;
+//        if (lockOk(pid)) {
+//            res = "ok";
+//            lockIntegerVar.setIntValue(0);
+//        } else {
+//            res = "failed";
+//        }
+//        return "<unlock result=\"" + res + "\" peer=\"" + BipUtils.intTo8HexString(lockIntegerVar.getIntValue()) + "\"/>";
+//    }
 
     /**
      * Finds a variable of the service using its name.
@@ -716,10 +891,9 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         String serviceName = "essai";
         System.out.println("ControlServer creation");
         ControlServer ctrl = new ControlServer(serviceName) {
-            protected void variableModificationQuery(byte[] buffer, VariableAttribute va) {
-                String valueStr = new String(buffer);
-                System.out.println("modif variable " + va.getName() + " <- " + valueStr);
-                va.setValueStr(valueStr);
+            protected void variableModificationQuery(String newValue, VariableAttribute va) {
+                System.out.println("modif variable " + va.getName() + " <- " + newValue);
+                va.setValueStr(newValue);
             }
         };
 
