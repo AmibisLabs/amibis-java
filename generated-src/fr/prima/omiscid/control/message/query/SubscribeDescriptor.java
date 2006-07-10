@@ -98,7 +98,7 @@ public class SubscribeDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
         { //-- local scope
             StringValidator typeValidator = new StringValidator();
             typeValidator.setWhiteSpace("preserve");
-            typeValidator.setPattern("[a-zA-Z0-9_]*");
+            typeValidator.setPattern("[a-zA-Z0-9_ ]*");
             fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);

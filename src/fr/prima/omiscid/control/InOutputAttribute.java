@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import fr.prima.omiscid.com.BipUtils;
@@ -258,15 +257,15 @@ public class InOutputAttribute extends Attribute {
         }
     }
 
-    /**
-     * Generates a short XML description of the in/output.
-     *
-     * @return the name of the in/output as &lt;inoutput_kind
-     *         name=&quot;inoutput_name&quot;/&gt;
-     */
-    public String generateShortDescription() {
-        return generateHeaderDescription(connectorType.getXMLTag(), true);
-    }
+//    /**
+//     * Generates a short XML description of the in/output.
+//     *
+//     * @return the name of the in/output as &lt;inoutput_kind
+//     *         name=&quot;inoutput_name&quot;/&gt;
+//     */
+//    public String generateShortDescription() {
+//        return generateHeaderDescription(connectorType.getXMLTag(), true);
+//    }
 
     /**
      * Accesses the list of the id of the connected peer
@@ -292,36 +291,36 @@ public class InOutputAttribute extends Attribute {
         peerVector.add(new Integer(peer));
     }
 
-    /**
-     * Generates a long XML description of the in/output.
-     *
-     * @return the XML description as a String
-     */
-    public String generateLongDescription() {
-        String str = generateHeaderDescription(connectorType.getXMLTag(), false);
-        if (getTcpPort() != 0) {
-            str += "<tcp>" + getTcpPort() + "</tcp>";
-        }
-        if (getUdpPort() != 0) {
-            str += "<udp>" + getUdpPort() + "</udp>";
-        }
-        str += generateTagDescriptionToStr();
-        str += "<peers>";
-        for (Integer peerId : getPeerVector()) {
-            str += "<peer>" + BipUtils.intTo8HexString(peerId) + "</peer>";
-        }
-        str += "</peers></" + connectorType.getXMLTag() + ">";
-        return str;
-    }
+//    /**
+//     * Generates a long XML description of the in/output.
+//     *
+//     * @return the XML description as a String
+//     */
+//    public String generateLongDescription() {
+//        String str = generateHeaderDescription(connectorType.getXMLTag(), false);
+//        if (getTcpPort() != 0) {
+//            str += "<tcp>" + getTcpPort() + "</tcp>";
+//        }
+//        if (getUdpPort() != 0) {
+//            str += "<udp>" + getUdpPort() + "</udp>";
+//        }
+//        str += generateTagDescriptionToStr();
+//        str += "<peers>";
+//        for (Integer peerId : getPeerVector()) {
+//            str += "<peer>" + BipUtils.intTo8HexString(peerId) + "</peer>";
+//        }
+//        str += "</peers></" + connectorType.getXMLTag() + ">";
+//        return str;
+//    }
 
-    /**
-     * Generates a string containing the answer to a connect query.
-     *
-     * @return the answer to a connect query
-     */
-    public String generateConnectAnswer() {
-        return generateLongDescription();
-    }
+//    /**
+//     * Generates a string containing the answer to a connect query.
+//     *
+//     * @return the answer to a connect query
+//     */
+//    public String generateConnectAnswer() {
+//        return generateLongDescription();
+//    }
 
     /**
      * Generates a string with port number.
@@ -399,49 +398,49 @@ public class InOutputAttribute extends Attribute {
         }
     }
 
-    public Element createXmlElement(Document doc) {
-
-        Element eltIo = doc.createElement(connectorType.getXMLTag());
-//      XERCES
-//        eltIo.setAttribute("name", getName());
+//    public Element createXmlElement(Document doc) {
 //
-//        Element elt = null;
-//        CDATASection cdata = null;
+//        Element eltIo = doc.createElement(connectorType.getXMLTag());
+////      XERCES
+////        eltIo.setAttribute("name", getName());
+////
+////        Element elt = null;
+////        CDATASection cdata = null;
+////
+////        elt = doc.createElement("tcp");
+////        elt.setTextContent(Integer.toString(getTcpPort()));
+////        eltIo.appendChild(elt);
+////
+////        elt = doc.createElement("udp");
+////        elt.setTextContent(Integer.toString(getUdpPort()));
+////        eltIo.appendChild(elt);
+////
+////        if (getDescription() != null && !getDescription().equals("")) {
+////            elt = doc.createElement("description");
+////            cdata = doc.createCDATASection(getDescription());
+////            elt.appendChild(cdata);
+////            eltIo.appendChild(elt);
+////        }
+////        if (getFormatDescription() != null && !getFormatDescription().equals("")) {
+////            elt = doc.createElement("formatDescription");
+////            cdata = doc.createCDATASection(getFormatDescription());
+////            elt.appendChild(cdata);
+////            eltIo.appendChild(elt);
+////        }
+////
+////        List<Integer> v = getPeerVector();
+////        if (!v.isEmpty()) {
+////            Element eltPeers = doc.createElement("peers");
+////            for (Integer peerId : v) {
+////                elt = doc.createElement("peer");
+////                elt.setTextContent(BipUtils.intTo8HexString(peerId));
+////                eltPeers.appendChild(elt);
+////            }
+////            eltIo.appendChild(eltPeers);
+////        }
 //
-//        elt = doc.createElement("tcp");
-//        elt.setTextContent(Integer.toString(getTcpPort()));
-//        eltIo.appendChild(elt);
-//
-//        elt = doc.createElement("udp");
-//        elt.setTextContent(Integer.toString(getUdpPort()));
-//        eltIo.appendChild(elt);
-//
-//        if (getDescription() != null && !getDescription().equals("")) {
-//            elt = doc.createElement("description");
-//            cdata = doc.createCDATASection(getDescription());
-//            elt.appendChild(cdata);
-//            eltIo.appendChild(elt);
-//        }
-//        if (getFormatDescription() != null && !getFormatDescription().equals("")) {
-//            elt = doc.createElement("formatDescription");
-//            cdata = doc.createCDATASection(getFormatDescription());
-//            elt.appendChild(cdata);
-//            eltIo.appendChild(elt);
-//        }
-//
-//        List<Integer> v = getPeerVector();
-//        if (!v.isEmpty()) {
-//            Element eltPeers = doc.createElement("peers");
-//            for (Integer peerId : v) {
-//                elt = doc.createElement("peer");
-//                elt.setTextContent(BipUtils.intTo8HexString(peerId));
-//                eltPeers.appendChild(elt);
-//            }
-//            eltIo.appendChild(eltPeers);
-//        }
-
-        return eltIo;
-    }
+//        return eltIo;
+//    }
 
     public CommunicationServer getCommunicationServer() {
         return communicationServer;

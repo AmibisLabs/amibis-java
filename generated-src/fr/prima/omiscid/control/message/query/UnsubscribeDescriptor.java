@@ -98,7 +98,7 @@ public class UnsubscribeDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         { //-- local scope
             StringValidator typeValidator = new StringValidator();
             typeValidator.setWhiteSpace("preserve");
-            typeValidator.setPattern("[a-zA-Z0-9_]*");
+            typeValidator.setPattern("[a-zA-Z0-9_ ]*");
             fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);

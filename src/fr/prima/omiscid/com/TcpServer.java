@@ -292,7 +292,7 @@ public class TcpServer implements CommunicationServer {
                     if (client.isConnectedToPeer(peerId)) {
                         assert found == null;
                         found = client;
-                        // could break but the assert stuff adds some checking
+                        // could break but the assert stuff adds some checking when running with -ea
                     }
                 } else {
                     disconnectedClients.add(client);

@@ -73,19 +73,19 @@ public abstract class Attribute {
         return formatDescription;
     }
 
-    /**
-     * Generates a brief description for the attribute (in XML string).
-     *
-     * @return a short XML description of the attribute
-     */
-    public abstract String generateShortDescription();
+//    /**
+//     * Generates a brief description for the attribute (in XML string).
+//     *
+//     * @return a short XML description of the attribute
+//     */
+//    public abstract String generateShortDescription();
 
-    /**
-     * Generates a complete description for the attribute (in XML string).
-     *
-     * @return a long XML description of the attribute
-     */
-    public abstract String generateLongDescription();
+//    /**
+//     * Generates a complete description for the attribute (in XML string).
+//     *
+//     * @return a long XML description of the attribute
+//     */
+//    public abstract String generateLongDescription();
 
     /**
      * Generates the tags about the description and format description for the

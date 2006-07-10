@@ -271,9 +271,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             controlEvent.marshal(new OutputStreamWriter(byteArrayOutputStream));
             byte[] message = byteArrayOutputStream.toByteArray();
 
-            System.out.println(new String(message));
             for (Integer peer : peersSet) {
-                System.out.println("send");
                 if (!tcpServer.sendToOneClient(message, peer.intValue())) {
                     unreachablePeers.add(peer);
                 }
@@ -675,7 +673,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             lockIntegerVar.setIntValue(0);
             unlock.setResult(CA_LockResultType.OK);
         } else {
-            unlock.setResult(CA_LockResultType.OK);
+            unlock.setResult(CA_LockResultType.FAILED);
         }
         unlock.setPeer(BipUtils.intTo8HexString(lockIntegerVar.getIntValue()));
         controlAnswerItem.setUnlock(unlock);

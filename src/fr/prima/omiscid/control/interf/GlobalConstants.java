@@ -2,6 +2,7 @@ package fr.prima.omiscid.control.interf;
 
 public final class GlobalConstants {
 
+    public static final String controlAnswerXMLTag = "controlAnswer";
     public static final String connectorTypeInputXMLTag = "input";
     public static final String connectorTypeOutputXMLTag = "output";
     public static final String connectorTypeInOutputXMLTag = "inoutput";
@@ -10,7 +11,7 @@ public final class GlobalConstants {
     public static final String variableAccessTypeRead= "read";
     public static final String variableAccessTypeReadWrite = "readWrite";
 
-    public static final String dnssdDefaultWorkingDomain = "_bip._tcp";
+    public static final String dnssdDefaultWorkingDomain = "_bip_rem._tcp";
     public static final String dnssdWorkingDomainEnvironmentVariableName = "OMISCID_WORKING_DOMAIN";
 
     public static final String constantNameForPeerId = "id";
