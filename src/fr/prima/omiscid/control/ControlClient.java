@@ -255,6 +255,10 @@ public class ControlClient implements BipMessageListener {
         //TODO
     }
 
+    public void connected(int remotePeerId) {
+        //TODO
+    }
+
     /**
      * Adds a listener for control event.
      *
@@ -307,6 +311,17 @@ public class ControlClient implements BipMessageListener {
      */
     public VariableAttribute findVariable(String name) {
         return (VariableAttribute) findAttribute(name, variableAttributesSet);
+    }
+
+    public InOutputAttribute findConnector(int peerId) {
+        for (Iterable<InOutputAttribute> list : new Iterable[]{inputAttributesSet,outputAttributesSet,inOutputAttributesSet}) {
+            for (InOutputAttribute attribute : list) {
+                if (attribute.getPeerId() == peerId) {
+                    return attribute;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -1122,6 +1137,7 @@ public class ControlClient implements BipMessageListener {
     public Set<String> getVariableNamesSet() {
         return Collections.unmodifiableSet(variableNamesSet);
     }
+
 
 
 }

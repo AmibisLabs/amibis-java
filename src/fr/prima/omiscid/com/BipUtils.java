@@ -115,6 +115,10 @@ public final class BipUtils {
         // return (int) (System.currentTimeMillis() & 0xFFFFFFFF);
     }
 
+    public static int rootBIPPeerId(int peerId) {
+        return peerId & 0xFFFFFF00;
+    }
+
     /**
      * The shared parser and writer used to change messages into DOM trees and vice-versa.
      */

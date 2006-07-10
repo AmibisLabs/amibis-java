@@ -286,6 +286,13 @@ public abstract class MessageSocket {
     synchronized void initMessageReceived(int peerId) {
         initMessageReceived = true;
         remotePeerId = peerId;
+        if (notifyListenersOnConnection) {
+            synchronized (listenersSet) {
+                for (BipMessageListener listener : listenersSet) {
+                    listener.connected(remotePeerId);
+                }
+            }
+        }
     }
 
     synchronized boolean isInitMessageSent() {
@@ -303,6 +310,8 @@ public abstract class MessageSocket {
 
     /** Set of listener to call when a BIP message is received */
     private Set<BipMessageListener> listenersSet;
+
+    private boolean notifyListenersOnConnection;
 
     /**
      * Creates a new instance of MessageSocket using the specified BIP peer id
@@ -437,13 +446,21 @@ public abstract class MessageSocket {
     /**
      * Initializes the connection (protocol initialisation).
      */
-    public synchronized void initializeConnection() {
+    public synchronized void initializeConnection(boolean shouldNotifyListenersOnConnection) {
         if (!initMessageSent) {
             send((byte[]) null);
             initMessageSent = true;
+            notifyListenersOnConnection = shouldNotifyListenersOnConnection;
         } else {
             System.err.println("Warning: in MessageSocket, multiple calls to initializeConnection");
         }
+    }
+
+    /**
+     * Initializes the connection (protocol initialisation).
+     */
+    public synchronized void initializeConnection() {
+        initializeConnection(false);
     }
 
     /**

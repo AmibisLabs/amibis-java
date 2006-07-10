@@ -4,6 +4,7 @@
  */
 package fr.prima.omiscid.control.filter;
 
+import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.control.OmiscidService;
 import fr.prima.omiscid.control.interf.ConnectorType;
 import fr.prima.omiscid.control.interf.VariableAccessType;
@@ -60,6 +61,21 @@ public final class OmiscidServiceFilters {
     }
 
     /**
+     * Tests whether the peerId of the service is matching a given peerId (possibly from a connector)
+     */
+    private static final class PeerId implements OmiscidServiceFilter {
+        private int peerId;
+
+        public PeerId(int peerId) {
+            this.peerId = BipUtils.rootBIPPeerId(peerId);
+        }
+
+        public boolean isAGoodService(OmiscidService s) {
+            return s.getRemotePeerId() == peerId;
+        }
+    }
+
+    /**
      * Tests whether the given service has a given variable,
      * with a particular access type and a value matching the given regexp.
      */
@@ -102,7 +118,6 @@ public final class OmiscidServiceFilters {
     private static final class Boolean implements OmiscidServiceFilter {
         private boolean value;
         public Boolean(boolean value) {
-            super();
             this.value = value;
         }
         public boolean isAGoodService(OmiscidService s) {
@@ -163,6 +178,10 @@ public final class OmiscidServiceFilters {
 
     public static OmiscidServiceFilter ownerIs(String ownerRegexp) {
         return new Owner("^" + ownerRegexp + "$");
+    }
+
+    public static OmiscidServiceFilter peerIdIs(int peerId) {
+        return new PeerId(peerId);
     }
 
     public static OmiscidServiceFilter hasVariable(String variableName) {

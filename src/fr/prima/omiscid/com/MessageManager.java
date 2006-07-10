@@ -34,6 +34,9 @@ public abstract class MessageManager implements BipMessageListener {
 
     }
 
+    public void connected(int remotePeerId) {
+    }
+
     /**
      * Tests whether there are available messages to process.
      *

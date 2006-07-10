@@ -25,4 +25,5 @@ public interface BipMessageListener extends EventListener {
      *
      */
     void disconnected(int remotePeerId);
+    void connected(int remotePeerId);
 }

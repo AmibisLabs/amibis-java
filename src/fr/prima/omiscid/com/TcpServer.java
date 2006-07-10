@@ -92,7 +92,7 @@ public class TcpServer implements CommunicationServer {
                     }
                 }
                 messageSocket.start();
-                messageSocket.initializeConnection();
+                messageSocket.initializeConnection(true);
                 synchronized (connectionsSet) {
                     connectionsSet.add(messageSocket);
                 }

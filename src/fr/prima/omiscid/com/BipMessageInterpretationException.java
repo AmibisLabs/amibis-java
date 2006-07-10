@@ -4,6 +4,7 @@
  */
 package fr.prima.omiscid.com;
 
+
 public class BipMessageInterpretationException extends Exception {
     private static final long serialVersionUID = -2759945647536972704L;
 
