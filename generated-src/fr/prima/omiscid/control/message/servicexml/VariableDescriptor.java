@@ -316,11 +316,13 @@ public class VariableDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         handler = new org.exolab.castor.xml.handlers.EnumFieldHandler(fr.prima.omiscid.control.message.servicexml.types.AccessType.class, handler);
         desc.setImmutable(true);
         desc.setHandler(handler);
+        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _access
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        fieldValidator.setMinOccurs(1);
         { //-- local scope
         }
         desc.setValidator(fieldValidator);

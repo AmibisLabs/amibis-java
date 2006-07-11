@@ -23,7 +23,7 @@
 				<xs:element name="value" type="string" minOccurs="0" />
 				<xs:element name="default" type="string" minOccurs="0" />
 				<xs:element name="type" type="string" minOccurs="0" />
-				<xs:element name="access" type="omiscid:accessType" minOccurs="0" />
+				<xs:element name="access" type="omiscid:accessType" minOccurs="1" maxOccurs="1"/>
 			</xs:all>
 			<attribute name="name" type="string" use="required"></attribute>
 		</complexType>
