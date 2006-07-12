@@ -1,13 +1,14 @@
 package fr.prima.omiscid.control;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
+import fr.prima.omiscid.com.TcpServer;
 import fr.prima.omiscid.control.interf.ConnectorType;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.control.interf.VariableChangeQueryListener;
@@ -30,7 +31,7 @@ public class ServiceFromXml extends ControlServer {
      * XmlToService.initServiceFromXml(this, doc.getDocumentElement()); }
      */
 
-    public ServiceFromXml(String fileName) throws MarshalException, ValidationException, FileNotFoundException {
+    public ServiceFromXml(String fileName) throws MarshalException, ValidationException, IOException {
         super();
         init(Service.unmarshal(new FileReader(fileName)));
 
@@ -39,7 +40,7 @@ public class ServiceFromXml extends ControlServer {
 //        XmlToService.initServiceFromXml(this, doc.getDocumentElement());
     }
 
-    public ServiceFromXml(InputStream inputStream) throws MarshalException, ValidationException {
+    public ServiceFromXml(InputStream inputStream) throws MarshalException, ValidationException, IOException {
         super();
         init(Service.unmarshal(new InputStreamReader(inputStream)));
 //        Document doc = XmlUtils.parseXMLStream(stream);
@@ -47,7 +48,7 @@ public class ServiceFromXml extends ControlServer {
 //        XmlToService.initServiceFromXml(this, doc.getDocumentElement());
     }
 
-    private void init(Service service) {
+    private void init(Service service) throws IOException {
         this.setServiceName(service.getName());
 //        service.getClazz();
 //        service.getDocURL();
@@ -61,13 +62,13 @@ public class ServiceFromXml extends ControlServer {
                 variableAttribute.init(item.getVariable());
             } else if (item.getChoiceValue() instanceof Input) {
                 Input inoutput = item.getInput();
-                this.addInOutput(inoutput.getName(), null, ConnectorType.INPUT).init(inoutput);
+                this.addInOutput(inoutput.getName(), new TcpServer(this.getPeerId(), 0), ConnectorType.INPUT).init(inoutput);
             } else if (item.getChoiceValue() instanceof Output) {
                 Output inoutput = item.getOutput();
-                this.addInOutput(inoutput.getName(), null, ConnectorType.OUTPUT).init(inoutput);
+                this.addInOutput(inoutput.getName(), new TcpServer(this.getPeerId(), 0), ConnectorType.OUTPUT).init(inoutput);
             } else if (item.getChoiceValue() instanceof Inoutput) {
                 Inoutput inoutput = item.getInoutput();
-                this.addInOutput(inoutput.getName(), null, ConnectorType.INOUTPUT).init(inoutput);
+                this.addInOutput(inoutput.getName(), new TcpServer(this.getPeerId(), 0), ConnectorType.INOUTPUT).init(inoutput);
             } else {
                 System.err.println("unhandled service item in ServiceFromXml.init");
             }
@@ -79,7 +80,7 @@ public class ServiceFromXml extends ControlServer {
 //        XmlToService.initServiceFromXml(this, doc.getDocumentElement());
 //    }
 
-    public static void main(String arg[]) throws MarshalException, ValidationException, FileNotFoundException {
+    public static void main(String arg[]) throws MarshalException, ValidationException, IOException {
         String path = "src/OmiscidSearch/xml/";
         String fileName = path + "generatedfile.xml";
         fileName = "service.xml";
