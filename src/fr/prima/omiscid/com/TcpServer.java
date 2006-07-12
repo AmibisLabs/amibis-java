@@ -60,13 +60,31 @@ public class TcpServer implements CommunicationServer {
         listenersSet = new HashSet<BipMessageListener>();
     }
 
+
+
+    /**
+     * Closses this server and all previously initiated connections.
+     *
+     * See {@link #closeServer()} if you need to close the server
+     * and wants to keep the initiated connections alive.
+     *
+     */
+    public void close() {
+        synchronized (connectionsSet) {
+            for (MessageSocketTCP socket : connectionsSet) {
+                socket.closeConnection();
+            }
+            connectionsSet.clear();
+        }
+        closeServer();
+    }
+
     /**
      * Closes this server. The main socket is closed, the listening thread is
      * stopped. However all the initiated connections are still alive.
+     * See {@link #close()} for a complete close (closing already initiated connections}
      */
-    // \REVIEWTASK should we close all the subconnections ? should we propose
-    // both ? ...
-    public void close() {
+    public void closeServer() {
         try {
             serverSocket.close();
         } catch (IOException e) {
