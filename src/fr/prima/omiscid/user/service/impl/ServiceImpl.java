@@ -88,6 +88,10 @@ public class ServiceImpl implements Service {
 		tcpClientServers = new HashMap<String, TcpClientServer>() ;
 		variableListeners = new HashMap<String, HashMap<LocalVariableListener, VariableListenerBridge> >() ;
 		msgListeners = new HashMap<String, HashMap<ConnectorListener, BipMessageListener> >() ;
+
+        for (InOutputAttribute inoutput : ctrlServer.getConnectors()) {
+            tcpClientServers.put(inoutput.getName(), (TcpClientServer) inoutput.getCommunicationServer());
+        }
 	}
 
 	/* (non-Javadoc)

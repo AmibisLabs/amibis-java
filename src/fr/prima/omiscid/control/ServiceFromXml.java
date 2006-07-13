@@ -62,13 +62,19 @@ public class ServiceFromXml extends ControlServer {
                 variableAttribute.init(item.getVariable());
             } else if (item.getChoiceValue() instanceof Input) {
                 Input inoutput = item.getInput();
-                this.addInOutput(inoutput.getName(), new TcpClientServer(this.getPeerId()), ConnectorType.INPUT).init(inoutput);
+                TcpClientServer tcpClientServer = new TcpClientServer(this.getPeerId());
+                this.addInOutput(inoutput.getName(), tcpClientServer, ConnectorType.INPUT).init(inoutput);
+                tcpClientServer.start();
             } else if (item.getChoiceValue() instanceof Output) {
                 Output inoutput = item.getOutput();
-                this.addInOutput(inoutput.getName(), new TcpClientServer(this.getPeerId()), ConnectorType.OUTPUT).init(inoutput);
+                TcpClientServer tcpClientServer = new TcpClientServer(this.getPeerId());
+                this.addInOutput(inoutput.getName(), tcpClientServer, ConnectorType.OUTPUT).init(inoutput);
+                tcpClientServer.start();
             } else if (item.getChoiceValue() instanceof Inoutput) {
                 Inoutput inoutput = item.getInoutput();
-                this.addInOutput(inoutput.getName(), new TcpClientServer(this.getPeerId()), ConnectorType.INOUTPUT).init(inoutput);
+                TcpClientServer tcpClientServer = new TcpClientServer(this.getPeerId());
+                this.addInOutput(inoutput.getName(), tcpClientServer, ConnectorType.INOUTPUT).init(inoutput);
+                tcpClientServer.start();
             } else {
                 System.err.println("unhandled service item in ServiceFromXml.init");
             }

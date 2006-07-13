@@ -994,4 +994,12 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         return variableChangeQueryListeners.remove(o);
     }
 
+    public Iterable<InOutputAttribute> getConnectors() {
+        Vector<InOutputAttribute> res = new Vector<InOutputAttribute>();
+        for (InOutputAttribute attribute : inoutputsSet) {
+            res.add(attribute);
+        }
+        return res;
+    }
+
 }
