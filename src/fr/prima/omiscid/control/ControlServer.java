@@ -204,6 +204,8 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             // register the service
             if (registerTheService(tcpServer.getTcpPort())) {
 //                setStatus(STATUS_INIT);
+                VariableAttribute variableAttribute = this.addVariable("name");
+                variableAttribute.setValueStr(serviceRegistration.getRegisteredName());
                 return true;
             } else {
                 return false;
