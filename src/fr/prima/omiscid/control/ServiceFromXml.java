@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
-import fr.prima.omiscid.com.TcpServer;
+import fr.prima.omiscid.com.TcpClientServer;
 import fr.prima.omiscid.control.interf.ConnectorType;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.control.interf.VariableChangeQueryListener;
@@ -62,13 +62,13 @@ public class ServiceFromXml extends ControlServer {
                 variableAttribute.init(item.getVariable());
             } else if (item.getChoiceValue() instanceof Input) {
                 Input inoutput = item.getInput();
-                this.addInOutput(inoutput.getName(), new TcpServer(this.getPeerId(), 0), ConnectorType.INPUT).init(inoutput);
+                this.addInOutput(inoutput.getName(), new TcpClientServer(this.getPeerId()), ConnectorType.INPUT).init(inoutput);
             } else if (item.getChoiceValue() instanceof Output) {
                 Output inoutput = item.getOutput();
-                this.addInOutput(inoutput.getName(), new TcpServer(this.getPeerId(), 0), ConnectorType.OUTPUT).init(inoutput);
+                this.addInOutput(inoutput.getName(), new TcpClientServer(this.getPeerId()), ConnectorType.OUTPUT).init(inoutput);
             } else if (item.getChoiceValue() instanceof Inoutput) {
                 Inoutput inoutput = item.getInoutput();
-                this.addInOutput(inoutput.getName(), new TcpServer(this.getPeerId(), 0), ConnectorType.INOUTPUT).init(inoutput);
+                this.addInOutput(inoutput.getName(), new TcpClientServer(this.getPeerId()), ConnectorType.INOUTPUT).init(inoutput);
             } else {
                 System.err.println("unhandled service item in ServiceFromXml.init");
             }
