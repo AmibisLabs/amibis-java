@@ -1,7 +1,7 @@
 /**
- * Copyright (c) 2006 INRIA/Université Joseph Fourrier/Université Pierre Mendès-France.  
+ * Copyright (c) 2006 INRIA/Université Joseph Fourrier/Université Pierre Mendès-France.
  * O3MiSCID (aka OMiSCID) Software written by Sebastien Pesnel, Dominique
- * Vaufreydaz, Patrick Reigner, Remi Emonnet and Julien Letessier. 
+ * Vaufreydaz, Patrick Reigner, Remi Emonnet and Julien Letessier.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -16,7 +16,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
  * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
@@ -27,6 +27,7 @@ package fr.prima.omiscid.user.service;
 
 import java.util.Set;
 
+import fr.prima.omiscid.control.interf.VariableAccessType;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.user.connector.ConnectorListener;
 import fr.prima.omiscid.user.exception.UnknownVariable;
@@ -44,12 +45,12 @@ import fr.prima.omiscid.user.variable.RemoteVariableChangeListener;
  */
 public interface ServiceProxy {
 
-	/** 
+	/**
 	 * Returns the service name (as it appears in DNS-SD)
 	 * @return the service name
 	 */
 	public String getName() ;
-	
+
    /**
 	 * Returns the list of variables
 	 * @return the list of variables
@@ -101,25 +102,32 @@ public interface ServiceProxy {
      * @param value the value (String format)
      */
     public void setVariableValue(String varName, String value) ;
- 
+
     /**
      * Gets the value of a remote variable
      * @param varName
      * @return the value
      */
     public String getVariableValue(String varName);
-    
-    /** 
+
+    /**
+     * Gets the access type of a remote variable
+     * @param varName
+     * @return the access type of the variable
+     */
+    public VariableAccessType getVariableAccessType(String varName);
+
+    /**
      * Registers a listener that will be triggered when the remote variable value will change
-     * @param varName the remote variable that must be monitored 
+     * @param varName the remote variable that must be monitored
      * @param remoteVariableChangeListener the listener
      * @throws UnknownVariable the variable does not exist
      * @see #removeRemoteVariableChangeListener(String, RemoteVariableChangeListener)
-     * @see RemoteVariableChangeListener 
+     * @see RemoteVariableChangeListener
      */
     public void addRemoteVariableChangeListener(String varName, final  RemoteVariableChangeListener remoteVariableChangeListener)
        throws UnknownVariable;
-    
+
     /**
      * Unregisters a listener on a remote variable value change
      * @param varName the name of the variable
@@ -128,11 +136,11 @@ public interface ServiceProxy {
      * @see #addRemoteVariableChangeListener(String, RemoteVariableChangeListener)
      * @see VariableChangeListener
      */
-    public void removeRemoteVariableChangeListener(String varName, 
-    																							   RemoteVariableChangeListener remoteVariableChangeListener) 
+    public void removeRemoteVariableChangeListener(String varName,
+    																							   RemoteVariableChangeListener remoteVariableChangeListener)
         throws UnknownVariable;
-    
-    /** 
+
+    /**
      * Extract the connector name of a remote service from its peerId. This peerId can be obtained from a message
      * sent by the remote service.
      * @param peerId the remote connector perrId
@@ -140,5 +148,5 @@ public interface ServiceProxy {
      * @see ConnectorListener#messageReceived(Service, String, fr.prima.omiscid.com.interf.Message)
      */
     public String findConnector(int peerId) ;
-    
+
 }

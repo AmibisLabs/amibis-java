@@ -1,7 +1,7 @@
 /**
- * Copyright (c) 2006 INRIA/Université Joseph Fourrier/Université Pierre Mendès-France.  
+ * Copyright (c) 2006 INRIA/Université Joseph Fourrier/Université Pierre Mendès-France.
  * O3MiSCID (aka OMiSCID) Software written by Sebastien Pesnel, Dominique
- * Vaufreydaz, Patrick Reigner, Remi Emonnet and Julien Letessier. 
+ * Vaufreydaz, Patrick Reigner, Remi Emonnet and Julien Letessier.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -16,7 +16,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
  * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
@@ -60,7 +60,7 @@ import fr.prima.omiscid.user.variable.LocalVariableListener;
  *
  */
 public class ServiceImpl implements Service {
-	
+
 	private class VariableListenerBridge
 	{
 		public VariableChangeListener variableChangeListener ;
@@ -71,7 +71,7 @@ public class ServiceImpl implements Service {
 
 	/* the Bip Control Server : this is the heart of the bip service */
 	private ControlServer ctrlServer ;
-	
+
 	private boolean started = false ;
 
 	/** The input output type for each connector of each service */
@@ -95,10 +95,10 @@ public class ServiceImpl implements Service {
 	 */
 	 synchronized  public void addConnector(String connectorName,
 			String connectorDescription, ConnectorType connectorKind) throws ConnectorAlreadyExisting, IOException, ServiceRunning {
-		
+
 		if (started)
 			throw new ServiceRunning("addConnector");
-		
+
 		InOutputAttribute ioa = null;
 		TcpClientServer tcpClientServer = null ;
 
@@ -137,16 +137,16 @@ public class ServiceImpl implements Service {
 			{
 				msgListener.connected(ServiceImpl.this ,connectorName, peerId);
 			}
-			
+
 			public void disconnected(int peerId) {
 				msgListener.disconnected(ServiceImpl.this, connectorName, peerId);
 			}
-	
+
 			public void receivedBipMessage(Message message) {
 				msgListener.messageReceived(ServiceImpl.this, connectorName, message) ;
 			}
 		};
-		
+
 		tcpClientServer.addBipMessageListener(bipMessageListener) ;
 
 		synchronized (lock) {
@@ -156,7 +156,7 @@ public class ServiceImpl implements Service {
 				listeners = new HashMap<ConnectorListener, BipMessageListener>() ;
 				msgListeners.put(connectorName, listeners) ;
 			}
-			
+
 			listeners.put(msgListener, bipMessageListener) ;
 		}
 	}
@@ -180,7 +180,7 @@ public class ServiceImpl implements Service {
 	 */
 	synchronized  public void stop() {
 		started = false ;
-		
+
 		// we first close all the tcpServers
 		Iterator<TcpClientServer> it = tcpClientServers.values().iterator() ;
 		while (it.hasNext())
@@ -207,7 +207,7 @@ public class ServiceImpl implements Service {
 			{
 				setClone.add(listener);
 			}
-			
+
 			for (ConnectorListener listener : setClone)
 			{
 				try {
@@ -222,8 +222,9 @@ public class ServiceImpl implements Service {
 		// we remove all the variables listeners
 		for (String varName : variableListeners.keySet())
 		{
-			HashMap<LocalVariableListener, VariableListenerBridge> listeners = 
-				             (HashMap<LocalVariableListener, VariableListenerBridge>) variableListeners.get(varName).clone();
+			HashMap<LocalVariableListener, VariableListenerBridge> listeners = new HashMap<LocalVariableListener, VariableListenerBridge>();
+            listeners.putAll(variableListeners.get(varName));
+//			HashMap<LocalVariableListener, VariableListenerBridge> listeners =	             (HashMap<LocalVariableListener, VariableListenerBridge>) variableListeners.get(varName).clone();
 			for (LocalVariableListener listener : listeners.keySet())
 			{
 				try {
@@ -239,7 +240,7 @@ public class ServiceImpl implements Service {
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.Service#sendToAllClients(java.lang.String, byte[], boolean)
 	 */
-	synchronized  public void sendToAllClients(String connectorName, byte[] msg, boolean unreliableButFastSend) throws UnknownConnector {
+    synchronized  public void sendToAllClients(String connectorName, byte[] msg, boolean unreliableButFastSend) throws UnknownConnector {
 		TcpClientServer tcpClientServer = getTcpClientServer(connectorName) ;
 		if (tcpClientServer == null)
 			throw new UnknownConnector("Unknown bip connector : " + connectorName) ;
@@ -247,10 +248,14 @@ public class ServiceImpl implements Service {
 		tcpClientServer.sendToClients(msg) ;
 	}
 
+    synchronized  public void sendToAllClients(String connectorName, byte[] msg) throws UnknownConnector {
+        sendToAllClients(connectorName, msg, false);
+    }
+
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.Service#sendToOneClient(java.lang.String, byte[], int, boolean)
 	 */
-	synchronized  public void sendToOneClient(String connectorName, byte[] msg, int pid, boolean unreliableButFastSend) throws UnknownConnector {
+    synchronized  public void sendToOneClient(String connectorName, byte[] msg, int pid, boolean unreliableButFastSend) throws UnknownConnector {
 		TcpClientServer tcpClientServer = getTcpClientServer(connectorName) ;
 
 		if (tcpClientServer == null)
@@ -259,6 +264,9 @@ public class ServiceImpl implements Service {
 		tcpClientServer.sendToOneClient(msg, pid) ;
 	}
 
+    synchronized  public void sendToOneClient(String connectorName, byte[] msg, int pid) throws UnknownConnector {
+        sendToOneClient(connectorName, msg, pid, false);
+    }
 	/**
 	 * Finds a tcpServer from the service reference and the connector name
 	 * @param connectorName the connector name
@@ -306,13 +314,13 @@ public class ServiceImpl implements Service {
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.Service#addVariable(java.lang.String,java.lang.String, java.lang.String)
 	 */
-	synchronized  public void addVariable(String varName, String type, String description, String accessType) throws VariableAlreadyExisting, ServiceRunning {
-		
+	synchronized  public void addVariable(String varName, String type, String description, VariableAccessType accessType) throws VariableAlreadyExisting, ServiceRunning {
+
 		if (started)
 		{
 			throw new ServiceRunning("addVariable");
 		}
-		
+
 		if (ctrlServer.findVariable(varName) != null)
 			// the variable already exists
 			throw new VariableAlreadyExisting("Variable already declared : " + varName) ;
@@ -320,11 +328,7 @@ public class ServiceImpl implements Service {
 		VariableAttribute var = ctrlServer.findVariable(varName) ;
 		var.setDescription(description);
 		var.setType(type) ;
-		if (accessType.equals(VariableAccessType.READ)) {
-			var.setAccessType(VariableAccessType.READ);
-		} else if (accessType.equals(VariableAccessType.READ_WRITE)) {
-			var.setAccessType(VariableAccessType.READ_WRITE);
-		}
+        var.setAccessType(accessType);
 	}
 
 	/* (non-Javadoc)
@@ -414,7 +418,7 @@ public class ServiceImpl implements Service {
 					listener.variableChanged(ServiceImpl.this, variableAttribute.getName(),variableAttribute.getValueStr() );
 				}
 			} ;
-			
+
 			// bridge between VariableListener et VariableChangeQueryListener
 			VariableChangeQueryListener queryListener = new VariableChangeQueryListener()
 			{
@@ -423,12 +427,12 @@ public class ServiceImpl implements Service {
 					return listener.isValid(ServiceImpl.this, currentVariable.generateValueMessage(), newValue) ;
 				}
 			};
-			
+
 			VariableListenerBridge bridge = new VariableListenerBridge();
 
 			bridge.variableChangeListener = omiscidListener;
 			bridge.variableChangeQueryListener = queryListener;
-			
+
 			var.addListenerChange(omiscidListener);
 			ctrlServer.addVariableChangeQueryListener(queryListener);
 			listeners.put(listener, bridge);
@@ -511,9 +515,12 @@ public class ServiceImpl implements Service {
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.Service#sendToOneClient(java.lang.String, byte[], fr.prima.omiscid.service.ServiceProxy, boolean)
 	 */
-	synchronized  public void sendToOneClient(String connectorName, byte[] msg, ServiceProxy serviceProxy,boolean unreliableButFastSend) throws UnknownConnector {
+    synchronized  public void sendToOneClient(String connectorName, byte[] msg, ServiceProxy serviceProxy,boolean unreliableButFastSend) throws UnknownConnector {
 		sendToOneClient(connectorName, msg, serviceProxy.getPeerId(),unreliableButFastSend) ;
 	}
+    synchronized  public void sendToOneClient(String connectorName, byte[] msg, ServiceProxy serviceProxy) throws UnknownConnector {
+        sendToOneClient(connectorName, msg, serviceProxy, false);
+    }
 
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.Service#removeConnectorListener(String, fr.prima.omiscid.connector.ConnectorListener)
@@ -538,7 +545,7 @@ public class ServiceImpl implements Service {
 	 */
 	synchronized  public ServiceProxy findService(OmiscidServiceFilter filter) {
 		OmiscidServiceFilter[] filters = {filter};
-	
+
 		return findServices(filters).get(filter);
 	}
 
@@ -549,18 +556,18 @@ public class ServiceImpl implements Service {
 		WaitForOmiscidServices waitForServices = new WaitForOmiscidServices(ctrlServer.getPeerId()) ;
 		HashMap<OmiscidServiceFilter, ServiceProxy> result = new HashMap<OmiscidServiceFilter, ServiceProxy>() ;
 		HashMap<Integer, OmiscidServiceFilter> tmpAssociation = new HashMap<Integer, OmiscidServiceFilter>() ;
-	
+
 		for (int i=0; i<filters.length; i++)
 			tmpAssociation.put(waitForServices.needService(".*", filters[i]), filters[i]) ;
-	
+
 		waitForServices.waitResolve() ;
-	
+
 		for (Integer serviceId : tmpAssociation.keySet())
 		{
 			OmiscidService bipService = waitForServices.getService(serviceId) ;
 			bipService.setServiceId(ctrlServer.getPeerId());
 			ServiceProxy proxy = new ServiceProxyImpl(bipService) ;
-	
+
 			result.put(tmpAssociation.get(serviceId), proxy) ;
 		}
 		//System.err.println("Service finding asked by " + this + " : " + result) ; //-trace
@@ -572,8 +579,8 @@ public class ServiceImpl implements Service {
 	 */
 	synchronized  public ServiceProxy findService(OmiscidServiceFilter filter, long timeout) {
 		OmiscidServiceFilter[] filters = {filter};
-		
-		return findServices(filters,timeout).get(filter);		
+
+		return findServices(filters,timeout).get(filter);
 	}
 
 	/* (non-Javadoc)
@@ -583,18 +590,18 @@ public class ServiceImpl implements Service {
 		WaitForOmiscidServices waitForServices = new WaitForOmiscidServices(ctrlServer.getPeerId()) ;
 		HashMap<OmiscidServiceFilter, ServiceProxy> result = new HashMap<OmiscidServiceFilter, ServiceProxy>() ;
 		HashMap<Integer, OmiscidServiceFilter> tmpAssociation = new HashMap<Integer, OmiscidServiceFilter>() ;
-	
+
 		for (int i=0; i<filters.length; i++)
 			tmpAssociation.put(waitForServices.needService(".*", filters[i]), filters[i]) ;
-	
+
 		waitForServices.waitResolve(timeout) ;
-	
+
 		for (Integer serviceId : tmpAssociation.keySet())
 		{
 			OmiscidService bipService = waitForServices.getService(serviceId) ;
 			bipService.setServiceId(ctrlServer.getPeerId());
 			ServiceProxy proxy = new ServiceProxyImpl(bipService) ;
-	
+
 			result.put(tmpAssociation.get(serviceId), proxy) ;
 		}
 		//System.err.println("Service finding asked by " + this + " : " + result) ; //-trace

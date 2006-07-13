@@ -1,7 +1,7 @@
 /**
- * Copyright (c) 2006 INRIA/Université Joseph Fourrier/Université Pierre Mendès-France.  
+ * Copyright (c) 2006 INRIA/Université Joseph Fourrier/Université Pierre Mendès-France.
  * O3MiSCID (aka OMiSCID) Software written by Sebastien Pesnel, Dominique
- * Vaufreydaz, Patrick Reigner, Remi Emonnet and Julien Letessier. 
+ * Vaufreydaz, Patrick Reigner, Remi Emonnet and Julien Letessier.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -16,7 +16,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
  * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
@@ -31,6 +31,7 @@ import java.util.Set;
 import fr.prima.omiscid.control.ControlClient;
 import fr.prima.omiscid.control.OmiscidService;
 import fr.prima.omiscid.control.VariableAttribute;
+import fr.prima.omiscid.control.interf.VariableAccessType;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.user.exception.UnknownVariable;
 import fr.prima.omiscid.user.service.ServiceProxy;
@@ -131,18 +132,24 @@ public class ServiceProxyImpl implements ServiceProxy {
 		controlClient.queryVariableModification(varName, value) ;
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.prima.omiscid.service.ServiceProxy#getVariableValue(java.lang.String)
-	 */
-	synchronized  public String getVariableValue(String varName) {
-		controlClient.findVariable(varName).getValueStr();
-		return null;
-	}
+    /* (non-Javadoc)
+     * @see fr.prima.omiscid.service.ServiceProxy#getVariableValue(java.lang.String)
+     */
+    synchronized  public String getVariableValue(String varName) {
+        return controlClient.findVariable(varName).getValueStr();
+    }
+
+    /* (non-Javadoc)
+     * @see fr.prima.omiscid.service.ServiceProxy#getVariableValue(java.lang.String)
+     */
+    synchronized  public VariableAccessType getVariableAccessType(String varName) {
+        return controlClient.findVariable(varName).getAccess();
+    }
 
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.ServiceProxy#addRemoteVariableChangeListener(String, fr.prima.omiscid.variable.RemoteVariableChangeListener)
 	 */
-	synchronized  public void addRemoteVariableChangeListener(String varName, final RemoteVariableChangeListener remoteVariableChangeListener) 
+	synchronized  public void addRemoteVariableChangeListener(String varName, final RemoteVariableChangeListener remoteVariableChangeListener)
                     	throws UnknownVariable
      {
 		VariableAttribute varAttr = controlClient.findVariable(varName);
@@ -152,7 +159,7 @@ public class ServiceProxyImpl implements ServiceProxy {
 			throw new UnknownVariable("Unknown variable : "  + varName);
 		}
 
-		HashMap<RemoteVariableChangeListener, VariableChangeListener> listeners = 
+		HashMap<RemoteVariableChangeListener, VariableChangeListener> listeners =
 			remoteVariableListeners.get(varName);
 		if (listeners == null)
 			// we have not registered listeners for this variable yet
@@ -161,20 +168,20 @@ public class ServiceProxyImpl implements ServiceProxy {
 			remoteVariableListeners.put(varName, listeners);
 		}
 
-		VariableChangeListener variableChangeListener = new VariableChangeListener() 
+		VariableChangeListener variableChangeListener = new VariableChangeListener()
 		{
 			public void variableChanged(VariableAttribute var) {
 				remoteVariableChangeListener.variableChanged(ServiceProxyImpl.this, var.generateValueMessage());
 			}
 		} ;
-		
+
 		listeners.put(remoteVariableChangeListener, variableChangeListener);
 	}
 
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.ServiceProxy#removeRemoteVariableChangeListener(String, fr.prima.omiscid.variable.RemoteVariableChangeListener)
 	 */
-	synchronized  public void removeRemoteVariableChangeListener(String varName, 
+	synchronized  public void removeRemoteVariableChangeListener(String varName,
 										RemoteVariableChangeListener remoteVariableChangeListener)
 				throws UnknownVariable
 	{
@@ -184,10 +191,10 @@ public class ServiceProxyImpl implements ServiceProxy {
 		{
 			throw new UnknownVariable("Unknown variable : "  + varName);
 		}
-		
-		HashMap<RemoteVariableChangeListener, VariableChangeListener> listeners = 
+
+		HashMap<RemoteVariableChangeListener, VariableChangeListener> listeners =
 			remoteVariableListeners.get(varName);
-		
+
 		if (listeners != null)
 		{
 			VariableChangeListener varListener = listeners.get(remoteVariableChangeListener);

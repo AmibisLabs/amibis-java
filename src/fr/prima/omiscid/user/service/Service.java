@@ -1,7 +1,7 @@
 /**
- * Copyright (c) 2006 INRIA/Université Joseph Fourrier/Université Pierre Mendès-France.  
+ * Copyright (c) 2006 INRIA/Université Joseph Fourrier/Université Pierre Mendès-France.
  * O3MiSCID (aka OMiSCID) Software written by Sebastien Pesnel, Dominique
- * Vaufreydaz, Patrick Reigner, Remi Emonnet and Julien Letessier. 
+ * Vaufreydaz, Patrick Reigner, Remi Emonnet and Julien Letessier.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -16,7 +16,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
  * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
@@ -30,6 +30,7 @@ import java.util.HashMap;
 
 import fr.prima.omiscid.control.filter.OmiscidServiceFilter;
 import fr.prima.omiscid.control.interf.ConnectorType;
+import fr.prima.omiscid.control.interf.VariableAccessType;
 import fr.prima.omiscid.user.connector.ConnectorListener;
 import fr.prima.omiscid.user.exception.ConnectorAlreadyExisting;
 import fr.prima.omiscid.user.exception.IncorrectConnectorType;
@@ -41,7 +42,7 @@ import fr.prima.omiscid.user.variable.LocalVariableListener;
 
 /**
  * @author Patrick Reignier (UJF/Gravir)
- * 
+ *
  */
 public interface Service {
 
@@ -80,20 +81,35 @@ public interface Service {
 	public void stop() ;
 
 
-	/**
-	 * Sends a message to a particular client. This client is identified by its Peer id (pid).
-	 * This method is usually used to answer a request coming from another service that
-	 * has requested a connexion with us. We know this service from its pid inside its request message. We
-	 * do not have a bipServiceProxy for it because we have not found this service to initiate the connexion.
-	 * @param connectorName the name of the connector that will send the message
-	 * @param msg the message to send
-	 * @param pid peer id : the identification of the client that must receive the message
-	 * @param unreliableButFastSend not implemented yet
-	 * @throws UnknownConnector thrown if the service has not declared this connector
-	 * @see Service#sendToOneClient(String, byte[], ServiceProxy)
-	 */
-	public void sendToOneClient(String connectorName, byte[] msg, int pid, boolean unreliableButFastSend)
-	           throws UnknownConnector;
+    /**
+     * Sends a message to a particular client. This client is identified by its Peer id (pid).
+     * This method is usually used to answer a request coming from another service that
+     * has requested a connexion with us. We know this service from its pid inside its request message. We
+     * do not have a bipServiceProxy for it because we have not found this service to initiate the connexion.
+     * @param connectorName the name of the connector that will send the message
+     * @param msg the message to send
+     * @param pid peer id : the identification of the client that must receive the message
+     * @param unreliableButFastSend not implemented yet
+     * @throws UnknownConnector thrown if the service has not declared this connector
+     * @see Service#sendToOneClient(String, byte[], ServiceProxy)
+     */
+    public void sendToOneClient(String connectorName, byte[] msg, int pid, boolean unreliableButFastSend)
+    throws UnknownConnector;
+
+    /**
+     * Sends a message to a particular client. This client is identified by its Peer id (pid).
+     * This method is usually used to answer a request coming from another service that
+     * has requested a connexion with us. We know this service from its pid inside its request message. We
+     * do not have a bipServiceProxy for it because we have not found this service to initiate the connexion.
+     * Defaults to reliable send.
+     * @param connectorName the name of the connector that will send the message
+     * @param msg the message to send
+     * @param pid peer id : the identification of the client that must receive the message
+     * @throws UnknownConnector thrown if the service has not declared this connector
+     * @see Service#sendToOneClient(String, byte[], ServiceProxy)
+     */
+    public void sendToOneClient(String connectorName, byte[] msg, int pid)
+    throws UnknownConnector;
 
 	/**
 	 * Sends a message to a particular client. This client is identified by ServiceProxy because
@@ -101,16 +117,28 @@ public interface Service {
 	 * @param connectorName the name of the connector that will send the message
 	 * @param msg the message to send
 	 * @param serviceProxy : the proxy of the remote service
-	 * @param unreliableButFastSend not implemented yet 
+	 * @param unreliableButFastSend not implemented yet
 	 * @throws UnknownConnector thrown if the service has not declared this connector
 	 * @see Service#sendToOneClient(String, byte[], int)
 	 */
 	public void sendToOneClient(String connectorName, byte[] msg, ServiceProxy serviceProxy, boolean unreliableButFastSend)
 	           throws UnknownConnector;
 
+    /**
+     * Sends a message to a particular client. This client is identified by ServiceProxy because
+     * we have been looking for it to create the connexion.
+     * Defaults to reliable send.
+     * @param connectorName the name of the connector that will send the message
+     * @param msg the message to send
+     * @param serviceProxy : the proxy of the remote service
+     * @throws UnknownConnector thrown if the service has not declared this connector
+     * @see Service#sendToOneClient(String, byte[], int)
+     */
+    public void sendToOneClient(String connectorName, byte[] msg, ServiceProxy serviceProxy)
+               throws UnknownConnector;
 
 	/**
-	 * Sends a message to all the clients connected to the service I
+	 * Sends a message to all the clients connected to the service.
 	 * @param connectorName the name of the connector sending the message
 	 * @param msg the message to send
 	 * @param unreliableButFastSend not implemented yet
@@ -119,6 +147,17 @@ public interface Service {
 	 */
 	public void sendToAllClients(String connectorName, byte[] msg, boolean unreliableButFastSend)
 				throws UnknownConnector;
+
+    /**
+     * Sends a message to all the clients connected to the service.
+     * Defaults to reliable send.
+     * @param connectorName the name of the connector sending the message
+     * @param msg the message to send
+     * @throws UnknownBipService thrown if serviceId is not a declared service
+     * @throws UnknownConnector thrown if the service has not declared this connector
+     */
+    public void sendToAllClients(String connectorName, byte[] msg)
+                throws UnknownConnector;
 
 	/**
 	 * Sets the value of a service variable
@@ -148,9 +187,9 @@ public interface Service {
 	 * @param accessType the access type of the variable
 	 * @throws VariableAlreadyExisting thrown if a variable with the same name has already been declated.
 	 * @throws ServiceRunning It is not possible to add a new connector if the service is already running. You have to stop it before.
-	 * 
+	 *
 	 */
-	public void addVariable(String varName, String type, String description, String accessType)
+	public void addVariable(String varName, String type, String description, VariableAccessType accessType)
 			throws VariableAlreadyExisting, ServiceRunning ;
 
 	/**
@@ -250,7 +289,7 @@ public interface Service {
 	 * @see ServiceProxy
 	 */
 	public HashMap<OmiscidServiceFilter, ServiceProxy> findServices(OmiscidServiceFilter[] filters) ;
-	
+
 	/**
 	 * Finds a service on the network. The research is based on the service names (as registered in DNS_SD)
 	 * @param filter the filter that specifies the service that we search.
