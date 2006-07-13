@@ -2,11 +2,10 @@
  * Created on 2006 uzt 13
  *
  */
-package fr.prima.omiscid.control.filter;
+package fr.prima.omiscid.user.service;
 
 import java.util.Vector;
 
-import fr.prima.omiscid.control.OmiscidService;
 
 public final class ServiceFilters {
 
@@ -25,7 +24,7 @@ public final class ServiceFilters {
         }
         public synchronized boolean acceptService(ServiceProxy serviceProxy) {
             for (ServiceFilter filter : filters) {
-                if (filter.isAGoodService(s) != isAnd) {
+                if (filter.acceptService(serviceProxy) != isAnd) {
                     return !isAnd;
                 }
             }
