@@ -444,15 +444,17 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      *            modify
      */
     protected void variableModificationQuery(String newValue, VariableAttribute va) {
-        boolean doModification = true;
-        for (VariableChangeQueryListener listener : variableChangeQueryListeners) {
-            if (! listener.isAccepted(va, newValue)) {
-                doModification = false;
-                break;
-            }
-        }
+        boolean doModification = va.canBeModified() && (newValue == null || !newValue.equals(va.getValueStr()));
         if (doModification) {
-            va.setValueStr(newValue);
+            for (VariableChangeQueryListener listener : variableChangeQueryListeners) {
+                if (! listener.isAccepted(va, newValue)) {
+                    doModification = false;
+                    break;
+                }
+            }
+            if (doModification) {
+                va.setValueStr(newValue);
+            }
         }
     }
 
