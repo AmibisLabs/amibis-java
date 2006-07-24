@@ -51,6 +51,7 @@ import fr.prima.omiscid.user.exception.ServiceRunning;
 import fr.prima.omiscid.user.exception.UnknownConnector;
 import fr.prima.omiscid.user.exception.UnknownVariable;
 import fr.prima.omiscid.user.exception.VariableAlreadyExisting;
+import fr.prima.omiscid.user.exception.WrongVariableAccessType;
 import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.variable.LocalVariableListener;
@@ -362,9 +363,13 @@ public class ServiceImpl implements Service {
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.Service#setVariableValue(java.lang.String, java.lang.String)
 	 */
-	synchronized  public void setVariableValue(String varName, String varValue) throws UnknownVariable {
+	synchronized  public void setVariableValue(String varName, String varValue) throws UnknownVariable, WrongVariableAccessType {
 		VariableAttribute var = getVariableAttribut(varName) ;
-		var.setValueStr(varValue) ;
+        if (var.getAccess() == VariableAccessType.CONSTANT && this.started) {
+            throw new WrongVariableAccessType("Variable ("+varName+") is constant and cannot be modified when service is started");
+        } else {
+            var.setValueStr(varValue) ;
+        }
 	}
 
 	/* (non-Javadoc)

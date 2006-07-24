@@ -38,6 +38,7 @@ import fr.prima.omiscid.user.exception.ServiceRunning;
 import fr.prima.omiscid.user.exception.UnknownConnector;
 import fr.prima.omiscid.user.exception.UnknownVariable;
 import fr.prima.omiscid.user.exception.VariableAlreadyExisting;
+import fr.prima.omiscid.user.exception.WrongVariableAccessType;
 import fr.prima.omiscid.user.variable.LocalVariableListener;
 
 /**
@@ -167,7 +168,7 @@ public interface Service {
 	 * @see Service#addVariable
 	 */
 	public void setVariableValue(String varName, String varValue)
-				throws UnknownVariable ;
+				throws UnknownVariable, WrongVariableAccessType ;
 
 	/**
 	 * Returns the variable value
