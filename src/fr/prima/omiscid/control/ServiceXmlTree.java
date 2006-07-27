@@ -257,7 +257,7 @@ public class ServiceXmlTree implements ServiceEventListener {
                     VariableAttribute va = it.next();
                     if (va.getName().equals("genealogy")) {
                         genealogy = va.getValueStr();
-                    } else if (va.getType().equals("xml") && va.getValueStr() != null) {
+                    } else if (va.getType()!=null && va.getType().equals("xml") && va.getValueStr() != null) {
                         try {
                             Element eltVar = doc.createElement(va.getName());
                             if (!va.getValueStr().equals("")) {
