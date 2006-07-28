@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www-prima.inrialpes.fr/schemas/omiscid/service.xsd" xmlns:omiscid="http://www-prima.inrialpes.fr/schemas/omiscid/service.xsd">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www-prima.inrialpes.fr/schemas/omiscid/service.xsd" xmlns:omiscid="http://www-prima.inrialpes.fr/schemas/omiscid/service.xsd">
 
 	<element name="service">
 		<complexType>
@@ -17,14 +17,14 @@
 
 	<element name="variable">
 		<complexType>
-			<xs:all>
-				<xs:element name="description" type="string" minOccurs="0" />
-				<xs:element name="formatDescription" type="string" minOccurs="0" />
-				<xs:element name="value" type="string" minOccurs="0" />
-				<xs:element name="default" type="string" minOccurs="0" />
-				<xs:element name="type" type="string" minOccurs="0" />
-				<xs:element name="access" type="omiscid:accessType" minOccurs="1" maxOccurs="1"/>
-			</xs:all>
+			<all>
+				<element name="description" type="string" minOccurs="0" />
+				<element name="formatDescription" type="string" minOccurs="0" />
+				<element name="value" type="string" minOccurs="0" />
+				<element name="default" type="string" minOccurs="0" />
+				<element name="type" type="string" minOccurs="0" />
+				<element name="access" type="omiscid:accessType" minOccurs="1" maxOccurs="1"/>
+			</all>
 			<attribute name="name" type="string" use="required"></attribute>
 		</complexType>
 	</element>
@@ -38,12 +38,12 @@
 	</simpleType>
 
 	<complexType name="connectorType">
-		<xs:all>
-			<xs:element name="description" type="string" minOccurs="0" />
-			<xs:element name="formatDescription" type="string" minOccurs="0" />
-			<xs:element name="schemaURL" type="string" minOccurs="0" />
-			<xs:element name="messageExample" type="string" minOccurs="0" />
-		</xs:all>
+		<all>
+			<element name="description" type="string" minOccurs="0" />
+			<element name="formatDescription" type="string" minOccurs="0" />
+			<element name="schemaURL" type="string" minOccurs="0" />
+			<element name="messageExample" type="string" minOccurs="0" />
+		</all>
 		<attribute name="name" type="string" use="required"></attribute>
 	</complexType>
 
