@@ -263,7 +263,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
         Set<Integer> unreachablePeers = new java.util.HashSet<Integer>();
         ControlEvent controlEvent = new ControlEvent();
-        controlEvent.setId(BipUtils.intTo8HexString(getPeerId()));
+//        controlEvent.setId(BipUtils.intTo8HexString(getPeerId()));
         fr.prima.omiscid.control.message.answer.Variable variable = new fr.prima.omiscid.control.message.answer.Variable();
         variable.setValue(variableAttribute.getValueStr());
         variable.setName(variableAttribute.getName());

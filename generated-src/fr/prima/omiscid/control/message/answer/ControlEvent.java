@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0M2</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -34,11 +34,6 @@ public class ControlEvent implements java.io.Serializable {
     //--------------------------/
 
     /**
-     * Field _id
-     */
-    private java.lang.String _id;
-
-    /**
      * Field _variable
      */
     private fr.prima.omiscid.control.message.answer.Variable _variable;
@@ -57,17 +52,6 @@ public class ControlEvent implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
-
-    /**
-     * Returns the value of field 'id'.
-     * 
-     * @return String
-     * @return the value of field 'id'.
-     */
-    public java.lang.String getId()
-    {
-        return this._id;
-    } //-- java.lang.String getId() 
 
     /**
      * Returns the value of field 'variable'.
@@ -125,16 +109,6 @@ public class ControlEvent implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
-     * Sets the value of field 'id'.
-     * 
-     * @param id the value of field 'id'.
-     */
-    public void setId(java.lang.String id)
-    {
-        this._id = id;
-    } //-- void setId(java.lang.String) 
 
     /**
      * Sets the value of field 'variable'.

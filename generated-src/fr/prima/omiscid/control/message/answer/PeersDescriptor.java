@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0M2</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -27,6 +27,11 @@ public class PeersDescriptor extends PeersTypeDescriptor {
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
+
+    /**
+     * Field elementDefinition
+     */
+    private boolean elementDefinition;
 
     /**
      * Field nsPrefix
@@ -58,6 +63,7 @@ public class PeersDescriptor extends PeersTypeDescriptor {
         super();
         setExtendsWithoutFlatten(new PeersTypeDescriptor());
         xmlName = "peers";
+        elementDefinition = true;
     } //-- fr.prima.omiscid.control.message.answer.PeersDescriptor()
 
 
@@ -162,5 +168,17 @@ public class PeersDescriptor extends PeersTypeDescriptor {
     {
         return xmlName;
     } //-- java.lang.String getXMLName() 
+
+    /**
+     * Method isElementDefinition
+     * 
+     * 
+     * 
+     * @return boolean
+     */
+    public boolean isElementDefinition()
+    {
+        return elementDefinition;
+    } //-- boolean isElementDefinition() 
 
 }

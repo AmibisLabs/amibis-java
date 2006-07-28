@@ -90,7 +90,6 @@
       <xs:all>
         <xs:element name="variable" type="CA_VariableType" minOccurs="0"/>
       </xs:all>
-      <xs:attribute name="id" type="IDType" use="required" />
     </xs:complexType>
   </xs:element>
 

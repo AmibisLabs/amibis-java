@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0M2</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -112,8 +112,8 @@ public class ControlAnswer implements java.io.Serializable {
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _items.size())) {
-            throw new IndexOutOfBoundsException("getControlAnswerItem: Index value '"+index+"' not in range [0.."+_items.size()+ "]");
+        if ((index < 0) || (index >= _items.size())) {
+            throw new IndexOutOfBoundsException("getControlAnswerItem: Index value '"+index+"' not in range [0.."+(_items.size() - 1) + "]");
         }
         
         return (fr.prima.omiscid.control.message.answer.ControlAnswerItem) _items.elementAt(index);
@@ -241,8 +241,8 @@ public class ControlAnswer implements java.io.Serializable {
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _items.size())) {
-            throw new IndexOutOfBoundsException("setControlAnswerItem: Index value '"+index+"' not in range [0.."+_items.size()+ "]");
+        if ((index < 0) || (index >= _items.size())) {
+            throw new IndexOutOfBoundsException("setControlAnswerItem: Index value '"+index+"' not in range [0.." + (_items.size() - 1) + "]");
         }
         _items.setElementAt(vControlAnswerItem, index);
     } //-- void setControlAnswerItem(int, fr.prima.omiscid.control.message.answer.ControlAnswerItem) 
