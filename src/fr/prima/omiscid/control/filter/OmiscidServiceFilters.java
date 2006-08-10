@@ -8,6 +8,7 @@ import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.control.OmiscidService;
 import fr.prima.omiscid.control.interf.ConnectorType;
 import fr.prima.omiscid.control.interf.VariableAccessType;
+import fr.prima.omiscid.user.service.ServiceProxy;
 
 /**
  * Utility class. Provides some {@link OmiscidServiceFilter} creators for
@@ -123,7 +124,16 @@ public final class OmiscidServiceFilters {
         public boolean isAGoodService(OmiscidService s) {
             return value;
         }
+    }
 
+    private static final class Not implements OmiscidServiceFilter {
+        private OmiscidServiceFilter baseFilter;
+        public Not(OmiscidServiceFilter baseFilter) {
+            this.baseFilter = baseFilter;
+        }
+        public boolean isAGoodService(OmiscidService s) {
+            return ! baseFilter.isAGoodService(s);
+        }
     }
 
 //    /**
@@ -203,6 +213,12 @@ public final class OmiscidServiceFilters {
         return new Connector(connectorName, null);
     }
 
+    public static OmiscidServiceFilter not(OmiscidServiceFilter filter) {
+        return new Not(filter);
+    }
+    public static OmiscidServiceFilter not(ServiceProxy proxy) {
+        return not(peerIdIs(proxy.getPeerId()));
+    }
     public static OmiscidServiceFilter yes() {
         return new Boolean(true);
     }

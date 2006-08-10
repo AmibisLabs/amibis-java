@@ -13,7 +13,7 @@ public interface Message {
 
     /**
      * Accesses the data buffer interpreted as a string.
-     * 
+     *
      * @return a string built on the data buffer
      * @throws BipMessageInterpretationException
      */
@@ -21,14 +21,14 @@ public interface Message {
 
     /**
      * Same as {@link #getBufferAsString()} but silently catches exceptions.
-     * 
+     *
      * @return null or what {@link #getBufferAsString()} would return
      */
     String getBufferAsStringUnchecked();
 
     /**
      * Accesses the data buffer interpreted as an xml document.
-     * 
+     *
      * @return a DOM element built from the data buffer
      * @throws BipMessageInterpretationException
      */
@@ -36,7 +36,7 @@ public interface Message {
 
     /**
      * Same as {@link #getBufferAsXML()} but silently catches exceptions.
-     * 
+     *
      * @return null or what {@link #getBufferAsXML()} would return
      */
     Element getBufferAsXMLUnchecked();
@@ -48,28 +48,28 @@ public interface Message {
      * example, if you get are in a {@link BipMessageListener} and want to keep
      * the content of the message buffer for further use, you must make a copy
      * of it.
-     * 
+     *
      * @return the data buffer
      */
     byte[] getBuffer();
 
     /**
      * Accesses the id of the source of this messages.
-     * 
+     *
      * @return an integer to identify the source of this message
      */
     int getPeerId();
 
     /**
      * Accesses the message id.
-     * 
+     *
      * @return the message number
      */
     int getMessageId();
 
     /**
      * Builds a string with pid, mid and message length (mainly use for test)
-     * 
+     *
      * @return "Message from "+pid+" "+mid+" "+buffer.length
      */
     String toString();
