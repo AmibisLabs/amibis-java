@@ -13,12 +13,9 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.w3c.dom.Element;
 
-import fr.prima.omiscid.com.BipMessageInterpretationException;
-import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.TcpClient;
 import fr.prima.omiscid.com.XmlMessage;
 import fr.prima.omiscid.com.interf.BipMessageListener;
-import fr.prima.omiscid.com.interf.Message;
 import fr.prima.omiscid.control.interf.GlobalConstants;
 import fr.prima.omiscid.control.message.answer.ControlAnswer;
 import fr.prima.omiscid.control.message.answer.ControlAnswerItem;
@@ -34,6 +31,9 @@ import fr.prima.omiscid.control.message.query.Subscribe;
 import fr.prima.omiscid.control.message.query.Unlock;
 import fr.prima.omiscid.control.message.query.Unsubscribe;
 import fr.prima.omiscid.control.message.query.Variable;
+import fr.prima.omiscid.user.connector.Message;
+import fr.prima.omiscid.user.exception.MessageInterpretationException;
+import fr.prima.omiscid.user.util.Utility;
 
 /**
  * Handles the communication with the control server of a OMiSCID service.
@@ -214,7 +214,7 @@ public class ControlClient implements BipMessageListener {
                         for (ControlEventListener listener : controlEventListenersSet) {
                             try {
                                 listener.receivedControlEvent(new XmlMessage(message));
-                            } catch (BipMessageInterpretationException e) {
+                            } catch (MessageInterpretationException e) {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
                             }
@@ -743,7 +743,7 @@ public class ControlClient implements BipMessageListener {
         try {
             ControlAnswer controlAnswer = queryToServer(controlQuery, true);
             if (controlAnswer != null) {
-                int peer = BipUtils.hexStringToInt(controlAnswer.getControlAnswerItem(0).getLock().getPeer());
+                int peer = Utility.hexStringToInt(controlAnswer.getControlAnswerItem(0).getLock().getPeer());
                 VariableAttribute vattr = findVariable("lock");
                 if (vattr != null) {
                     vattr.setValueStr(Integer.toString(peer));
@@ -799,7 +799,7 @@ public class ControlClient implements BipMessageListener {
         try {
             ControlAnswer controlAnswer = queryToServer(controlQuery, true);
             if (controlAnswer != null) {
-                int peer = BipUtils.hexStringToInt(controlAnswer.getControlAnswerItem(0).getUnlock().getPeer());
+                int peer = Utility.hexStringToInt(controlAnswer.getControlAnswerItem(0).getUnlock().getPeer());
 
                 VariableAttribute vattr = findVariable("lock");
                 if (vattr != null) {
@@ -889,7 +889,7 @@ public class ControlClient implements BipMessageListener {
         synchronized (answerEvent) {
             if (isConnected()) {
                 int theMsgId = messageId++;
-                String strMessageId = BipUtils.intTo8HexString(theMsgId);
+                String strMessageId = Utility.intTo8HexString(theMsgId);
                 controlQuery.setId(strMessageId);
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 controlQuery.marshal(new OutputStreamWriter(byteArrayOutputStream));

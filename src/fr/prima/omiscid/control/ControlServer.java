@@ -16,10 +16,7 @@ import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.CommunicationServer;
 import fr.prima.omiscid.com.MessageManager;
 import fr.prima.omiscid.com.TcpServer;
-import fr.prima.omiscid.com.interf.Message;
-import fr.prima.omiscid.control.interf.ConnectorType;
 import fr.prima.omiscid.control.interf.GlobalConstants;
-import fr.prima.omiscid.control.interf.VariableAccessType;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.control.interf.VariableChangeQueryListener;
 import fr.prima.omiscid.control.message.answer.ControlAnswer;
@@ -38,6 +35,10 @@ import fr.prima.omiscid.control.message.query.Unlock;
 import fr.prima.omiscid.control.message.query.Unsubscribe;
 import fr.prima.omiscid.control.message.query.Variable;
 import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
+import fr.prima.omiscid.user.connector.ConnectorType;
+import fr.prima.omiscid.user.connector.Message;
+import fr.prima.omiscid.user.util.Utility;
+import fr.prima.omiscid.user.variable.VariableAccessType;
 
 /**
  * Represents a "local" OmiscidService. To access remote service, use the
@@ -164,7 +165,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         lockIntegerVar = new IntVariableAttribute(lockVar, 0);
 
         VariableAttribute peerIdVariable = addVariable(GlobalConstants.constantNameForPeerId);
-        peerIdVariable.setValueStr(BipUtils.intTo8HexString(peerId));
+        peerIdVariable.setValueStr(Utility.intTo8HexString(peerId));
         peerIdVariable.setAccessType(VariableAccessType.CONSTANT);
 
         VariableAttribute ownerVariable = addVariable(GlobalConstants.constantNameForOwner);
@@ -528,7 +529,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             controlAnswer.marshal(new OutputStreamWriter(byteArrayOutputStream));
             if (!tcpServer.sendToOneClient(byteArrayOutputStream.toByteArray(), message.getPeerId())) {
-                System.err.println("Warning: ControlServer: Send failed: peer not found : " + BipUtils.intTo8HexString(message.getPeerId()));
+                System.err.println("Warning: ControlServer: Send failed: peer not found : " + Utility.intTo8HexString(message.getPeerId()));
             }
         } catch (MarshalException e) {
             // TODO Auto-generated catch block
@@ -666,7 +667,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         } else {
             lock.setResult(CA_LockResultType.FAILED);
         }
-        lock.setPeer(BipUtils.intTo8HexString(lockIntegerVar.getIntValue()));
+        lock.setPeer(Utility.intTo8HexString(lockIntegerVar.getIntValue()));
         controlAnswerItem.setLock(lock);
         return controlAnswerItem;
     }
@@ -680,7 +681,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         } else {
             unlock.setResult(CA_LockResultType.FAILED);
         }
-        unlock.setPeer(BipUtils.intTo8HexString(lockIntegerVar.getIntValue()));
+        unlock.setPeer(Utility.intTo8HexString(lockIntegerVar.getIntValue()));
         controlAnswerItem.setUnlock(unlock);
         return controlAnswerItem;
     }

@@ -5,11 +5,12 @@ import java.io.IOException;
 import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.TcpClient;
 import fr.prima.omiscid.com.interf.BipMessageListener;
-import fr.prima.omiscid.control.interf.ConnectorType;
 import fr.prima.omiscid.control.interf.GlobalConstants;
-import fr.prima.omiscid.control.interf.VariableAccessType;
 import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.dnssd.interf.ServiceInformation;
+import fr.prima.omiscid.user.connector.ConnectorType;
+import fr.prima.omiscid.user.util.Utility;
+import fr.prima.omiscid.user.variable.VariableAccessType;
 
 /**
  * Encapsulates the data about a <b>remote</b> service. Service instantiation is done by
@@ -99,7 +100,11 @@ public class OmiscidService {
      */
     public void setServiceId(int peerId) {
         if (this.peerId != 0) {
-            System.err.println("Warning: peer id already set in OmiscidService (was " + BipUtils.intTo8HexString(this.peerId) + "), setting anyway");
+            if (this.peerId != peerId) {
+                System.err.println("Warning: peer id already set in OmiscidService (was " + Utility.intTo8HexString(this.peerId) + "), setting anyway (to "+Utility.intTo8HexString(peerId)+")");
+            } else {
+                System.err.println("Warning: useless setting of OmiscidService to the same value (" + Utility.intTo8HexString(this.peerId) + ")");
+            }
         }
         this.peerId = peerId;
     }
@@ -120,9 +125,9 @@ public class OmiscidService {
      * @return the owner name, or "" if the owner property is not defined
      */
     public String getOwner() {
-        String str = serviceInformation.getStringProperty("owner");
+        String str = serviceInformation.getStringProperty(GlobalConstants.constantNameForOwner);
         if (str != null) {
-            return str.replaceFirst(GlobalConstants.prefixForConstantInDnssd, "");
+            return VariableAccessType.realValueFromDnssdValue(str);
         } else {
             // should do as getRemotePeerId does
             return "";
@@ -138,12 +143,15 @@ public class OmiscidService {
     public int getRemotePeerId() {
         String str = serviceInformation.getStringProperty(GlobalConstants.constantNameForPeerId);
         if (str != null) {
-            return BipUtils.hexStringToInt(str.replaceFirst(GlobalConstants.prefixForConstantInDnssd, ""));
+            return Utility.hexStringToInt(VariableAccessType.realValueFromDnssdValue(str));
         } else {
             ControlClient ctrlClient = initControlClient();
-            int pid = ctrlClient.getPeerId();
-            closeControlClient();
-            return pid;
+            if (ctrlClient != null) {
+                int pid = ctrlClient.getPeerId();
+                closeControlClient();
+                return pid;
+            }
+            return 0;
         }
     }
 

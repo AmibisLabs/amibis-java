@@ -1,17 +1,19 @@
-package fr.prima.omiscid.control.interf;
+package fr.prima.omiscid.user.variable;
+
+import fr.prima.omiscid.user.util.Constants;
 
 public enum VariableAccessType {
     CONSTANT(
-            GlobalConstants.variableAccessTypeConstant,
-            GlobalConstants.prefixForConstantInDnssd
+            Constants.variableAccessTypeConstant,
+            Constants.prefixForConstantInDnssd
             ),
     READ(
-            GlobalConstants.variableAccessTypeRead,
-            GlobalConstants.prefixForReadOnlyVariableInDnssd
+            Constants.variableAccessTypeRead,
+            Constants.prefixForReadOnlyVariableInDnssd
             ),
     READ_WRITE(
-            GlobalConstants.variableAccessTypeReadWrite,
-            GlobalConstants.prefixForReadWriteVariableInDnssd);
+            Constants.variableAccessTypeReadWrite,
+            Constants.prefixForReadWriteVariableInDnssd);
 
     private String stringDescription;
     private String prefixInDnssd;

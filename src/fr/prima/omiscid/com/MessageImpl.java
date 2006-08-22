@@ -8,7 +8,9 @@ package fr.prima.omiscid.com;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import fr.prima.omiscid.com.interf.Message;
+import fr.prima.omiscid.user.connector.Message;
+import fr.prima.omiscid.user.exception.MessageInterpretationException;
+import fr.prima.omiscid.user.util.Utility;
 
 /**
  * Contains the data about a BIP Message.
@@ -57,10 +59,10 @@ public class MessageImpl implements Message {
      *
      * @see fr.prima.omiscid.com.Message#getBufferAsString()
      */
-    public String getBufferAsString() throws BipMessageInterpretationException {
-        String res = BipUtils.byteArrayToString(buffer);
+    public String getBufferAsString() throws MessageInterpretationException {
+        String res = Utility.byteArrayToString(buffer);
         if (res == null) {
-            throw new BipMessageInterpretationException(null);
+            throw new MessageInterpretationException(null);
         } else {
             return res;
         }
@@ -69,23 +71,23 @@ public class MessageImpl implements Message {
     public String getBufferAsStringUnchecked() {
         try {
             return getBufferAsString();
-        } catch (BipMessageInterpretationException e) {
+        } catch (MessageInterpretationException e) {
             return null;
         }
     }
 
-    public Element getBufferAsXML() throws BipMessageInterpretationException {
+    public Element getBufferAsXML() throws MessageInterpretationException {
         try {
-            return BipUtils.byteArrayToDomElement(buffer);
+            return Utility.Xml.byteArrayToDomElement(buffer);
         } catch (SAXException e) {
-            throw new BipMessageInterpretationException(e);
+            throw new MessageInterpretationException(e);
         }
     }
 
     public Element getBufferAsXMLUnchecked() {
         try {
             return getBufferAsXML();
-        } catch (BipMessageInterpretationException e) {
+        } catch (MessageInterpretationException e) {
             return null;
         }
     }

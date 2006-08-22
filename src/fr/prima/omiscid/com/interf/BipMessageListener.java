@@ -3,6 +3,8 @@ package fr.prima.omiscid.com.interf;
 
 import java.util.EventListener;
 
+import fr.prima.omiscid.user.connector.Message;
+
 /**
  * Defines the listener interface for Basic Interconnection Protocol (BIP)
  * messages. This interface must be implemented in order to receive

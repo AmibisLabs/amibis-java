@@ -18,10 +18,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import fr.prima.omiscid.com.BipUtils;
-import fr.prima.omiscid.control.interf.ConnectorType;
 import fr.prima.omiscid.dnssd.interf.ServiceEvent;
 import fr.prima.omiscid.dnssd.interf.ServiceEventListener;
+import fr.prima.omiscid.user.connector.ConnectorType;
+import fr.prima.omiscid.user.util.Utility;
 
 public class ServiceXmlTree implements ServiceEventListener {
 
@@ -298,7 +298,7 @@ public class ServiceXmlTree implements ServiceEventListener {
                 try {
                     Document tmpDoc;
                     synchronized (docBuilder) {
-                        tmpDoc = docBuilder.parse(new ByteArrayInputStream(BipUtils.stringToByteArray(str)));
+                        tmpDoc = docBuilder.parse(new ByteArrayInputStream(Utility.stringToByteArray(str)));
                     }
                     Node n = doc.importNode(tmpDoc.getDocumentElement(), true);
                     ioElt.appendChild(n);

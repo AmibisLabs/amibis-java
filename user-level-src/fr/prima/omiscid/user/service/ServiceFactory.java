@@ -27,7 +27,7 @@ package fr.prima.omiscid.user.service;
 
 import java.io.InputStream;
 
-import fr.prima.omiscid.control.interf.ConnectorType;
+import fr.prima.omiscid.user.connector.ConnectorType;
 import fr.prima.omiscid.user.exception.InvalidDescriptionException;
 
 

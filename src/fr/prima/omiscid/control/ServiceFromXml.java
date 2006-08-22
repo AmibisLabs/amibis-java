@@ -9,7 +9,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
 import fr.prima.omiscid.com.TcpClientServer;
-import fr.prima.omiscid.control.interf.ConnectorType;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.control.interf.VariableChangeQueryListener;
 import fr.prima.omiscid.control.message.servicexml.Inoutput;
@@ -18,6 +17,7 @@ import fr.prima.omiscid.control.message.servicexml.Output;
 import fr.prima.omiscid.control.message.servicexml.Service;
 import fr.prima.omiscid.control.message.servicexml.ServiceItem;
 import fr.prima.omiscid.control.message.servicexml.Variable;
+import fr.prima.omiscid.user.connector.ConnectorType;
 
 public class ServiceFromXml extends ControlServer {
 

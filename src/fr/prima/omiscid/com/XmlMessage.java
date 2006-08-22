@@ -2,7 +2,8 @@ package fr.prima.omiscid.com;
 
 import org.w3c.dom.Element;
 
-import fr.prima.omiscid.com.interf.Message;
+import fr.prima.omiscid.user.connector.Message;
+import fr.prima.omiscid.user.exception.MessageInterpretationException;
 
 /**
  * Encapsulates a BIP message interpreted as XML DOM document. Stores the
@@ -17,7 +18,7 @@ public class XmlMessage implements Message {
 
     private Message delegateMessage;
 
-    public XmlMessage(Message message) throws BipMessageInterpretationException {
+    public XmlMessage(Message message) throws MessageInterpretationException {
         this.delegateMessage = message;
         this.xmlRepresentation = message.getBufferAsXML();
     }
@@ -27,7 +28,7 @@ public class XmlMessage implements Message {
         return delegateMessage.getBuffer();
     }
 
-    public String getBufferAsString() throws BipMessageInterpretationException {
+    public String getBufferAsString() throws MessageInterpretationException {
         System.err.println("Warning: in XmlMessage, getBufferAsString shouldn't be used");
         return delegateMessage.getBufferAsString();
     }
@@ -37,7 +38,7 @@ public class XmlMessage implements Message {
         return delegateMessage.getBufferAsStringUnchecked();
     }
 
-    public Element getBufferAsXML() throws BipMessageInterpretationException {
+    public Element getBufferAsXML() throws MessageInterpretationException {
         return xmlRepresentation;
     }
 
@@ -71,7 +72,7 @@ public class XmlMessage implements Message {
     public static XmlMessage newUnchecked(Message message) {
         try {
             return new XmlMessage(message);
-        } catch (BipMessageInterpretationException e) {
+        } catch (MessageInterpretationException e) {
             return null;
         }
     }

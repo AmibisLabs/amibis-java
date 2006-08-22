@@ -1,4 +1,6 @@
-package fr.prima.omiscid.control.interf;
+package fr.prima.omiscid.user.connector;
+
+import fr.prima.omiscid.user.util.Constants;
 
 /**
  * Enumeration of kind of input/output
@@ -7,16 +9,16 @@ package fr.prima.omiscid.control.interf;
  */
 public enum ConnectorType {
     INPUT("Input",
-            GlobalConstants.connectorTypeInputXMLTag,
-            GlobalConstants.prefixForInputInDnssd
+            Constants.connectorTypeInputXMLTag,
+            Constants.prefixForInputInDnssd
             ),
     OUTPUT("Output",
-            GlobalConstants.connectorTypeOutputXMLTag,
-            GlobalConstants.prefixForOutputInDnssd
+            Constants.connectorTypeOutputXMLTag,
+            Constants.prefixForOutputInDnssd
             ),
     INOUTPUT("InOutput",
-            GlobalConstants.connectorTypeInOutputXMLTag,
-            GlobalConstants.prefixForInoutputInDnssd
+            Constants.connectorTypeInOutputXMLTag,
+            Constants.prefixForInoutputInDnssd
             );
 
     /** String representation of the input/output kind */

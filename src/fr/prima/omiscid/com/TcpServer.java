@@ -16,7 +16,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import fr.prima.omiscid.com.interf.BipMessageListener;
-import fr.prima.omiscid.com.interf.Message;
+import fr.prima.omiscid.user.connector.Message;
+import fr.prima.omiscid.user.exception.MessageInterpretationException;
+import fr.prima.omiscid.user.util.Utility;
 
 /**
  * TCP Server. Accept multiple connections. Enables sending messages to one or
@@ -155,7 +157,7 @@ public class TcpServer implements CommunicationServer {
      *            the XML message to send
      */
     public void sendToAllClients(Element message) {
-        sendToAllClients(BipUtils.elementToByteArray(message));
+        sendToAllClients(Utility.Xml.elementToByteArray(message));
     }
 
     /**
@@ -179,7 +181,7 @@ public class TcpServer implements CommunicationServer {
      *            the message to send
      */
     public void sendToAllClientsUnchecked(String message) {
-        sendToAllClients(BipUtils.stringToByteArray(message));
+        sendToAllClients(Utility.stringToByteArray(message));
     }
 
     /**
@@ -215,7 +217,7 @@ public class TcpServer implements CommunicationServer {
      *         delivered to it
      */
     public boolean sendToOneClient(Element message, int peerId) {
-        return sendToOneClient(BipUtils.elementToByteArray(message), peerId);
+        return sendToOneClient(Utility.Xml.elementToByteArray(message), peerId);
     }
 
     /**
@@ -243,7 +245,7 @@ public class TcpServer implements CommunicationServer {
      *            identify the client to contact
      */
     public void sendToOneClientUnchecked(String message, int peerId) {
-        sendToOneClient(BipUtils.stringToByteArray(message), peerId);
+        sendToOneClient(Utility.stringToByteArray(message), peerId);
     }
 
     /**
@@ -418,7 +420,7 @@ public class TcpServer implements CommunicationServer {
                 protected void processMessage(Message message) {
                     try {
                         System.out.println(message.getBufferAsString());
-                    } catch (BipMessageInterpretationException e) {
+                    } catch (MessageInterpretationException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }

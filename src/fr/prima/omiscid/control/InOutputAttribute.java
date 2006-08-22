@@ -6,15 +6,15 @@ import java.util.Vector;
 
 import org.w3c.dom.Element;
 
-import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.CommunicationServer;
-import fr.prima.omiscid.control.interf.ConnectorType;
 import fr.prima.omiscid.control.message.answer.CA_InOutputType;
 import fr.prima.omiscid.control.message.answer.ControlAnswerItem;
 import fr.prima.omiscid.control.message.answer.Inoutput;
 import fr.prima.omiscid.control.message.answer.Input;
 import fr.prima.omiscid.control.message.answer.Output;
 import fr.prima.omiscid.control.message.answer.Peers;
+import fr.prima.omiscid.user.connector.ConnectorType;
+import fr.prima.omiscid.user.util.Utility;
 
 /**
  * Stores an in/output description. The in/output description is composed of a
@@ -99,12 +99,12 @@ public class InOutputAttribute extends Attribute {
         if (inoutput.getName() != null) this.setName(inoutput.getName());
         if (inoutput.getDescription() != null) this.setDescription(inoutput.getDescription());
         if (inoutput.getFormatDescription() != null) this.setFormatDescription(inoutput.getFormatDescription());
-        if (inoutput.getPeerId() != null) this.setPeerId(BipUtils.hexStringToInt(inoutput.getPeerId()));
+        if (inoutput.getPeerId() != null) this.setPeerId(Utility.hexStringToInt(inoutput.getPeerId()));
         this.setTcpPort(inoutput.getTcp());
         this.setUdpPort(inoutput.getUdp());
         this.peerVector.clear();
         for (String peer : inoutput.getPeers().getPeer()) {
-            addPeer(BipUtils.hexStringToInt(peer));
+            addPeer(Utility.hexStringToInt(peer));
         }
     }
 
@@ -124,13 +124,13 @@ public class InOutputAttribute extends Attribute {
         inoutput.setDescription(getDescription());
         inoutput.setFormatDescription(getFormatDescription());
         inoutput.setName(getName());
-        inoutput.setPeerId(BipUtils.intTo8HexString(getPeerId()));
+        inoutput.setPeerId(Utility.intTo8HexString(getPeerId()));
         inoutput.setTcp(getTcpPort());
         if (getUdpPort() != 0) inoutput.setTcp(getTcpPort());
         inoutput.setUdp(getUdpPort());
         Peers peers = new Peers();
         for (int peerId : getPeerVector()) {
-            peers.addPeer(BipUtils.intTo8HexString(peerId));
+            peers.addPeer(Utility.intTo8HexString(peerId));
         }
         inoutput.setPeers(peers);
         ControlAnswerItem controlAnswerItem = new ControlAnswerItem();

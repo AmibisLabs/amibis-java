@@ -28,10 +28,8 @@ package fr.prima.omiscid.user.service;
 import java.io.IOException;
 import java.util.HashMap;
 
-import fr.prima.omiscid.control.filter.OmiscidServiceFilter;
-import fr.prima.omiscid.control.interf.ConnectorType;
-import fr.prima.omiscid.control.interf.VariableAccessType;
 import fr.prima.omiscid.user.connector.ConnectorListener;
+import fr.prima.omiscid.user.connector.ConnectorType;
 import fr.prima.omiscid.user.exception.ConnectorAlreadyExisting;
 import fr.prima.omiscid.user.exception.IncorrectConnectorType;
 import fr.prima.omiscid.user.exception.ServiceRunning;
@@ -40,6 +38,7 @@ import fr.prima.omiscid.user.exception.UnknownVariable;
 import fr.prima.omiscid.user.exception.VariableAlreadyExisting;
 import fr.prima.omiscid.user.exception.WrongVariableAccessType;
 import fr.prima.omiscid.user.variable.LocalVariableListener;
+import fr.prima.omiscid.user.variable.VariableAccessType;
 
 /**
  * @author Patrick Reignier (UJF/Gravir)
@@ -276,36 +275,36 @@ public interface Service {
     		throws UnknownConnector, IncorrectConnectorType;
 
 	/**
-	 * Finds a service on the network. The research is based on the service names (as registered in DNS_SD)
+	 * Finds a service on the network.
 	 * @param filter the filter that specifies the service that we search
 	 * @return the service Proxy
 	 * @see ServiceProxy
 	 */
-	public ServiceProxy findService(OmiscidServiceFilter filter) ;
+	public ServiceProxy findService(ServiceFilter filter) ;
 
 	/**
-	 * Finds a list of services on the network. The research is based on the service names (as registered in DNS_SD)
+	 * Finds a list of services on the network.
 	 * @param filters the filters that specifies the service that we search
 	 * @return the list of associated services proxy
 	 * @see ServiceProxy
 	 */
-	public HashMap<OmiscidServiceFilter, ServiceProxy> findServices(OmiscidServiceFilter[] filters) ;
+	public HashMap<ServiceFilter, ServiceProxy> findServices(ServiceFilter[] filters) ;
 
 	/**
-	 * Finds a service on the network. The research is based on the service names (as registered in DNS_SD)
+	 * Finds a service on the network.
 	 * @param filter the filter that specifies the service that we search.
 	 * @param timeout maximum delay (in ms) to find the resquest service.
-	 * @return the service Proxy
+	 * @return the service Proxy or null if the search timed out
 	 * @see ServiceProxy
 	 */
-	public ServiceProxy findService(OmiscidServiceFilter filter, long timeout) ;
+	public ServiceProxy findService(ServiceFilter filter, long timeout) ;
 
 	/**
-	 * Finds a list of services on the network. The research is based on the service names (as registered in DNS_SD)
+	 * Finds a list of services on the network.
 	 * @param filters the filters that specifies the list of services that we search. Each filter in the array is associated to a requested service.
 	 * @param timeout maximum delay (in ms) to find all the requested services.
 	 * @return the list of associated services proxy
 	 * @see ServiceProxy
 	 */
-	public HashMap<OmiscidServiceFilter, ServiceProxy> findServices(OmiscidServiceFilter[] filters, long timeout) ;
+	public HashMap<ServiceFilter, ServiceProxy> findServices(ServiceFilter[] filters, long timeout) ;
 }

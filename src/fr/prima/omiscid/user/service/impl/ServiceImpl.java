@@ -32,7 +32,6 @@ import java.util.Vector;
 
 import fr.prima.omiscid.com.TcpClientServer;
 import fr.prima.omiscid.com.interf.BipMessageListener;
-import fr.prima.omiscid.com.interf.Message;
 import fr.prima.omiscid.control.ControlClient;
 import fr.prima.omiscid.control.ControlServer;
 import fr.prima.omiscid.control.InOutputAttribute;
@@ -40,11 +39,11 @@ import fr.prima.omiscid.control.OmiscidService;
 import fr.prima.omiscid.control.VariableAttribute;
 import fr.prima.omiscid.control.WaitForOmiscidServices;
 import fr.prima.omiscid.control.filter.OmiscidServiceFilter;
-import fr.prima.omiscid.control.interf.ConnectorType;
-import fr.prima.omiscid.control.interf.VariableAccessType;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.control.interf.VariableChangeQueryListener;
 import fr.prima.omiscid.user.connector.ConnectorListener;
+import fr.prima.omiscid.user.connector.ConnectorType;
+import fr.prima.omiscid.user.connector.Message;
 import fr.prima.omiscid.user.exception.ConnectorAlreadyExisting;
 import fr.prima.omiscid.user.exception.IncorrectConnectorType;
 import fr.prima.omiscid.user.exception.ServiceRunning;
@@ -53,8 +52,10 @@ import fr.prima.omiscid.user.exception.UnknownVariable;
 import fr.prima.omiscid.user.exception.VariableAlreadyExisting;
 import fr.prima.omiscid.user.exception.WrongVariableAccessType;
 import fr.prima.omiscid.user.service.Service;
+import fr.prima.omiscid.user.service.ServiceFilter;
 import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.variable.LocalVariableListener;
+import fr.prima.omiscid.user.variable.VariableAccessType;
 
 /**
  * @author Patrick Reignier (UJF/Gravir)
@@ -552,8 +553,8 @@ public class ServiceImpl implements Service {
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.Service#findService(fr.prima.omiscid.control.filter.OmiscidServiceFilter)
 	 */
-	synchronized  public ServiceProxy findService(OmiscidServiceFilter filter) {
-		OmiscidServiceFilter[] filters = {filter};
+	synchronized  public ServiceProxy findService(ServiceFilter filter) {
+		ServiceFilter[] filters = {filter};
 
 		return findServices(filters).get(filter);
 	}
@@ -561,33 +562,15 @@ public class ServiceImpl implements Service {
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.Service#findServices(fr.prima.omiscid.control.filter.OmiscidServiceFilter[])
 	 */
-	synchronized  public HashMap<OmiscidServiceFilter, ServiceProxy> findServices(OmiscidServiceFilter[] filters) {
-		WaitForOmiscidServices waitForServices = new WaitForOmiscidServices(ctrlServer.getPeerId()) ;
-		HashMap<OmiscidServiceFilter, ServiceProxy> result = new HashMap<OmiscidServiceFilter, ServiceProxy>() ;
-		HashMap<Integer, OmiscidServiceFilter> tmpAssociation = new HashMap<Integer, OmiscidServiceFilter>() ;
-
-		for (int i=0; i<filters.length; i++)
-			tmpAssociation.put(waitForServices.needService(".*", filters[i]), filters[i]) ;
-
-		waitForServices.waitResolve() ;
-
-		for (Integer serviceId : tmpAssociation.keySet())
-		{
-			OmiscidService bipService = waitForServices.getService(serviceId) ;
-			bipService.setServiceId(ctrlServer.getPeerId());
-			ServiceProxy proxy = new ServiceProxyImpl(bipService) ;
-
-			result.put(tmpAssociation.get(serviceId), proxy) ;
-		}
-		//System.err.println("Service finding asked by " + this + " : " + result) ; //-trace
-		return result ;
+	synchronized  public HashMap<ServiceFilter, ServiceProxy> findServices(ServiceFilter[] filters) {
+	    return findServices(filters,-1);
 	}
 
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.Service#findService(fr.prima.omiscid.control.filter.OmiscidServiceFilter, long)
 	 */
-	synchronized  public ServiceProxy findService(OmiscidServiceFilter filter, long timeout) {
-		OmiscidServiceFilter[] filters = {filter};
+	synchronized  public ServiceProxy findService(ServiceFilter filter, long timeout) {
+		ServiceFilter[] filters = {filter};
 
 		return findServices(filters,timeout).get(filter);
 	}
@@ -595,23 +578,56 @@ public class ServiceImpl implements Service {
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.Service#findServices(fr.prima.omiscid.control.filter.OmiscidServiceFilter[], long)
 	 */
-	synchronized  public HashMap<OmiscidServiceFilter, ServiceProxy> findServices(OmiscidServiceFilter[] filters, long timeout) {
+	synchronized  public HashMap<ServiceFilter, ServiceProxy> findServices(ServiceFilter[] filters, long timeout) {
 		WaitForOmiscidServices waitForServices = new WaitForOmiscidServices(ctrlServer.getPeerId()) ;
-		HashMap<OmiscidServiceFilter, ServiceProxy> result = new HashMap<OmiscidServiceFilter, ServiceProxy>() ;
-		HashMap<Integer, OmiscidServiceFilter> tmpAssociation = new HashMap<Integer, OmiscidServiceFilter>() ;
+		HashMap<ServiceFilter, ServiceProxy> result = new HashMap<ServiceFilter, ServiceProxy>() ;
+		HashMap<Integer, ServiceFilter> tmpAssociation = new HashMap<Integer, ServiceFilter>() ;
+        
+//        final HashMap<Integer, ServiceProxy> proxyForService = new HashMap<Integer, ServiceProxy>();
+//        for (int i=0; i<filters.length; i++) {
+//            final ServiceFilter finalFilter = filters[i];
+//            tmpAssociation.put(waitForServices.needService(".*", new OmiscidServiceFilter() {
+//                public boolean isAGoodService(OmiscidService s) {
+//                    System.out.println(s.getRemotePeerId());
+//                    ServiceProxy proxy = proxyForService.get(s.getRemotePeerId());
+//                    if (proxy == null) {
+//                        proxy = new ServiceProxyImpl(s);
+//                        proxyForService.put(s.getRemotePeerId(),proxy);
+//                        return finalFilter.acceptService(proxy);
+//                    } else {
+//                        System.out.println("/// recycling");
+//                        return finalFilter.acceptService(proxy);
+//                    }
+//                }
+//            }), filters[i]) ;
+//        }
+        
+        for (int i=0; i<filters.length; i++) {
+            final ServiceFilter finalFilter = filters[i];
+            tmpAssociation.put(waitForServices.needService(".*", new OmiscidServiceFilter() {
+                public boolean isAGoodService(OmiscidService s) {
+//                    return finalFilter.acceptService(new ServiceProxyImpl(s));
+                    return finalFilter.acceptService(ServiceProxyImpl.forService(s));
+                }
+            }), filters[i]) ;
+        }
 
-		for (int i=0; i<filters.length; i++)
-			tmpAssociation.put(waitForServices.needService(".*", filters[i]), filters[i]) ;
+        if (timeout != -1) {
+            waitForServices.waitResolve(timeout);
+        } else {
+            waitForServices.waitResolve();
+        }
 
-		waitForServices.waitResolve(timeout) ;
-
-		for (Integer serviceId : tmpAssociation.keySet())
-		{
-			OmiscidService bipService = waitForServices.getService(serviceId) ;
-			bipService.setServiceId(ctrlServer.getPeerId());
-			ServiceProxy proxy = new ServiceProxyImpl(bipService) ;
-
-			result.put(tmpAssociation.get(serviceId), proxy) ;
+		for (Integer serviceId : tmpAssociation.keySet()) {
+			OmiscidService bipService = waitForServices.getService(serviceId);
+            if (bipService != null) {
+                //bipService.setServiceId(ctrlServer.getPeerId()); //useless as the waitforservices object is already instanciated with this peer id
+//                ServiceProxy proxy = new ServiceProxyImpl(bipService) ;
+                ServiceProxy proxy = ServiceProxyImpl.forService(bipService) ;
+                result.put(tmpAssociation.get(serviceId), proxy);
+            } else {
+                result.put(tmpAssociation.get(serviceId), null);
+            }
 		}
 		//System.err.println("Service finding asked by " + this + " : " + result) ; //-trace
 		return result ;

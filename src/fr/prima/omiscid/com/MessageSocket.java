@@ -8,7 +8,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import fr.prima.omiscid.com.interf.BipMessageListener;
-import fr.prima.omiscid.com.interf.Message;
+import fr.prima.omiscid.user.connector.Message;
+import fr.prima.omiscid.user.util.Utility;
 
 /**
  * Manages the buffer to store bytes and parsed BIP messages. The buffer can
@@ -98,7 +99,7 @@ final class ReceiveBuffer {
             int res = goodBeginning();
             while (res != 0) {
                 if (res == 2) { // a message beginning
-                    int length = BipUtils.hexStringToInt(messageAttribute[2]);
+                    int length = Utility.hexStringToInt(messageAttribute[2]);
                     int dec = position + length;
                     // test the end of the message
                     if (buffer[dec] == '\r' && buffer[dec + 1] == '\n') {
@@ -109,8 +110,8 @@ final class ReceiveBuffer {
                         buffer[dec + 1] = 0;
 
                         // new message
-                        int pid = BipUtils.hexStringToInt(messageAttribute[0]);
-                        int mid = BipUtils.hexStringToInt(messageAttribute[1]);
+                        int pid = Utility.hexStringToInt(messageAttribute[0]);
+                        int mid = Utility.hexStringToInt(messageAttribute[1]);
 
                         if (!messageSocket.isInitMessageReceived()) {
                             messageSocket.initMessageReceived(pid);
@@ -184,7 +185,7 @@ final class ReceiveBuffer {
                 messageAttribute[1] = new String(buffer, position + BipUtils.messageBegin.length + 9, 8);
                 messageAttribute[2] = new String(buffer, position + BipUtils.messageBegin.length + 18, 8);
 
-                int length = BipUtils.hexStringToInt(messageAttribute[2]);
+                int length = Utility.hexStringToInt(messageAttribute[2]);
                 if (nbByte >= MIN_LENGTH_MESSAGE + length) {
                     readAdvance(BipUtils.messageBegin.length + 28);
                     return 2;
@@ -260,9 +261,9 @@ public abstract class MessageSocket {
                                                                                                                                      * end
                                                                                                                                      */;
 
-    protected static final String messageBeginStr = BipUtils.byteArrayToString(BipUtils.messageBegin);
+    protected static final String messageBeginStr = Utility.byteArrayToString(BipUtils.messageBegin);
 
-    protected static final String headerEndStr = BipUtils.byteArrayToString(BipUtils.headerEnd);
+    protected static final String headerEndStr = Utility.byteArrayToString(BipUtils.headerEnd);
 
     /**
      * Indicates whether an empty message used for 'synchronization' has already
@@ -336,7 +337,7 @@ public abstract class MessageSocket {
      *            give the length that will appear in OMiSCID header
      */
     protected String generateHeader(int len) {
-        String str = messageBeginStr + BipUtils.intTo8HexString(localPeerId) + " " + BipUtils.intTo8HexString(mid) + " " + BipUtils.intTo8HexString(len)
+        String str = messageBeginStr + Utility.intTo8HexString(localPeerId) + " " + Utility.intTo8HexString(mid) + " " + Utility.intTo8HexString(len)
                 + headerEndStr;
         mid++;
         return str;
@@ -346,7 +347,7 @@ public abstract class MessageSocket {
      * Same as {@link #generateHeader(int)} but returning a byte array
      */
     protected byte[] generateHeaderByte(int len) {
-        return BipUtils.stringToByteArray(generateHeader(len));
+        return Utility.stringToByteArray(generateHeader(len));
     }
 
     /**
@@ -472,7 +473,7 @@ public abstract class MessageSocket {
      * @param messageBody the message to send in a BIP message
      */
     public void send(String messageBody) {
-        send(BipUtils.stringToByteArray(messageBody));
+        send(Utility.stringToByteArray(messageBody));
     }
 
     /**
@@ -481,7 +482,7 @@ public abstract class MessageSocket {
      * @param message the XML message to send
      */
     public void send(Element message) {
-        send(BipUtils.elementToByteArray(message));
+        send(Utility.Xml.elementToByteArray(message));
     }
 
     /**

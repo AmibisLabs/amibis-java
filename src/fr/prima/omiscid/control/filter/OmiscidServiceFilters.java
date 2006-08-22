@@ -4,11 +4,11 @@
  */
 package fr.prima.omiscid.control.filter;
 
-import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.control.OmiscidService;
-import fr.prima.omiscid.control.interf.ConnectorType;
-import fr.prima.omiscid.control.interf.VariableAccessType;
+import fr.prima.omiscid.user.connector.ConnectorType;
 import fr.prima.omiscid.user.service.ServiceProxy;
+import fr.prima.omiscid.user.util.Utility;
+import fr.prima.omiscid.user.variable.VariableAccessType;
 
 /**
  * Utility class. Provides some {@link OmiscidServiceFilter} creators for
@@ -68,7 +68,7 @@ public final class OmiscidServiceFilters {
         private int peerId;
 
         public PeerId(int peerId) {
-            this.peerId = BipUtils.rootBIPPeerId(peerId);
+            this.peerId = Utility.rootPeerIdFromConnectorPeerId(peerId);
         }
 
         public boolean isAGoodService(OmiscidService s) {

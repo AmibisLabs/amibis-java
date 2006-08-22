@@ -8,11 +8,11 @@ import java.util.Set;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import fr.prima.omiscid.control.interf.VariableAccessType;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.control.message.answer.ControlAnswerItem;
 import fr.prima.omiscid.control.message.answer.Variable;
 import fr.prima.omiscid.control.message.answer.types.AccessType;
+import fr.prima.omiscid.user.variable.VariableAccessType;
 
 /**
  * Stores a variable description. The variable description is composed of a

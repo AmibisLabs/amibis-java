@@ -31,11 +31,11 @@ import java.util.Set;
 import fr.prima.omiscid.control.ControlClient;
 import fr.prima.omiscid.control.OmiscidService;
 import fr.prima.omiscid.control.VariableAttribute;
-import fr.prima.omiscid.control.interf.VariableAccessType;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.user.exception.UnknownVariable;
 import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.variable.RemoteVariableChangeListener;
+import fr.prima.omiscid.user.variable.VariableAccessType;
 
 /**
  * @author reignier
@@ -46,17 +46,29 @@ public class ServiceProxyImpl implements ServiceProxy {
     protected ControlClient controlClient ;
     protected OmiscidService omiscidService ;
 
+    private static HashMap<Integer, ServiceProxyImpl> proxyForService = new HashMap<Integer, ServiceProxyImpl>();
+    public static ServiceProxyImpl forService(OmiscidService omiscidService) {
+        ServiceProxyImpl proxy = proxyForService.get(omiscidService.getRemotePeerId());
+        if (proxy == null) {
+            proxy = new ServiceProxyImpl(omiscidService);
+            proxyForService.put(omiscidService.getRemotePeerId(),proxy);
+        }
+        return proxy;
+    }
+    
     /**
      * Constructs a new ServiceProxy.
      * @param omiscidService
      */
-    public ServiceProxyImpl(OmiscidService omiscidService)
+    private ServiceProxyImpl(OmiscidService omiscidService)
     {
         this.omiscidService = omiscidService ;
         remoteVariableListeners = new HashMap<String, HashMap<RemoteVariableChangeListener, VariableChangeListener>>();
-        controlClient = omiscidService.initControlClient() ;
-        updateDescription() ;
- //       omiscidService.closeControlClient() ;
+        controlClient = omiscidService.initControlClient();
+        if (controlClient!=null) {
+            updateDescription() ;
+            omiscidService.closeControlClient() ;
+        }
     }
 
 	/* (non-Javadoc)

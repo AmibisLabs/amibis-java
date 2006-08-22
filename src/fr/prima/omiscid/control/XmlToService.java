@@ -4,7 +4,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import fr.prima.omiscid.control.interf.ConnectorType;
+import fr.prima.omiscid.user.connector.ConnectorType;
 
 /**
  * Group methods to initialize service from an XML file. The XML file contains

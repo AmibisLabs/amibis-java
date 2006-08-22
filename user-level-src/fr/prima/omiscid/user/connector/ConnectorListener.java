@@ -1,7 +1,7 @@
 /**
- * Copyright (c) 2006 INRIA/Université Joseph Fourrier/Université Pierre Mendès-France.  
+ * Copyright (c) 2006 INRIA/Université Joseph Fourrier/Université Pierre Mendès-France.
  * O3MiSCID (aka OMiSCID) Software written by Sebastien Pesnel, Dominique
- * Vaufreydaz, Patrick Reigner, Remi Emonnet and Julien Letessier. 
+ * Vaufreydaz, Patrick Reigner, Remi Emonet and Julien Letessier.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -16,7 +16,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
  * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
@@ -25,7 +25,6 @@
 
 package fr.prima.omiscid.user.connector;
 
-import fr.prima.omiscid.com.interf.Message;
 import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceProxy;
 
@@ -53,7 +52,7 @@ public interface ConnectorListener {
      * @param peerId the disconnected remote service
      */
     public void disconnected(Service service, String localConnectorName, int peerId);
-    
+
     /**
      * Called when a remote service connects to the local connector.
      * The peerId is a unique pair (service + remote connector). The
@@ -65,5 +64,5 @@ public interface ConnectorListener {
      * @see ServiceProxy#findConnector(int)
      */
     public void connected(Service service, String localConnectorName, int peerId);
-   
+
 }

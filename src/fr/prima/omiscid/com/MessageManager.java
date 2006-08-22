@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import fr.prima.omiscid.com.interf.BipMessageListener;
-import fr.prima.omiscid.com.interf.Message;
+import fr.prima.omiscid.user.connector.Message;
 
 /**
  * Stores the received messages in a FIFO list. The messages are processed by

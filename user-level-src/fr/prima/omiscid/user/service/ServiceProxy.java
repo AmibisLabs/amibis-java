@@ -27,11 +27,10 @@ package fr.prima.omiscid.user.service;
 
 import java.util.Set;
 
-import fr.prima.omiscid.control.interf.VariableAccessType;
-import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.user.connector.ConnectorListener;
 import fr.prima.omiscid.user.exception.UnknownVariable;
 import fr.prima.omiscid.user.variable.RemoteVariableChangeListener;
+import fr.prima.omiscid.user.variable.VariableAccessType;
 
 /**
  * @author Patrick Reignier (UJF/Gravir)
@@ -134,7 +133,7 @@ public interface ServiceProxy {
      * @param remoteVariableChangeListener the listener
      * @throws UnknownVariable the variable does not exist
      * @see #addRemoteVariableChangeListener(String, RemoteVariableChangeListener)
-     * @see VariableChangeListener
+     * @see RemoteVariableChangeListener
      */
     public void removeRemoteVariableChangeListener(String varName,
     																							   RemoteVariableChangeListener remoteVariableChangeListener)

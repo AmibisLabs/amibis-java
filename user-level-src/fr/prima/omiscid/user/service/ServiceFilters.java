@@ -1,14 +1,10 @@
-/*
- * Created on 2006 uzt 13
- *
- */
 package fr.prima.omiscid.user.service;
 
 import java.util.Vector;
 
-import fr.prima.omiscid.com.BipUtils;
-import fr.prima.omiscid.control.interf.ConnectorType;
-import fr.prima.omiscid.control.interf.VariableAccessType;
+import fr.prima.omiscid.user.connector.ConnectorType;
+import fr.prima.omiscid.user.util.Utility;
+import fr.prima.omiscid.user.variable.VariableAccessType;
 
 
 public final class ServiceFilters {
@@ -76,7 +72,7 @@ public final class ServiceFilters {
         private int peerId;
 
         public PeerId(int peerId) {
-            this.peerId = BipUtils.rootBIPPeerId(peerId);
+            this.peerId = Utility.rootPeerIdFromConnectorPeerId(peerId);
         }
 
         public boolean acceptService(ServiceProxy s) {
@@ -152,6 +148,18 @@ public final class ServiceFilters {
 
     }
 
+    private static final class Not implements ServiceFilter {
+        private ServiceFilter serviceFilter;
+        public Not(ServiceFilter serviceFilter) {
+            this.serviceFilter = serviceFilter;
+        }
+        public boolean acceptService(ServiceProxy s) {
+            return !serviceFilter.acceptService(s);
+        }
+    }
+
+
+
 
 
     public static String baseNameRegexp(String nameRegexp) {
@@ -208,6 +216,13 @@ public final class ServiceFilters {
         return new Connector(connectorName, null);
     }
 
+    public static ServiceFilter not(ServiceProxy proxy) {
+        return not(peerIdIs(proxy.getPeerId()));
+    }
+
+    public static ServiceFilter not(ServiceFilter serviceFilter) {
+        return new Not(serviceFilter);
+    }
     public static ServiceFilter yes() {
         return new Boolean(true);
     }
