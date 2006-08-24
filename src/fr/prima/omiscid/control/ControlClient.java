@@ -77,7 +77,6 @@ public class ControlClient implements BipMessageListener {
         synchronized private void pushMessageAnswer(ControlAnswer controlAnswer) throws InterruptedException {
             while (sending) wait();
             int msgId = Utility.hexStringToInt(controlAnswer.getId());
-//            System.out.println("pushing "+msgId);
             if (answers.containsKey(msgId)) {
                 System.err.println("Warning: non-null message answer while receiving another one, should not happen");
             }
@@ -103,14 +102,11 @@ public class ControlClient implements BipMessageListener {
         }
         private ControlAnswer willProcess(int msgId, long timeout) throws InterruptedException {
             Object event;
-            long t;
             synchronized (this) {
                 lockForEventAdditionAndWaiting.lock();
                 sent();
-//                System.out.println("waiting "+msgId);
-                t = System.currentTimeMillis();
                 if (events.containsKey(msgId)) {
-//                    System.err.println("Warning: key already present while waiting for answer, wrong message iding");
+                    System.err.println("Warning: key already present while waiting for answer, wrong message iding");
                 }
                 event = new Object();
                 events.put(msgId, event);
@@ -120,7 +116,6 @@ public class ControlClient implements BipMessageListener {
                 event.wait(timeout); // wait event without having the lock on "this"
                 synchronized (this) {
                     ControlAnswer answer = answers.remove(msgId);
-//                    System.out.println("waited "+(System.currentTimeMillis()-t)+", got "+answer);
                     return answer;
                 }
             }
