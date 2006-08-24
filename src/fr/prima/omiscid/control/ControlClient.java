@@ -6,8 +6,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -64,11 +67,66 @@ public class ControlClient implements BipMessageListener {
     /** Query Id: the answer to a query have the same id that the query */
     private int messageId = 0;
 
-    /** Object used as condition to signal when an answer is available */
-    private Object answerEvent = new Object();
 
-    /** An available answer */
-    private ControlAnswer messageAnswer = null;
+    private static class MessageAnswerMonitor {
+        private boolean sending = false;
+        private Map<Integer, Object> events = new Hashtable<Integer, Object>();
+        private Map<Integer, ControlAnswer> answers = new Hashtable<Integer, ControlAnswer>();
+        private ReentrantLock lockForEventAdditionAndWaiting = new ReentrantLock();
+        
+        synchronized private void pushMessageAnswer(ControlAnswer controlAnswer) throws InterruptedException {
+            while (sending) wait();
+            int msgId = Utility.hexStringToInt(controlAnswer.getId());
+//            System.out.println("pushing "+msgId);
+            if (answers.containsKey(msgId)) {
+                System.err.println("Warning: non-null message answer while receiving another one, should not happen");
+            }
+            Object event = events.remove(msgId);
+            if (event == null) {
+                System.err.println("Warning: dropped control answer. May be due to previous timeout");
+            } else {
+                lockForEventAdditionAndWaiting.lock();
+                answers.put(msgId, controlAnswer);
+                synchronized (event) {
+                    event.notifyAll();
+                }
+                lockForEventAdditionAndWaiting.unlock();
+            }
+        }
+        synchronized private void willSend() throws InterruptedException {
+            while (sending) wait();
+            sending = true;
+        }
+        synchronized private void sent() throws InterruptedException {
+            sending = false;
+            notifyAll();
+        }
+        private ControlAnswer willProcess(int msgId, long timeout) throws InterruptedException {
+            Object event;
+            long t;
+            synchronized (this) {
+                lockForEventAdditionAndWaiting.lock();
+                sent();
+//                System.out.println("waiting "+msgId);
+                t = System.currentTimeMillis();
+                if (events.containsKey(msgId)) {
+//                    System.err.println("Warning: key already present while waiting for answer, wrong message iding");
+                }
+                event = new Object();
+                events.put(msgId, event);
+            }
+            synchronized (event) {
+                lockForEventAdditionAndWaiting.unlock();
+                event.wait(timeout); // wait event without having the lock on "this"
+                synchronized (this) {
+                    ControlAnswer answer = answers.remove(msgId);
+//                    System.out.println("waited "+(System.currentTimeMillis()-t)+", got "+answer);
+                    return answer;
+                }
+            }
+        }
+    }
+    private MessageAnswerMonitor monitor = new MessageAnswerMonitor();
 
     /**
      * Set of listener interested in the control event (Set of object
@@ -195,15 +253,15 @@ public class ControlClient implements BipMessageListener {
             if (root.getNodeName().equals(GlobalConstants.controlAnswerXMLTag)) {
                 try {
                     ControlAnswer answer = ControlAnswer.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())));
-                    synchronized (answerEvent) {
-                        messageAnswer = answer;
-                        answerEvent.notify();
-                    }
+                    monitor.pushMessageAnswer(answer);
                     return;
                 } catch (MarshalException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 } catch (ValidationException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
@@ -886,32 +944,33 @@ public class ControlClient implements BipMessageListener {
 //  }
 
     private ControlAnswer queryToServer(ControlQuery controlQuery, boolean waitAnswer) throws MarshalException, ValidationException {
-        synchronized (answerEvent) {
-            if (isConnected()) {
-                int theMsgId = messageId++;
-                String strMessageId = Utility.intTo8HexString(theMsgId);
-                controlQuery.setId(strMessageId);
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                controlQuery.marshal(new OutputStreamWriter(byteArrayOutputStream));
-                tcpClient.send(byteArrayOutputStream.toByteArray());
-                if (waitAnswer) {
-                    try {
-                        answerEvent.wait(maxTimeToWait);
-                        if (messageAnswer != null) {
-                            ControlAnswer controlAnswer = messageAnswer;
-                            if (controlAnswer.getId().equals(strMessageId)) {
-                                return controlAnswer;
-                            }
-                        } else {
-                            System.err.println("answer null from " + Integer.toHexString(getPeerId()));
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+        if (isConnected()) {
+            int theMsgId;
+            synchronized (this) {
+                theMsgId = messageId++;
             }
-            return null;
+            String strMessageId = Utility.intTo8HexString(theMsgId);
+            controlQuery.setId(strMessageId);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            controlQuery.marshal(new OutputStreamWriter(byteArrayOutputStream));
+            try {
+                monitor.willSend();
+                tcpClient.send(byteArrayOutputStream.toByteArray());
+                if (!waitAnswer) {
+                    monitor.sent();
+                } else {
+                    ControlAnswer controlAnswer = monitor.willProcess(theMsgId,maxTimeToWait);
+                    if (controlAnswer == null) {
+                        System.err.println("answer null from " + Utility.intTo8HexString(getPeerId()));
+                    }
+                    return controlAnswer;
+                }
+            } catch (InterruptedException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
         }
+        return null;
     }
 
 //  /**
