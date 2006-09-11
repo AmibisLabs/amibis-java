@@ -54,6 +54,9 @@ public final class Utility {
      * @return the integer value associated to the string
      */
     public static int hexStringToInt(String str) {
+        if (str == null) {
+            return -1;
+        }
         int nb = str.length();
         byte cstr[];
         try {
