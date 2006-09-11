@@ -22,6 +22,9 @@
   <xs:element name="controlQuery">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="fullDescription">
+          <xs:complexType/>
+        </xs:element>
         <xs:element name="input">
           <xs:complexType>
             <xs:attribute name="name" type="NameType" use="required" />
