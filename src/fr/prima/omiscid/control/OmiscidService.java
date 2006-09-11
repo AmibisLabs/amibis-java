@@ -270,15 +270,20 @@ public class OmiscidService {
     }
 
     public String getSimplifiedName() {
+//        System.out.println("+++++++++++");
+//        for (String k : serviceInformation.getPropertyKeys()) {
+//            System.out.println(k);
+//        }
         String str = serviceInformation.getStringProperty(GlobalConstants.constantNameForName);
         if (str != null) {
             return VariableAccessType.realValueFromDnssdValue(str);
         } else {
             ControlClient ctrlClient = initControlClient();
             if (ctrlClient != null) {
-                String pid = ctrlClient.findVariable(GlobalConstants.constantNameForName).getValueStr();
+                System.out.println(GlobalConstants.constantNameForName);
+                String name = ctrlClient.findVariable(GlobalConstants.constantNameForName).getValueStr();
                 closeControlClient();
-                return pid;
+                return name;
             }
             return "";
         }

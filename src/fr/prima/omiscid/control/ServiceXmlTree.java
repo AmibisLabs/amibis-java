@@ -212,10 +212,10 @@ public class ServiceXmlTree implements ServiceEventListener {
         return false;
     }
 
-    public boolean removeAService(String serviceName) {
+    public boolean removeAService(int servicePeerId) {
         synchronized (rootNode) {
             synchronized (serviceSet) {
-                ServiceElement se = findServiceElement(serviceName);
+                ServiceElement se = findServiceElement(servicePeerId);
                 if (se != null) {
                     se.elementParent.removeChild(se.element);
                     serviceSet.remove(se);
@@ -227,12 +227,12 @@ public class ServiceXmlTree implements ServiceEventListener {
         return false;
     }
 
-    protected ServiceElement findServiceElement(String serviceName) {
+    protected ServiceElement findServiceElement(int servicePeerId) {
         synchronized (serviceSet) {
             java.util.Iterator<ServiceElement> it = serviceSet.iterator();
             while (it.hasNext()) {
                 ServiceElement se = it.next();
-                if (se.service.getFullName().equals(serviceName))
+                if (se.service.getRemotePeerId() == servicePeerId)
                     return se;
             }
             return null;
@@ -333,7 +333,7 @@ public class ServiceXmlTree implements ServiceEventListener {
         if (e.isFound()) {
             insertAService(new OmiscidService(peerId, e.getServiceInformation()));
         } else {
-            removeAService(e.getServiceInformation().getFullName());
+            removeAService(Utility.hexStringToInt(OmiscidService.cleanName(e.getServiceInformation().getFullName())));
         }
     }
 
