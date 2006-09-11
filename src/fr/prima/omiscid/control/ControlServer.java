@@ -245,61 +245,74 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      * @return whether the service was correctly registered
      */
     private boolean registerTheService(int port) {
-        serviceRegistration.addProperty(GlobalConstants.keyForFullTextRecord, GlobalConstants.keyForFullTextRecordFull);
         boolean incomplete = false;
-        Vector<VariableAttribute> filteredVariableSet = new Vector<VariableAttribute>();
-        {
-            filteredVariableSet.addAll(variablesSet);
-            for (String variableName : GlobalConstants.specialVariablesNames) {
-                VariableAttribute variable = findVariable(variableName);
-                if (variable != null) {
-                    filteredVariableSet.remove(variable);
+        boolean errorOccured = true;
+        Vector<String> blackList = new Vector<String>();
+        while (errorOccured) {
+            errorOccured = false;
+            initServiceRegistration();
+            serviceRegistration.addProperty(GlobalConstants.keyForFullTextRecord, GlobalConstants.keyForFullTextRecordFull);
+            Vector<VariableAttribute> filteredVariableSet = new Vector<VariableAttribute>();
+            {
+                filteredVariableSet.addAll(variablesSet);
+                for (String rem : blackList) {
+                    filteredVariableSet.remove(rem);
+                }
+                for (String variableName : GlobalConstants.specialVariablesNames) {
+                    VariableAttribute variable = findVariable(variableName);
+                    if (variable != null) {
+                        filteredVariableSet.remove(variable);
+                        String prefix = variable.getAccess().getPrefixInDnssd();
+                        if (variable.getAccess() != VariableAccessType.CONSTANT) {
+                            serviceRegistration.addProperty(variable.getName(), prefix);
+                        } else {
+                            serviceRegistration.addProperty(variable.getName(), prefix + variable.getValueStr());
+                        }
+                    }
+                }
+                Collections.sort(filteredVariableSet, new Comparator<VariableAttribute>() {
+                    public int compare(VariableAttribute o1, VariableAttribute o2) {
+                        return o1.getName().compareTo(o2.getName());
+                    }
+                });
+            }
+            for (VariableAttribute variable: filteredVariableSet) {
+                if (variable.getAccess() == VariableAccessType.CONSTANT) {
                     String prefix = variable.getAccess().getPrefixInDnssd();
-                    if (variable.getAccess() != VariableAccessType.CONSTANT) {
-                        serviceRegistration.addProperty(variable.getName(), prefix);
+                    if (blackList.contains(variable.getName())) {
+                        try {
+                            serviceRegistration.addProperty(variable.getName(), Constants.valueForLongConstantsInDnssd);
+                        } catch (Exception e) {
+                            incomplete = true;
+                        }
                     } else {
-                        serviceRegistration.addProperty(variable.getName(), prefix + variable.getValueStr());
+                        try {
+                            serviceRegistration.addProperty(variable.getName(), prefix + variable.getValueStr());
+                        } catch (Exception e) {
+                            incomplete = true;
+                            errorOccured = true;
+                            blackList.add(variable.getName());
+                            continue;
+                        }
                     }
-                    System.out.println("registered "+variable.getName());
                 }
             }
-            Collections.sort(filteredVariableSet, new Comparator<VariableAttribute>() {
-                public int compare(VariableAttribute o1, VariableAttribute o2) {
-                    return o1.getName().compareTo(o2.getName());
-                }
-            });
-        }
-        for (VariableAttribute variable: filteredVariableSet) {
-            if (variable.getAccess() == VariableAccessType.CONSTANT) {
-                String prefix = variable.getAccess().getPrefixInDnssd();
+            for (InOutputAttribute connector : inoutputsSet) {
+                String prefix = connector.getConnectorType().getPrefixInDnssd();
                 try {
-                    serviceRegistration.addProperty(variable.getName(), prefix + variable.getValueStr());
+                    serviceRegistration.addProperty(connector.getName(), prefix + connector.getTcpPort());
                 } catch (Exception e) {
                     incomplete = true;
+                }
+            }
+            for (VariableAttribute variable: filteredVariableSet) {
+                if (variable.getAccess() != VariableAccessType.CONSTANT) {
+                    String prefix = variable.getAccess().getPrefixInDnssd();
                     try {
-                        serviceRegistration.addProperty(variable.getName(), Constants.valueForLongConstantsInDnssd);
-                        System.out.println("registered "+variable.getName());
-                    } catch (Exception ee) {
+                        serviceRegistration.addProperty(variable.getName(), prefix);
+                    } catch (Exception e) {
+                        incomplete = true;
                     }
-                }
-            }
-        }
-        for (InOutputAttribute connector : inoutputsSet) {
-            String prefix = connector.getConnectorType().getPrefixInDnssd();
-            try {
-                serviceRegistration.addProperty(connector.getName(), prefix + connector.getTcpPort());
-            } catch (Exception e) {
-                incomplete = true;
-            }
-        }
-        for (VariableAttribute variable: filteredVariableSet) {
-            if (variable.getAccess() != VariableAccessType.CONSTANT) {
-                String prefix = variable.getAccess().getPrefixInDnssd();
-                try {
-                    serviceRegistration.addProperty(variable.getName(), prefix);
-                    System.out.println("registered "+variable.getName());
-                } catch (Exception e) {
-                    incomplete = true;
                 }
             }
         }
