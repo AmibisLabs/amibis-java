@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0M2</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -27,6 +27,11 @@ public class UnlockDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
+
+    /**
+     * Field elementDefinition
+     */
+    private boolean elementDefinition;
 
     /**
      * Field nsPrefix
@@ -57,6 +62,7 @@ public class UnlockDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
      {
         super();
         xmlName = "unlock";
+        elementDefinition = true;
     } //-- fr.prima.omiscid.control.message.query.UnlockDescriptor()
 
 
@@ -159,5 +165,17 @@ public class UnlockDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
     {
         return xmlName;
     } //-- java.lang.String getXMLName() 
+
+    /**
+     * Method isElementDefinition
+     * 
+     * 
+     * 
+     * @return boolean
+     */
+    public boolean isElementDefinition()
+    {
+        return elementDefinition;
+    } //-- boolean isElementDefinition() 
 
 }

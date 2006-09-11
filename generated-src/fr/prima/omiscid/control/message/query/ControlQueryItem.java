@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0M2</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -31,6 +31,11 @@ public class ControlQueryItem implements java.io.Serializable {
      * Internal choice value storage
      */
     private java.lang.Object _choiceValue;
+
+    /**
+     * Field _fullDescription
+     */
+    private fr.prima.omiscid.control.message.query.FullDescription _fullDescription;
 
     /**
      * Field _input
@@ -131,6 +136,17 @@ public class ControlQueryItem implements java.io.Serializable {
     {
         return this._disconnect;
     } //-- fr.prima.omiscid.control.message.query.Disconnect getDisconnect() 
+
+    /**
+     * Returns the value of field 'fullDescription'.
+     * 
+     * @return FullDescription
+     * @return the value of field 'fullDescription'.
+     */
+    public fr.prima.omiscid.control.message.query.FullDescription getFullDescription()
+    {
+        return this._fullDescription;
+    } //-- fr.prima.omiscid.control.message.query.FullDescription getFullDescription() 
 
     /**
      * Returns the value of field 'inoutput'.
@@ -241,6 +257,17 @@ public class ControlQueryItem implements java.io.Serializable {
         this._disconnect = disconnect;
         this._choiceValue = disconnect;
     } //-- void setDisconnect(fr.prima.omiscid.control.message.query.Disconnect) 
+
+    /**
+     * Sets the value of field 'fullDescription'.
+     * 
+     * @param fullDescription the value of field 'fullDescription'.
+     */
+    public void setFullDescription(fr.prima.omiscid.control.message.query.FullDescription fullDescription)
+    {
+        this._fullDescription = fullDescription;
+        this._choiceValue = fullDescription;
+    } //-- void setFullDescription(fr.prima.omiscid.control.message.query.FullDescription) 
 
     /**
      * Sets the value of field 'inoutput'.

@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0M2</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -27,6 +27,11 @@ public class ControlQueryItemDescriptor extends org.exolab.castor.xml.util.XMLCl
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
+
+    /**
+     * Field elementDefinition
+     */
+    private boolean elementDefinition;
 
     /**
      * Field nsPrefix
@@ -57,6 +62,7 @@ public class ControlQueryItemDescriptor extends org.exolab.castor.xml.util.XMLCl
      {
         super();
         xmlName = "controlQuery";
+        elementDefinition = true;
         
         //-- set grouping compositor
         setCompositorAsChoice();
@@ -67,6 +73,39 @@ public class ControlQueryItemDescriptor extends org.exolab.castor.xml.util.XMLCl
         
         //-- initialize element descriptors
         
+        //-- _fullDescription
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(fr.prima.omiscid.control.message.query.FullDescription.class, "_fullDescription", "fullDescription", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                ControlQueryItem target = (ControlQueryItem) object;
+                return target.getFullDescription();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    ControlQueryItem target = (ControlQueryItem) object;
+                    target.setFullDescription( (fr.prima.omiscid.control.message.query.FullDescription) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new fr.prima.omiscid.control.message.query.FullDescription();
+            }
+        };
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _fullDescription
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
         //-- _input
         desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(fr.prima.omiscid.control.message.query.Input.class, "_input", "input", org.exolab.castor.xml.NodeType.Element);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
@@ -499,5 +538,17 @@ public class ControlQueryItemDescriptor extends org.exolab.castor.xml.util.XMLCl
     {
         return xmlName;
     } //-- java.lang.String getXMLName() 
+
+    /**
+     * Method isElementDefinition
+     * 
+     * 
+     * 
+     * @return boolean
+     */
+    public boolean isElementDefinition()
+    {
+        return elementDefinition;
+    } //-- boolean isElementDefinition() 
 
 }

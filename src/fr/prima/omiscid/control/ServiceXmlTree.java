@@ -246,7 +246,7 @@ public class ServiceXmlTree implements ServiceEventListener {
         if (ctrlClient != null) {
             if (ctrlClient.queryGlobalDescription() || ctrlClient.queryGlobalDescription()) {
 
-                ctrlClient.queryCompleteDescription();
+//                ctrlClient.queryCompleteDescription();
 
                 elt = doc.createElement("service");
                 elt.setAttribute("name", s.getFullName());

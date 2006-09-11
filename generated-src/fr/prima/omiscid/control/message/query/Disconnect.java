@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0M2</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -123,8 +123,8 @@ public class Disconnect implements java.io.Serializable {
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _peerList.size())) {
-            throw new IndexOutOfBoundsException("getPeer: Index value '"+index+"' not in range [0.."+_peerList.size()+ "]");
+        if ((index < 0) || (index >= _peerList.size())) {
+            throw new IndexOutOfBoundsException("getPeer: Index value '"+index+"' not in range [0.."+(_peerList.size() - 1) + "]");
         }
         
         return (String)_peerList.elementAt(index);
@@ -251,8 +251,8 @@ public class Disconnect implements java.io.Serializable {
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _peerList.size())) {
-            throw new IndexOutOfBoundsException("setPeer: Index value '"+index+"' not in range [0.."+_peerList.size()+ "]");
+        if ((index < 0) || (index >= _peerList.size())) {
+            throw new IndexOutOfBoundsException("setPeer: Index value '"+index+"' not in range [0.." + (_peerList.size() - 1) + "]");
         }
         _peerList.setElementAt(vPeer, index);
     } //-- void setPeer(int, java.lang.String) 

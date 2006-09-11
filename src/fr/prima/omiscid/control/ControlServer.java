@@ -26,6 +26,7 @@ import fr.prima.omiscid.control.message.answer.types.CA_LockResultType;
 import fr.prima.omiscid.control.message.query.Connect;
 import fr.prima.omiscid.control.message.query.ControlQuery;
 import fr.prima.omiscid.control.message.query.ControlQueryItem;
+import fr.prima.omiscid.control.message.query.FullDescription;
 import fr.prima.omiscid.control.message.query.Inoutput;
 import fr.prima.omiscid.control.message.query.Input;
 import fr.prima.omiscid.control.message.query.Lock;
@@ -527,7 +528,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
                             controlAnswer.addControlAnswerItem(answerItem);
                         }
                     } else if (item.getChoiceValue() instanceof Variable) {
-                        ControlAnswerItem answerItem = generateVariableAnswer(item.getVariable(), remoteId);
+                        ControlAnswerItem answerItem = generateVariableAnswerChoice(item.getVariable(), remoteId);
                         if (answerItem != null) {
                             controlAnswer.addControlAnswerItem(answerItem);
                         }
@@ -556,6 +557,8 @@ public class ControlServer extends MessageManager implements VariableChangeListe
                         if (answerItem != null) {
                             controlAnswer.addControlAnswerItem(answerItem);
                         }
+                    } else if (item.getChoiceValue() instanceof FullDescription) {
+                        generateFullGlobalDescription(controlAnswer);
                     }
                 }
             }
@@ -573,65 +576,16 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         }
     }
 
-
-//    /**
-//     * Processes a message received by the control server.
-//     *
-//     * @param message
-//     *            a message received by the control server
-//     */
-//    protected void processXMLMessage(XmlMessage message) {
-//        // System.out.println("in ControlServer::processAMessage");
-//        if (message.getRootElement() != null) {
-//            Element root = message.getRootElement();
-//            if (root.getNodeName().equals("controlQuery")) {
-//                Attr attrId = root.getAttributeNode("id");
-//
-//                String str = "";
-//                NodeList nodeList = root.getChildNodes();
-//                if (nodeList.getLength() == 0) {
-//                    // global description
-//                    str = generateShortGlobalDescription();
-//                } else {
-//                    for (int i = 0; i < nodeList.getLength(); i++) {
-//                        Node cur = nodeList.item(i);
-//                        if (cur.getNodeType() == Node.ELEMENT_NODE) {
-//                            String curName = cur.getNodeName();
-//                            if (curName.equals(ConnectorType.INPUT.getXMLTag())) {
-//                                str += processInOutputQuery((Element) cur, ConnectorType.INPUT);
-//                            } else if (curName.equals(ConnectorType.OUTPUT.getXMLTag())) {
-//                                str += processInOutputQuery((Element) cur, ConnectorType.OUTPUT);
-//                            } else if (curName.equals(ConnectorType.INOUTPUT.getXMLTag())) {
-//                                str += processInOutputQuery((Element) cur, ConnectorType.INOUTPUT);
-//                            } else if (curName.equals("variable")) {
-//                                str += processVariableQuery((Element) cur, message.getPeerId());
-//                            } else if (curName.equals("connect")) {
-//                                str += processConnectQuery((Element) cur);
-//                            } else if (curName.equals("subscribe")) {
-//                                str += processSubscribeQuery((Element) cur, message.getPeerId(), true);
-//                            } else if (curName.equals("unsubscribe")) {
-//                                str += processSubscribeQuery((Element) cur, message.getPeerId(), false);
-//                            } else if (curName.equals("lock")) {
-//                                str += processLockQuery((Element) cur, message.getPeerId());
-//                            } else if (curName.equals("unlock")) {
-//                                str += processUnlockQuery((Element) cur, message.getPeerId());
-//                            } else
-//                                System.err.println("unknow tag : " + curName);
-//                        }
-//                    }
-//                }
-//
-//                str = "<controlAnswer id=\"" + attrId.getValue() + "\">" + str + "</controlAnswer>";
-//
-//                if (!tcpServer.sendToOneClient(str.getBytes(), message.getPeerId())) {
-//                    System.err.println("Warning: ControlServer: Send failed: peer not found : " + BipUtils.intTo8HexString(message.getPeerId()));
-//                }
-//            } else {
-//                System.err.println("Warning: in ControlServer#processAMessage, Unknown Tag: " + message.getRootElement().getNodeName());
-//            }
-//        }
-//    }
-
+    private void generateFullGlobalDescription(ControlAnswer controlAnswer) {
+        for (VariableAttribute variable : variablesSet) {
+            controlAnswer.addControlAnswerItem(variable.generateControlAnswer());
+        }
+        for (InOutputAttribute inoutput : inoutputsSet) {
+            String name = inoutput.getName();
+            ConnectorType connectorType = inoutput.getConnectorType();
+            controlAnswer.addControlAnswerItem(generateInoutputAnswer(name, connectorType));
+        }
+    }
 
     private void generateShortGlobalDescription(ControlAnswer controlAnswer) {
         for (VariableAttribute variable : variablesSet) {
@@ -642,14 +596,14 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         }
     }
 
-    private ControlAnswerItem generateInoutputAnswer(String name, ConnectorType input) {
-        InOutputAttribute ioa = findInOutput(name, input);
+    private ControlAnswerItem generateInoutputAnswer(String name, ConnectorType connectorType) {
+        InOutputAttribute ioa = findInOutput(name, connectorType);
         if (ioa != null) {
             return ioa.generateControlAnswer();
         }
         return null;
     }
-    private ControlAnswerItem generateVariableAnswer(Variable variable, int peerId) {
+    private ControlAnswerItem generateVariableAnswerChoice(Variable variable, int peerId) {
         VariableAttribute va = findVariable(variable.getName());
         if (va != null) {
             if (variable.getValue() == null) {

@@ -26,6 +26,7 @@ import fr.prima.omiscid.control.message.answer.ControlEvent;
 import fr.prima.omiscid.control.message.answer.types.CA_LockResultType;
 import fr.prima.omiscid.control.message.query.ControlQuery;
 import fr.prima.omiscid.control.message.query.ControlQueryItem;
+import fr.prima.omiscid.control.message.query.FullDescription;
 import fr.prima.omiscid.control.message.query.Inoutput;
 import fr.prima.omiscid.control.message.query.Input;
 import fr.prima.omiscid.control.message.query.Lock;
@@ -446,20 +447,89 @@ public class ControlClient implements BipMessageListener {
      */
     // \REVIEWTASK should optimize this process (one network exchange only?)
     public void queryCompleteDescription() {
-        for (String input : inputNamesSet) {
-            queryInputDescription(input);
-        }
-        for (String output : outputNamesSet) {
-            queryOutputDescription(output);
-        }
-        for (String inoutput : inOutputNamesSet) {
-            queryInOutputDescription(inoutput);
-        }
-        for (String variable : variableNamesSet) {
-            VariableAttribute variableAttribute = queryVariableDescription(variable);
-            if (variableAttribute == null) {
-                System.err.println("Error queryVariableDescription : " + variable);
+        ControlQuery controlQuery = new ControlQuery();
+        FullDescription fullDescription = new FullDescription();
+        ControlQueryItem controlQueryItem = new ControlQueryItem();
+        controlQueryItem.setFullDescription(fullDescription);
+        controlQuery.addControlQueryItem(controlQueryItem);
+
+        try {
+            ControlAnswer controlAnswer = queryToServer(controlQuery, true);
+            if (controlAnswer != null) {
+                for (ControlAnswerItem item : controlAnswer.getControlAnswerItem()) {
+                    processControlAnswerItem(item);
+                }
             }
+        } catch (MarshalException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        
+//        for (String input : inputNamesSet) {
+//            queryInputDescription(input);
+//        }
+//        for (String output : outputNamesSet) {
+//            queryOutputDescription(output);
+//        }
+//        for (String inoutput : inOutputNamesSet) {
+//            queryInOutputDescription(inoutput);
+//        }
+//        for (String variable : variableNamesSet) {
+//            VariableAttribute variableAttribute = queryVariableDescription(variable);
+//            if (variableAttribute == null) {
+//                System.err.println("Error queryVariableDescription : " + variable);
+//            }
+//        }
+    }
+
+    private void processControlAnswerItem(ControlAnswerItem item) {
+        Object choice = item.getChoiceValue();
+        if (choice instanceof fr.prima.omiscid.control.message.answer.Variable) {
+            fr.prima.omiscid.control.message.answer.Variable variable = item.getVariable();
+            VariableAttribute vattr = findVariable(variable.getName());
+            VariableAttribute attr = processVariableDescription(item, vattr);
+            if (vattr == null) {
+                variableAttributesSet.add(attr);
+            }
+            if (!variableNamesSet.contains(variable.getName())) {
+                variableNamesSet.add(variable.getName());
+            }
+        } else if (choice instanceof fr.prima.omiscid.control.message.answer.Inoutput) {
+            fr.prima.omiscid.control.message.answer.Inoutput inoutput = item.getInoutput();
+            InOutputAttribute ioattr = findInOutput(inoutput.getName());
+            InOutputAttribute attr = processInOutputDescription(item, ioattr);
+            if (ioattr == null) {
+                inOutputAttributesSet.add(attr);
+            }
+            if (!inOutputNamesSet.contains(inoutput.getName())) {
+                inOutputNamesSet.add(inoutput.getName());
+            }
+        } else if (choice instanceof fr.prima.omiscid.control.message.answer.Output) {
+            fr.prima.omiscid.control.message.answer.Output inoutput = item.getOutput();
+            InOutputAttribute ioattr = findOutput(inoutput.getName());
+            InOutputAttribute attr = processInOutputDescription(item, ioattr);
+            if (ioattr == null) {
+                outputAttributesSet.add(attr);
+            }
+            if (!outputNamesSet.contains(inoutput.getName())) {
+                outputNamesSet.add(inoutput.getName());
+            }
+        } else if (choice instanceof fr.prima.omiscid.control.message.answer.Input) {
+            fr.prima.omiscid.control.message.answer.Input inoutput = item.getInput();
+            InOutputAttribute ioattr = findInput(inoutput.getName());
+            InOutputAttribute attr = processInOutputDescription(item, ioattr);
+            if (ioattr == null) {
+                inputAttributesSet.add(attr);
+            }
+            if (!inputNamesSet.contains(inoutput.getName())) {
+                inputNamesSet.add(inoutput.getName());
+            }
+        } else {
+            System.err.println("unhandled answer element "+choice);
         }
     }
 
