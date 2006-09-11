@@ -141,9 +141,11 @@ public class OmiscidService {
      * @return the BIP peer id of the remote service
      */
     public int getRemotePeerId() {
-        String str = serviceInformation.getStringProperty(GlobalConstants.constantNameForPeerId);
+        String str = OmiscidService.cleanName(serviceInformation.getFullName());
+//        String str = serviceInformation.getStringProperty(GlobalConstants.constantNameForPeerId);
         if (str != null) {
-            return Utility.hexStringToInt(VariableAccessType.realValueFromDnssdValue(str));
+            return Utility.hexStringToInt(str);
+//            return Utility.hexStringToInt(VariableAccessType.realValueFromDnssdValue(str));
         } else {
             ControlClient ctrlClient = initControlClient();
             if (ctrlClient != null) {
@@ -268,7 +270,18 @@ public class OmiscidService {
     }
 
     public String getSimplifiedName() {
-        return cleanName(getFullName());
+        String str = serviceInformation.getStringProperty(GlobalConstants.constantNameForName);
+        if (str != null) {
+            return VariableAccessType.realValueFromDnssdValue(str);
+        } else {
+            ControlClient ctrlClient = initControlClient();
+            if (ctrlClient != null) {
+                String pid = ctrlClient.findVariable(GlobalConstants.constantNameForName).getValueStr();
+                closeControlClient();
+                return pid;
+            }
+            return "";
+        }
     }
 
     private boolean isServiceInformationDescriptionFull() {

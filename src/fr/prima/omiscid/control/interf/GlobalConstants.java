@@ -8,6 +8,7 @@ public final class GlobalConstants {
     public static final String dnssdWorkingDomainEnvironmentVariableName = "OMISCID_WORKING_DOMAIN";
 
     public static final String constantNameForPeerId = "id";
+    public static final String constantNameForName = "name";
     public static final String constantNameForOwner = "owner";
     public static final String constantNameForClass = "class";
     public static final String variableNameForLock = "lock";

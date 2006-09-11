@@ -11,6 +11,18 @@ package fr.prima.omiscid.dnssd.interf;
  * @author emonet
  */
 public interface ServiceRegistration {
+    
+    public static interface ServiceNameProducer {
+        /**
+         * This method being called does not necessarilly means that
+         * the returned service name has been tried for registration.
+         * For example, implementations can cache a certain number of
+         * returned service names and return as soon it can register one.
+         * 
+         * @return null or the next service name to try to for registration.
+         */
+        String getServiceName();
+    }
 
     /**
      * Adds a property to the property set under dnssd. The properties must be
@@ -52,6 +64,16 @@ public interface ServiceRegistration {
      * @return whether the registration was successful
      */
     boolean register(int port);
+
+    /**
+     * Tries to register the service with a fixed name. It tries iterativelly the
+     * service names returned by the given {@link ServiceNameProducer}.
+     *   
+     * @param port
+     * @param serviceNameProducer
+     * @return whether the registration was successful using one of the names given by the {@link ServiceNameProducer}
+     */
+    boolean register(int port, ServiceNameProducer serviceNameProducer);
 
     boolean isRegistered();
 

@@ -46,6 +46,10 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
         }
         return registered;
     }
+    
+    public boolean register(int port, ServiceNameProducer serviceNameProducer) {
+        throw new UnsupportedOperationException();
+    }
 
     public boolean isRegistered() {
         return registered;

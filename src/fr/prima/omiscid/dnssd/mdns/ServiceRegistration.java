@@ -85,6 +85,24 @@ public class ServiceRegistration implements RegisterListener, fr.prima.omiscid.d
         return registered;
     }
 
+    public synchronized boolean register(int port, ServiceNameProducer serviceNameProducer) {
+        registered = false;
+        String nextTry = serviceNameProducer.getServiceName();
+        while (!registered && nextTry != null) {
+            setName(nextTry);
+            try {
+                dnssdRegistration = DNSSD.register(DNSSD.NO_AUTO_RENAME, IF_INDEX, serviceName, registrationType, DOMAIN, null, port, txtRecord, this);
+                this.wait();
+            } catch (com.apple.dnssd.DNSSDException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            nextTry = serviceNameProducer.getServiceName();
+        }
+        return registered;
+    }
+
     public synchronized boolean isRegistered() {
         return registered;
     }
@@ -96,6 +114,5 @@ public class ServiceRegistration implements RegisterListener, fr.prima.omiscid.d
     public synchronized String getRegisteredName() {
         return registeredServiceName;
     }
-
 
 }

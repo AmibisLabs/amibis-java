@@ -84,10 +84,12 @@ import fr.prima.omiscid.user.variable.VariableAccessType;
 public class ControlServer extends MessageManager implements VariableChangeListener {
 
     /** the service id used OMiSCID exchange */
-    private final int peerId = BipUtils.generateBIPPeerId();
+    private int peerId = BipUtils.generateBIPPeerId();
 
     /** TCP server : the control server */
     private TcpServer tcpServer = null;
+
+    private VariableAttribute nameVariable;
 
     /**
      * Set of variable descriptions (Set of VariableAttribute object)
@@ -126,7 +128,12 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      */
     public ControlServer(String serviceName) {
         initDefaultVar();
-        serviceRegistration = OmiscidService.dnssdFactory.createServiceRegistration(serviceName, OmiscidService.REG_TYPE());
+        setServiceName(serviceName);
+        initServiceRegistration();
+    }
+
+    private void initServiceRegistration() {
+        serviceRegistration = OmiscidService.dnssdFactory.createServiceRegistration("O3MiSCID_default_name", OmiscidService.REG_TYPE());
     }
 
     /**
@@ -138,7 +145,6 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      */
     public ControlServer() {
         initDefaultVar();
-        serviceRegistration = OmiscidService.dnssdFactory.createServiceRegistration("O3MiSCID_default_name", OmiscidService.REG_TYPE());
     }
 
     /**
@@ -154,7 +160,8 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      * that is to say before calling {@link #startServer(int)}.
      */
     public void setServiceName(String serviceName) {
-        serviceRegistration.setName(serviceName);
+//        serviceRegistration.setName(serviceName);
+        nameVariable.setValueStr(serviceName);
     }
 
     /**
@@ -164,9 +171,9 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         VariableAttribute lockVar = addVariable(GlobalConstants.variableNameForLock);
         lockIntegerVar = new IntVariableAttribute(lockVar, 0);
 
-        VariableAttribute peerIdVariable = addVariable(GlobalConstants.constantNameForPeerId);
-        peerIdVariable.setValueStr(Utility.intTo8HexString(peerId));
-        peerIdVariable.setAccessType(VariableAccessType.CONSTANT);
+//        VariableAttribute peerIdVariable = addVariable(GlobalConstants.constantNameForPeerId);
+//        peerIdVariable.setValueStr(Utility.intTo8HexString(peerId));
+//        peerIdVariable.setAccessType(VariableAccessType.CONSTANT);
 
         VariableAttribute ownerVariable = addVariable(GlobalConstants.constantNameForOwner);
         ownerVariable.setValueStr(System.getProperty("user.name"));
@@ -175,6 +182,10 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         VariableAttribute classVariable = addVariable(GlobalConstants.constantNameForClass);
         classVariable.setValueStr(GlobalConstants.defaultServiceClassValue);
         classVariable.setAccessType(VariableAccessType.CONSTANT);
+
+        nameVariable = addVariable(GlobalConstants.constantNameForName);
+        nameVariable.setValueStr("***Unnamed***");
+        nameVariable.setAccessType(VariableAccessType.CONSTANT);
     }
 
     /**
@@ -205,9 +216,9 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             // register the service
             if (registerTheService(tcpServer.getTcpPort())) {
 //                setStatus(STATUS_INIT);
-                VariableAttribute variableAttribute = this.addVariable("name");
-                variableAttribute.setAccessType(VariableAccessType.CONSTANT);
-                variableAttribute.setValueStr(serviceRegistration.getRegisteredName());
+//                VariableAttribute variableAttribute = this.addVariable("name");
+//                variableAttribute.setAccessType(VariableAccessType.CONSTANT);
+//                variableAttribute.setValueStr(serviceRegistration.getRegisteredName());
                 return true;
             } else {
                 return false;
@@ -251,7 +262,24 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         } catch (Exception e) {
             serviceRegistration.addProperty(GlobalConstants.keyForFullTextRecord, GlobalConstants.keyForFullTextRecordNonFull);
         }
-        return serviceRegistration.register(port);
+        boolean registrationDone = serviceRegistration.register(port, new ServiceRegistration.ServiceNameProducer() {
+            int remainingTries = 5;
+            public String getServiceName() {
+                if (remainingTries < 1) {
+                    return null;
+                } else {
+                    remainingTries--;
+                    return Utility.intTo8HexString(BipUtils.generateBIPPeerId());
+                }
+            }
+        });
+        if (registrationDone) {
+            this.peerId = Utility.hexStringToInt(serviceRegistration.getRegisteredName());
+            VariableAttribute peerIdVariable = addVariable(GlobalConstants.constantNameForPeerId);
+            peerIdVariable.setValueStr(Utility.intTo8HexString(peerId));
+            peerIdVariable.setAccessType(VariableAccessType.CONSTANT);
+        }
+        return registrationDone;
     }
 
     /*
@@ -341,17 +369,22 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      * @return the service name
      */
     public String getServiceName() {
-        return serviceRegistration.getName();
+        return nameVariable.getValueStr();
+//        return serviceRegistration.getName();
     }
 
     /**
      * Accesses the name created during registration: available only after
      * registration.
+     * 
+     * This method is deprecated as there is no more difference between
+     * desired name and registered name. Use {@link #getServiceName()} instead.
      *
      * @return the service name after registration
      */
-    public String getRegisteredServiceName() {
-        return serviceRegistration.getRegisteredName();
+    @Deprecated public String getRegisteredServiceName() {
+        return getServiceName();
+//        return serviceRegistration.getRegisteredName();
     }
 
     /**
