@@ -618,10 +618,12 @@ public class ControlServer extends MessageManager implements VariableChangeListe
                     }
                 }
             }
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            controlAnswer.marshal(new OutputStreamWriter(byteArrayOutputStream));
-            if (!tcpServer.sendToOneClient(byteArrayOutputStream.toByteArray(), message.getPeerId())) {
-                System.err.println("Warning: ControlServer: Send failed: peer not found : " + Utility.intTo8HexString(message.getPeerId()));
+            if (controlAnswer.getControlAnswerItemCount() != 0) {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                controlAnswer.marshal(new OutputStreamWriter(byteArrayOutputStream));
+                if (!tcpServer.sendToOneClient(byteArrayOutputStream.toByteArray(), message.getPeerId())) {
+                    System.err.println("Warning: ControlServer: Send failed: peer not found : " + Utility.intTo8HexString(message.getPeerId()));
+                }
             }
         } catch (MarshalException e) {
             // TODO Auto-generated catch block
