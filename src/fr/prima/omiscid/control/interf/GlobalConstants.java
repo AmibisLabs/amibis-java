@@ -7,7 +7,7 @@ public final class GlobalConstants {
     public static final String dnssdDefaultWorkingDomain = "_bip._tcp";
     public static final String dnssdWorkingDomainEnvironmentVariableName = "OMISCID_WORKING_DOMAIN";
 
-    public static final String constantNameForPeerId = "id";
+    public static final String constantNameForPeerId = "peerId";
     public static final String constantNameForName = "name";
     public static final String constantNameForOwner = "owner";
     public static final String constantNameForClass = "class";
