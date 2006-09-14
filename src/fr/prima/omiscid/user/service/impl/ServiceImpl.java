@@ -604,7 +604,7 @@ public class ServiceImpl implements Service {
         
         for (int i=0; i<filters.length; i++) {
             final ServiceFilter finalFilter = filters[i];
-            tmpAssociation.put(waitForServices.needService(".*", new OmiscidServiceFilter() {
+            tmpAssociation.put(waitForServices.needService(new OmiscidServiceFilter() {
                 public boolean isAGoodService(OmiscidService s) {
 //                    return finalFilter.acceptService(new ServiceProxyImpl(s));
                     return finalFilter.acceptService(ServiceProxyImpl.forService(s));

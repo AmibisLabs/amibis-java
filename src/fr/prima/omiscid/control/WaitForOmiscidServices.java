@@ -41,20 +41,6 @@ public class WaitForOmiscidServices {
     }
 
     /**
-     * Adds a new service to the required services. The service is only
-     * specified by its name, no specific filter is given.
-     *
-     * @param name
-     *            the name of the desired service ({@link OmiscidServiceWaiter#OmiscidServiceWaiter(String, OmiscidServiceFilter)})
-     * @return the index to retrieve the desired service via
-     *         {@link #getService(int)} or to test whether it has been found via
-     *         {@link #isResolved(int)}
-     */
-    public synchronized int needService(String name) {
-        return needService(name, null);
-    }
-
-    /**
      * Adds a new service to the required services.
      *
      * @param name
@@ -65,8 +51,8 @@ public class WaitForOmiscidServices {
      * @return the index to retrieve the wanted service or to know if it has
      *         been found
      */
-    public synchronized int needService(String name, OmiscidServiceFilter filter) {
-        searchServiceArray.add(new OmiscidServiceWaiter(name, filter, peerId));
+    public synchronized int needService(OmiscidServiceFilter filter) {
+        searchServiceArray.add(new OmiscidServiceWaiter(filter, peerId));
         searchServiceArray.lastElement().startSearch();
         return searchServiceArray.size() - 1;
     }

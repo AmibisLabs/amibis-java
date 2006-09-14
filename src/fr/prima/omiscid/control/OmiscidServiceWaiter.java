@@ -18,8 +18,6 @@ public class OmiscidServiceWaiter implements ServiceEventListener {
 
     private ServiceBrowser serviceBrowser;
 
-    private String baseServiceName;
-
     private OmiscidServiceFilter omiscidServiceFilter;
 
     private OmiscidService foundService = null;
@@ -38,13 +36,11 @@ public class OmiscidServiceWaiter implements ServiceEventListener {
      * your application has no BIP peer id, {@link BipUtils#generateBIPPeerId()}
      * can be used to get one.
      *
-     * @param baseServiceNameRegexp
      * @param omiscidServiceFilter
      * @param localPeerId
      *            the BIP peer id of the local peer
      */
-    public OmiscidServiceWaiter(String baseServiceNameRegexp, OmiscidServiceFilter omiscidServiceFilter, int localPeerId) {
-        this.baseServiceName = baseServiceNameRegexp;
+    public OmiscidServiceWaiter(OmiscidServiceFilter omiscidServiceFilter, int localPeerId) {
         this.omiscidServiceFilter = omiscidServiceFilter;
         this.peerId = localPeerId;
     }
@@ -103,13 +99,11 @@ public class OmiscidServiceWaiter implements ServiceEventListener {
 
     public synchronized void serviceEventReceived(ServiceEvent e) {
         if (e.isFound() && !isResolved()) {
-            if (OmiscidService.cleanName(e.getServiceInformation().getFullName()).matches(OmiscidServiceFilters.baseNameRegexp(baseServiceName))) {
-                OmiscidService omiscidService = new OmiscidService(peerId, e.getServiceInformation());
-                if (omiscidServiceFilter == null || omiscidServiceFilter.isAGoodService(omiscidService)) {
-                    foundService = omiscidService;
-                    serviceBrowser.stop();
-                    this.notify();
-                }
+            OmiscidService omiscidService = new OmiscidService(peerId, e.getServiceInformation());
+            if (omiscidServiceFilter == null || omiscidServiceFilter.isAGoodService(omiscidService)) {
+                foundService = omiscidService;
+                serviceBrowser.stop();
+                this.notify();
             }
         }
     }
