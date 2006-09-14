@@ -48,11 +48,11 @@ public class ServiceInformation implements fr.prima.omiscid.dnssd.interf.Service
     }
 
     /*package*/ static String fullName(String name, String type, String domain) {
-        return name+"."+type+"."+domain;
+        return name+"."+type+"."+domain+".";
     }
 
     public String getHostName() {
-        return tuple.f;
+        return tuple.f+".";
     }
 
     public int getPort() {

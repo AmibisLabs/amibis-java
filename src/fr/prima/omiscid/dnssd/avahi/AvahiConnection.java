@@ -100,7 +100,9 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
 //        System.err.println("new "+serviceInformation.getFullName());
         assert !services.containsKey(serviceInformation.getFullName());
         services.put(serviceInformation.getFullName(), serviceInformation);
-        avahiBrowserListener.serviceFound(serviceInformation);
+        if (avahiBrowserListener!=null) {
+            avahiBrowserListener.serviceFound(serviceInformation);
+        }
     }
     private synchronized void notifyServiceLost(ItemRemove a) {
         String fullName = fr.prima.omiscid.dnssd.avahi.ServiceInformation.fullName(a.name, a.type, a.domain);
