@@ -3,11 +3,6 @@ package fr.prima.omiscid.dnssd.avahi;
 import java.io.UnsupportedEncodingException;
 import java.util.Hashtable;
 
-import com.apple.dnssd.DNSSD;
-
-import fr.prima.omiscid.dnssd.client.ServiceRegistrator;
-import fr.prima.omiscid.dnssd.interf.ServiceRegistration.ServiceNameProducer;
-
 public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.ServiceRegistration {
 
     private AvahiConnection avahiConnection;

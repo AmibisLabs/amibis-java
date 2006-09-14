@@ -23,13 +23,13 @@ import fr.prima.omiscid.control.interf.GlobalConstants;
 public class TestDBus {
     public static void main(String[] args) throws DBusException, InterruptedException, ClassNotFoundException {
         
-        Class c = Class.forName("java.util.List");
+//        Class c = Class.forName("java.util.List");
         Object[] object = (Object[]) Array.newInstance(List.class, 19);
         object[0] = wrap(new byte[] {10});
         object[0] = wrap(new Vector());
         
-        boolean owners = true;
-        boolean users = true;
+//        boolean owners = true;
+//        boolean users = true;
         int connection = DBusConnection.SYSTEM;
 
         DBusConnection conn = DBusConnection.getConnection(connection);
@@ -90,7 +90,7 @@ public class TestDBus {
         frame.setVisible(true);
         
 //        conn.callMethodAsync(avahi, "ServiceBrowserNew",
-        ServiceBrowser browser = (ServiceBrowser) avahi.ServiceBrowserNew(
+        avahi.ServiceBrowserNew(
                 -1, // -1 for AVAHI_IF_UNSPEC
                 -1, // -1 for AVAHI_PROTO_UNSPEC
                 GlobalConstants.dnssdDefaultWorkingDomain,
