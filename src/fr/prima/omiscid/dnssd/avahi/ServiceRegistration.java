@@ -44,7 +44,9 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
 
     public boolean register(int port) {
         this.port = port;
-        return avahiConnection.register(this);
+        // Do not try to do some renaming
+        // TODO if needed, could have some renaming rules
+        return avahiConnection.register(this) != null;
     }
 
     public boolean isRegistered() {
@@ -81,11 +83,15 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
     }
 
     public boolean register(int port, ServiceNameProducer serviceNameProducer) {
+        this.port = port;
         registered = false;
         String nextTry = serviceNameProducer.getServiceName();
         while (nextTry != null) {
             setName(nextTry);
-            if (avahiConnection.register(this)) {
+            String registeredName = avahiConnection.register(this);
+            if (registeredName != null) {
+                registered = true;
+                setRegisteredServiceName(registeredName);
                 return true;
             }
             nextTry = serviceNameProducer.getServiceName();

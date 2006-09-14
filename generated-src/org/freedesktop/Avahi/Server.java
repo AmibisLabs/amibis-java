@@ -37,7 +37,7 @@ public interface Server extends DBusInterface
   public Sextuple<Integer, Integer, String, Integer, String, UInt32> ResolveHostName(int _interface, int protocol, String name, int aprotocol, UInt32 flags);
   public Sextuple<Integer, Integer, Integer, String, String, UInt32> ResolveAddress(int _interface, int protocol, String address, UInt32 flags);
   public NTuple11<Integer, Integer, String, String, String, String, Integer, String, UInt16, List<List<Byte>>, UInt32> ResolveService(int _interface, int protocol, String name, String type, String domain, int aprotocol, UInt32 flags);
-  public DBusInterface EntryGroupNew();
+  public EntryGroup EntryGroupNew();
   public DBusInterface DomainBrowserNew(int _interface, int protocol, String domain, int btype, UInt32 flags);
   public DBusInterface ServiceTypeBrowserNew(int _interface, int protocol, String domain, UInt32 flags);
   @NoReply public DBusInterface ServiceBrowserNew(int _interface, int protocol, String type, String domain, UInt32 flags);

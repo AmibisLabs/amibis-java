@@ -243,7 +243,7 @@ public class OmiscidService {
      * @return the cleaned service name
      */
     public static String cleanName(String fullName) {
-        return fullName.replaceAll(("." + OmiscidService.REG_TYPE + ".local.$").replaceAll("[.]", "\\."), "").replaceAll("\\\\032", " ");
+        return fullName.replaceAll(("." + OmiscidService.REG_TYPE + ".local.?$").replaceAll("[.]", "\\."), "").replaceAll("\\\\032", " ");
     }
 
     public ServiceInformation getServiceInformation() {

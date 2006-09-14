@@ -10,6 +10,7 @@ import org.freedesktop.Avahi.EntryGroup;
 import org.freedesktop.Avahi.NTuple11;
 import org.freedesktop.Avahi.Server;
 import org.freedesktop.Avahi.ServiceBrowser;
+import org.freedesktop.Avahi.EntryGroup.StateChanged;
 import org.freedesktop.Avahi.ServiceBrowser.ItemRemove;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.DBusException;
@@ -31,6 +32,7 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
     private DBusConnection dbus;
     private Server avahi;
     private EntryGroup entryGroup;
+    private String registeredName = null;
     
     public AvahiConnection() {
         try {
@@ -74,7 +76,7 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
                     -1, // -1 for AVAHI_PROTO_UNSPEC
                     registrationType,
                     "local",
-                    new UInt32(0)  // 2 for AVAHI_LOOKUP_USE_MULTICAST
+                    new UInt32(0)
             );
         } catch (DBusException e) {
             // TODO Auto-generated catch block
@@ -95,54 +97,80 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
     
     private synchronized void notifyServiceFound(NTuple11<Integer, Integer, String, String, String, String, Integer, String, UInt16, List<List<Byte>>, UInt32> serviceInfo) {
         ServiceInformation serviceInformation = new fr.prima.omiscid.dnssd.avahi.ServiceInformation(serviceInfo); 
-        System.err.println("new "+serviceInformation.getFullName());
+//        System.err.println("new "+serviceInformation.getFullName());
         assert !services.containsKey(serviceInformation.getFullName());
+        services.put(serviceInformation.getFullName(), serviceInformation);
         avahiBrowserListener.serviceFound(serviceInformation);
     }
     private synchronized void notifyServiceLost(ItemRemove a) {
         String fullName = fr.prima.omiscid.dnssd.avahi.ServiceInformation.fullName(a.name, a.type, a.domain);
-        System.err.println("rem "+fullName);
+//        System.err.println("rem "+fullName);
         ServiceInformation serviceInformation = services.remove(fullName);
         assert serviceInformation != null;
         avahiBrowserListener.serviceLost(serviceInformation);
 //        assert services.containsKey(a.name+a.domain);
     }
 
-    public boolean register(ServiceRegistration registration) {
+    public synchronized String register(final ServiceRegistration registration) {
         assert entryGroup == null;
-        entryGroup = (EntryGroup) avahi.EntryGroupNew();
-        List<List<Byte>> txt = new Vector<List<Byte>>();
-        for(Entry<String,byte[]> entry : registration.getProperties().entrySet()) {
-            Vector<Byte> list = new Vector<Byte>();
-            for (byte b : entry.getKey().getBytes()) {
-                list.add(b);
-            }
-            if (entry.getValue() != null) {
-                list.add("=".getBytes()[0]);
-                for (byte b : entry.getValue()) {
+        registeredName = null;
+        try {
+            dbus.addSigHandler(EntryGroup.StateChanged.class, new DBusSigHandler<EntryGroup.StateChanged>() {
+                public void handle(StateChanged a) {
+                    if (a.state == 1) {
+                        // AVAHI_ENTRY_GROUP_ESTABLISHED
+                        registrationDone(registration.getName());
+                    } else {
+                        registrationDone(null);
+                    }
+                }
+            });
+            entryGroup = (EntryGroup) avahi.EntryGroupNew();
+            List<List<Byte>> txt = new Vector<List<Byte>>();
+            for(Entry<String,byte[]> entry : registration.getProperties().entrySet()) {
+                Vector<Byte> list = new Vector<Byte>();
+                for (byte b : entry.getKey().getBytes()) {
                     list.add(b);
                 }
+                if (entry.getValue() != null) {
+                    list.add("=".getBytes()[0]);
+                    for (byte b : entry.getValue()) {
+                        list.add(b);
+                    }
+                }
+                txt.add(list);
             }
-            txt.add(list);
+            entryGroup.AddService(
+                    -1,
+                    -1, 
+                    new UInt32(0),
+                    registration.getName(),
+                    registration.getRegistrationType(), 
+                    "local",
+                    "",
+                    new UInt16(registration.getPort()),
+                    txt);
+            entryGroup.Commit();
+            this.wait();
+        } catch (DBusException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        entryGroup.AddService(
-                -1,
-                -1, 
-                new UInt32(0),
-                registration.getName(),
-                registration.getRegistrationType(), 
-                "local",
-                "",
-                new UInt16(registration.getPort()),
-                txt);
-        entryGroup.Commit();
-        return false;
+        return registeredName;
+    }
+
+    private synchronized void registrationDone(String registeredName) {
+        this.registeredName = registeredName;
+        this.notify();
     }
 
     public void unregister(ServiceRegistration registration) {
-//        assert entryGroup != null;
-//        entryGroup.Free();
-//        entryGroup = null;
+        assert entryGroup != null;
+        entryGroup.Free();
+        entryGroup = null;
     }
 
     

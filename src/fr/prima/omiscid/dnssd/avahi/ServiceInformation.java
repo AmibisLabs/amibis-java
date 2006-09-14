@@ -2,7 +2,6 @@ package fr.prima.omiscid.dnssd.avahi;
 
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.freedesktop.Avahi.NTuple11;
 import org.freedesktop.dbus.UInt16;
@@ -39,9 +38,9 @@ public class ServiceInformation implements fr.prima.omiscid.dnssd.interf.Service
             }
             properties.put(key.toString(), value);
         }
-        for(Entry<String,byte[]> entry : properties.entrySet()) {
-            System.out.println("properties["+entry.getKey()+"] = '"+new String(entry.getValue())+"'");
-        }
+//        for(Entry<String,byte[]> entry : properties.entrySet()) {
+//            System.out.println("properties["+entry.getKey()+"] = '"+new String(entry.getValue())+"'");
+//        }
     }
 
     public String getFullName() {
