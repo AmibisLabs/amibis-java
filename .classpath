@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="var" path="CASTOR/xerces-J_1.4.0.jar"/>
 	<classpathentry kind="var" path="CASTOR/commons-logging.jar"/>
+	<classpathentry sourcepath="/local_home/softs/prefix/libdbus-java-1.9" kind="lib" path="lib/libdbus-java-1.9.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="user-level-src"/>
 	<classpathentry kind="src" path="src"/>
