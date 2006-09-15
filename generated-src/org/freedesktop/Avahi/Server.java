@@ -41,7 +41,7 @@ public interface Server extends DBusInterface
   public DBusInterface DomainBrowserNew(int _interface, int protocol, String domain, int btype, UInt32 flags);
   public DBusInterface ServiceTypeBrowserNew(int _interface, int protocol, String domain, UInt32 flags);
   @NoReply public DBusInterface ServiceBrowserNew(int _interface, int protocol, String type, String domain, UInt32 flags);
-  @NoReply public DBusInterface ServiceResolverNew(int _interface, int protocol, String name, String type, String domain, int aprotocol, UInt32 flags);
+  public DBusInterface ServiceResolverNew(int _interface, int protocol, String name, String type, String domain, int aprotocol, UInt32 flags);
   public DBusInterface HostNameResolverNew(int _interface, int protocol, String name, int aprotocol, UInt32 flags);
   public DBusInterface AddressResolverNew(int _interface, int protocol, String address, UInt32 flags);
   public DBusInterface RecordBrowserNew(int _interface, int protocol, String name, UInt16 clazz, UInt16 type, UInt32 flags);

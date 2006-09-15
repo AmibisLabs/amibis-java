@@ -128,6 +128,7 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
                 }
             });
             entryGroup = avahi.EntryGroupNew();
+            System.out.println(entryGroup);
             List<List<Byte>> txt = new Vector<List<Byte>>();
             for(Entry<String,byte[]> entry : registration.getProperties().entrySet()) {
                 Vector<Byte> list = new Vector<Byte>();
@@ -174,6 +175,11 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
         entryGroup.Free();
         entryGroup = null;
     }
-
     
 }
+
+// The running user must be in one of the following groups: dialout cdrom floppy plugdev
+// It is usually the case but not with nis (yellow pages)
+
+//@NoReply on the used Server#ServiceBrowserNew
+// EntryGroup return type for Server#EntryGroupNew
