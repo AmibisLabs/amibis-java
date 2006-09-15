@@ -128,7 +128,6 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
                 }
             });
             entryGroup = avahi.EntryGroupNew();
-            System.out.println(entryGroup);
             List<List<Byte>> txt = new Vector<List<Byte>>();
             for(Entry<String,byte[]> entry : registration.getProperties().entrySet()) {
                 Vector<Byte> list = new Vector<Byte>();
