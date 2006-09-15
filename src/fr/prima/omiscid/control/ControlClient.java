@@ -55,7 +55,7 @@ import fr.prima.omiscid.user.util.Utility;
 //\REVIEWTASK shouldn't this be a monitor?
 public class ControlClient implements BipMessageListener {
     /** The max time to wait for the answer to a query */
-    private final int maxTimeToWait = 500; // milliseconds
+    private final int maxTimeToWait = 2000; // milliseconds
 
     // \REVIEWTASK should be configurable in a specific way (env variable?)
 
@@ -803,7 +803,26 @@ public class ControlClient implements BipMessageListener {
 //          String request = "<subscribe name=\"" + va.getName() + "\"/>";
 //          queryToServer(request, false);
             try {
-                queryToServer(controlQuery, false);
+                ControlAnswer controlAnswer = queryToServer(controlQuery, true);
+                if (controlAnswer != null && controlAnswer.getControlAnswerItemCount() != 0) {
+                    VariableAttribute vattr = findVariable(varName);
+                    VariableAttribute attr = processVariableDescription(controlAnswer.getControlAnswerItem(0), vattr);
+                    if (attr == null) {
+                        if (vattr != null) {
+                            variableAttributesSet.remove(vattr);
+                        }
+                        if (variableNamesSet.contains(varName)) {
+                            variableNamesSet.remove(varName);
+                        }
+                    } else {
+                        if (vattr == null) {
+                            variableAttributesSet.add(attr);
+                        }
+                        if (!variableNamesSet.contains(varName)) {
+                            variableNamesSet.add(varName);
+                        }
+                    }
+                }
             } catch (MarshalException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

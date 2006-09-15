@@ -696,6 +696,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         if (va != null) {
             if (subscribe) {
                 va.addPeer(peerId);
+                return va.generateControlAnswer();
             } else {
                 va.removePeer(peerId);
             }
