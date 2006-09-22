@@ -79,11 +79,9 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
                     if (sharedTrueValue.equals(bundle.getString(sharedKey))) {
                         factory = new SharedFactory(factory);
                     }
-                    System.out.println(bundle.getString(sharedKey));
                 } catch (Exception e) {
                     System.out.println("Problem while testing for shared factory");
                 } 
-                System.out.println(factory);
                 return factory;
             } catch (Exception e) {
                 System.out.println("Problem while instanciating \"" + className + "\", using default factory");
