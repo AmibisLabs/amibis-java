@@ -171,7 +171,6 @@ public final class ServiceFilters {
      * removed).
      *
      * @param nameRegexp
-     * @return
      */
     public static ServiceFilter nameIs(String nameRegexp) {
         return new Name(baseNameRegexp(nameRegexp)); // @@@( \(\d+\))?@@@

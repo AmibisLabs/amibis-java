@@ -144,7 +144,7 @@ public interface ServiceProxy {
      * sent by the remote service.
      * @param peerId the remote connector perrId
      * @return the remote connector name
-     * @see ConnectorListener#messageReceived(Service, String, fr.prima.omiscid.com.interf.Message)
+     * @see ConnectorListener#messageReceived(Service, String, fr.prima.omiscid.user.connector.Message)
      */
     public String findConnector(int peerId) ;
 

@@ -46,7 +46,7 @@ public interface ServiceFactory {
 	 * @param serviceName the name of the service as it will appear in DNS-SD
 	 * @return the bip service. All access to the service will be through this object
 	 * @see fr.prima.omiscid.user.service.Service#addConnector(String, String, ConnectorType)
-	 * @see fr.prima.omiscid.user.service.Service#addVariable(String,String,String) 
+	 * @see fr.prima.omiscid.user.service.Service#addVariable(String, String, String, fr.prima.omiscid.user.variable.VariableAccessType) 
 	 */
 	public Service create(String serviceName) ;
 	
@@ -60,7 +60,7 @@ public interface ServiceFactory {
 	 * @param className the name of the service class
 	 * @return the bip service. All access to the service will be through this object
 	 * @see fr.prima.omiscid.user.service.Service#addConnector(String, String, ConnectorType)
-	 * @see fr.prima.omiscid.user.service.Service#addVariable(String,String,String) 
+	 * @see fr.prima.omiscid.user.service.Service#addVariable(String, String, String, fr.prima.omiscid.user.variable.VariableAccessType) 
 	 */
 	public Service create(String serviceName, String className);
 	
@@ -74,7 +74,7 @@ public interface ServiceFactory {
 	 * @return the bip service. All access to the service will be through this object
 	 * @throws InvalidDescriptionException the xml file does not respect the corresponding schema
 	 * @see fr.prima.omiscid.user.service.Service#addConnector(String, String, ConnectorType)
-	 * @see fr.prima.omiscid.user.service.Service#addVariable(String,String,String) 
+	 * @see fr.prima.omiscid.user.service.Service#addVariable(String, String, String, fr.prima.omiscid.user.variable.VariableAccessType) 
 	 */
 	public Service createFromXML(InputStream stream) throws InvalidDescriptionException ;	
 

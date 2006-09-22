@@ -206,7 +206,7 @@ public interface Service {
 	 * @param varName the variable name
 	 * @return the description
 	 * @throws UnknownVariable thrown if the variable has not been created
-	 * @see Service#addVariable(String, String, String)
+	 * @see Service#addVariable(String, String, String, VariableAccessType)
 	 */
 	public String getVariableDescription(String varName)
 			throws UnknownVariable ;
@@ -216,7 +216,7 @@ public interface Service {
 	 * @param varName the variable name
 	 * @return the access type (String version)
 	 * @throws UnknownVariable thrown if the variable has not been decladed
-	 * @see Service#addVariable(String, String, String)
+	 * @see Service#addVariable(String, String, String, VariableAccessType)
 	 */
 	public String getVariableAccessType(String varName)
 			throws UnknownVariable ;
@@ -226,7 +226,7 @@ public interface Service {
 	 * @param varName the variable name
 	 * @return the variable type
 	 * @throws UnknownVariable thrown if the variable has not been declared
-	 * @see Service#addVariable(String, String, String)
+	 * @see Service#addVariable(String, String, String, VariableAccessType)
 	 */
 	public String getVariableType(String varName)
 			throws UnknownVariable ;
@@ -239,7 +239,7 @@ public interface Service {
 	 * @param varName the varName
 	 * @param listener the listener
 	 * @throws UnknownVariable thrown if the variable has not been declared
-	 * @see Service#addVariable(String, String, String)
+	 * @see Service#addVariable(String, String, String, VariableAccessType)
 	 */
 	public void addLocalVariableListener(String varName, final LocalVariableListener listener)
 			throws UnknownVariable ;
@@ -249,7 +249,7 @@ public interface Service {
 	 * @param varName the varName
 	 * @param listener the listener
 	 * @throws UnknownVariable thrown if the variable has not been declared
-	 * @see Service#addVariable(String, String, String)
+	 * @see Service#addVariable(String, String, String, VariableAccessType)
 	 */
 	public void removeLocalVariableListener(String varName, LocalVariableListener listener)
 			throws UnknownVariable ;
