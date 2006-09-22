@@ -35,6 +35,7 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
     private String registeredName = null;
     
     public AvahiConnection() {
+        System.out.println("new avahi");
         try {
             dbus = DBusConnection.getConnection(DBusConnection.SYSTEM);
             avahi = (Server) dbus.getRemoteObject("org.freedesktop.Avahi", "/", Server.class);
@@ -93,6 +94,8 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
     public synchronized void stopBrowse(final AvahiBrowserListener avahiBrowserListener) {
         assert this.avahiBrowserListener==avahiBrowserListener;
         this.avahiBrowserListener = null;
+        dbus.disconnect();
+        System.out.println("disconnect avahi");
     }
     
     private synchronized void notifyServiceFound(NTuple11<Integer, Integer, String, String, String, String, Integer, String, UInt16, List<List<Byte>>, UInt32> serviceInfo) {

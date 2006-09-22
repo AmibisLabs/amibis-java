@@ -133,7 +133,6 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     public ControlServer(String serviceName) {
         initDefaultVar();
         setServiceName(serviceName);
-        initServiceRegistration();
     }
 
     private void initServiceRegistration() {
