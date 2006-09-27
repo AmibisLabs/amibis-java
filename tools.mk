@@ -28,3 +28,7 @@ prepare:
 		rm -r fr/prima/omiscid/user/*/impl ;\
 		)
 	cd ,,build && jar cvf ../$(INTERFACEJAR) .
+
+fix-headers:
+	find src -name \*.java -exec ./set-header.sh {} \;
+	find user-level-src -name \*.java -exec ./set-header.sh {} \;
