@@ -38,7 +38,7 @@ import fr.prima.omiscid.user.exception.InvalidDescriptionException;
 public interface ServiceFactory {
 	
 	/** 
-	 * Registers a new Omiscid service. This service is not yet advertised in DSN-SD. It must
+	 * Creates a new Omiscid service. This service is not yet advertised in DSN-SD. It must
 	 * be first launched (see {@link fr.prima.omiscid.user.service.Service#start}). 
 	 * <BR>
 	 * <B>Caution :</B> As long as the service is not started, it is still possible to add connectors
@@ -51,7 +51,7 @@ public interface ServiceFactory {
 	public Service create(String serviceName) ;
 	
 	/** 
-	 * Registers a new Omiscid service. This service is not yet advertised in DSN-SD. It must
+	 * Creates a new Omiscid service. This service is not yet advertised in DSN-SD. It must
 	 * be first launched (see {@link fr.prima.omiscid.user.service.Service#start}). 
 	 * <BR>
 	 * <B>Caution :</B> As long as the service is not started, it is still possible to add connectors
@@ -65,7 +65,7 @@ public interface ServiceFactory {
 	public Service create(String serviceName, String className);
 	
 	/** 
-	 * Creates a new Bip service. This service is not yet advertised in DSN-SD. It must
+	 * Creates a new Omiscid service from an XML description. This service is not yet advertised in DSN-SD. It must
 	 * first be launched (see {@link fr.prima.omiscid.user.service.Service#start})
 	 * <BR>
 	 * <B>Caution :</B> As long as the service is not started, it is still possible to add connectors 
