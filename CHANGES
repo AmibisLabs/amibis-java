@@ -1,0 +1,14 @@
+
+
+                        CHANGES
+
+In this files, you will find changes between java OMiSCID versions.
+
+
+1.0.1
+        fix: made variable subscription working properly from the common api
+        fix: removed deadlock happening in some stressing tests
+        fix: peer id propagation to the connectors after registration
+
+1.0.0
+        first release
