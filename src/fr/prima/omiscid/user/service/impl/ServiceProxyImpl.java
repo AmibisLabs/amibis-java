@@ -173,11 +173,11 @@ public class ServiceProxyImpl implements ServiceProxy {
 		VariableChangeListener variableChangeListener = new VariableChangeListener()
 		{
 			public void variableChanged(VariableAttribute var) {
-				remoteVariableChangeListener.variableChanged(ServiceProxyImpl.this, var.generateValueMessage());
+				remoteVariableChangeListener.variableChanged(ServiceProxyImpl.this, var.getValueStr());
 			}
 		} ;
-
 		listeners.put(remoteVariableChangeListener, variableChangeListener);
+        omiscidService.subscribe(varName, variableChangeListener);
 	}
 
 	/* (non-Javadoc)
@@ -200,7 +200,7 @@ public class ServiceProxyImpl implements ServiceProxy {
 		if (listeners != null)
 		{
 			VariableChangeListener varListener = listeners.get(remoteVariableChangeListener);
-			varAttr.removeListenerChange(varListener);
+            omiscidService.unsubscribe(varName, varListener);
 		}
 	}
 

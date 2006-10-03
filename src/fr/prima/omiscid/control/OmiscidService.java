@@ -33,6 +33,7 @@ import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.TcpClient;
 import fr.prima.omiscid.com.interf.BipMessageListener;
 import fr.prima.omiscid.control.interf.GlobalConstants;
+import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.dnssd.interf.ServiceInformation;
 import fr.prima.omiscid.user.connector.ConnectorType;
@@ -473,6 +474,38 @@ public class OmiscidService {
         VariableAttribute queryVariableModification = ctrlClient.queryVariableModification(name, value);
         closeControlClient();
         return queryVariableModification;
+    }
+
+    public boolean subscribe(String varName, VariableChangeListener variableChangeListener) {
+        //could hold a count of the allready subscribed variables ... to handle multiple subscribe to a same variable
+        initControlClient();
+        VariableAttribute va = findVariable(varName);
+        if (va != null) {
+            boolean subscribe = ctrlClient.subscribe(varName);
+            if (!subscribe) {
+                closeControlClient();
+            } else {
+                va.addListenerChange(variableChangeListener);
+            }
+            return subscribe;
+        } else {
+            closeControlClient();
+            return false;
+        }
+    }
+
+    public boolean unsubscribe(String varName, VariableChangeListener varListener) {
+        VariableAttribute va = findVariable(varName);
+        if (va != null) {
+            boolean unsubscribe = ctrlClient.unsubscribe(varName);
+            if (unsubscribe) {
+                va.removeListenerChange(varListener);
+                closeControlClient();
+            }
+            return unsubscribe;
+        } else {
+            return false;
+        }
     }
 
 }

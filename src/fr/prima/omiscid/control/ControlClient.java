@@ -291,7 +291,14 @@ public class ControlClient implements BipMessageListener {
                 }
             }else {
                 try {
-                    ControlEvent.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())));
+                    ControlEvent controlEvent = ControlEvent.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())));
+                    if (controlEvent.getVariable() != null) {
+                        VariableAttribute variableAttribute = findVariable(controlEvent.getVariable().getName());
+                        if (variableAttribute != null) {
+                            variableAttribute.setValueStr(controlEvent.getVariable().getValue());
+                        }
+                    }
+                    // old mecanism for backward compatibility
                     synchronized (controlEventListenersSet) {
                         for (ControlEventListener listener : controlEventListenersSet) {
                             try {
