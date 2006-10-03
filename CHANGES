@@ -4,6 +4,8 @@
 
 In this files, you will find changes between java OMiSCID versions.
 
+1.0.2
+        fix: implemented properly the sendToOneClient using a ServiceProxy
 
 1.0.1
 r1463
