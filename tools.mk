@@ -12,6 +12,10 @@ dist: prepare
 	mv $(BASEJAR) ${HOME}/tmp
 	scp $(INTERFACEJAR) $(DISTON)
 	mv $(INTERFACEJAR) ${HOME}/tmp
+	make -f tools.mk checkdomain
+
+checkdomain:
+	find src -name \*.java -exec egrep -e '_bip.+\._tcp' {} \; -exec echo "!!!!!!!!!!!!!!!!!!!!" \; -exec echo "!! DOMAIN WARNING !!" \; -exec echo "!!!!!!!!!!!!!!!!!!!!" \;
 
 prepare:
 	rm -rf ,,build
