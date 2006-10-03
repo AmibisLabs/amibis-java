@@ -114,7 +114,7 @@ import fr.prima.omiscid.user.variable.VariableAccessType;
 public class ControlServer extends MessageManager implements VariableChangeListener {
 
     /** the service id used OMiSCID exchange */
-    private int peerId = BipUtils.generateBIPPeerId();
+    private int peerId = 0;
 
     /** TCP server : the control server */
     private TcpServer tcpServer = null;
@@ -239,15 +239,16 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     public boolean startServer(int port) {
         try {
             tcpServer = new TcpServer(getPeerId(), port);
-            tcpServer.addBipMessageListener(this);
-            tcpServer.start();
 
             // register the service
             if (registerTheService(tcpServer.getTcpPort())) {
-//                setStatus(STATUS_INIT);
-//                VariableAttribute variableAttribute = this.addVariable("name");
-//                variableAttribute.setAccessType(VariableAccessType.CONSTANT);
-//                variableAttribute.setValueStr(serviceRegistration.getRegisteredName());
+                tcpServer.setPeerId(getPeerId());
+                for (InOutputAttribute io : inoutputsSet) {
+                    io.setPeerId(io.getPeerId()+peerId);
+                    assert Utility.rootPeerIdFromConnectorPeerId(io.getPeerId()) == peerId;
+                };
+                tcpServer.addBipMessageListener(this);
+                tcpServer.start();
                 return true;
             } else {
                 return false;

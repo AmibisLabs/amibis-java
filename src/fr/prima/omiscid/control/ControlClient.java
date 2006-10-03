@@ -244,6 +244,8 @@ public class ControlClient implements BipMessageListener {
     public void close() {
         if (tcpClient != null) {
             tcpClient.closeConnection();
+            tcpClient.removeBipMessageListener(this);
+            tcpClient = null;
         }
     }
 

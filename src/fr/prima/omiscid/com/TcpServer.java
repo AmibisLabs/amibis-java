@@ -495,4 +495,10 @@ public class TcpServer implements CommunicationServer {
             return nb;
         }
     }
+
+
+
+    public void setPeerId(int peerId) {
+        this.peerId = peerId;
+    }
 }

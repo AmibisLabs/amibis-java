@@ -33,7 +33,6 @@ import java.util.Vector;
 
 import fr.prima.omiscid.com.TcpClientServer;
 import fr.prima.omiscid.com.interf.BipMessageListener;
-import fr.prima.omiscid.control.ControlClient;
 import fr.prima.omiscid.control.ControlServer;
 import fr.prima.omiscid.control.InOutputAttribute;
 import fr.prima.omiscid.control.OmiscidService;
@@ -247,7 +246,7 @@ public class ServiceImpl implements Service {
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.Service#sendToAllClients(java.lang.String, byte[], boolean)
 	 */
-    synchronized  public void sendToAllClients(String connectorName, byte[] msg, boolean unreliableButFastSend) throws UnknownConnector {
+    public void sendToAllClients(String connectorName, byte[] msg, boolean unreliableButFastSend) throws UnknownConnector {
 		TcpClientServer tcpClientServer = getTcpClientServer(connectorName) ;
 		if (tcpClientServer == null)
 			throw new UnknownConnector("Unknown bip connector : " + connectorName) ;
@@ -255,14 +254,14 @@ public class ServiceImpl implements Service {
 		tcpClientServer.sendToClients(msg) ;
 	}
 
-    synchronized  public void sendToAllClients(String connectorName, byte[] msg) throws UnknownConnector {
+    public void sendToAllClients(String connectorName, byte[] msg) throws UnknownConnector {
         sendToAllClients(connectorName, msg, false);
     }
 
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.Service#sendToOneClient(java.lang.String, byte[], int, boolean)
 	 */
-    synchronized  public void sendToOneClient(String connectorName, byte[] msg, int pid, boolean unreliableButFastSend) throws UnknownConnector {
+    public void sendToOneClient(String connectorName, byte[] msg, int pid, boolean unreliableButFastSend) throws UnknownConnector {
 		TcpClientServer tcpClientServer = getTcpClientServer(connectorName) ;
 
 		if (tcpClientServer == null)
@@ -271,7 +270,7 @@ public class ServiceImpl implements Service {
 		tcpClientServer.sendToOneClient(msg, pid) ;
 	}
 
-    synchronized  public void sendToOneClient(String connectorName, byte[] msg, int pid) throws UnknownConnector {
+    public void sendToOneClient(String connectorName, byte[] msg, int pid) throws UnknownConnector {
         sendToOneClient(connectorName, msg, pid, false);
     }
 	/**
@@ -483,14 +482,14 @@ public class ServiceImpl implements Service {
 		}
 
 		ConnectorType remoteKind = null ;
-		ControlClient controlClient = ((ServiceProxyImpl) proxy).getControlClient() ;
-		InOutputAttribute remoteAttribut = controlClient.findOutput(remoteConnector) ;
+        OmiscidService omiscidService = ((ServiceProxyImpl) proxy).getOmiscidService() ;
+		InOutputAttribute remoteAttribut = omiscidService.findOutput(remoteConnector) ;
 		if (remoteAttribut == null)
 		{
-			remoteAttribut = controlClient.findInOutput(remoteConnector) ;
+			remoteAttribut = omiscidService.findInOutput(remoteConnector) ;
 			if (remoteAttribut == null)
 			{
-				remoteAttribut = controlClient.findInput(remoteConnector) ;
+				remoteAttribut = omiscidService.findInput(remoteConnector) ;
 				if (remoteAttribut == null)
 					// the connector does not exist
 					throw new UnknownConnector(this + " : Unknown remote connector : " + remoteConnector) ;

@@ -27,6 +27,7 @@
 package fr.prima.omiscid.control;
 
 import java.io.IOException;
+import java.util.Set;
 
 import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.TcpClient;
@@ -200,8 +201,10 @@ public class OmiscidService {
                 System.err.println("Warning: no local peer id (service id) set in OmiscidService to access remote control server ... generating a new one");
                 peerId = BipUtils.generateBIPPeerId();
             }
-            if (ctrlClient == null || !ctrlClient.isConnected()) {
+            if (ctrlClient == null) {
                 ctrlClient = new ControlClient(peerId);
+            }
+            if (!ctrlClient.isConnected()) {
                 if (!ctrlClient.connectToControlServer(serviceInformation.getHostName(), serviceInformation.getPort())) {
                     ctrlClient = null;
                 }
@@ -296,10 +299,6 @@ public class OmiscidService {
     }
 
     public String getSimplifiedName() {
-//        System.out.println("+++++++++++");
-//        for (String k : serviceInformation.getPropertyKeys()) {
-//            System.out.println(k);
-//        }
         String str = serviceInformation.getStringProperty(GlobalConstants.constantNameForName);
         if (str != null) {
             return VariableAccessType.realValueFromDnssdValue(str);
@@ -369,6 +368,111 @@ public class OmiscidService {
                     connectorType == ConnectorType.fromDnssdValue(property)
             );
         }
+    }
+
+    public InOutputAttribute findConnector(int peerId) {
+        initControlClient();
+        InOutputAttribute findConnector = ctrlClient.findConnector(peerId);
+        closeControlClient();
+        return findConnector;
+    }
+
+    public InOutputAttribute findInOutput(String name) {
+        initControlClient();
+        InOutputAttribute findInOutput = ctrlClient.findInOutput(name);
+        closeControlClient();
+        return findInOutput;
+    }
+
+    public InOutputAttribute findInput(String name) {
+        initControlClient();
+        InOutputAttribute findInput = ctrlClient.findInput(name);
+        closeControlClient();
+        return findInput;
+    }
+
+    public InOutputAttribute findOutput(String name) {
+        initControlClient();
+        InOutputAttribute findOutput = ctrlClient.findOutput(name);
+        closeControlClient();
+        return findOutput;
+    }
+
+    public VariableAttribute findVariable(String name) {
+        initControlClient();
+        VariableAttribute findVariable = ctrlClient.findVariable(name);
+        closeControlClient();
+        return findVariable;
+    }
+
+    public Set<InOutputAttribute> getInOutputAttributesSet() {
+        initControlClient();
+        Set<InOutputAttribute> inOutputAttributesSet = ctrlClient.getInOutputAttributesSet();
+        closeControlClient();
+        return inOutputAttributesSet;
+    }
+
+    public Set<String> getInOutputNamesSet() {
+        initControlClient();
+        Set<String> inOutputNamesSet = ctrlClient.getInOutputNamesSet();
+        closeControlClient();
+        return inOutputNamesSet;
+    }
+
+    public Set<InOutputAttribute> getInputAttributesSet() {
+        initControlClient();
+        Set<InOutputAttribute> inputAttributesSet = ctrlClient.getInputAttributesSet();
+        closeControlClient();
+        return inputAttributesSet;
+    }
+
+    public Set<String> getInputNamesSet() {
+        initControlClient();
+        Set<String> inputNamesSet = ctrlClient.getInputNamesSet();
+        closeControlClient();
+        return inputNamesSet;
+    }
+
+    public Set<InOutputAttribute> getOutputAttributesSet() {
+        initControlClient();
+        Set<InOutputAttribute> outputAttributesSet = ctrlClient.getOutputAttributesSet();
+        closeControlClient();
+        return outputAttributesSet;
+    }
+
+    public Set<String> getOutputNamesSet() {
+        initControlClient();
+        Set<String> outputNamesSet = ctrlClient.getOutputNamesSet();
+        closeControlClient();
+        return outputNamesSet;
+    }
+
+    public Set<VariableAttribute> getVariableAttributesSet() {
+        initControlClient();
+        Set<VariableAttribute> variableAttributesSet = ctrlClient.getVariableAttributesSet();
+        closeControlClient();
+        return variableAttributesSet;
+    }
+
+    public Set<String> getVariableNamesSet() {
+        initControlClient();
+        Set<String> variableNamesSet = ctrlClient.getVariableNamesSet();
+        closeControlClient();
+        return variableNamesSet;
+    }
+
+    public void updateDescription() {
+        initControlClient();
+        ctrlClient.queryGlobalDescription();
+        ctrlClient.queryCompleteDescription();
+        closeControlClient();
+    }
+
+    public VariableAttribute queryVariableModification(String name, String value) {
+        initControlClient();
+        VariableAttribute queryVariableModification = ctrlClient.queryVariableModification(name, value);
+        closeControlClient();
+        return queryVariableModification;
     }
 
 }

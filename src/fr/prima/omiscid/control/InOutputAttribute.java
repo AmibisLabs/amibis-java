@@ -33,6 +33,7 @@ import java.util.Vector;
 import org.w3c.dom.Element;
 
 import fr.prima.omiscid.com.CommunicationServer;
+import fr.prima.omiscid.com.TcpServer;
 import fr.prima.omiscid.control.message.answer.CA_InOutputType;
 import fr.prima.omiscid.control.message.answer.ControlAnswerItem;
 import fr.prima.omiscid.control.message.answer.Inoutput;
@@ -474,14 +475,22 @@ public class InOutputAttribute extends Attribute {
 
     public void setCommunicationServer(CommunicationServer communicationServer) {
         this.communicationServer = communicationServer;
+        this.setPeerId(this.getPeerId());
     }
 
     public int getPeerId() {
         return peerId;
     }
 
-    private void setPeerId(int peerId) {
+    void setPeerId(int peerId) {
         this.peerId = peerId;
+        if (communicationServer != null) {
+            if (communicationServer instanceof TcpServer) {
+                ((TcpServer)this.communicationServer).setPeerId(peerId);  
+            } else {
+                System.err.println("Warning! : unhandled case in setPeerId in InOutputAttribute "+communicationServer);
+            }
+        }
     }
 
 }

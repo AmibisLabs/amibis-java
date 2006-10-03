@@ -49,6 +49,8 @@ public class TcpClientServer extends TcpServer {
     public TcpClientServer(int peerId) throws IOException {
         super(peerId, 0);
     }
+    
+    public int getPeer() {return peerId;}
 
     /**
      * Connects to a remote server.
