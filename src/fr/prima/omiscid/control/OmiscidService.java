@@ -28,6 +28,8 @@ package fr.prima.omiscid.control;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.TcpClient;
@@ -227,13 +229,25 @@ public class OmiscidService {
     public void closeControlClient() {
         synchronized (controlClientSync) {
             nbUserForControl--;
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    freeControlClient();
+                }
+            }, 1000); // One second delay before disconnecting
+            if (nbUserForControl < 0) {
+                System.err.println("Warning: in OmiscidService, to many calls to closeControlClient ... ignoring");
+                nbUserForControl = 0;
+            }
+        }
+    }
+
+    protected void freeControlClient() {
+        synchronized (controlClientSync) {
             if (nbUserForControl == 0) {
                 if (ctrlClient != null) {
                     ctrlClient.close();
                 }
-            } else if (nbUserForControl < 0) {
-                System.err.println("Warning: in OmiscidService, to many calls to closeControlClient ... ignoring");
-                nbUserForControl = 0;
             }
         }
     }
