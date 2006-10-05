@@ -385,6 +385,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             controlEvent.marshal(new OutputStreamWriter(byteArrayOutputStream));
             byte[] message = byteArrayOutputStream.toByteArray();
+            byteArrayOutputStream.close();
 
             for (Integer peer : peersSet) {
                 if (!tcpServer.sendToOneClient(message, peer.intValue())) {
@@ -396,6 +397,9 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -650,11 +654,15 @@ public class ControlServer extends MessageManager implements VariableChangeListe
                 if (!tcpServer.sendToOneClient(byteArrayOutputStream.toByteArray(), message.getPeerId())) {
                     System.err.println("Warning: ControlServer: Send failed: peer not found : " + Utility.intTo8HexString(message.getPeerId()));
                 }
+                byteArrayOutputStream.close();
             }
         } catch (MarshalException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

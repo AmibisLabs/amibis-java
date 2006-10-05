@@ -28,6 +28,7 @@ package fr.prima.omiscid.control;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Collections;
@@ -1075,6 +1076,7 @@ public class ControlClient implements BipMessageListener {
             try {
                 monitor.willSend();
                 tcpClient.send(byteArrayOutputStream.toByteArray());
+                byteArrayOutputStream.close();
                 if (!waitAnswer) {
                     monitor.sent();
                 } else {
@@ -1087,6 +1089,9 @@ public class ControlClient implements BipMessageListener {
             } catch (InterruptedException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         }
         return null;
