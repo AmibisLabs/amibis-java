@@ -227,7 +227,14 @@ public final class Utility {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            return byteArrayOutputStream.toByteArray();
+            byte[] res = byteArrayOutputStream.toByteArray();
+            try {
+                byteArrayOutputStream.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return res;
         }
 
         public synchronized static Document createDocument() {
