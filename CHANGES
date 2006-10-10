@@ -8,6 +8,7 @@ In this files, you will find changes between java OMiSCID versions.
         fix: implemented properly the sendToOneClient using a ServiceProxy
         impr: performance improvement for introspection connections
         fix: added missing stream closing causing problems with numerous variable change notification
+        impr: made some exceptions RuntimeException
 
 1.0.1
 r1463
