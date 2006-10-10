@@ -29,7 +29,7 @@ package fr.prima.omiscid.user.exception;
 /**
  * @author Patrick Reignier (UJF/Gravir)
  */
-public class ConnectorAlreadyExisting extends Exception {
+public class ConnectorAlreadyExisting extends RuntimeException {
     public ConnectorAlreadyExisting(String message) {
         super(message);
     }

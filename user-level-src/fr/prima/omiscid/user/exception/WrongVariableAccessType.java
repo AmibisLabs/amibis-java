@@ -30,7 +30,7 @@ package fr.prima.omiscid.user.exception;
  * @author Patrick Reignier (Prima/Gravir)
  *
  */
-public class WrongVariableAccessType extends Exception {
+public class WrongVariableAccessType extends RuntimeException {
 	public WrongVariableAccessType(String message)
 	{
 		super(message);

@@ -30,7 +30,7 @@ package fr.prima.omiscid.user.exception;
  * @author Patrick Reignier (UJF/Gravir)
  *
  */
-public class VariableAlreadyExisting extends Exception {
+public class VariableAlreadyExisting extends RuntimeException {
 	public VariableAlreadyExisting(String message)
 	{
 		super(message) ;

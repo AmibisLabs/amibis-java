@@ -30,7 +30,7 @@ package fr.prima.omiscid.user.exception;
  * @author Patrick Reignier (UJF/Gravir)
  *
  */
-public class UnknownConnector extends Exception {
+public class UnknownConnector extends RuntimeException {
 	public UnknownConnector(String message)
 	{
 		super(message) ;

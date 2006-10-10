@@ -30,7 +30,7 @@ package fr.prima.omiscid.user.exception;
  * @author Patrick Reignier (UJF/Gravir)
  *
  */
-public class UnknownVariable extends Exception {
+public class UnknownVariable extends RuntimeException {
 	public UnknownVariable(String message)
 	{
 		super(message) ;
