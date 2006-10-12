@@ -560,7 +560,7 @@ public class ServiceImpl implements Service {
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.Service#findService(fr.prima.omiscid.control.filter.OmiscidServiceFilter)
 	 */
-	synchronized  public ServiceProxy findService(ServiceFilter filter) {
+	public ServiceProxy findService(ServiceFilter filter) {
 		ServiceFilter[] filters = {filter};
 
 		return findServices(filters).get(filter);
@@ -569,14 +569,14 @@ public class ServiceImpl implements Service {
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.Service#findServices(fr.prima.omiscid.control.filter.OmiscidServiceFilter[])
 	 */
-	synchronized  public HashMap<ServiceFilter, ServiceProxy> findServices(ServiceFilter[] filters) {
+	public HashMap<ServiceFilter, ServiceProxy> findServices(ServiceFilter[] filters) {
 	    return findServices(filters,-1);
 	}
 
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.Service#findService(fr.prima.omiscid.control.filter.OmiscidServiceFilter, long)
 	 */
-	synchronized  public ServiceProxy findService(ServiceFilter filter, long timeout) {
+	public ServiceProxy findService(ServiceFilter filter, long timeout) {
 		ServiceFilter[] filters = {filter};
 
 		return findServices(filters,timeout).get(filter);
@@ -585,7 +585,7 @@ public class ServiceImpl implements Service {
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.Service#findServices(fr.prima.omiscid.control.filter.OmiscidServiceFilter[], long)
 	 */
-	synchronized  public HashMap<ServiceFilter, ServiceProxy> findServices(ServiceFilter[] filters, long timeout) {
+	public HashMap<ServiceFilter, ServiceProxy> findServices(ServiceFilter[] filters, long timeout) {
 		WaitForOmiscidServices waitForServices = new WaitForOmiscidServices(ctrlServer.getPeerId()) ;
 		HashMap<ServiceFilter, ServiceProxy> result = new HashMap<ServiceFilter, ServiceProxy>() ;
 		HashMap<Integer, ServiceFilter> tmpAssociation = new HashMap<Integer, ServiceFilter>() ;
