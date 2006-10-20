@@ -45,15 +45,33 @@ public class ServiceProxyImpl implements ServiceProxy {
 	protected HashMap<String, HashMap<RemoteVariableChangeListener, VariableChangeListener>> remoteVariableListeners;
     protected OmiscidService omiscidService ;
 
-    private static HashMap<Integer, ServiceProxyImpl> proxyForService = new HashMap<Integer, ServiceProxyImpl>();
-    public static ServiceProxyImpl forService(OmiscidService omiscidService) {
-        ServiceProxyImpl proxy = proxyForService.get(omiscidService.getRemotePeerId());
-        if (proxy == null) {
-            proxy = new ServiceProxyImpl(omiscidService);
-            proxyForService.put(omiscidService.getRemotePeerId(),proxy);
-        }
-        return proxy;
+    
+    /**/
+    private static class ProxyInfo {
+        long timeout;
+        ServiceProxyImpl serviceProxyImpl;
     }
+    private static HashMap<ServiceImpl, HashMap<Integer, ProxyInfo>> proxyForService = new HashMap<ServiceImpl, HashMap<Integer,ProxyInfo>>();
+    public static ServiceProxyImpl forService(ServiceImpl owner, OmiscidService omiscidService) {
+        HashMap<Integer, ProxyInfo> proxies = proxyForService.get(owner);
+        if (proxies == null) {
+            proxies = new HashMap<Integer, ProxyInfo>();
+            proxyForService.put(owner, proxies);
+        }
+        ProxyInfo proxyInfo = proxies.get(omiscidService.getRemotePeerId());
+        if (proxyInfo == null) {
+            proxyInfo = new ProxyInfo();
+        }
+        long now = System.currentTimeMillis();
+        if (proxyInfo == null || proxyInfo.timeout < now) {
+            proxyInfo.serviceProxyImpl = new ServiceProxyImpl(omiscidService);
+            proxyInfo.timeout = Long.MAX_VALUE; // ignoring timeout for now //now + ???;
+            proxies.put(omiscidService.getRemotePeerId(), proxyInfo);
+        }
+        return proxyInfo.serviceProxyImpl;
+//        return new ServiceProxyImpl(omiscidService);
+    }
+    /**/
     
     /**
      * Constructs a new ServiceProxy.

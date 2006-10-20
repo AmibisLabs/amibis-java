@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="var" path="CASTOR/xerces-J_1.4.0.jar"/>
 	<classpathentry kind="var" path="CASTOR/commons-logging.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="src" path="user-level-src"/>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="generated-src"/>
-	<classpathentry kind="lib" path="lib/jmdns.jar"/>
 	<classpathentry kind="lib" path="lib/libdbus-java-1.10.jar"/>
-	<classpathentry kind="var" path="CASTOR/castor-1.0.1-xml.jar"/>
 	<classpathentry kind="var" path="CASTOR/log4j-1.2.8.jar"/>
+	<classpathentry kind="src" path="user-level-src"/>
 	<classpathentry kind="lib" path="lib/jakarta-oro-2.0.8.jar"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="var" path="CASTOR/xerces-J_1.4.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/jmdns.jar"/>
+	<classpathentry kind="var" path="CASTOR/castor-1.0.1-xml.jar"/>
+	<classpathentry kind="src" path="generated-src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

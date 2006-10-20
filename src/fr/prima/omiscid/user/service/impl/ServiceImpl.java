@@ -614,7 +614,7 @@ public class ServiceImpl implements Service {
             tmpAssociation.put(waitForServices.needService(new OmiscidServiceFilter() {
                 public boolean isAGoodService(OmiscidService s) {
 //                    return finalFilter.acceptService(new ServiceProxyImpl(s));
-                    return finalFilter.acceptService(ServiceProxyImpl.forService(s));
+                    return finalFilter.acceptService(ServiceProxyImpl.forService(ServiceImpl.this, s));
                 }
             }), filters[i]) ;
         }
@@ -630,7 +630,7 @@ public class ServiceImpl implements Service {
             if (bipService != null) {
                 //bipService.setServiceId(ctrlServer.getPeerId()); //useless as the waitforservices object is already instanciated with this peer id
 //                ServiceProxy proxy = new ServiceProxyImpl(bipService) ;
-                ServiceProxy proxy = ServiceProxyImpl.forService(bipService) ;
+                ServiceProxy proxy = ServiceProxyImpl.forService(this, bipService) ;
                 result.put(tmpAssociation.get(serviceId), proxy);
             } else {
                 result.put(tmpAssociation.get(serviceId), null);

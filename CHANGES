@@ -10,6 +10,7 @@ In this files, you will find changes between java OMiSCID versions.
         fix:  added missing stream closing causing problems with numerous variable change notification
         impr: made some exceptions RuntimeException
         fix:  removed some more synchronization to allow to findService while doing other operations
+        fix:  for OSGi, made the service proxy cache dependent of the service that creates the proxy
 
 1.0.1
 r1463

@@ -96,7 +96,7 @@ public class ControlClient implements BipMessageListener {
     private int messageId = 0;
 
 
-    private static class MessageAnswerMonitor {
+    private class MessageAnswerMonitor {
         private boolean sending = false;
         private Map<Integer, Object> events = new Hashtable<Integer, Object>();
         private Map<Integer, ControlAnswer> answers = new Hashtable<Integer, ControlAnswer>();
@@ -106,11 +106,12 @@ public class ControlClient implements BipMessageListener {
             while (sending) wait();
             int msgId = Utility.hexStringToInt(controlAnswer.getId());
             if (answers.containsKey(msgId)) {
-                System.err.println("Warning: non-null message answer while receiving another one, should not happen");
+                System.err.println("Warning: "+Utility.intTo8HexString(ControlClient.this.peerId)+" received a non-null message answer from "+Utility.intTo8HexString(ControlClient.this.getPeerId())+" while receiving another one, should not happen");
             }
             Object event = events.remove(msgId);
             if (event == null) {
-                System.err.println("Warning: dropped control answer. May be due to previous timeout");
+                System.err.println("Warning: "+Utility.intTo8HexString(ControlClient.this.peerId)+" dropped a control answer from "+Utility.intTo8HexString(ControlClient.this.getPeerId())+". May be due to previous timeout");
+                // This could happen: when there was a timeout just before, or when we break the wait (is it really possible)? 
             } else {
                 lockForEventAdditionAndWaiting.lock();
                 answers.put(msgId, controlAnswer);
@@ -1082,7 +1083,7 @@ public class ControlClient implements BipMessageListener {
                 } else {
                     ControlAnswer controlAnswer = monitor.willProcess(theMsgId,maxTimeToWait);
                     if (controlAnswer == null) {
-                        System.err.println("answer null from " + Utility.intTo8HexString(getPeerId()));
+                        System.err.println(Utility.intTo8HexString(this.peerId)+"got a null answer from " + Utility.intTo8HexString(getPeerId()));
                     }
                     return controlAnswer;
                 }
