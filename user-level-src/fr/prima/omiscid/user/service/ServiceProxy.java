@@ -29,6 +29,7 @@ package fr.prima.omiscid.user.service;
 import java.util.Set;
 
 import fr.prima.omiscid.user.connector.ConnectorListener;
+import fr.prima.omiscid.user.exception.UnknownConnector;
 import fr.prima.omiscid.user.exception.UnknownVariable;
 import fr.prima.omiscid.user.variable.RemoteVariableChangeListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
@@ -78,8 +79,8 @@ public interface ServiceProxy {
     /**
      * Updates the local view of a remote bip service :
      * <ul>
-     * <li> the list of variables
-     * <li> the list of connectors
+     * <li> the list of variables</li>
+     * <li> the list of connectors</li>
      * </ul>
      */
     public void updateDescription() ;
@@ -101,21 +102,24 @@ public interface ServiceProxy {
      * @param varName the name of the remote variable
      * @param value the value (String format)
      */
-    public void setVariableValue(String varName, String value) ;
+    public void setVariableValue(String varName, String value)
+    throws UnknownVariable;
 
     /**
      * Gets the value of a remote variable
      * @param varName
      * @return the value
      */
-    public String getVariableValue(String varName);
+    public String getVariableValue(String varName)
+    throws UnknownVariable;
 
     /**
      * Gets the access type of a remote variable
      * @param varName
      * @return the access type of the variable
      */
-    public VariableAccessType getVariableAccessType(String varName);
+    public VariableAccessType getVariableAccessType(String varName)
+    throws UnknownVariable;
 
     /**
      * Registers a listener that will be triggered when the remote variable value will change
@@ -126,7 +130,7 @@ public interface ServiceProxy {
      * @see RemoteVariableChangeListener
      */
     public void addRemoteVariableChangeListener(String varName, final  RemoteVariableChangeListener remoteVariableChangeListener)
-       throws UnknownVariable;
+    throws UnknownVariable;
 
     /**
      * Unregisters a listener on a remote variable value change
@@ -138,7 +142,7 @@ public interface ServiceProxy {
      */
     public void removeRemoteVariableChangeListener(String varName,
     																							   RemoteVariableChangeListener remoteVariableChangeListener)
-        throws UnknownVariable;
+    throws UnknownVariable;
 
     /**
      * Extract the connector name of a remote service from its peerId. This peerId can be obtained from a message
@@ -147,6 +151,7 @@ public interface ServiceProxy {
      * @return the remote connector name
      * @see ConnectorListener#messageReceived(Service, String, fr.prima.omiscid.user.connector.Message)
      */
-    public String findConnector(int peerId) ;
-
+    public String findConnector(int peerId)
+    throws UnknownConnector;
+    
 }

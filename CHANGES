@@ -11,6 +11,7 @@ In this files, you will find changes between java OMiSCID versions.
         impr: made some exceptions RuntimeException
         fix:  removed some more synchronization to allow to findService while doing other operations
         fix:  for OSGi, made the service proxy cache dependent of the service that creates the proxy
+        impr: throwing some omiscid exceptions (instead of NPE) for some ServiceProxy methods
 
 1.0.1
 r1463

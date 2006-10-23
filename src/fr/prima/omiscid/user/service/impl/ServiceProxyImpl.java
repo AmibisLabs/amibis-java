@@ -29,9 +29,12 @@ package fr.prima.omiscid.user.service.impl;
 import java.util.HashMap;
 import java.util.Set;
 
+import fr.prima.omiscid.control.Attribute;
+import fr.prima.omiscid.control.InOutputAttribute;
 import fr.prima.omiscid.control.OmiscidService;
 import fr.prima.omiscid.control.VariableAttribute;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
+import fr.prima.omiscid.user.exception.UnknownConnector;
 import fr.prima.omiscid.user.exception.UnknownVariable;
 import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.variable.RemoteVariableChangeListener;
@@ -148,22 +151,23 @@ public class ServiceProxyImpl implements ServiceProxy {
 	/* (non-Javadoc)
 	 * @see fr.prima.bip.service.BipServiceProxy#setVariableValue(java.lang.String, java.lang.String)
 	 */
-	synchronized  public void setVariableValue(String varName, String value) {
+	synchronized  public void setVariableValue(String varName, String value) throws UnknownVariable {
+        getVariable(varName); // This checks for the variable existence
         omiscidService.queryVariableModification(varName, value) ;
 	}
 
     /* (non-Javadoc)
      * @see fr.prima.omiscid.service.ServiceProxy#getVariableValue(java.lang.String)
      */
-    synchronized  public String getVariableValue(String varName) {
-        return omiscidService.findVariable(varName).getValueStr();
+    synchronized  public String getVariableValue(String varName) throws UnknownVariable {
+        return getVariable(varName).getValueStr();
     }
 
     /* (non-Javadoc)
      * @see fr.prima.omiscid.service.ServiceProxy#getVariableValue(java.lang.String)
      */
-    synchronized  public VariableAccessType getVariableAccessType(String varName) {
-        return omiscidService.findVariable(varName).getAccess();
+    synchronized  public VariableAccessType getVariableAccessType(String varName) throws UnknownVariable {
+        return getVariable(varName).getAccess();
     }
 
 	/* (non-Javadoc)
@@ -172,12 +176,7 @@ public class ServiceProxyImpl implements ServiceProxy {
 	synchronized  public void addRemoteVariableChangeListener(String varName, final RemoteVariableChangeListener remoteVariableChangeListener)
                     	throws UnknownVariable
      {
-		VariableAttribute varAttr = omiscidService.findVariable(varName);
-		if (varAttr == null)
-			// the variable does not exist
-		{
-			throw new UnknownVariable("Unknown variable : "  + varName);
-		}
+		getVariable(varName); // This checks for the variable existence
 
 		HashMap<RemoteVariableChangeListener, VariableChangeListener> listeners =
 			remoteVariableListeners.get(varName);
@@ -205,12 +204,7 @@ public class ServiceProxyImpl implements ServiceProxy {
 										RemoteVariableChangeListener remoteVariableChangeListener)
 				throws UnknownVariable
 	{
-		VariableAttribute varAttr = omiscidService.findVariable(varName);
-		if (varAttr == null)
-			// the variable does not exist
-		{
-			throw new UnknownVariable("Unknown variable : "  + varName);
-		}
+        getVariable(varName); // This checks for the variable existence
 
 		HashMap<RemoteVariableChangeListener, VariableChangeListener> listeners =
 			remoteVariableListeners.get(varName);
@@ -222,14 +216,29 @@ public class ServiceProxyImpl implements ServiceProxy {
 		}
 	}
 
-	/* (non-Javadoc)
+	private VariableAttribute getVariable(String varName) throws UnknownVariable {
+        VariableAttribute varAttr = omiscidService.findVariable(varName);
+        if (varAttr == null) {
+            throw new UnknownVariable("Unknown variable: '"  + varName+"'");
+        }
+        return varAttr;
+    }
+
+    /* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.ServiceProxy#findConnector(int)
 	 */
-	synchronized  public String findConnector(int peerId) {
-		return omiscidService.findConnector(peerId).getName();
+	synchronized  public String findConnector(int peerId) throws UnknownConnector {
+        return getConnector(peerId).getName();
 	}
 
-	/* (non-Javadoc)
+	private Attribute getConnector(int peerId) throws UnknownConnector {
+	    InOutputAttribute connector = omiscidService.findConnector(peerId);
+        if (connector == null) {
+            throw new UnknownConnector("Unknown connector: '"+connector+"'");
+        }
+        return connector;
+    }
+    /* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.ServiceProxy#getName()
 	 */
 	public String getName() {
