@@ -234,7 +234,7 @@ public class ServiceProxyImpl implements ServiceProxy {
 	private Attribute getConnector(int peerId) throws UnknownConnector {
 	    InOutputAttribute connector = omiscidService.findConnector(peerId);
         if (connector == null) {
-            throw new UnknownConnector("Unknown connector: '"+connector+"'");
+            throw new UnknownConnector("Unknown connector with peer id: '"+peerId+"'");
         }
         return connector;
     }
