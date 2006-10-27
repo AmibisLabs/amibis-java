@@ -85,7 +85,7 @@ public class ServiceBrowser implements BrowseListener, fr.prima.omiscid.dnssd.in
     }
 
     public synchronized void serviceLost(DNSSDService browser, int flags, int ifIndex, String serviceName, String regType, String domain) {
-        notifyListeners(new ServiceInformation(regType, serviceName), ServiceEvent.LOST);
+        notifyListeners(new ServiceInformation(regType+domain, serviceName), ServiceEvent.LOST);
     }
 
     public synchronized void operationFailed(DNSSDService service, int errorCode) {
@@ -122,7 +122,7 @@ public class ServiceBrowser implements BrowseListener, fr.prima.omiscid.dnssd.in
     public void serviceFound(DNSSDService browser, int flags, int ifIndex, String serviceName, String regType, String domain) {
         try {
             synchronized (DNSSD.class) {
-                DNSSD.resolve(0, ifIndex, serviceName, regType, domain, new MemoryResolveListener(regType, serviceName));
+                DNSSD.resolve(0, ifIndex, serviceName, regType, domain, new MemoryResolveListener(regType+domain, serviceName));
             }
         } catch (DNSSDException e) {
             // TODO Auto-generated catch block

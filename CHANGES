@@ -4,6 +4,10 @@
 
 In this files, you will find changes between java OMiSCID versions.
 
+1.0.3
+dnssd server
++dnssd fix among implementation (coherence in full name ...)
+
 1.0.2
 r1614
 2006-10-26

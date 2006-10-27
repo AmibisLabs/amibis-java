@@ -42,7 +42,7 @@ public class DNSSDFactoryOmiscid implements DNSSDFactory {
     private ServiceRegistrator serviceRegistrator;
 
     public synchronized ServiceBrowser createServiceBrowser(String registrationType) {
-        return new fr.prima.omiscid.dnssd.client.ServiceBrowser(registrationType + ".local.", host, port);
+        return new fr.prima.omiscid.dnssd.client.ServiceBrowser(registrationType, host, port);
     }
 
     public synchronized ServiceRegistration createServiceRegistration(String serviceName, String registrationType) {
@@ -57,7 +57,7 @@ public class DNSSDFactoryOmiscid implements DNSSDFactory {
                 e.printStackTrace();
             }
         }
-        return new fr.prima.omiscid.dnssd.client.ServiceRegistration(serviceRegistrator, serviceName, registrationType + ".local.");
+        return new fr.prima.omiscid.dnssd.client.ServiceRegistration(serviceRegistrator, serviceName, registrationType);
     }
 
 }

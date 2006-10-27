@@ -58,7 +58,7 @@ public class ServiceInformation implements fr.prima.omiscid.dnssd.interf.Service
     }
 
     public String getFullName() {
-        return serviceInfo.getName();
+        return serviceInfo.getQualifiedName();
     }
 
     public String getHostName() {
