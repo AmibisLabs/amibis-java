@@ -320,7 +320,11 @@ public class OmiscidService {
         } else {
             ControlClient ctrlClient = initControlClient();
             if (ctrlClient != null) {
-                String name = ctrlClient.findVariable(GlobalConstants.constantNameForName).getValueStr();
+                VariableAttribute variable = ctrlClient.findVariable(GlobalConstants.constantNameForName);
+                String name = "$$$UNKNOWN$$$";
+                if (variable != null) {
+                    name = variable.getValueStr();
+                }
                 closeControlClient();
                 return name;
             }

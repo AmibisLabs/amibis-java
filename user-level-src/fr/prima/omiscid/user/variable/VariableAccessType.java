@@ -71,7 +71,7 @@ public enum VariableAccessType {
     public static String realValueFromDnssdValue(String propertyValue) {
         VariableAccessType variableAccessType = fromDnssdValue(propertyValue);
         return variableAccessType == null ?
-                null : propertyValue.replaceFirst(variableAccessType.getPrefixInDnssd(), "");
+                "$$$ERROR$$$" : propertyValue.replaceFirst(variableAccessType.getPrefixInDnssd(), "");
     }
 
 //    public static VariableAccessType fromControlString(String accessTypeName) {

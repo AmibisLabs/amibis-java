@@ -223,7 +223,7 @@ public class ClientInformation implements ServiceEventListener {
     }
 
     public void fatalException(Exception e) {
-        e.printStackTrace();
+//        e.printStackTrace();
         unregisterAllServices();
         if (serviceBrowser != null) {
             serviceBrowser.stop();
