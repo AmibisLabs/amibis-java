@@ -8,6 +8,7 @@ In this files, you will find changes between java OMiSCID versions.
 +dnssd server refresh (allow declaration)
 +dnssd fix among implementation (coherence in full name ...)
 +dnssd avahi refresh : !!! still not 100% ok
++uses derefencing in cfg.properties to choose dnssd impl
         fix:  added some fallback behaviours to avoid exception when really old services are present
 
 1.0.2

@@ -81,8 +81,17 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
             try {
                 className = bundle.getString(dnssdFactoryKey);
             } catch (Exception e) {
-                System.out.println("Problem while getting data in opened bundle " + propertyBundle + ", using default factory");
+                System.out.println("Problem while getting data ("+dnssdFactoryKey+") in opened bundle " + propertyBundle + ", using default factory");
                 return makeHardCodedDefault();
+            }
+            if (!className.contains(".")) {
+                try {
+                    className = dnssdFactoryKey+"."+className;
+                    className = bundle.getString(className);
+                } catch (Exception e) {
+                    System.out.println("Problem while getting data ("+className+") in opened bundle " + propertyBundle + ", using default factory");
+                    return makeHardCodedDefault();
+                }
             }
             Class factoryClass;
             try {
