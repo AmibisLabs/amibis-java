@@ -55,7 +55,7 @@ public class ServiceProxyImpl implements ServiceProxy {
         ServiceProxyImpl serviceProxyImpl;
     }
     private static HashMap<ServiceImpl, HashMap<Integer, ProxyInfo>> proxyForService = new HashMap<ServiceImpl, HashMap<Integer,ProxyInfo>>();
-    public static ServiceProxyImpl forService(ServiceImpl owner, OmiscidService omiscidService) {
+    public static synchronized ServiceProxyImpl forService(ServiceImpl owner, OmiscidService omiscidService) {
         HashMap<Integer, ProxyInfo> proxies = proxyForService.get(owner);
         if (proxies == null) {
             proxies = new HashMap<Integer, ProxyInfo>();
