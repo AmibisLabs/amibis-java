@@ -22,6 +22,7 @@ prepare:
 	cp -r $(CLASSDIR) ,,build
 	cp CHANGES ,,build/
 	cd src            && find . -name \*.java -exec cp {} ../,,build/{} \;
+	cd dnssd-src      && find . -name \*.java -exec cp {} ../,,build/{} \;
 	cd generated-src  && find . -name \*.java -exec cp {} ../,,build/{} \;
 	cd user-level-src && find . -name \*.java -exec cp {} ../,,build/{} \;
 	cd ,,build && jar cvf ../$(BASEJAR) .
@@ -36,4 +37,5 @@ prepare:
 
 fix-headers:
 	find src -name \*.java -exec ./set-header.sh {} \;
+	find dnssd-src -name \*.java -exec ./set-header.sh {} \;
 	find user-level-src -name \*.java -exec ./set-header.sh {} \;
