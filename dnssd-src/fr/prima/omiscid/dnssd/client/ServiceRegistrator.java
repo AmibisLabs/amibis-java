@@ -33,7 +33,9 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
+import java.util.Vector;
 
+import fr.prima.omiscid.dnssd.interf.ServiceRegistration.ServiceNameProducer;
 import fr.prima.omiscid.dnssd.server.ServiceInformation;
 
 public class ServiceRegistrator implements Runnable {
@@ -89,10 +91,8 @@ public class ServiceRegistrator implements Runnable {
         serviceInformation.crosslanguageWrite(notificationSocketOut);
     }
 
-    public boolean register(ServiceRegistration serviceRegistration) {
+    private boolean register(ServiceRegistration serviceRegistration, ServiceInformation i) {
         try {
-            ServiceInformation i = new ServiceInformation(serviceRegistration.getRegistrationType(), serviceRegistration.getServiceName(), InetAddress
-                    .getLocalHost().getHostName(), serviceRegistration.getPort(), serviceRegistration.getProperties(), ServiceInformation.statusRegistering);
             String id = Integer.toString(i.getPort());
             notifications.put(id, i);
             synchronized (i) {
@@ -104,15 +104,47 @@ public class ServiceRegistrator implements Runnable {
             assert i.isNotifying();
             assert i.getPort() == serviceRegistration.getPort();
             String registeredServiceName = i.getFullName();
-            serviceRegistration.setRegisteredServiceName(registeredServiceName);
-            return true;
-        } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            if (registeredServiceName != null) {
+                serviceRegistration.setRegisteredServiceName(registeredServiceName);
+                return true;
+            } else {
+                return false;
+            }
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean register(ServiceRegistration serviceRegistration) {
+        try {
+            return register(
+                    serviceRegistration,
+                    new ServiceInformation(serviceRegistration.getRegistrationType(), serviceRegistration.getServiceName(), InetAddress.getLocalHost().getHostName(), serviceRegistration.getPort(), serviceRegistration.getProperties(), ServiceInformation.statusRegistering));
+        } catch (UnknownHostException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean register(ServiceRegistration serviceRegistration, ServiceNameProducer serviceNameProducer) {
+        try {
+            Vector<String> names = new Vector<String>();
+            {
+                String name;
+                while ((name=serviceNameProducer.getServiceName()) != null && names.size()<25) {
+                    names.add(name);
+                }
+            }
+            return register(
+                    serviceRegistration,
+                    new ServiceInformation(serviceRegistration.getRegistrationType(), names , InetAddress.getLocalHost().getHostName(), serviceRegistration.getPort(), serviceRegistration.getProperties(), ServiceInformation.statusRegistering));
+        } catch (UnknownHostException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

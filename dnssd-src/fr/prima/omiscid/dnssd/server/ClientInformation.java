@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import javax.jmdns.JmDNS;
 
@@ -38,6 +40,7 @@ import fr.prima.omiscid.dnssd.interf.ServiceBrowser;
 import fr.prima.omiscid.dnssd.interf.ServiceEvent;
 import fr.prima.omiscid.dnssd.interf.ServiceEventListener;
 import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
+import fr.prima.omiscid.dnssd.interf.ServiceRegistration.ServiceNameProducer;
 
 /**
  * Contains informations about a client connected to the {@link OmiscidDnssdServer}.
@@ -106,8 +109,8 @@ public class ClientInformation implements ServiceEventListener {
     public void serviceAdded(ServiceInformation serviceInformation)
             throws IOException {
         assert serviceInformation.isConnecting();
-        System.out.println(registrationType);
-        System.out.println(serviceInformation.getRegistrationType());
+//        System.out.println(registrationType);
+//        System.out.println(serviceInformation.getRegistrationType());
         if (registrationType != null && (registrationType+".local.").equals(serviceInformation.getRegistrationType())) {
             send(serviceInformation);
         }
@@ -127,13 +130,27 @@ public class ClientInformation implements ServiceEventListener {
         for (String key : serviceInformation.getPropertyKeys()) {
             serviceRegistration.addProperty(key, serviceInformation.getStringProperty(key));
         }
-        boolean registered = serviceRegistration.register(serviceInformation.getPort());
+        boolean registered;
+        if (serviceInformation.isShouldChooseAmongNamesList()) {
+            final Queue<String> names = new LinkedList<String>();
+            names.addAll(serviceInformation.getNamesList());
+            ServiceNameProducer serviceNameProducer = new ServiceNameProducer() {
+                public String getServiceName() {
+                    return names.isEmpty() ? null : names.remove();
+                }
+            };
+            registered = serviceRegistration.register(serviceInformation.getPort(), serviceNameProducer);
+        } else {
+            registered = serviceRegistration.register(serviceInformation.getPort());
+        }
         if (registered) {
             serviceInformation.setNotifying(serviceRegistration.getRegisteredName());
             send(serviceInformation);
             serviceRegistrations.put(serviceInformation.getQualifiedName(), serviceRegistration);
             System.out.println("registered: "+serviceInformation.getQualifiedName());
         } else {
+            serviceInformation.setNotifying(null);
+            send(serviceInformation);
             System.out.println("!!! registration failed: "+serviceInformation.getFullName());
         }
     }

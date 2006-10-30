@@ -27,13 +27,14 @@
 package fr.prima.omiscid.dnssd.server;
 
 import java.io.EOFException;
-import java.io.Externalizable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Contains informations about a dnssd service.
@@ -72,12 +73,14 @@ import java.util.Hashtable;
  * @author emonet
  *
  */
-public class ServiceInformation implements Externalizable {
+public class ServiceInformation {
 
     private static final long serialVersionUID = -7947660767854019970L;
     
     private String registrationType = null;
     private String fullName = null;
+    private boolean shouldChooseAmongNamesList = false;
+    private Vector<String> namesList = new Vector<String>();
     private String hostName = null;
     private int port;
     private Hashtable<String, byte[]> properties = new Hashtable<String, byte[]>();
@@ -103,6 +106,11 @@ public class ServiceInformation implements Externalizable {
         String value = Integer.toString(i) + "\n";
         out.write(value.getBytes(crosslanguageCharset));
     }
+    
+    private static void writeBoolean(OutputStream out, boolean b) throws IOException {
+        String value = (b?"true":"false") + "\n";
+        out.write(value.getBytes(crosslanguageCharset));
+    }
 
     private static void writeByteArray(OutputStream out, byte[] bytes) throws IOException {
         writeInt(out, bytes.length);
@@ -126,7 +134,25 @@ public class ServiceInformation implements Externalizable {
         }
     }
 
+    private static boolean readBoolean(InputStream in) throws IOException {
+        String line = readLine(in);
+        if ("true".equals(line)) {
+            return true;
+        } else if ("false".equals(line)) {
+            return false;
+        } else {
+            System.err.println("neither true nor false when reading boolean in service information");
+            return false;
+        }
+    }
+
     private static int readInt(InputStream in) throws IOException {
+        String line = readLine(in);
+        int i = Integer.parseInt(line);
+        return i;
+    }
+
+    private static String readLine(InputStream in) throws IOException, EOFException, UnsupportedEncodingException {
         byte[] bytes = new byte[1024];
         int size;
         for (size = 0; ; size++) {
@@ -139,10 +165,8 @@ public class ServiceInformation implements Externalizable {
             }
             bytes[size] = (byte)read;
         }
-        int i = Integer.parseInt(new String(bytes,0,size,crosslanguageCharset));
-        return i;
+        return new String(bytes,0,size,crosslanguageCharset);
     }
-
 
     
     public static void writeString(OutputStream out, String s) throws IOException {
@@ -166,6 +190,11 @@ public class ServiceInformation implements Externalizable {
     public void crosslanguageWrite(OutputStream out) throws IOException {
         writeString(out,registrationType);
         writeString(out,fullName);
+        writeBoolean(out, shouldChooseAmongNamesList);
+        writeInt(out, namesList.size());
+        for (String name : namesList) {
+            writeString(out, name);
+        }
         writeString(out,hostName);
         writeInt(out,port);
         writeInt(out,status);
@@ -184,36 +213,26 @@ public class ServiceInformation implements Externalizable {
     public void crosslanguageRead(InputStream in) throws IOException {
         registrationType = readString(in);
         fullName = readString(in);
+        shouldChooseAmongNamesList = readBoolean(in);
+        {
+            int size = readInt(in);
+            namesList.clear();
+            for (int i = 0; i < size; i++) {
+                namesList.add(readString(in));
+            }
+        }
         hostName = readString(in);
         port = readInt(in);
         status = readInt(in);
-        int size = readInt(in);
-        for (int i = 0; i < size; i++) {
-            properties.put(readString(in), readByteArray(in));
+        {
+            int size = readInt(in);
+            for (int i = 0; i < size; i++) {
+                properties.put(readString(in), readByteArray(in));
+            }
         }
     }
 
 
-    public void writeExternal(ObjectOutput out) throws IOException {
-        if(true) throw new RuntimeException("writeExternal should not be called: use crosslanguage protocol instead");
-        out.writeObject(registrationType);
-        out.writeObject(fullName);
-        out.writeObject(hostName);
-        out.writeInt(port);
-        out.writeObject(properties);
-        out.writeInt(status);
-    }
-    @SuppressWarnings("unchecked")
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        if(true) throw new RuntimeException("readExternal should not be called: use crosslanguage protocol instead");
-        registrationType = (String) in.readObject();
-        fullName = (String) in.readObject();
-        hostName = (String) in.readObject();
-        port = in.readInt();
-        properties = (Hashtable<String, byte[]>) in.readObject();
-        status = in.readInt();
-    }
-    
     public void setNotifying(String registeredName) {
         assert status == statusRegistering || status == statusUnregistering;
         status = statusNotifyingRegistered;
@@ -248,7 +267,17 @@ public class ServiceInformation implements Externalizable {
     }
     public ServiceInformation(String registrationType, String fullName, String hostName, int port, Hashtable<String, byte[]> properties, int status) {
         this.registrationType = registrationType;
+        this.shouldChooseAmongNamesList = false;
         this.fullName = fullName;
+        this.hostName = hostName;
+        this.port = port;
+        this.properties = properties;
+        this.status = status;
+    }
+    public ServiceInformation(String registrationType, List<String> names, String hostName, int port, Hashtable<String, byte[]> properties, int status) {
+        this.registrationType = registrationType;
+        this.shouldChooseAmongNamesList = true;
+        this.namesList.addAll(names);
         this.hostName = hostName;
         this.port = port;
         this.properties = properties;
@@ -285,6 +314,16 @@ public class ServiceInformation implements Externalizable {
 
     public int getStatus() {
         return status;
+    }
+
+
+    public boolean isShouldChooseAmongNamesList() {
+        return shouldChooseAmongNamesList;
+    }
+
+
+    public List<String> getNamesList() {
+        return Collections.unmodifiableList(namesList);
     }
 
 }
