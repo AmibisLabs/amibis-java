@@ -30,7 +30,7 @@ package fr.prima.omiscid.user.exception;
  * @author Patrick Reignier (UJF/Gravir)
  *
  */
-public class IncorrectConnectorType extends Exception {
+public class IncorrectConnectorType extends RuntimeException {
 	public IncorrectConnectorType(String message)
 	{
 		super(message) ;
