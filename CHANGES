@@ -5,11 +5,9 @@
 In this files, you will find changes between java OMiSCID versions.
 
 1.0.3
-+dnssd server refresh (allow declaration)
-+dnssd fix among implementation (coherence in full name ...)
-+dnssd avahi refresh : !!! still not 100% ok
-+uses derefencing in cfg.properties to choose dnssd impl
+r1700
         fix:  added some fallback behaviours to avoid exception when really old services are present
+        impr: made IncorrectConnectorType a RuntimeException
 
 1.0.2
 r1614
