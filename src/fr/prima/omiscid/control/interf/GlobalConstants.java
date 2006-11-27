@@ -38,7 +38,7 @@ public final class GlobalConstants {
     public static final String constantNameForOwner = "owner";
     public static final String constantNameForClass = "class";
     public static final String variableNameForLock = "lock";
-    public static final String defaultServiceClassValue = ".Void";
+    public static final String defaultServiceClassValue = "Service";
     public static final String keyForFullTextRecord = "desc";
     public static final String keyForFullTextRecordFull = "full";
     public static final String keyForFullTextRecordNonFull = "part";

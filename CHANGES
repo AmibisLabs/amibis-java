@@ -4,6 +4,16 @@
 
 In this files, you will find changes between java OMiSCID versions.
 
+
+1.0.4
++dnssd server refresh (allow declaration)
++dnssd fix among implementation (coherence in full name ...)
++dnssd avahi refresh : !!! still not 100% ok (wait for a stable dbus release and java dbus release and/or pure java dbus)
++uses derefencing in cfg.properties to choose dnssd impl
+        fix:  default "class" variable value is now "Service" as intended
+
+
+
 1.0.3
 r1700
         fix:  added some fallback behaviours to avoid exception when really old services are present
