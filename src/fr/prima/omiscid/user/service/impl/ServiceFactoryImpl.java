@@ -72,22 +72,6 @@ public class ServiceFactoryImpl implements ServiceFactory {
 		return service ;
 	}
 	
-	/**
-	 * @param bipComponent
-	 */
-	public void addMainClass(MainClass bipComponent)
-    {
-      System.err.println("Debug : Omiscid arriving") ;   
-    }
-	
-    /**
-     * @param bipComponent
-     */
-    public void removeMainClass(MainClass bipComponent)
-    {
-      System.err.println("Debug : Omiscid  leaving") ;   
-    }
-
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.ServiceFactory#create(java.lang.String, java.lang.String)
 	 */
