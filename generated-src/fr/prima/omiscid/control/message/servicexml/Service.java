@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0M2</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -155,8 +155,8 @@ public class Service implements java.io.Serializable {
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _items.size())) {
-            throw new IndexOutOfBoundsException("getServiceItem: Index value '"+index+"' not in range [0.."+_items.size()+ "]");
+        if ((index < 0) || (index >= _items.size())) {
+            throw new IndexOutOfBoundsException("getServiceItem: Index value '"+index+"' not in range [0.."+(_items.size() - 1) + "]");
         }
         
         return (fr.prima.omiscid.control.message.servicexml.ServiceItem) _items.elementAt(index);
@@ -303,8 +303,8 @@ public class Service implements java.io.Serializable {
         throws java.lang.IndexOutOfBoundsException
     {
         //-- check bounds for index
-        if ((index < 0) || (index > _items.size())) {
-            throw new IndexOutOfBoundsException("setServiceItem: Index value '"+index+"' not in range [0.."+_items.size()+ "]");
+        if ((index < 0) || (index >= _items.size())) {
+            throw new IndexOutOfBoundsException("setServiceItem: Index value '"+index+"' not in range [0.." + (_items.size() - 1) + "]");
         }
         _items.setElementAt(vServiceItem, index);
     } //-- void setServiceItem(int, fr.prima.omiscid.control.message.servicexml.ServiceItem) 

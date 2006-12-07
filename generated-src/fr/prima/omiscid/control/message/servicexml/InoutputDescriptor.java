@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0M2</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -27,6 +27,11 @@ public class InoutputDescriptor extends ConnectorTypeDescriptor {
       //--------------------------/
      //- Class/Member Variables -/
     //--------------------------/
+
+    /**
+     * Field elementDefinition
+     */
+    private boolean elementDefinition;
 
     /**
      * Field nsPrefix
@@ -59,6 +64,7 @@ public class InoutputDescriptor extends ConnectorTypeDescriptor {
         setExtendsWithoutFlatten(new ConnectorTypeDescriptor());
         nsURI = "http://www-prima.inrialpes.fr/schemas/omiscid/service.xsd";
         xmlName = "inoutput";
+        elementDefinition = true;
     } //-- fr.prima.omiscid.control.message.servicexml.InoutputDescriptor()
 
 
@@ -163,5 +169,17 @@ public class InoutputDescriptor extends ConnectorTypeDescriptor {
     {
         return xmlName;
     } //-- java.lang.String getXMLName() 
+
+    /**
+     * Method isElementDefinition
+     * 
+     * 
+     * 
+     * @return boolean
+     */
+    public boolean isElementDefinition()
+    {
+        return elementDefinition;
+    } //-- boolean isElementDefinition() 
 
 }
