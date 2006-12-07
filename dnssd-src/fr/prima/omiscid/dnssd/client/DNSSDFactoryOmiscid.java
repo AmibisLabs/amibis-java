@@ -38,6 +38,22 @@ public class DNSSDFactoryOmiscid implements DNSSDFactory {
     private static int port = 12053;
 
     private static String host = "localhost";
+    static {
+        try {
+            if (System.getenv("OMISCID_DNSSD_SERVER_HOSTNAME") != null) {
+                host = System.getenv("OMISCID_DNSSD_SERVER_HOSTNAME");
+            }
+            if (System.getenv("OMISCID_DNSSD_SERVER_PORT") != null) {
+                port = Integer.parseInt(System.getenv("OMISCID_DNSSD_SERVER_PORT"));
+            }
+            // \REVIEWTASK this variable name should be documented somewhere
+        } catch (SecurityException e) {
+            // Access to environment variable is forbidden
+            System.err.println("Warning: access to environment variables is forbidden.");
+        } catch (NumberFormatException e) {
+            System.err.println("Warning: environment variable cannot be interpreted as an integer.");
+        }
+    }
 
     private ServiceRegistrator serviceRegistrator;
 

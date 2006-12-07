@@ -85,6 +85,14 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
                 System.out.println("Problem while getting data ("+dnssdFactoryKey+") in opened bundle " + propertyBundle + ", using default factory");
                 return makeHardCodedDefault();
             }
+            try {
+                if (System.getenv("OMISCID_DNSSD_FACTORY") != null) {
+                    className = System.getenv("OMISCID_DNSSD_FACTORY");
+                }
+                // \REVIEWTASK this variable name should be documented somewhere
+            } catch (SecurityException e) {
+                // Access to environment variable is forbidden
+            }
             if (!className.contains(".")) {
                 try {
                     className = dnssdFactoryKey+"."+className;
