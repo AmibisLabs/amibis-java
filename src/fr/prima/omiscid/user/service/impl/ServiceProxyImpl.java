@@ -160,7 +160,8 @@ public class ServiceProxyImpl implements ServiceProxy {
      * @see fr.prima.omiscid.service.ServiceProxy#getVariableValue(java.lang.String)
      */
     synchronized  public String getVariableValue(String varName) throws UnknownVariable {
-        return getVariable(varName).getValueStr();
+    //    return getVariable(varName).getValueStr();
+        return omiscidService.getVariableValue(getVariable(varName).getName());
     }
 
     /* (non-Javadoc)

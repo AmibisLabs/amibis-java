@@ -151,13 +151,13 @@ public class InOutputAttribute extends Attribute {
         inoutput.setDescription(getDescription());
         inoutput.setFormatDescription(getFormatDescription());
         inoutput.setName(getName());
-        inoutput.setPeerId(Utility.intTo8HexString(getPeerId()));
+        inoutput.setPeerId(Utility.intTo8HexString(getPeerId()).toLowerCase());
         inoutput.setTcp(getTcpPort());
         if (getUdpPort() != 0) inoutput.setTcp(getTcpPort());
         inoutput.setUdp(getUdpPort());
         Peers peers = new Peers();
         for (int peerId : getPeerVector()) {
-            peers.addPeer(Utility.intTo8HexString(peerId));
+            peers.addPeer(Utility.intTo8HexString(peerId).toLowerCase());
         }
         inoutput.setPeers(peers);
         ControlAnswerItem controlAnswerItem = new ControlAnswerItem();

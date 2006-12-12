@@ -486,6 +486,20 @@ public class OmiscidService {
         ctrlClient.queryCompleteDescription();
         closeControlClient();
     }
+    
+    public String getVariableValue(String variableName) {
+        VariableAttribute variable = findVariable(variableName);
+        if (variable != null) {
+            if (variable.getAccess() != VariableAccessType.CONSTANT) {
+                initControlClient();
+                variable = ctrlClient.queryVariableDescription(variableName);
+                closeControlClient();
+            }
+            return variable.getValueStr();
+        } else {
+            return null;
+        }
+    }
 
     public VariableAttribute queryVariableModification(String name, String value) {
         initControlClient();

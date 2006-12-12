@@ -63,7 +63,7 @@ import fr.prima.omiscid.user.variable.VariableAccessType;
  */
 public class ServiceImpl implements Service {
 
-	private class VariableListenerBridge
+	private static class VariableListenerBridge
 	{
 		public VariableChangeListener variableChangeListener ;
 		public VariableChangeQueryListener variableChangeQueryListener ;
@@ -96,6 +96,10 @@ public class ServiceImpl implements Service {
         }
 	}
 
+     public int getPeerId() {
+         return ctrlServer.getPeerId();
+     }
+     
 	/* (non-Javadoc)
 	 * @see fr.prima.omiscid.service.Service#addConnector(java.lang.String, fr.prima.omiscid.control.interf.ChannelType)
 	 */

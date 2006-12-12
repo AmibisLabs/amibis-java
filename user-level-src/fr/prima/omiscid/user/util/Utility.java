@@ -63,7 +63,7 @@ public final class Utility {
      *            the value to change into string
      */
     public static String intTo8HexString(int i) {
-        String str = Integer.toHexString(i);
+        String str = Integer.toHexString(i).toUpperCase();
         while (str.length() < 8) {
             str = "0" + str;
         }
@@ -83,6 +83,7 @@ public final class Utility {
         if (str == null) {
             return -1;
         }
+        str = str.toLowerCase();
         int nb = str.length();
         byte cstr[];
         try {

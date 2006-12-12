@@ -55,7 +55,7 @@ final class ReceiveBuffer {
     /**
      * The max length of the buffer used to receive messages
      */
-    private int BUFFER_LENGTH = 64000;
+    private int BUFFER_LENGTH = 1024;
 
     /** The buffer used to receive byte */
     public byte[] buffer;
@@ -363,7 +363,7 @@ public abstract class MessageSocket {
      *            give the length that will appear in OMiSCID header
      */
     protected String generateHeader(int len) {
-        String str = messageBeginStr + Utility.intTo8HexString(localPeerId) + " " + Utility.intTo8HexString(mid) + " " + Utility.intTo8HexString(len)
+        String str = messageBeginStr + Utility.intTo8HexString(localPeerId).toLowerCase() + " " + Utility.intTo8HexString(mid).toLowerCase() + " " + Utility.intTo8HexString(len).toLowerCase()
                 + headerEndStr;
         mid++;
         return str;

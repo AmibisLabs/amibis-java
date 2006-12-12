@@ -80,6 +80,7 @@ import fr.prima.omiscid.user.util.Utility;
  * @author Sebastien Pesnel Refactoring by Patrick Reignier and emonet
  */
 //\REVIEWTASK shouldn't this be a monitor?
+//\REVIEWTASK shouldn't contain the sets it contains (should be in an higher level class (this one has two functionnalities))
 public class ControlClient implements BipMessageListener {
     /** The max time to wait for the answer to a query */
     private final int maxTimeToWait = 2000; // milliseconds
@@ -1070,7 +1071,7 @@ public class ControlClient implements BipMessageListener {
             synchronized (this) {
                 theMsgId = messageId++;
             }
-            String strMessageId = Utility.intTo8HexString(theMsgId);
+            String strMessageId = Utility.intTo8HexString(theMsgId).toLowerCase();
             controlQuery.setId(strMessageId);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             controlQuery.marshal(new OutputStreamWriter(byteArrayOutputStream));

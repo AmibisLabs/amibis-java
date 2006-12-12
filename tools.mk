@@ -35,7 +35,8 @@ prepare:
 		)
 	cd ,,build && jar cvf ../$(INTERFACEJAR) .
 
-fix-headers:
+headers:
 	find src -name \*.java -exec ./set-header.sh {} \;
 	find dnssd-src -name \*.java -exec ./set-header.sh {} \;
 	find user-level-src -name \*.java -exec ./set-header.sh {} \;
+	find test -name \*.java -exec ./set-header.sh {} \;

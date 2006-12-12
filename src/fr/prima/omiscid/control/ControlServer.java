@@ -352,14 +352,14 @@ public class ControlServer extends MessageManager implements VariableChangeListe
                     return null;
                 } else {
                     remainingTries--;
-                    return Utility.intTo8HexString(BipUtils.generateBIPPeerId());
+                    return Utility.intTo8HexString(BipUtils.generateBIPPeerId()).toLowerCase();
                 }
             }
         });
         if (registrationDone) {
             this.peerId = Utility.hexStringToInt(serviceRegistration.getRegisteredName());
             VariableAttribute peerIdVariable = addVariable(GlobalConstants.constantNameForPeerId);
-            peerIdVariable.setValueStr(Utility.intTo8HexString(peerId));
+            peerIdVariable.setValueStr(Utility.intTo8HexString(peerId).toLowerCase());
             peerIdVariable.setAccessType(VariableAccessType.CONSTANT);
         }
         return registrationDone;
@@ -747,7 +747,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         } else {
             lock.setResult(CA_LockResultType.FAILED);
         }
-        lock.setPeer(Utility.intTo8HexString(lockIntegerVar.getIntValue()));
+        lock.setPeer(Utility.intTo8HexString(lockIntegerVar.getIntValue()).toLowerCase());
         controlAnswerItem.setLock(lock);
         return controlAnswerItem;
     }
@@ -761,7 +761,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         } else {
             unlock.setResult(CA_LockResultType.FAILED);
         }
-        unlock.setPeer(Utility.intTo8HexString(lockIntegerVar.getIntValue()));
+        unlock.setPeer(Utility.intTo8HexString(lockIntegerVar.getIntValue()).toLowerCase());
         controlAnswerItem.setUnlock(unlock);
         return controlAnswerItem;
     }
