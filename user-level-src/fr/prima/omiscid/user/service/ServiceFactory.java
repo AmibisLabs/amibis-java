@@ -49,7 +49,7 @@ public interface ServiceFactory {
 	 * @see fr.prima.omiscid.user.service.Service#addConnector(String, String, ConnectorType)
 	 * @see fr.prima.omiscid.user.service.Service#addVariable(String, String, String, fr.prima.omiscid.user.variable.VariableAccessType) 
 	 */
-	public Service create(String serviceName) ;
+	public Service create(String serviceName);
 	
 	/** 
 	 * Creates a new Omiscid service. This service is not yet advertised in DSN-SD. It must
@@ -77,5 +77,18 @@ public interface ServiceFactory {
 	 * @see fr.prima.omiscid.user.service.Service#addConnector(String, String, ConnectorType)
 	 * @see fr.prima.omiscid.user.service.Service#addVariable(String, String, String, fr.prima.omiscid.user.variable.VariableAccessType) 
 	 */
-	public Service createFromXML(InputStream stream) throws InvalidDescriptionException ;	
+	public Service createFromXML(InputStream stream) throws InvalidDescriptionException;
+    
+    /**
+     * Future extension : used by the service Binder to detect incoming new bundled services
+     * @param bundle
+     */
+    public void addMainClass(MainClass bundle);
+
+    /**
+     * Future extension : used by the service Binder to detect departure of bundled services
+     * @param bundle
+     */
+    public void removeMainClass(MainClass bundle);
+
 }
