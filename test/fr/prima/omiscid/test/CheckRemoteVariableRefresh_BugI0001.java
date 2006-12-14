@@ -31,17 +31,17 @@ import java.util.Arrays;
 import java.util.Vector;
 
 import fr.prima.omiscid.user.service.Service;
+import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
-import fr.prima.omiscid.user.service.impl.ServiceFactoryImpl;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
 public class CheckRemoteVariableRefresh_BugI0001 {
     
     public static void main(String[] args) {
-        ServiceFactoryImpl factory = new ServiceFactoryImpl();
+        ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("BugServer");
+            final Service server = factory.create("BugI0001Server");
             server.addVariable("bug", "", "an allway moving variable", VariableAccessType.READ);
             server.start();
             new Thread() {
@@ -61,9 +61,9 @@ public class CheckRemoteVariableRefresh_BugI0001 {
             }.start();
         }
         {
-            Service client = factory.create("BugClient");
+            Service client = factory.create("BugI0001Client");
             client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("BugServer"));
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("BugI0001Server"));
             new Thread() {
                 @Override
                 public void run() {
@@ -74,7 +74,7 @@ public class CheckRemoteVariableRefresh_BugI0001 {
                             Thread.sleep(200);
                             String newVal = proxy.getVariableValue("bug");
                             if (newVal.equals(val)) {
-                                System.err.println("Test Failed: value constant at "+val);
+                                FactoryFactory.failed("value constant at "+val);
                                 System.exit(1);
                             }
                             res.add(val);
@@ -84,7 +84,7 @@ public class CheckRemoteVariableRefresh_BugI0001 {
                         }
                     }
                     
-                    System.err.println("Test Passed: "+Arrays.toString(res.toArray()));
+                    FactoryFactory.passed(Arrays.toString(res.toArray()));
                     System.exit(0);
                 }
             }.start();
