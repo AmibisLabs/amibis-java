@@ -29,6 +29,8 @@ package fr.prima.omiscid.dnssd.avahi;
 import java.io.UnsupportedEncodingException;
 import java.util.Hashtable;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.ServiceRegistration {
 
     private AvahiConnection avahiConnection;
@@ -66,6 +68,10 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
 
     public String getName() {
         return serviceName;
+    }
+    
+    public void setHostName(String serviceHostName) {
+        throw new NotImplementedException();
     }
 
     public boolean register(int port) {

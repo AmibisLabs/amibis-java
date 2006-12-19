@@ -59,6 +59,8 @@ public class ServiceRegistration implements RegisterListener, fr.prima.omiscid.d
 
     private TXTRecord txtRecord = new TXTRecord();
 
+    private String hostName = null;
+
     /* package */ServiceRegistration(String serviceName, String registrationType) {
         this.serviceName = serviceName;
         this.registrationType = registrationType;
@@ -93,11 +95,15 @@ public class ServiceRegistration implements RegisterListener, fr.prima.omiscid.d
     public String getName() {
         return serviceName;
     }
+    
+    public void setHostName(String serviceHostName) {
+        this.hostName = serviceHostName;
+    }
 
     public synchronized boolean register(int port) {
         registered = false;
         try {
-            dnssdRegistration = DNSSD.register(FLAG, IF_INDEX, serviceName, registrationType, DOMAIN, null, port, txtRecord, this);
+            dnssdRegistration = DNSSD.register(FLAG, IF_INDEX, serviceName, registrationType, DOMAIN, hostName, port, txtRecord, this);
             this.wait();
         } catch (com.apple.dnssd.DNSSDException e) {
             e.printStackTrace();
@@ -113,7 +119,7 @@ public class ServiceRegistration implements RegisterListener, fr.prima.omiscid.d
         while (!registered && nextTry != null) {
             setName(nextTry);
             try {
-                dnssdRegistration = DNSSD.register(DNSSD.NO_AUTO_RENAME, IF_INDEX, serviceName, registrationType, DOMAIN, null, port, txtRecord, this);
+                dnssdRegistration = DNSSD.register(DNSSD.NO_AUTO_RENAME, IF_INDEX, serviceName, registrationType, DOMAIN, hostName, port, txtRecord, this);
                 this.wait();
             } catch (com.apple.dnssd.DNSSDException e) {
                 e.printStackTrace();

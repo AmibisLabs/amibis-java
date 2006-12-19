@@ -32,6 +32,8 @@ import java.util.Hashtable;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.ServiceRegistration {
 
     private JmDNS jmdns;
@@ -92,6 +94,10 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
 
     public String getName() {
         return serviceName;
+    }
+    
+    public void setHostName(String serviceHostName) {
+        throw new NotImplementedException();
     }
 
 }

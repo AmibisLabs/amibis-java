@@ -40,6 +40,8 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
     private String serviceName;
 
     private String registeredServiceName;
+    
+    private String overrideHostName = null;
 
     private Hashtable<String, byte[]> properties = new Hashtable<String, byte[]>();
 
@@ -66,6 +68,10 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
 
     public String getName() {
         return serviceName;
+    }
+    
+    public void setHostName(String serviceHostName) {
+        this.overrideHostName = serviceHostName;
     }
 
     public boolean register(int port) {
@@ -109,6 +115,10 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
     public boolean register(int port, ServiceNameProducer serviceNameProducer) {
         this.port = port;
         return serviceRegistrator.register(this, serviceNameProducer);
+    }
+
+    String getOverrideHostName() {
+        return overrideHostName;
     }
 
 }

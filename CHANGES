@@ -5,10 +5,17 @@
 In this files, you will find changes between java OMiSCID versions.
 
 1.0.4
-r1806
+/////r1806
         fix:  default "class" variable value is now "Service" as intended
         fix:  getting a remote variable now properly ask the remote service (wrong caching policy)
         fix:  service xml description now uses proper castor version
++dnssd server refresh (allow declaration)
++dnssd fix among implementation (coherence in full name ...)
++dnssd avahi refresh : !!! still not 100% ok (wait for a stable dbus release and java dbus release and/or pure java dbus)
++uses derefencing in cfg.properties to choose dnssd impl
++added a test !! the first one !!! and some more
++dnssd server for production use
++dnssd server fix when on different machines :-) using ip address for now
 
 
 1.0.3

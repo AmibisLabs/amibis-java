@@ -78,6 +78,14 @@ public interface ServiceRegistration {
     String getName();
 
     /**
+     * Set the desired hostname the service is running on.
+     * This should not include the possible ".local." suffix.
+     *
+     * @param serviceHostName
+     */
+    void setHostName(String serviceHostName);
+
+    /**
      * Registers the service under dnssd. If the registration succeeds, the
      * registered service name is accessible through
      * {@link #getRegisteredName()}.

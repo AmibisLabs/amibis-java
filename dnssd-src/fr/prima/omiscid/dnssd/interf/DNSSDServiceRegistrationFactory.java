@@ -30,6 +30,7 @@ public interface DNSSDServiceRegistrationFactory {
 
     /**
      * Creates a new object representing the registration to the dnssd network.
+     * The default is to create a registration for the localhost machine.
      * 
      * @see ServiceRegistration to see how to register and unregister services
      *      using {@link ServiceRegistration}

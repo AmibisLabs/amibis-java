@@ -122,10 +122,12 @@ public class ServiceRegistrator implements Runnable {
 
     public boolean register(ServiceRegistration serviceRegistration) {
         try {
+//            String hostName = InetAddress.getLocalHost().getHostName() + ".local.";
+            String hostName = serviceRegistration.getOverrideHostName();
             return register(
                     serviceRegistration,
-                    new ServiceInformation(serviceRegistration.getRegistrationType(), serviceRegistration.getServiceName(), InetAddress.getLocalHost().getHostName(), serviceRegistration.getPort(), serviceRegistration.getProperties(), ServiceInformation.statusRegistering));
-        } catch (UnknownHostException e) {
+                    new ServiceInformation(serviceRegistration.getRegistrationType(), serviceRegistration.getServiceName(), hostName, serviceRegistration.getPort(), serviceRegistration.getProperties(), ServiceInformation.statusRegistering));
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -141,10 +143,12 @@ public class ServiceRegistrator implements Runnable {
                     names.add(name);
                 }
             }
+//            String hostName = InetAddress.getLocalHost().getHostName() + ".local.";
+            String hostName = serviceRegistration.getOverrideHostName();
             return register(
                     serviceRegistration,
-                    new ServiceInformation(serviceRegistration.getRegistrationType(), names , InetAddress.getLocalHost().getHostName(), serviceRegistration.getPort(), serviceRegistration.getProperties(), ServiceInformation.statusRegistering));
-        } catch (UnknownHostException e) {
+                    new ServiceInformation(serviceRegistration.getRegistrationType(), names , hostName, serviceRegistration.getPort(), serviceRegistration.getProperties(), ServiceInformation.statusRegistering));
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

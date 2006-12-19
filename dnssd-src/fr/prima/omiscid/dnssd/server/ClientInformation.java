@@ -70,20 +70,23 @@ public class ClientInformation implements ServiceEventListener {
 
     private ServiceBrowser serviceBrowser;
 
+    private Socket socket;
+
     public ClientInformation(DNSSDFactory dnssdFactory, Socket socket, String registrationType) {
         this.dnssdFactory = dnssdFactory;
         this.registrationType = registrationType;
-        if (registrationType != null) {
-            this.serviceBrowser = dnssdFactory.createServiceBrowser(registrationType);
-            this.serviceBrowser.addListener(this);
-            this.serviceBrowser.start();
-        }
+        this.socket = socket;
         try {
             outputStream = socket.getOutputStream();
             //objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+        if (registrationType != null) {
+            this.serviceBrowser = dnssdFactory.createServiceBrowser(registrationType);
+            this.serviceBrowser.addListener(this);
+            this.serviceBrowser.start();
         }
     }
 
@@ -123,10 +126,15 @@ public class ClientInformation implements ServiceEventListener {
             send(serviceInformation);
         }
     }
-
+    
     public void registerService(ServiceInformation serviceInformation) throws IOException {
         assert serviceInformation.isRegistering();
         ServiceRegistration serviceRegistration = dnssdFactory.createServiceRegistration(serviceInformation.getFullName(), serviceInformation.getRegistrationType());
+        if (serviceInformation.getHostName() == null) {
+            serviceRegistration.setHostName(socket.getInetAddress().getHostAddress());
+        } else {
+            serviceRegistration.setHostName(serviceInformation.getHostName());
+        }
         for (String key : serviceInformation.getPropertyKeys()) {
             serviceRegistration.addProperty(key, serviceInformation.getStringProperty(key));
         }
