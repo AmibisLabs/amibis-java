@@ -86,7 +86,7 @@ public class TcpClientServer extends TcpServer {
      * @see fr.prima.omiscid.com.TcpServer#sendToClients(byte[])
      */
     @Override
-    public void sendToClients(byte[] buffer) {
+    public void sendToAllClients(byte[] buffer) {
         super.sendToAllClients(buffer);
         synchronized (this) {
             for (TcpClient client : clientsList.values()) {
