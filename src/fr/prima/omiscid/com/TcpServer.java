@@ -64,7 +64,7 @@ public class TcpServer implements CommunicationServer {
     private Thread listeningThread;
 
     /** Set of listener call when OMiSCID messages arrive */
-    private Set<BipMessageListener> listenersSet;
+    protected Set<BipMessageListener> listenersSet;
 
     /**
      * Creates a new instance of TcpServer.

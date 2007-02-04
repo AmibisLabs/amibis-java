@@ -36,6 +36,7 @@ import fr.prima.omiscid.com.interf.BipMessageListener;
  * @author Patrick Reignier (UJF/Gravir)
  */
 // \REVIEWTASK shouldn't this be a monitor?
+// \REVIEWTASK avoid inheritance whenever possible
 public class TcpClientServer extends TcpServer {
 
     /** List of clients connected to a remote server (accessed by peer Id) */
@@ -76,6 +77,9 @@ public class TcpClientServer extends TcpServer {
         }
         synchronized (this) {
             clientsList.put(tcpClient.getRemotePeerId(), tcpClient);
+            for (BipMessageListener listener : listenersSet) {
+                tcpClient.addBipMessageListener(listener);
+            }
         }
         return tcpClient.getRemotePeerId();
     }
