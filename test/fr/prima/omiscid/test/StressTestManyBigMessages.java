@@ -26,6 +26,8 @@
 
 package fr.prima.omiscid.test;
 
+import fr.prima.omiscid.user.exception.ConnectorAlreadyExisting;
+import fr.prima.omiscid.user.exception.ServiceRunning;
 import java.io.IOException;
 import java.util.Vector;
 
@@ -40,10 +42,13 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 public class StressTestManyBigMessages {
     
     private static final int smallSize = 1;
-    private static final int bigSize = 5;
+    private static final int bigSize = 3*288*324;//5*1024;
+
+    private static final int clientsToStart = 3;
+    private static final int messagesToSend = 100;
     
     public static void main(String[] args) throws IOException, InterruptedException {
-        ServiceFactory factory = FactoryFactory.factory();
+        final ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("ServerBigMessages");
             server.addConnector("c", "big messages", ConnectorType.INOUTPUT);
@@ -51,7 +56,7 @@ public class StressTestManyBigMessages {
             
                 public void messageReceived(final Service service, final String localConnectorName, final Message message) {
                     System.out.println("server received");
-                    service.sendToAllClients(localConnectorName, new byte[bigSize]);
+                    service.sendToAllClients(localConnectorName, new byte[bigSize]/*, message.getPeerId()*/);
                     System.out.println("server sent");
                 }
             
@@ -69,8 +74,8 @@ public class StressTestManyBigMessages {
             server.start();
         }
         final Vector<Object> ended = new Vector<Object>();
-        int started = 3;
-        for (int i = 0; i < started; i++) {
+        final Vector<Object> started = new Vector<Object>();
+        for (int i = 0; i < clientsToStart; i++) {
             Service client = factory.create("Client");
             client.addConnector("c", "big messages", ConnectorType.INOUTPUT);
             client.addConnectorListener("c", new ConnectorListener() {
@@ -81,7 +86,7 @@ public class StressTestManyBigMessages {
                     service.sendToAllClients("c", new byte[smallSize]);
                     System.out.println("client sent");
                     count++;
-                    if (count == 5) {
+                    if (count >= messagesToSend) {
                         service.stop();
                         ended.add(service);
                     }
@@ -102,14 +107,15 @@ public class StressTestManyBigMessages {
             final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("ServerBigMessages"));
             client.connectTo("c", proxy, "c");
             client.sendToAllClients("c", new byte[smallSize]);
-            Thread.sleep(2000);
+            started.add(client);
+            Thread.sleep(1000);
         }
-        Thread.sleep(2000);
+        Thread.sleep(3000);
         int endedSize = ended.size();
-        if (endedSize == started) {
-            FactoryFactory.passed("all "+started+" ok");
+        if (endedSize == started.size()) {
+            FactoryFactory.passed("all "+started.size()+" ok");
         } else {
-            FactoryFactory.failed("started is "+started+" and only "+endedSize+" ended");
+            FactoryFactory.failed("started is "+started.size()+" and only "+endedSize+" ended");
         }
         System.exit(0);
     }
