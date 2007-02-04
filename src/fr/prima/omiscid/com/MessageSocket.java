@@ -316,7 +316,11 @@ public abstract class MessageSocket {
         if (notifyListenersOnConnection) {
             synchronized (listenersSet) {
                 for (BipMessageListener listener : listenersSet) {
-                    listener.connected(remotePeerId);
+                    try {
+                        listener.connected(remotePeerId);
+                    } catch (Exception e) {
+                        // FIXME: should log
+                    }
                 }
             }
         }
@@ -403,7 +407,11 @@ public abstract class MessageSocket {
     public void newMessageReceived(Message message) {
         synchronized (listenersSet) {
             for (BipMessageListener listener : listenersSet) {
-                listener.receivedBipMessage(message);
+                try {
+                    listener.receivedBipMessage(message);
+                } catch (Exception e) {
+                    // FIXME: should log
+                }
             }
         }
     }
@@ -414,7 +422,11 @@ public abstract class MessageSocket {
         }
         synchronized (listenersSet) {
             for (BipMessageListener listener : listenersSet) {
-                listener.disconnected(remotePeerId);
+                try {
+                    listener.disconnected(remotePeerId);
+                } catch (Exception e) {
+                    // FIXME: should log
+                }
             }
         }
     }
