@@ -1,7 +1,29 @@
-/*
- * Created on 14 déc. 06
+/**
+ * Copyright© 2005-2006 INRIA/Université Pierre Mendès-France/Université Joseph Fourier.
  *
+ * O3MiSCID (aka OMiSCID) Software written by Sebastien Pesnel, Dominique
+ * Vaufreydaz, Patrick Reignier, Remi Emonet and Julien Letessier.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 package fr.prima.omiscid.test;
 
 import java.io.IOException;
@@ -17,16 +39,20 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 
 public class StressTestManyBigMessages {
     
+    private static final int smallSize = 1;
+    private static final int bigSize = 5;
+    
     public static void main(String[] args) throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("Server");
+            final Service server = factory.create("ServerBigMessages");
             server.addConnector("c", "big messages", ConnectorType.INOUTPUT);
             server.addConnectorListener("c", new ConnectorListener() {
             
-                public void messageReceived(Service service, String localConnectorName, Message message) {
+                public void messageReceived(final Service service, final String localConnectorName, final Message message) {
                     System.out.println("server received");
-                    service.sendToOneClient(localConnectorName, new byte[1024*5], message.getPeerId());
+                    service.sendToAllClients(localConnectorName, new byte[bigSize]);
+                    System.out.println("server sent");
                 }
             
                 public void disconnected(Service service, String localConnectorName, int peerId) {
@@ -46,13 +72,14 @@ public class StressTestManyBigMessages {
         int started = 3;
         for (int i = 0; i < started; i++) {
             Service client = factory.create("Client");
-            client.addConnector("c", "", ConnectorType.INOUTPUT);
+            client.addConnector("c", "big messages", ConnectorType.INOUTPUT);
             client.addConnectorListener("c", new ConnectorListener() {
                 int count = 0;
             
-                public void messageReceived(Service service, String localConnectorName, Message message) {
+                public void messageReceived(final Service service, String localConnectorName, Message message) {
                     System.out.println("client received, count is "+count);
-                    service.sendToAllClients("c", new byte[0]);
+                    service.sendToAllClients("c", new byte[smallSize]);
+                    System.out.println("client sent");
                     count++;
                     if (count == 5) {
                         service.stop();
@@ -72,9 +99,9 @@ public class StressTestManyBigMessages {
             
             });
             client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("Server"));
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("ServerBigMessages"));
             client.connectTo("c", proxy, "c");
-            client.sendToAllClients("c", new byte[0]);
+            client.sendToAllClients("c", new byte[smallSize]);
             Thread.sleep(2000);
         }
         Thread.sleep(2000);

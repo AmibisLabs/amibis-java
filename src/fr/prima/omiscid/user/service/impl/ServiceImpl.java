@@ -255,7 +255,7 @@ public class ServiceImpl implements Service {
 		if (tcpClientServer == null)
 			throw new UnknownConnector("Unknown bip connector : " + connectorName) ;
 
-		tcpClientServer.sendToClients(msg) ;
+		tcpClientServer.sendToAllClients(msg) ;
 	}
 
     public void sendToAllClients(String connectorName, byte[] msg) throws UnknownConnector {
