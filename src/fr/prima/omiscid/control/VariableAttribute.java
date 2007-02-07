@@ -287,7 +287,11 @@ public class VariableAttribute extends Attribute {
     private void valueChanged() {
         synchronized (listenersSet) {
             for (VariableChangeListener listener : listenersSet) {
-                listener.variableChanged(this);
+                try {
+                    listener.variableChanged(this);
+                } catch (Exception e) {
+                    // FIXME: should log
+                }
             }
         }
     }

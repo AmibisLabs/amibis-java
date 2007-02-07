@@ -568,9 +568,13 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         boolean doModification = va.canBeModified() && (newValue == null || !newValue.equals(va.getValueStr()));
         if (doModification) {
             for (VariableChangeQueryListener listener : variableChangeQueryListeners) {
-                if (! listener.isAccepted(va, newValue)) {
-                    doModification = false;
-                    break;
+                try {
+                    if (! listener.isAccepted(va, newValue)) {
+                        doModification = false;
+                        break;
+                    }
+                } catch (Exception e) {
+                    // FIXME: should log
                 }
             }
             if (doModification) {
