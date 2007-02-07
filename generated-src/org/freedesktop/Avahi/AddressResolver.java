@@ -1,8 +1,9 @@
 package org.freedesktop.Avahi;
-import org.freedesktop.dbus.DBusException;
+
 import org.freedesktop.dbus.DBusInterface;
 import org.freedesktop.dbus.DBusSignal;
 import org.freedesktop.dbus.UInt32;
+import org.freedesktop.dbus.exceptions.DBusException;
 public interface AddressResolver extends DBusInterface
 {
    public static class Found extends DBusSignal

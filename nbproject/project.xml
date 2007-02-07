@@ -7,10 +7,10 @@
             <minimum-ant-version>1.6.5</minimum-ant-version>
             <source-roots>
                 <root id="src.dir" name="user-level-src"/>
-                <root id="jOMiSCID2.dir" name="src"/>
-                <root id="dnssd-src.dir" name="dnssd-src"/>
-                <root id="generated-src.dir" name="generated-src"/>
-                <root id="test.dir" name="test"/>
+                <root id="jOMiSCID2.dir"/>
+                <root id="dnssd-src.dir"/>
+                <root id="generated-src.dir"/>
+                <root id="test.dir"/>
             </source-roots>
             <test-roots/>
         </data>

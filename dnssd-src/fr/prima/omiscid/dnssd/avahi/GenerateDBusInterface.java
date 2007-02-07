@@ -36,8 +36,8 @@ import java.io.PrintStream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.freedesktop.dbus.CreateInterface;
-import org.freedesktop.dbus.DBusException;
+import org.freedesktop.dbus.bin.CreateInterface;
+import org.freedesktop.dbus.exceptions.DBusException;
 import org.xml.sax.SAXException;
 
 public class GenerateDBusInterface {
@@ -69,7 +69,7 @@ public class GenerateDBusInterface {
     }
 
     public static void main(String[] args) throws FileNotFoundException, ParserConfigurationException, SAXException, IOException, DBusException {
-        CreateInterface createInterface = new CreateInterface(new FileStreamFactory("generated-src/"));
+        CreateInterface createInterface = new CreateInterface(new FileStreamFactory("generated-src/"), false);
         for (File file : new File("/usr/share/avahi/introspection/").listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.endsWith(".introspect");

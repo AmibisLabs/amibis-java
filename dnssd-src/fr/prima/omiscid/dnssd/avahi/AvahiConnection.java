@@ -39,12 +39,12 @@ import org.freedesktop.Avahi.ServiceBrowser;
 import org.freedesktop.Avahi.EntryGroup.StateChanged;
 import org.freedesktop.Avahi.ServiceBrowser.ItemRemove;
 import org.freedesktop.dbus.DBusConnection;
-import org.freedesktop.dbus.DBusException;
 import org.freedesktop.dbus.DBusSigHandler;
 import org.freedesktop.dbus.UInt16;
 import org.freedesktop.dbus.UInt32;
 
 import fr.prima.omiscid.dnssd.interf.ServiceInformation;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 /*package*/ class AvahiConnection {
 

@@ -39,12 +39,12 @@ import org.freedesktop.Avahi.ServiceBrowser;
 import org.freedesktop.Avahi.ServiceResolver;
 import org.freedesktop.Avahi.ServiceResolver.Found;
 import org.freedesktop.dbus.DBusConnection;
-import org.freedesktop.dbus.DBusException;
 import org.freedesktop.dbus.DBusSigHandler;
 import org.freedesktop.dbus.UInt16;
 import org.freedesktop.dbus.UInt32;
 
 import fr.prima.omiscid.control.interf.GlobalConstants;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 public class TestDBus {
     public static void main(String[] args) throws DBusException, InterruptedException, ClassNotFoundException {

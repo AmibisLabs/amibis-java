@@ -1,8 +1,9 @@
 package org.freedesktop.Avahi;
-import org.freedesktop.dbus.DBusException;
+
 import org.freedesktop.dbus.DBusInterface;
 import org.freedesktop.dbus.DBusSignal;
 import org.freedesktop.dbus.UInt32;
+import org.freedesktop.dbus.exceptions.DBusException;
 public interface ServiceTypeBrowser extends DBusInterface
 {
    public static class ItemNew extends DBusSignal
