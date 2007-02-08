@@ -83,7 +83,7 @@ import fr.prima.omiscid.user.util.Utility;
 //\REVIEWTASK shouldn't contain the sets it contains (should be in an higher level class (this one has two functionnalities))
 public class ControlClient implements BipMessageListener {
     /** The max time to wait for the answer to a query */
-    private final int maxTimeToWait = 2000; // milliseconds
+    private final int maxTimeToWait = 5000; // milliseconds
 
     // \REVIEWTASK should be configurable in a specific way (env variable?)
 
@@ -1084,7 +1084,7 @@ public class ControlClient implements BipMessageListener {
                 } else {
                     ControlAnswer controlAnswer = monitor.willProcess(theMsgId,maxTimeToWait);
                     if (controlAnswer == null) {
-                        System.err.println(Utility.intTo8HexString(this.peerId)+"got a null answer from " + Utility.intTo8HexString(getPeerId()));
+                        System.err.println(Utility.intTo8HexString(this.peerId)+" got a null answer from " + Utility.intTo8HexString(getPeerId()));
                     }
                     return controlAnswer;
                 }
