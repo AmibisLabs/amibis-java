@@ -29,6 +29,7 @@ package fr.prima.omiscid.com;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 /**
  * Client for exchanges of BIP messages over TCP connexion.
@@ -73,11 +74,21 @@ public class TcpClient extends MessageSocketTCP {
         socket.setTcpNoDelay(true);
         // \REVIEWTASK should have a policy on tcp no delay
         if (stripTrailingDotLocalDot && host.endsWith(".local.")) {
-            host = host.replaceAll("[.]local[.]$", "");
+            host = host.replaceFirst("[.]local[.]$", "");
             // System.out.println(host);
         }
         InetSocketAddress endpoint = new InetSocketAddress(host, port);
-        socket.connect(endpoint);
+        try {
+            socket.connect(endpoint);
+        } catch (UnknownHostException e) {
+            if (host.endsWith("-2")) {
+                host = host.replaceFirst("-2$", "");
+                endpoint = new InetSocketAddress(host, port);
+                socket.connect(endpoint);
+            } else {
+                throw e;
+            }
+        }
         super.setSocket(socket);
         super.start();
         initializeConnection();
