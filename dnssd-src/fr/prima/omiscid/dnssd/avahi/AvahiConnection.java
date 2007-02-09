@@ -136,7 +136,9 @@ import org.freedesktop.dbus.exceptions.DBusException;
 //        System.err.println("rem "+fullName);
         ServiceInformation serviceInformation = services.remove(fullName);
         assert serviceInformation != null;
-        avahiBrowserListener.serviceLost(serviceInformation);
+        if (avahiBrowserListener!=null) {
+            avahiBrowserListener.serviceLost(serviceInformation);
+        }
 //        assert services.containsKey(a.name+a.domain);
     }
 
