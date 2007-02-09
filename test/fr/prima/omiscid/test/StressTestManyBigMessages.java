@@ -26,8 +26,6 @@
 
 package fr.prima.omiscid.test;
 
-import fr.prima.omiscid.user.exception.ConnectorAlreadyExisting;
-import fr.prima.omiscid.user.exception.ServiceRunning;
 import java.io.IOException;
 import java.util.Vector;
 
@@ -42,10 +40,11 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 public class StressTestManyBigMessages {
     
     private static final int smallSize = 1;
-    private static final int bigSize = 3*288*324;//5*1024;
+    private static final int bigSize = 1024*1024;
 
     private static final int clientsToStart = 3;
-    private static final int messagesToSend = 100;
+    private static final int messagesToSend = 20;
+    private static final int timeToWait = 5000;
     
     public static void main(String[] args) throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
@@ -110,7 +109,7 @@ public class StressTestManyBigMessages {
             started.add(client);
             Thread.sleep(1000);
         }
-        Thread.sleep(3000);
+        Thread.sleep(timeToWait);
         int endedSize = ended.size();
         if (endedSize == started.size()) {
             FactoryFactory.passed("all "+started.size()+" ok");

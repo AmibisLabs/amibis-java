@@ -58,6 +58,7 @@ public class TestSimpleServiceXMLDescription {
         service.stop();
         FactoryFactory.passed("no exceptions occured");
         in.close();
+        System.exit(0);
     }
 
 }
