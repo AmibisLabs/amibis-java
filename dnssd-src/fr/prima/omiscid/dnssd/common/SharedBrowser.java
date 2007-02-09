@@ -56,10 +56,14 @@ public class SharedBrowser implements ServiceEventListener {
 
     private static synchronized void removeEmpty(String registrationType) {
         SharedBrowser sharedBrowser = browsers.remove(registrationType);
-        if (sharedBrowser.clients.size() != 0) {
-            browsers.put(registrationType, sharedBrowser);
+        if (sharedBrowser == null) {
+            // the browser has already been removed
         } else {
-            sharedBrowser.serviceBrowser.stop();
+            if (sharedBrowser.clients.size() != 0) {
+                browsers.put(registrationType, sharedBrowser);
+            } else {
+                sharedBrowser.serviceBrowser.stop();
+            }
         }
     }
     
