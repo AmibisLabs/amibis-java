@@ -30,8 +30,6 @@ package fr.prima.omiscid.test;
 import fr.prima.omiscid.user.connector.ConnectorListener;
 import fr.prima.omiscid.user.connector.ConnectorType;
 import fr.prima.omiscid.user.connector.Message;
-import fr.prima.omiscid.user.variable.LocalVariableListener;
-import fr.prima.omiscid.user.variable.VariableAccessType;
 import java.io.IOException;
 import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceFactory;
@@ -39,29 +37,39 @@ import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.util.Utility;
 
-public class SafeVariableListenerCalls_BugI0004 {
+public class BugI0002_SafeListenerCalls {
     
     public static void main(String[] args) throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("BugI0004Server");
-            server.addVariable("bug", "Bug", "plop", VariableAccessType.READ_WRITE);
-            server.addLocalVariableListener("bug", new LocalVariableListener() {
-                public boolean isValid(Service service, String currentValue, String newValue) {
+            final Service server = factory.create("BugI0002Server");
+            server.addConnector("bug", "", ConnectorType.INPUT);
+            server.addConnectorListener("bug", new ConnectorListener() {
+                public void messageReceived(Service service,
+                                            String localConnectorName,
+                                            Message message) {
                     throw new UnsupportedOperationException("Not supported yet.");
                 }
-                public void variableChanged(Service service, String name, String value) {
+
+                public void disconnected(Service service,
+                                         String localConnectorName, int peerId) {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+
+                public void connected(Service service, String localConnectorName,
+                                      int peerId) {
                     throw new UnsupportedOperationException("Not supported yet.");
                 }
             });
-            server.addLocalVariableListener("bug", new LocalVariableListener() {
+            server.addConnectorListener("bug", new ConnectorListener() {
                 boolean passedOnce = false;
-                public boolean isValid(Service service, String currentValue, String newValue) {
-                    return true;
+                public void connected(Service service, String localConnectorName, int peerId) {
                 }
-                public void variableChanged(Service service, String name, String value) {
+                public void disconnected(Service service, String localConnectorName, int peerId) {
+                }
+                public void messageReceived(Service service, String localConnectorName, Message message) {
                     if (passedOnce) {
-                        FactoryFactory.passed("Two notifications received by the clean listener");
+                        FactoryFactory.passed("Two messages received by the clean listener");
                         System.exit(0);
                     } else {
                         passedOnce = true;
@@ -70,14 +78,16 @@ public class SafeVariableListenerCalls_BugI0004 {
             });
             server.start();
         }{
-            Service client = factory.create("BugI0004Client");
+            Service client = factory.create("BugI0002Client");
+            client.addConnector("bug", "", ConnectorType.OUTPUT);
             client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("BugI0004Server"));
-            proxy.setVariableValue("bug", "ga");
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("BugI0002Server"));
+            client.connectTo("bug", proxy, "bug");
+            client.sendToAllClients("bug", Utility.stringToByteArray("hiiiii"));
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {}
-            proxy.setVariableValue("bug", "bu");
+            client.sendToAllClients("bug", Utility.stringToByteArray("hellllowwwwww"));
         }
         try {
             Thread.sleep(1500);

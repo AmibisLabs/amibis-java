@@ -26,13 +26,12 @@
 
 package fr.prima.omiscid.control.interf;
 
-import java.util.Arrays;
 
 public final class GlobalConstants {
 
     public static final String controlAnswerXMLTag = "controlAnswer";
 
-    public static final String dnssdDefaultWorkingDomain = "_bip._tcp";
+    public static final String dnssdDefaultWorkingDomain = "_bip_rem._tcp";
     public static final String dnssdWorkingDomainEnvironmentVariableName = "OMISCID_WORKING_DOMAIN";
 
     public static final String constantNameForPeerId = "peerId";

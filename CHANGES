@@ -22,6 +22,7 @@ In this files, you will find changes between java OMiSCID versions.
 +dnssd server fix when on different machines :-) using ip address for now
 *must: solve the castor proliferation problem
 *should: avahi usage using dbus using java-dbus 2.0 (pure java + native unix socket library)
+*should: add an heuristic on whether avahi registration will be accepted based on the size of the properties
 *could: dnssd client auto connect/reconnect
 *could: dnssd client has a list of expected servers
 

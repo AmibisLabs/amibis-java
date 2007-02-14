@@ -345,17 +345,36 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         if (incomplete) {
             serviceRegistration.addProperty(GlobalConstants.keyForFullTextRecord, GlobalConstants.keyForFullTextRecordNonFull);
         }
-        boolean registrationDone = serviceRegistration.register(port, new ServiceRegistration.ServiceNameProducer() {
-            int remainingTries = 5;
-            public String getServiceName() {
-                if (remainingTries < 1) {
-                    return null;
-                } else {
-                    remainingTries--;
-                    return Utility.intTo8HexString(BipUtils.generateBIPPeerId()).toLowerCase();
+        ServiceRegistration.ServiceNameProducer nameProducer = new ServiceRegistration.ServiceNameProducer() {
+                    int remainingTries = 5;
+                    public String getServiceName() {
+                        if (remainingTries < 1) {
+                            return null;
+                        } else {
+                            remainingTries--;
+                            return Utility.intTo8HexString(BipUtils.generateBIPPeerId()).toLowerCase();
+                        }
+                    }
+                };
+        boolean registrationDone = false;
+        try {
+            registrationDone = serviceRegistration.register(port, nameProducer);
+        } catch (Exception e) {
+            initServiceRegistration();
+            serviceRegistration.addProperty(GlobalConstants.keyForFullTextRecord, GlobalConstants.keyForFullTextRecordNonFull);
+            for (String variableName : GlobalConstants.specialVariablesNames) {
+                VariableAttribute variable = findVariable(variableName);
+                if (variable != null) {
+                    String prefix = variable.getAccess().getPrefixInDnssd();
+                    if (variable.getAccess() != VariableAccessType.CONSTANT) {
+                        serviceRegistration.addProperty(variable.getName(), prefix);
+                    } else {
+                        serviceRegistration.addProperty(variable.getName(), prefix + variable.getValueStr());
+                    }
                 }
             }
-        });
+            registrationDone = serviceRegistration.register(port, nameProducer);
+        }
         if (registrationDone) {
             this.peerId = Utility.hexStringToInt(serviceRegistration.getRegisteredName());
             VariableAttribute peerIdVariable = addVariable(GlobalConstants.constantNameForPeerId);

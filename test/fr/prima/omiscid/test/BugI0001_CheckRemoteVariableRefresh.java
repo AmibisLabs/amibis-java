@@ -36,7 +36,7 @@ import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
-public class CheckRemoteVariableRefresh_BugI0001 {
+public class BugI0001_CheckRemoteVariableRefresh {
     
     public static void main(String[] args) {
         ServiceFactory factory = FactoryFactory.factory();
