@@ -11,11 +11,13 @@ In this files, you will find changes between java OMiSCID versions.
         fix:  service xml description now uses proper castor version
         fix:  added a try catch around listener callbacks (was trusting listeners) (connector and variable listeners)
         fix:  listener added before connectTo are now properly listening
+        impr: performance improvement on high bandwidth receptions
 +dnssd server refresh (allow declaration)
 +dnssd fix among implementation (coherence in full name ...)
 +dnssd avahi refresh: !!! still not 100% ok (wait for a stable dbus release and java dbus release and/or pure java dbus)
 +dnssd avahi refresh: using dbusjava 2 that is 100% pure java except libunix.so
 +dnssd avahi/mdns conflict: fallback on removing trailing "-2" when the hostname to connectTo cannot be found
++dnssd jmdns: added handling of new service registration using peerId
 +uses derefencing in cfg.properties to choose dnssd impl
 +added a test !! the first one !!! and some more
 +dnssd server for production use
