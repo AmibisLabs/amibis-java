@@ -219,8 +219,7 @@ final class ReceiveBuffer {
                     // System.out.println("new buffer");
                     BUFFER_LENGTH = MIN_LENGTH_MESSAGE + length + 10;
                     byte tmpBuffer[] = new byte[BUFFER_LENGTH];
-                    for (int c = 0; c < nbByte; c++)
-                        tmpBuffer[c] = buffer[position + c];
+                    System.arraycopy(buffer, position, tmpBuffer, 0, nbByte);
                     position = 0;
                     buffer = tmpBuffer;
                     return 0;
@@ -239,10 +238,10 @@ final class ReceiveBuffer {
      * Move the data in the buffer. The byte are moved from 'position' to 0
      */
     private synchronized void moveData() {
-        for (int i = 0; i < nbByte; i++) {
-            buffer[i] = buffer[i + position];
+        if (position != 0) {
+            System.arraycopy(buffer, position, buffer, 0, nbByte);
+            position = 0;
         }
-        position = 0;
     }
 }
 
