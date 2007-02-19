@@ -72,7 +72,23 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
     }
     
     public boolean register(int port, ServiceNameProducer serviceNameProducer) {
-        throw new UnsupportedOperationException();
+        registered = false;
+        while ((serviceName = serviceNameProducer.getServiceName()) != null) {
+            serviceInfo = new ServiceInfo(registrationType, serviceName, port, 0, 0, properties);
+            try {
+                jmdns.registerService(serviceInfo);
+                if (serviceInfo.getName().equals(serviceName)) {
+                    registered = true;
+                    break;
+                } else {
+                    jmdns.unregisterService(serviceInfo);
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        return registered;
     }
 
     public boolean isRegistered() {
