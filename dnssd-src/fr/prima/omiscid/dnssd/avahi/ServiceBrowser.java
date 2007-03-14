@@ -62,10 +62,14 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
         avahiConnection.stopBrowse(this);
     }
 
-    public void notify(ServiceEvent e) {
-        for(ServiceEventListener listener : listeners) {
-            listener.serviceEventReceived(e);
-        }
+    public void notify(final ServiceEvent e) {
+        new Thread(new Runnable() {
+            public void run() {
+                for(ServiceEventListener listener : listeners) {
+                    listener.serviceEventReceived(e);
+                }
+            }
+        }).start();
     }
 
     public void serviceFound(ServiceInformation i) {

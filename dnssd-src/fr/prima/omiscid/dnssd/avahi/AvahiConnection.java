@@ -26,7 +26,6 @@
 
 package fr.prima.omiscid.dnssd.avahi;
 
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -43,9 +42,9 @@ import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.DBusSigHandler;
 import org.freedesktop.dbus.UInt16;
 import org.freedesktop.dbus.UInt32;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 import fr.prima.omiscid.dnssd.interf.ServiceInformation;
-import org.freedesktop.dbus.exceptions.DBusException;
 
 /*package*/ class AvahiConnection {
 
@@ -59,6 +58,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
     private DBusConnection dbus;
     private Server avahi;
     private EntryGroup entryGroup;
+    private boolean registrationDone = false;
     private String registeredName = null;
     
     public AvahiConnection() {
@@ -146,6 +146,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
     public synchronized String register(final ServiceRegistration registration) {
         assert entryGroup == null;
         registeredName = null;
+        registrationDone = false;
         try {
             dbus.addSigHandler(EntryGroup.StateChanged.class, new DBusSigHandler<EntryGroup.StateChanged>() {
                 public void handle(StateChanged a) {
@@ -183,7 +184,9 @@ import org.freedesktop.dbus.exceptions.DBusException;
                     new UInt16(registration.getPort()),
                     txt);
             entryGroup.Commit();
-            this.wait();
+            while (!this.registrationDone) {
+                this.wait();
+            }
         } catch (DBusException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -196,6 +199,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
 
     private synchronized void registrationDone(String registeredName) {
         this.registeredName = registeredName;
+        this.registrationDone = true;
         this.notify();
     }
 
