@@ -593,6 +593,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
                         break;
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
                     // FIXME: should log
                 }
             }

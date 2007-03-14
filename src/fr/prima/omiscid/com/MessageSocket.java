@@ -318,6 +318,7 @@ public abstract class MessageSocket {
                     try {
                         listener.connected(remotePeerId);
                     } catch (Exception e) {
+                        e.printStackTrace();
                         // FIXME: should log
                     }
                 }
@@ -409,6 +410,7 @@ public abstract class MessageSocket {
                 try {
                     listener.receivedBipMessage(message);
                 } catch (Exception e) {
+                    e.printStackTrace();
                     // FIXME: should log
                 }
             }
@@ -424,6 +426,7 @@ public abstract class MessageSocket {
                 try {
                     listener.disconnected(remotePeerId);
                 } catch (Exception e) {
+                    e.printStackTrace();
                     // FIXME: should log
                 }
             }
