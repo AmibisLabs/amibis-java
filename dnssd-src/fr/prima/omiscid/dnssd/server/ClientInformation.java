@@ -28,6 +28,7 @@ package fr.prima.omiscid.dnssd.server;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -130,11 +131,11 @@ public class ClientInformation implements ServiceEventListener {
     public void registerService(ServiceInformation serviceInformation) throws IOException {
         assert serviceInformation.isRegistering();
         ServiceRegistration serviceRegistration = dnssdFactory.createServiceRegistration(serviceInformation.getFullName(), serviceInformation.getRegistrationType());
-        if (serviceInformation.getHostName() == null) {
-            serviceRegistration.setHostName(socket.getInetAddress().getHostAddress());
-        } else {
-            serviceRegistration.setHostName(serviceInformation.getHostName());
+        String hostName = serviceInformation.getHostName();
+        if (hostName == null && !socket.getInetAddress().isLoopbackAddress()) {
+            hostName = socket.getInetAddress().getCanonicalHostName();
         }
+        serviceRegistration.setHostName(hostName);
         for (String key : serviceInformation.getPropertyKeys()) {
             serviceRegistration.addProperty(key, serviceInformation.getStringProperty(key));
         }

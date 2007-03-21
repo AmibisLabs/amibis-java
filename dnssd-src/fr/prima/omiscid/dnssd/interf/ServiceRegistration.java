@@ -105,6 +105,10 @@ public interface ServiceRegistration {
      */
     boolean register(int port, ServiceNameProducer serviceNameProducer);
 
+    /**
+     * 
+     * @return whether the service was successfully registered. Should correspond to the return value of {@link #register}.
+     */
     boolean isRegistered();
 
     /**
