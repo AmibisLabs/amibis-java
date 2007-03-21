@@ -94,7 +94,7 @@ public class ServiceInformation implements fr.prima.omiscid.dnssd.interf.Service
     }
 
     public String getRegType() {
-        return tuple.d;
+        return tuple.d+"."+tuple.e+".";
     }
 
     public String getStringProperty(String key) {

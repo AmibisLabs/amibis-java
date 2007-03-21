@@ -43,6 +43,7 @@ import org.freedesktop.dbus.DBusSigHandler;
 import org.freedesktop.dbus.UInt16;
 import org.freedesktop.dbus.UInt32;
 import org.freedesktop.dbus.exceptions.DBusException;
+import org.freedesktop.dbus.exceptions.DBusExecutionException;
 
 import fr.prima.omiscid.dnssd.interf.ServiceInformation;
 
@@ -126,7 +127,7 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
     private synchronized void notifyServiceFound(NTuple11<Integer, Integer, String, String, String, String, Integer, String, UInt16, List<List<Byte>>, UInt32> serviceInfo) {
         ServiceInformation serviceInformation = new fr.prima.omiscid.dnssd.avahi.ServiceInformation(serviceInfo); 
 //        System.err.println("new "+serviceInformation.getFullName());
-        assert !services.containsKey(serviceInformation.getFullName());
+        assert !services.containsKey(serviceInformation.getFullName()) : serviceInformation.getFullName();
         services.put(serviceInformation.getFullName(), serviceInformation);
         if (avahiBrowserListener!=null) {
             avahiBrowserListener.serviceFound(serviceInformation);
@@ -173,6 +174,7 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
                 }
                 txt.add(list);
             }
+            String hostName = registration.getHostName();
             entryGroup.AddService(
                     -1,
                     -1, 
@@ -180,7 +182,7 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
                     registration.getName(),
                     registration.getRegistrationType(), 
                     "local",
-                    "",
+                    registration.getHostName() == null ? "" : hostName,
                     new UInt16(registration.getPort()),
                     txt);
             entryGroup.Commit();
@@ -190,9 +192,16 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
         } catch (DBusException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } catch (DBusExecutionException e) {
+            // This happens when the txt record is invalid (too big)
+            // Should log?
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+        if (registeredName == null) {
+            entryGroup.Free();
+            entryGroup = null;
         }
         return registeredName;
     }
