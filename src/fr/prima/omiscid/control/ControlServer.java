@@ -346,19 +346,25 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             serviceRegistration.addProperty(GlobalConstants.keyForFullTextRecord, GlobalConstants.keyForFullTextRecordNonFull);
         }
         ServiceRegistration.ServiceNameProducer nameProducer = new ServiceRegistration.ServiceNameProducer() {
-                    int remainingTries = 5;
-                    public String getServiceName() {
-                        if (remainingTries < 1) {
-                            return null;
-                        } else {
-                            remainingTries--;
-                            return Utility.intTo8HexString(BipUtils.generateBIPPeerId()).toLowerCase();
-                        }
-                    }
-                };
+            final int initRemaningTries = 5;
+            int remainingTries = initRemaningTries;
+            public String getServiceName() {
+                if (remainingTries < 1) {
+                    remainingTries = initRemaningTries;
+                    // This reinitialization allows us to retry in the catch
+                    return null;
+                } else {
+                    remainingTries--;
+                    return Utility.intTo8HexString(BipUtils.generateBIPPeerId()).toLowerCase();
+                }
+            }
+        };
         boolean registrationDone = false;
         try {
             registrationDone = serviceRegistration.register(port, nameProducer);
+            if (!registrationDone) {
+                throw new Exception(); 
+            }
         } catch (Exception e) {
             initServiceRegistration();
             serviceRegistration.addProperty(GlobalConstants.keyForFullTextRecord, GlobalConstants.keyForFullTextRecordNonFull);
