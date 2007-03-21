@@ -8,7 +8,7 @@
 	<classpathentry path="lib/xerces.jar" kind="lib"/>
 	<classpathentry path="lib/commons-logging-1.1.jar" kind="lib"/>
 	<classpathentry path="lib/jakarta-oro-2.0.8.jar" kind="lib"/>
-	<classpathentry path="lib/castor-1.0.1-xml.jar" kind="lib"/>
+	<classpathentry path="lib/castor-1.0.5-xml.jar" kind="lib"/>
 	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
 	<classpathentry path="lib/jmdns.jar" kind="lib"/>
 	<classpathentry path="lib/dbus-2.1.jar" kind="lib"/>
