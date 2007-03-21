@@ -75,6 +75,9 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
         registered = false;
         while ((serviceName = serviceNameProducer.getServiceName()) != null) {
             serviceInfo = new ServiceInfo(registrationType, serviceName, port, 0, 0, properties);
+            if (!serviceInfo.getPropertyNames().hasMoreElements() && !properties.isEmpty()) {
+                return registered;
+            }
             try {
                 jmdns.registerService(serviceInfo);
                 if (serviceInfo.getName().equals(serviceName)) {
