@@ -42,9 +42,9 @@ import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.DBusSigHandler;
 import org.freedesktop.dbus.UInt16;
 import org.freedesktop.dbus.UInt32;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 import fr.prima.omiscid.control.interf.GlobalConstants;
-import org.freedesktop.dbus.exceptions.DBusException;
 
 public class TestDBus {
     public static void main(String[] args) throws DBusException, InterruptedException, ClassNotFoundException {
