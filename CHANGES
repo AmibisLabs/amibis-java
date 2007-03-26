@@ -5,7 +5,7 @@
 In this files, you will find changes between java OMiSCID versions.
 
 1.0.4
-r2235
+r2249
         fix:  default "class" variable value is now "Service" as intended
         fix:  getting a remote variable now properly ask the remote service (wrong caching policy)
         fix:  service xml description now uses proper castor version
