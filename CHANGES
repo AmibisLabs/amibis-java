@@ -4,8 +4,15 @@
 
 In this files, you will find changes between java OMiSCID versions.
 
+*must: solve the castor proliferation problem
+*should: do not query full description before needed
+*should: decide how omiscid is configured (cfg.properties or crosslanguage environment variables)
+*could: add an heuristic on whether avahi registration will be accepted based on the size of the properties
+*could: dnssd client auto connect/reconnect
+*could: dnssd client has a list of expected servers
+
 1.0.4
-r2249
+r
         fix:  default "class" variable value is now "Service" as intended
         fix:  getting a remote variable now properly ask the remote service (wrong caching policy)
         fix:  service xml description now uses proper castor version
@@ -15,6 +22,7 @@ r2249
         impr: in order to handle mDNSResponder vs avahi daemons conflict, the possible trailing "-2" on the hostname is removed when needed
         impr: have different options to access dnssd (mdnsResponder, avahi, jmdns, custom proxy for lightweight devices)
         impr: allows dnssd browser sharing to improve performance of applications using multiple browsers
+        impr: cleaner affectation of peer id for searchs and connections before .start()
 
 1.0.3
 r1700

@@ -200,6 +200,11 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         VariableAttribute lockVar = addVariable(GlobalConstants.variableNameForLock);
         lockIntegerVar = new IntVariableAttribute(lockVar, 0);
 
+        // Generate a (at worse) temporary peer id hoping it will be unique
+        // At the time of registration #start, it will be tried first and finally will be changed
+        // if this peer id is already taken by someone else
+        peerId = BipUtils.generateBIPPeerId();
+        
 //        VariableAttribute peerIdVariable = addVariable(GlobalConstants.constantNameForPeerId);
 //        peerIdVariable.setValueStr(Utility.intTo8HexString(peerId));
 //        peerIdVariable.setAccessType(VariableAccessType.CONSTANT);
@@ -355,7 +360,13 @@ public class ControlServer extends MessageManager implements VariableChangeListe
                     return null;
                 } else {
                     remainingTries--;
-                    return Utility.intTo8HexString(BipUtils.generateBIPPeerId()).toLowerCase();
+                    if (remainingTries == initRemaningTries-1) {
+                        // First tries the randomly generated peerId 
+                        return Utility.intTo8HexString(peerId).toLowerCase();
+                    } else {
+                        // Fall to a new random if the peerId generated in the constructor is already used
+                        return Utility.intTo8HexString(BipUtils.generateBIPPeerId()).toLowerCase();
+                    }
                 }
             }
         };
