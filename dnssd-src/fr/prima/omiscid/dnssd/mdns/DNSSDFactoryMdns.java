@@ -26,6 +26,8 @@
 
 package fr.prima.omiscid.dnssd.mdns;
 
+import com.apple.dnssd.DNSSD;
+
 import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.dnssd.interf.ServiceBrowser;
 import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
@@ -34,6 +36,22 @@ import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
  * @author emonet
  */
 public class DNSSDFactoryMdns implements DNSSDFactory {
+
+    // This static code block is called on class initialisation.
+    // This code tests for availability of the mdnsresponder subsystem.
+    // When the mdnsresponder subsystem is not available, it throws a RuntimeException.
+    // This class is basically loaded by a smart factory that catches the produced exception and then tries another factory.
+    static {
+        // There is no static code that can quickly test for the present of a mdns daemon.
+        // So we suppose the presence of mdns java wrapper is a desire to use mdns.
+        
+        try {
+            // We just ensure the DNSSD class is loaded and found.
+            DNSSD.getNameForIfIndex(0);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public ServiceBrowser createServiceBrowser(String registrationType) {
         return new fr.prima.omiscid.dnssd.mdns.ServiceBrowser(registrationType);

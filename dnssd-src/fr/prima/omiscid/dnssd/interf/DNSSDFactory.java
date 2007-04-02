@@ -28,10 +28,9 @@ package fr.prima.omiscid.dnssd.interf;
 
 import java.util.Arrays;
 import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.Stack;
 
 import fr.prima.omiscid.dnssd.common.SharedFactory;
-import fr.prima.omiscid.dnssd.mdns.DNSSDFactoryMdns;
 
 /**
  * Factory interface used to generate objects to access the dnssd network. The
@@ -62,6 +61,9 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
         private static final String propertyBundle = "cfg";
         private static final String dnssdFactoryKey = "dnssdFactory";
         private static final String sharedKey = "sharedFactory";
+
+        private static final String factoryEnvironmentVariable = "OMISCID_DNSSD_FACTORY";
+        private static final String sharedFactoryEnvironmentVariable = "OMISCID_DNSSD_SHARED_FACTORY";
         private static final String sharedTrueValue = "true";
 
         private static DNSSDFactory instance = null;
@@ -71,68 +73,59 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
         }
 
         private static DNSSDFactory makeInstance() {
-            String className;
-            ResourceBundle bundle;
+            Stack<String> factories = new Stack<String>();
+            factories.push("fr.prima.omiscid.dnssd.jmdns.DNSSDFactoryJmdns");
+            factories.push("fr.prima.omiscid.dnssd.mdns.DNSSDFactoryMdns");
+            factories.push("fr.prima.omiscid.dnssd.avahi.DNSSDFactoryAvahi");
             try {
-                bundle = ResourceBundle.getBundle(propertyBundle);
-            } catch (Exception e) {
-                System.out.println("Problem while getting resource bundle " + propertyBundle + ", using default factory");
-                return makeHardCodedDefault();
-            }
-            try {
-                className = bundle.getString(dnssdFactoryKey);
-            } catch (Exception e) {
-                System.out.println("Problem while getting data ("+dnssdFactoryKey+") in opened bundle " + propertyBundle + ", using default factory");
-                return makeHardCodedDefault();
-            }
-            try {
-                if (System.getenv("OMISCID_DNSSD_FACTORY") != null) {
-                    className = System.getenv("OMISCID_DNSSD_FACTORY");
+                if (System.getenv(factoryEnvironmentVariable) != null) {
+                    factories.push(System.getenv(factoryEnvironmentVariable));
                 }
-                // \REVIEWTASK this variable name should be documented somewhere
             } catch (SecurityException e) {
                 // Access to environment variable is forbidden
             }
-            if (!className.contains(".")) {
+            
+            Class factoryClass = null;
+            String className;
+            while (!factories.isEmpty() && null != (className = factories.pop())) {
                 try {
-                    className = dnssdFactoryKey+"."+className;
-                    className = bundle.getString(className);
+                    factoryClass = Class.forName(className);
+                } catch (Throwable e) {
+                    // Problem while looking for given class, falling back to the next choice
+                    continue;
+                }
+                if (factoryClass != null
+                        && !Arrays.asList(factoryClass.getInterfaces()).contains(DNSSDFactory.class)) {
+                    System.err.println("Specified class \"" + className + "\" is not a DNSSDFactory ... ignoring");
+                    factoryClass = null;
+                    continue;
+                }
+                try {
+                    DNSSDFactory factory = (DNSSDFactory) factoryClass.newInstance();
+                    try {
+                        String shared = sharedTrueValue;
+                        try {
+                            if (System.getenv(sharedFactoryEnvironmentVariable) != null) {
+                                shared = System.getenv(sharedFactoryEnvironmentVariable);
+                            }
+                        } catch (SecurityException e) {
+                            // Access to environment variable is forbidden
+                        }
+                        if (sharedTrueValue.equals(shared)) {
+                            factory = new SharedFactory(factory);
+                        }
+                    } catch (MissingResourceException e) {
+                        System.out.println("Problem while testing for shared factory: key '"+sharedKey+"' not found, using non-shared by default");
+                    } catch (Exception e) {
+                        System.out.println("Problem while testing for shared factory");
+                    } 
+                    return factory;
                 } catch (Exception e) {
-                    System.out.println("Problem while getting data ("+className+") in opened bundle " + propertyBundle + ", using default factory");
-                    return makeHardCodedDefault();
+                    System.out.println("Problem while instanciating \"" + className + "\", using default factory");
                 }
             }
-            Class factoryClass;
-            try {
-                factoryClass = Class.forName(className);
-            } catch (Exception e) {
-                System.out.println("Problem while retrieving class \"" + className + "\", using default factory");
-                return makeHardCodedDefault();
-            }
-            if (!Arrays.asList(factoryClass.getInterfaces()).contains(DNSSDFactory.class)) {
-                System.out.println("Specified class \"" + className + "\" is not a DNSSDFactory, using default factory");
-                return makeHardCodedDefault();
-            }
-            try {
-                DNSSDFactory factory = (DNSSDFactory) factoryClass.newInstance();
-                try {
-                    if (sharedTrueValue.equals(bundle.getString(sharedKey))) {
-                        factory = new SharedFactory(factory);
-                    }
-                } catch (MissingResourceException e) {
-                    System.out.println("Problem while testing for shared factory: key '"+sharedKey+"' not found, using non-shared by default");
-                } catch (Exception e) {
-                    System.out.println("Problem while testing for shared factory");
-                } 
-                return factory;
-            } catch (Exception e) {
-                System.out.println("Problem while instanciating \"" + className + "\", using default factory");
-                return makeHardCodedDefault();
-            }
-        }
-
-        private static DNSSDFactory makeHardCodedDefault() {
-            return new DNSSDFactoryMdns();
+            System.err.println("Could not get any operational DNSSDFactory ... will badly throw a NPE soon");
+            return null;
         }
     }
 }

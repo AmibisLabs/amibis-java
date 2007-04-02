@@ -26,6 +26,10 @@
 
 package fr.prima.omiscid.dnssd.avahi;
 
+import org.freedesktop.Avahi.EntryGroup;
+import org.freedesktop.Avahi.Server;
+import org.freedesktop.dbus.DBusConnection;
+
 import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.dnssd.interf.ServiceBrowser;
 import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
@@ -39,6 +43,30 @@ public class DNSSDFactoryAvahi implements DNSSDFactory {
 //        }
 //        return avahiConnection;
 //    }
+
+    static {
+        // This static code block is called on class initialisation.
+        // This code tests for availability of the avahi subsystem.
+        // When the avahi subsystem is not available, it throws a RuntimeException.
+        // This class is basically loaded by a smart factory that catches the produced exception and then tries another factory.
+        try {
+            System.loadLibrary("unix-java");
+            DBusConnection dbus = DBusConnection.getConnection(DBusConnection.SYSTEM);
+            try {
+                Server avahi = (Server) dbus.getRemoteObject("org.freedesktop.Avahi", "/", Server.class);
+                EntryGroup entryGroup = avahi.EntryGroupNew();
+                // This is only when the entry group is created that we really know that avahi is here (or not).
+                entryGroup.Free();
+            } catch (Exception e) {
+                throw e;
+            } finally {
+                //dbus.disconnect();
+                // We want to disconnect from dbus but this causes problems afterwards so we don't do it.
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
     
     public ServiceBrowser createServiceBrowser(String registrationType) {
         return new fr.prima.omiscid.dnssd.avahi.ServiceBrowser(new AvahiConnection(), registrationType);
