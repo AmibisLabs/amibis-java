@@ -27,6 +27,8 @@
 package fr.prima.omiscid.user.service.impl;
 
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 
 import fr.prima.omiscid.control.Attribute;
@@ -54,22 +56,31 @@ public class ServiceProxyImpl implements ServiceProxy {
         long timeout;
         ServiceProxyImpl serviceProxyImpl;
     }
-    private static HashMap<ServiceImpl, HashMap<Integer, ProxyInfo>> proxyForService = new HashMap<ServiceImpl, HashMap<Integer,ProxyInfo>>();
-    public static synchronized ServiceProxyImpl forService(ServiceImpl owner, OmiscidService omiscidService) {
-        HashMap<Integer, ProxyInfo> proxies = proxyForService.get(owner);
-        if (proxies == null) {
-            proxies = new HashMap<Integer, ProxyInfo>();
-            proxyForService.put(owner, proxies);
+    // Hastable is synchronized
+    private static Hashtable<ServiceImpl, Map<Integer, ProxyInfo>> proxyForService = new Hashtable<ServiceImpl, Map<Integer,ProxyInfo>>();
+    public static ServiceProxyImpl forService(ServiceImpl owner, OmiscidService omiscidService) {
+        Map<Integer, ProxyInfo> proxies;
+        synchronized (proxyForService) {
+            proxies = proxyForService.get(owner);
+            if (proxies == null) {
+                proxies = new Hashtable<Integer, ProxyInfo>();
+                proxyForService.put(owner, proxies);
+            }
         }
-        ProxyInfo proxyInfo = proxies.get(omiscidService.getRemotePeerId());
-        if (proxyInfo == null) {
-            proxyInfo = new ProxyInfo();
+        ProxyInfo proxyInfo;
+        synchronized (proxies) {
+            proxyInfo = proxies.get(omiscidService.getRemotePeerId());
+            if (proxyInfo == null) {
+                proxyInfo = new ProxyInfo();
+                proxies.put(omiscidService.getRemotePeerId(), proxyInfo);
+            }
         }
-        long now = System.currentTimeMillis();
-        if (proxyInfo == null || proxyInfo.timeout < now) {
-            proxyInfo.serviceProxyImpl = new ServiceProxyImpl(omiscidService);
-            proxyInfo.timeout = Long.MAX_VALUE; // ignoring timeout for now //now + ???;
-            proxies.put(omiscidService.getRemotePeerId(), proxyInfo);
+        synchronized (proxyInfo) {
+            long now = System.currentTimeMillis();
+            if (proxyInfo.timeout < now) {
+                proxyInfo.serviceProxyImpl = new ServiceProxyImpl(omiscidService);
+                proxyInfo.timeout = Long.MAX_VALUE; // ignoring timeout for now //now + ???;
+            }
         }
         return proxyInfo.serviceProxyImpl;
 //        return new ServiceProxyImpl(omiscidService);
