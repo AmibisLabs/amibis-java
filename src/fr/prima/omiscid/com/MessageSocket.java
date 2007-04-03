@@ -141,9 +141,7 @@ final class ReceiveBuffer {
 
                         if (!messageSocket.isInitMessageReceived()) {
                             messageSocket.initMessageReceived(pid);
-                            if (!messageSocket.isInitMessageSent()) {
-                                messageSocket.initializeConnection();
-                            }
+                            messageSocket.initializeConnection();
                         } else {
                             messageSocket.newMessageReceived(new MessageImpl(buffer, position, length, mid, pid));
                         }
@@ -493,7 +491,11 @@ public abstract class MessageSocket {
             initMessageSent = true;
             notifyListenersOnConnection = shouldNotifyListenersOnConnection;
         } else {
-            System.err.println("Warning: in MessageSocket, multiple calls to initializeConnection");
+            //System.err.println("Warning: in MessageSocket, multiple calls to initializeConnection");
+            
+            // Multiple calls to initializeConnection may happen.
+            // This can be because both connections ends are sending an init message
+            // and the MessageSocket retries to send it when it receives one.
         }
     }
 
