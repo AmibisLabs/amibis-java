@@ -78,20 +78,16 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
         try {
             dbus.addSigHandler(ServiceBrowser.ItemNew.class, new DBusSigHandler<ServiceBrowser.ItemNew>() {
                 public void handle(ServiceBrowser.ItemNew a) {
-                    NTuple11<Integer, Integer, String, String, String, String, Integer, String, UInt16, List<List<Byte>>, UInt32> serviceInfo = 
-                        avahi.ResolveService(a._interface, a.protocol, a.name, a.type, a.domain,
-                                -1, // proto unspec
-                                new UInt32(0));
-                    notifyServiceFound(serviceInfo);
-//                    System.err.println("new "+a.name+" "+a.type);
-//                    for(List<Byte> bs : serviceInfo.j) {
-//                        byte[] data = new byte[bs.size()];
-//                        int i = 0;
-//                        for (Byte b : bs) {
-//                            data[i++] = b;
-//                        }
-//                        System.out.println("..."+new String(data));
-//                    }
+                    try {
+                        NTuple11<Integer, Integer, String, String, String, String, Integer, String, UInt16, List<List<Byte>>, UInt32> serviceInfo = 
+                            avahi.ResolveService(a._interface, a.protocol, a.name, a.type, a.domain,
+                                    -1, // proto unspec
+                                    new UInt32(0));
+                        notifyServiceFound(serviceInfo);
+                    } catch (DBusExecutionException e) {
+                        // This could be a timeout probably meaning the service is not here anymore.
+                        // In other words, if we cannot resolve a service, we do not notify its presence.
+                    }
                 }
             });
             dbus.addSigHandler(ServiceBrowser.ItemRemove.class, new DBusSigHandler<ServiceBrowser.ItemRemove>() {
@@ -212,7 +208,7 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
         this.notify();
     }
 
-    public void unregister(ServiceRegistration registration) {
+    public synchronized void unregister(ServiceRegistration registration) {
         assert entryGroup != null;
         entryGroup.Free();
         entryGroup = null;
