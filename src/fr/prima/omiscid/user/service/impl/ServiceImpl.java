@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.Map.Entry;
 
 import fr.prima.omiscid.com.TcpClientServer;
 import fr.prima.omiscid.com.interf.BipMessageListener;
@@ -629,18 +630,16 @@ public class ServiceImpl implements Service {
             waitForServices.waitResolve();
         }
 
-		for (Integer serviceId : tmpAssociation.keySet()) {
-			OmiscidService bipService = waitForServices.getService(serviceId);
+        for (Entry<Integer, ServiceFilter> entry : tmpAssociation.entrySet()) {
+            OmiscidService bipService = waitForServices.getService(entry.getKey());
             if (bipService != null) {
                 //bipService.setServiceId(ctrlServer.getPeerId()); //useless as the waitforservices object is already instanciated with this peer id
-//                ServiceProxy proxy = new ServiceProxyImpl(bipService) ;
                 ServiceProxy proxy = ServiceProxyImpl.forService(this, bipService) ;
-                result.put(tmpAssociation.get(serviceId), proxy);
+                result.put(entry.getValue(), proxy);
             } else {
-                result.put(tmpAssociation.get(serviceId), null);
+                result.put(entry.getValue(), null);
             }
-		}
-		//System.err.println("Service finding asked by " + this + " : " + result) ; //-trace
+        }
 		return result ;
 	}
 }
