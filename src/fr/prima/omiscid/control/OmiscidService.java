@@ -480,11 +480,15 @@ public class OmiscidService {
         return variableNamesSet;
     }
 
-    public void updateDescription() {
+    public boolean updateDescription() {
         initControlClient();
-        ctrlClient.queryGlobalDescription();
-        ctrlClient.queryCompleteDescription();
-        closeControlClient();
+        if (ctrlClient != null) {
+            ctrlClient.queryCompleteDescription();
+            closeControlClient();
+            return true;
+        } else {
+            return false;
+        }
     }
     
     public String getVariableValue(String variableName) {
