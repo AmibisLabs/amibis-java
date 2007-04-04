@@ -225,9 +225,8 @@ public class ControlClient implements BipMessageListener {
             tcpClient.connectTo(host, port);
             tcpClient.addBipMessageListener(this);
             return true;
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
             tcpClient = null;
-            e.printStackTrace();
             return false;
         }
     }
