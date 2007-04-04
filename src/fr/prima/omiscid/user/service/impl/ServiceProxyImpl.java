@@ -78,8 +78,13 @@ public class ServiceProxyImpl implements ServiceProxy {
         synchronized (proxyInfo) {
             long now = System.currentTimeMillis();
             if (proxyInfo.timeout < now) {
-                proxyInfo.serviceProxyImpl = new ServiceProxyImpl(omiscidService);
-                proxyInfo.timeout = Long.MAX_VALUE; // ignoring timeout for now //now + ???;
+                try {
+                    proxyInfo.serviceProxyImpl = new ServiceProxyImpl(omiscidService);
+                    proxyInfo.timeout = Long.MAX_VALUE; // ignoring timeout for now //now + ???;
+                } catch (RuntimeException e) {
+                    proxyInfo.serviceProxyImpl = null;
+                    proxyInfo.timeout = now;
+                }
             }
         }
         return proxyInfo.serviceProxyImpl;
@@ -95,7 +100,9 @@ public class ServiceProxyImpl implements ServiceProxy {
     {
         this.omiscidService = omiscidService ;
         remoteVariableListeners = new HashMap<String, HashMap<RemoteVariableChangeListener, VariableChangeListener>>();
-        updateDescription() ;
+        if (!checkedUpdateDescription()) {
+            throw new RuntimeException("Could not update service description");
+        }
     }
 
 	/* (non-Javadoc)
@@ -117,9 +124,11 @@ public class ServiceProxyImpl implements ServiceProxy {
      * @see fr.prima.bip.service.BipServiceProxy#updateDescription()
      */
     synchronized  public void updateDescription() {
-        omiscidService.updateDescription() ;
+        checkedUpdateDescription();
     }
-
+    synchronized  public boolean checkedUpdateDescription() {
+        return omiscidService.updateDescription() ;
+    }
     /* (non-Javadoc)
      * @see fr.prima.bip.service.BipServiceProxy#getInputOutputConnectors()
      */
