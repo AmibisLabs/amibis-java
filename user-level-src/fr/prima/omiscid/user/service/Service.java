@@ -31,6 +31,7 @@ import java.util.HashMap;
 
 import fr.prima.omiscid.user.connector.ConnectorListener;
 import fr.prima.omiscid.user.connector.ConnectorType;
+import fr.prima.omiscid.user.exception.ConnectionRefused;
 import fr.prima.omiscid.user.exception.ConnectorAlreadyExisting;
 import fr.prima.omiscid.user.exception.IncorrectConnectorType;
 import fr.prima.omiscid.user.exception.ServiceRunning;
@@ -273,7 +274,7 @@ public interface Service {
      * connector on another input connector.
      */
     public void connectTo(String localConnector, ServiceProxy proxy, String remoteConnector)
-    		throws UnknownConnector, IncorrectConnectorType;
+    		throws UnknownConnector, IncorrectConnectorType, ConnectionRefused;
 
 	/**
 	 * Finds a service on the network.

@@ -61,19 +61,15 @@ public class TcpClientServer extends TcpServer {
      * @param port
      *            the port number
      * @return the peer id of the remote peer
+     * @throws IOException 
      */
-    public int connectTo(String host, int port) {
+    public int connectTo(String host, int port) throws IOException {
         TcpClient tcpClient = new TcpClient(peerId);
-        try {
-            tcpClient.connectTo(host, port);
-            while (tcpClient.getRemotePeerId() == 0) {
-                Thread.yield();
-                // \REVIEWTASK probably 100% cpu usage, should be tested and
-                // done differently (small sleep?)
-            }
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        tcpClient.connectTo(host, port); // throws the IOException
+        while (tcpClient.getRemotePeerId() == 0) {
+            Thread.yield();
+            // \REVIEWTASK probably 100% cpu usage, should be tested and
+            // done differently (small sleep?)
         }
         synchronized (this) {
             clientsList.put(tcpClient.getRemotePeerId(), tcpClient);

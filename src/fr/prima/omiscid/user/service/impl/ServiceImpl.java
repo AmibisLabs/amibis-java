@@ -45,6 +45,7 @@ import fr.prima.omiscid.control.interf.VariableChangeQueryListener;
 import fr.prima.omiscid.user.connector.ConnectorListener;
 import fr.prima.omiscid.user.connector.ConnectorType;
 import fr.prima.omiscid.user.connector.Message;
+import fr.prima.omiscid.user.exception.ConnectionRefused;
 import fr.prima.omiscid.user.exception.ConnectorAlreadyExisting;
 import fr.prima.omiscid.user.exception.IncorrectConnectorType;
 import fr.prima.omiscid.user.exception.ServiceRunning;
@@ -55,6 +56,7 @@ import fr.prima.omiscid.user.exception.WrongVariableAccessType;
 import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceFilter;
 import fr.prima.omiscid.user.service.ServiceProxy;
+import fr.prima.omiscid.user.util.Utility;
 import fr.prima.omiscid.user.variable.LocalVariableListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
@@ -475,7 +477,7 @@ public class ServiceImpl implements Service {
 	 * @see fr.prima.omiscid.service.Service#connectTo(java.lang.String, fr.prima.omiscid.service.ServiceProxy, java.lang.String)
 	 */
 	synchronized  public void connectTo(String localConnector, ServiceProxy proxy, String remoteConnector)
-	throws UnknownConnector, IncorrectConnectorType
+	throws UnknownConnector, IncorrectConnectorType, ConnectionRefused
 	{
 		// we first check if we can find the connectors
 		TcpClientServer localClientServer = null ;
@@ -497,7 +499,7 @@ public class ServiceImpl implements Service {
 				remoteAttribut = omiscidService.findInput(remoteConnector) ;
 				if (remoteAttribut == null)
 					// the connector does not exist
-					throw new UnknownConnector(this + " : Unknown remote connector : " + remoteConnector) ;
+					throw new UnknownConnector(Utility.intTo8HexString(this.getPeerId()) + " : Unknown remote connector : " + remoteConnector + " on "+Utility.intTo8HexString(proxy.getPeerId())) ;
 				else
 					remoteKind = ConnectorType.INPUT ;
 			}
@@ -524,7 +526,11 @@ public class ServiceImpl implements Service {
 				throw new IncorrectConnectorType("Cannot connect two output connectors : " + localConnector + " to " + remoteConnector) ;
 		}
 
-		localClientServer.connectTo(proxy.getHostName(), remoteAttribut.getTcpPort()) ;
+        try {
+            localClientServer.connectTo(proxy.getHostName(), remoteAttribut.getTcpPort());
+        } catch(Exception e) {
+            throw new ConnectionRefused(e);
+        }
 	}
 
 	/* (non-Javadoc)
@@ -618,8 +624,8 @@ public class ServiceImpl implements Service {
             final ServiceFilter finalFilter = filters[i];
             tmpAssociation.put(waitForServices.needService(new OmiscidServiceFilter() {
                 public boolean isAGoodService(OmiscidService s) {
-//                    return finalFilter.acceptService(new ServiceProxyImpl(s));
-                    return finalFilter.acceptService(ServiceProxyImpl.forService(ServiceImpl.this, s));
+                    ServiceProxyImpl serviceProxy = ServiceProxyImpl.forService(ServiceImpl.this, s);
+                    return serviceProxy != null && finalFilter.acceptService(serviceProxy);
                 }
             }), filters[i]) ;
         }
