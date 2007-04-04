@@ -9,9 +9,13 @@ In this files, you will find changes between java OMiSCID versions.
 *could: add an heuristic on whether avahi registration will be accepted based on the size of the properties
 *could: dnssd client auto connect/reconnect
 *could: dnssd client has a list of expected servers
+*should: review, optimize and make safer the queries present under ServiceProxy (e.g. 2 queries are done to get a service global description)
 
 1.0.4
 r
+API CHANGE!!!! added a ConnectionRefused exception on connectTo
+revisited synchronization procedure in ServiceProxyImpl cache
+minor (unperceptible/mostly code cleaning) performance improvement in ServiceImpl.findService
         fix:  default "class" variable value is now "Service" as intended
         fix:  getting a remote variable now properly ask the remote service (wrong caching policy)
         fix:  service xml description now uses proper castor version

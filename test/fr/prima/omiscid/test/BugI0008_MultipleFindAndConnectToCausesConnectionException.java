@@ -29,6 +29,7 @@ package fr.prima.omiscid.test;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Vector;
 
 import fr.prima.omiscid.user.connector.ConnectorType;
@@ -41,50 +42,85 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 public class BugI0008_MultipleFindAndConnectToCausesConnectionException {
     
     // This tries to replicate a problem seen with Marina's osgi code.
-    // 
+    // The original code just looks for 2 services and connects to them.
+    // Sometimes, when searching for the second service, the Service on which findService is called
+    // tries to connect to itself to get its own description (which is normal) but cannot establish the connection (which is not).
     
     // This works (at the time of writing)
     public static void main(String[] args) throws IOException, InterruptedException {
-        ServiceFactory factory = FactoryFactory.factory();
-        Vector<String> startedServices = new Vector<String>();
-        for (int i = 0; i<5; i++) {
+        final ServiceFactory factory = FactoryFactory.factory();
+        final Vector<String> startedServices = new Vector<String>();
+        for (int i = 0; i<30; i++) {
             String name = "BugI0008Server"+i;
             startedServices.add(name);
+        }
+        for (final String name : startedServices) {
+            new Thread(new Runnable() {
             
-            String serviceDotXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-            "<service name=\""+name+"\" xmlns=\"http://www-prima.inrialpes.fr/schemas/bip/service.xsd\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www-prima.inrialpes.fr/schemas/bip/service.xsd service.xsd \">\n" + 
-            "   <output name=\""+"bug"+"\">\n" + 
-            "       <description>Stream of points (sinus fonction)</description>\n" + 
-            "   </output>\n" + 
-            "   <inoutput name=\"f\"></inoutput>\n" + 
-            "   <variable name=\"w\">\n" + 
-            "       <access>readWrite</access>\n" + 
-            "   </variable>\n" + 
-            "</service>";
-            InputStream in = new ByteArrayInputStream(serviceDotXml.getBytes("utf-8"));
-            try {
-                Service service = factory.createFromXML(in);
-                service.start();
-            } catch (InvalidDescriptionException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            
-//            final Service server = factory.create(name);
-//            server.addConnector("bug", "", ConnectorType.OUTPUT);
-//            server.start();
+                public void run() {
+                    String serviceDotXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
+                    "<service name=\""+name+"\" xmlns=\"http://www-prima.inrialpes.fr/schemas/bip/service.xsd\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www-prima.inrialpes.fr/schemas/bip/service.xsd service.xsd \">\n" + 
+                    "   <output name=\""+"bug"+"\">\n" + 
+                    "       <description>Stream of points (sinus fonction)</description>\n" + 
+                    "   </output>\n" + 
+                    "   <inoutput name=\"f\"></inoutput>\n" + 
+                    "   <variable name=\"w\">\n" + 
+                    "       <access>readWrite</access>\n" + 
+                    "   </variable>\n" + 
+                    "</service>";
+                    try {
+                        InputStream in = new ByteArrayInputStream(serviceDotXml.getBytes("utf-8"));
+                        final Service service = factory.createFromXML(in);
+                        service.start();
+                        new Thread(new Runnable() {
+                            public void run() {
+                                try {
+                                    Thread.sleep((long) (500+3500*Math.random()));
+                                } catch (InterruptedException e) {}
+                                service.stop();
+                            }                
+                        }).start();
+                    } catch (InvalidDescriptionException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    } catch (UnsupportedEncodingException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            }, "Starter-"+name).start();
         }
         {
             final Service client = factory.create("BugI0008Client");
             client.addConnector("bug", "plop", ConnectorType.INPUT);
             client.start();
-            client.findService(ServiceFilters.nameIs("BugI0008Client"));
-            for (String name : startedServices) {
-                ServiceProxy proxy = client.findService(ServiceFilters.nameIs(name));
-                client.connectTo("bug", proxy, "bug");
+            //client.findService(ServiceFilters.nameIs("BugI0008Client"));
+            final Vector<String> done = new Vector<String>();
+            for (final String name : startedServices) {
+                new Thread(new Runnable() {
+                    public void run() {
+                        try {
+                            Thread.sleep((long) (1000*Math.random()));
+                        } catch (InterruptedException e) {}
+                        System.out.println(name);
+                        ServiceProxy proxy = client.findService(ServiceFilters.nameIs(name), 500);
+                        if (proxy != null) {
+                            try {
+                                client.connectTo("bug", proxy, "bug");
+                            } catch (RuntimeException e) {}
+                        }
+                        done.add(name);
+                        System.out.println(done.size());
+                        if (done.size() == startedServices.size()) {
+                            FactoryFactory.passed("Search done properly. All "+done.size()+" ok.");
+                            System.exit(0);
+                        }
+                    }
+                }, "Finder-"+name).start();
             }
-            FactoryFactory.passed("Search done properly");
-            System.exit(0);
+            Thread.sleep(8000);
+            FactoryFactory.failed("Some undesired exceptions have probably occured. Only "+done.size()+"/"+startedServices.size()+" ended as expected.");
+            System.exit(1);
         }
     }
 
