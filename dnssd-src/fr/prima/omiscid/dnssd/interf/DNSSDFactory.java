@@ -68,7 +68,7 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
 
         private static DNSSDFactory instance = null;
 
-        public static DNSSDFactory instance() {
+        public static synchronized DNSSDFactory instance() {
             return instance != null ? instance : (instance = makeInstance());
         }
 
