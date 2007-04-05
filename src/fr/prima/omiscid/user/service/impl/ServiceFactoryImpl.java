@@ -36,6 +36,7 @@ import fr.prima.omiscid.user.exception.InvalidDescriptionException;
 import fr.prima.omiscid.user.service.MainClass;
 import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceFactory;
+import fr.prima.omiscid.user.service.ServiceRepository;
 
 /**
  * @author Patrick Reignier (UJF/Gravir)
@@ -85,6 +86,10 @@ public class ServiceFactoryImpl implements ServiceFactory {
 		return service ;
 	}
     
+    public ServiceRepository createServiceRepositoy(Service service) {
+        return new ServiceRepositoryImpl((ServiceImpl)service);
+    }
+
 	/**
 	 * @param bipComponent
 	 */

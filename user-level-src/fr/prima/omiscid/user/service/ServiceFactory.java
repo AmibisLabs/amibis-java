@@ -79,6 +79,8 @@ public interface ServiceFactory {
 	 */
 	public Service createFromXML(InputStream stream) throws InvalidDescriptionException;
     
+    public ServiceRepository createServiceRepositoy(Service service);
+    
     /**
      * Future extension : used by the service Binder to detect incoming new bundled services
      * @param bundle
