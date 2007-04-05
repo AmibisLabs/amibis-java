@@ -4,6 +4,5 @@ Castor is released under a new, Apache 2.0-style license
 Xerces is released under a Apache License, Version 2.0
  http://www.apache.org/licenses/LICENSE-2.0.html
 
-Other jar dependencies contained in this package are released under Apache Licenses (1.1 or 2.0)
+Other jar sub-dependencies contained in this package are released under Apache Licenses (1.1 or 2.0)
  licenses files are contained within the jars
-
