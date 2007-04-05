@@ -54,6 +54,17 @@ public final class Utility {
     public static int rootPeerIdFromConnectorPeerId(int peerId) {
         return peerId & 0xFFFFFF00;
     }
+    
+    public static int connectorPeerIdFromIndex(int rootPeerId, int connectorIndex) {
+        if (rootPeerId != rootPeerIdFromConnectorPeerId(rootPeerId)) {
+            throw new RuntimeException("TODO");
+        }
+        if (connectorIndex != (connectorIndex&0xFF)) {
+            throw new RuntimeException("TODO 2");
+        }
+        return rootPeerId | connectorIndex;
+    }
+
 
     /**
      * Create a string with an hexadecimal representation of an integer. The
@@ -259,4 +270,5 @@ public final class Utility {
             return document;
         }
     }
+
 }
