@@ -70,6 +70,8 @@ prepare:
 		rm -r fr/prima/omiscid/control ;\
 		rm -r fr/prima/omiscid/dnssd ;\
 		rm -r fr/prima/omiscid/user/*/impl ;\
+		rm -r fr/prima/omiscid/test ;\
+		rm -r org/ ;\
 		)
 	cd ,,build && jar cvf ../$(INTERFACEJAR) .
 
