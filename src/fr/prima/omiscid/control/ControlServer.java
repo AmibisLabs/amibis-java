@@ -63,6 +63,7 @@ import fr.prima.omiscid.control.message.query.Subscribe;
 import fr.prima.omiscid.control.message.query.Unlock;
 import fr.prima.omiscid.control.message.query.Unsubscribe;
 import fr.prima.omiscid.control.message.query.Variable;
+import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
 import fr.prima.omiscid.user.connector.ConnectorType;
 import fr.prima.omiscid.user.connector.Message;
@@ -162,7 +163,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     }
 
     private void initServiceRegistration() {
-        serviceRegistration = OmiscidService.dnssdFactory.createServiceRegistration("O3MiSCID_default_name", OmiscidService.REG_TYPE());
+        serviceRegistration = DNSSDFactory.DefaultFactory.instance().createServiceRegistration("O3MiSCID_default_name", OmiscidService.REG_TYPE());
     }
 
     /**
@@ -409,35 +410,37 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     public void variableChanged(VariableAttribute variableAttribute) {
         Set<Integer> peersSet = variableAttribute.getPeerInterestedIn();
 
-        Set<Integer> unreachablePeers = new java.util.HashSet<Integer>();
-        ControlEvent controlEvent = new ControlEvent();
+        if (peersSet.size() > 0) {
+            Set<Integer> unreachablePeers = new java.util.HashSet<Integer>();
+            ControlEvent controlEvent = new ControlEvent();
 //        controlEvent.setId(BipUtils.intTo8HexString(getPeerId()));
-        fr.prima.omiscid.control.message.answer.Variable variable = new fr.prima.omiscid.control.message.answer.Variable();
-        variable.setValue(variableAttribute.getValueStr());
-        variable.setName(variableAttribute.getName());
-        controlEvent.setVariable(variable);
-
-        try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            controlEvent.marshal(new OutputStreamWriter(byteArrayOutputStream));
-            byte[] message = byteArrayOutputStream.toByteArray();
-            byteArrayOutputStream.close();
-
-            for (Integer peer : peersSet) {
-                if (!tcpServer.sendToOneClient(message, peer.intValue())) {
-                    unreachablePeers.add(peer);
+            fr.prima.omiscid.control.message.answer.Variable variable = new fr.prima.omiscid.control.message.answer.Variable();
+            variable.setValue(variableAttribute.getValueStr());
+            variable.setName(variableAttribute.getName());
+            controlEvent.setVariable(variable);
+            
+            try {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                controlEvent.marshal(new OutputStreamWriter(byteArrayOutputStream));
+                byte[] message = byteArrayOutputStream.toByteArray();
+                byteArrayOutputStream.close();
+                
+                for (Integer peer : peersSet) {
+                    if (!tcpServer.sendToOneClient(message, peer.intValue())) {
+                        unreachablePeers.add(peer);
+                    }
                 }
+                variableAttribute.removeAllPeers(unreachablePeers);
+            } catch (MarshalException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (ValidationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
-            variableAttribute.removeAllPeers(unreachablePeers);
-        } catch (MarshalException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ValidationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
 
         //        String message = "<controlEvent>" + variableAttribute.generateValueMessage() + "</controlEvent>";
