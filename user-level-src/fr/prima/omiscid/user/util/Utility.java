@@ -54,15 +54,19 @@ public final class Utility {
     public static int rootPeerIdFromConnectorPeerId(int peerId) {
         return peerId & 0xFFFFFF00;
     }
+    public static int connectorIndexFromPeerId(int connectorPeerId) {
+        return connectorPeerId & 0xFF;
+    }
     
     public static int connectorPeerIdFromIndex(int rootPeerId, int connectorIndex) {
         if (rootPeerId != rootPeerIdFromConnectorPeerId(rootPeerId)) {
             throw new RuntimeException("TODO");
         }
-        if (connectorIndex != (connectorIndex&0xFF)) {
+        int res = rootPeerId | connectorIndex;
+        if (connectorIndex != connectorIndexFromPeerId(res)) {
             throw new RuntimeException("TODO 2");
         }
-        return rootPeerId | connectorIndex;
+        return res;
     }
 
 

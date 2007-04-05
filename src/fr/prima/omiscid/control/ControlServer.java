@@ -250,8 +250,9 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             if (registerTheService(tcpServer.getTcpPort())) {
                 tcpServer.setPeerId(getPeerId());
                 for (InOutputAttribute io : inoutputsSet) {
-                    io.setPeerId(Utility.connectorPeerIdFromIndex(peerId, io.getPeerId()));
-                    assert Utility.rootPeerIdFromConnectorPeerId(io.getPeerId()) == peerId;
+                    int connectorIndex = Utility.connectorIndexFromPeerId(io.getPeerId());
+                    io.setPeerId(Utility.connectorPeerIdFromIndex(getPeerId(), connectorIndex));
+                    assert Utility.rootPeerIdFromConnectorPeerId(connectorIndex) == peerId;
                 };
                 tcpServer.addBipMessageListener(this);
                 tcpServer.start();
