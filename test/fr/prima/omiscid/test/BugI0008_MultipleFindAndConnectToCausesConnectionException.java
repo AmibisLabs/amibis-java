@@ -48,6 +48,7 @@ public class BugI0008_MultipleFindAndConnectToCausesConnectionException {
     
     // This works (at the time of writing)
     public static void main(String[] args) throws IOException, InterruptedException {
+        Thread.sleep(2000);
         final ServiceFactory factory = FactoryFactory.factory();
         final Vector<String> startedServices = new Vector<String>();
         for (int i = 0; i<30; i++) {

@@ -2,7 +2,7 @@
 include release.conf
 
 BASEJAR=omiscid.jar
-#INTERFACEJAR=omiscid-use.jar
+INTERFACEJAR=omiscidService.jar
 CLASSDIR=bin
 
 dist: prepare
@@ -32,6 +32,8 @@ dist: prepare
 	make -f tools.mk bundle
 	cd ,,rel-bundle && tar cvfz ../$(release-bundle-tgz) *
 	scp $(release-bundle-tgz) $(release-diston)/
+# copy the interface jar
+	scp $(INTERFACEJAR) $(release-diston)/
 
 # displays a warning if domain is wrong
 	make -f tools.mk checkdomain
@@ -63,14 +65,13 @@ prepare:
 	cd generated-src  && find . -name \*.java -exec cp {} ../,,build/{} \;
 	cd user-level-src && find . -name \*.java -exec cp {} ../,,build/{} \;
 	cd ,,build && jar cvf ../$(BASEJAR) .
-#	cd ,,build && ( \
-#		rm cfg.properties ;\
-#		rm -r fr/prima/omiscid/com ;\
-#		rm -r fr/prima/omiscid/control ;\
-#		rm -r fr/prima/omiscid/dnssd ;\
-#		rm -r fr/prima/omiscid/user/*/impl ;\
-#		)
-#	cd ,,build && jar cvf ../$(INTERFACEJAR) .
+	cd ,,build && ( \
+		rm -r fr/prima/omiscid/com ;\
+		rm -r fr/prima/omiscid/control ;\
+		rm -r fr/prima/omiscid/dnssd ;\
+		rm -r fr/prima/omiscid/user/*/impl ;\
+		)
+	cd ,,build && jar cvf ../$(INTERFACEJAR) .
 
 headers:
 	find src -name \*.java -exec ./set-header.sh {} \;

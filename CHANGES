@@ -13,14 +13,17 @@ In this files, you will find changes between java OMiSCID versions.
 
 1.0.4
 r
-API CHANGE!!!! added a ConnectionRefused exception on connectTo
-revisited synchronization procedure in ServiceProxyImpl cache
+API MINOR CHANGE!!!! added a ConnectionRefused exception on connectTo
+API ADDITION!!!! added ServiceRepository
+revisited synchronization procedure in ServiceProxyImpl cache (better handling of updateDescription problem)
 minor (unperceptible/mostly code cleaning) performance improvement in ServiceImpl.findService
+unnecessary marshalling avoided
         fix:  default "class" variable value is now "Service" as intended
         fix:  getting a remote variable now properly ask the remote service (wrong caching policy)
         fix:  service xml description now uses proper castor version
         fix:  added a try catch around listener callbacks (was trusting listeners) (connector and variable listeners)
         fix:  listener added before connectTo are now properly listening
+        fix:  connectors peer id where wrongly generated in some cases
         impr: sensible performance improvement on high bandwidth message receptions
         impr: have different options to access dnssd (mdnsResponder, avahi, jmdns, custom proxy for lightweight devices)
         impr: added a default factory that smartly uses available dnssd provider (avahi then mdns then jmdns)
