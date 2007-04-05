@@ -91,9 +91,7 @@ is divided into following sections:
             </and>
         </condition>
         <condition property="have.tests">
-            <or>
-                <available file="${test.test.dir}"/>
-            </or>
+            <or/>
         </condition>
         <condition property="have.sources">
             <or>
@@ -101,6 +99,7 @@ is divided into following sections:
                 <available file="${jOMiSCID2.dir}"/>
                 <available file="${dnssd-src.dir}"/>
                 <available file="${generated-src.dir}"/>
+                <available file="${src.test.dir}"/>
             </or>
         </condition>
         <condition property="netbeans.home+have.tests">
@@ -132,7 +131,7 @@ is divided into following sections:
         <fail unless="jOMiSCID2.dir">Must set jOMiSCID2.dir</fail>
         <fail unless="dnssd-src.dir">Must set dnssd-src.dir</fail>
         <fail unless="generated-src.dir">Must set generated-src.dir</fail>
-        <fail unless="test.test.dir">Must set test.test.dir</fail>
+        <fail unless="src.test.dir">Must set src.test.dir</fail>
         <fail unless="build.dir">Must set build.dir</fail>
         <fail unless="dist.dir">Must set dist.dir</fail>
         <fail unless="build.classes.dir">Must set build.classes.dir</fail>
@@ -153,7 +152,7 @@ is divided into following sections:
     </target>
     <target name="-init-macrodef-javac">
         <macrodef name="javac" uri="http://www.netbeans.org/ns/j2se-project/3">
-            <attribute name="srcdir" default="${src.dir}:${jOMiSCID2.dir}:${dnssd-src.dir}:${generated-src.dir}"/>
+            <attribute name="srcdir" default="${src.dir}:${jOMiSCID2.dir}:${dnssd-src.dir}:${generated-src.dir}:${src.test.dir}"/>
             <attribute name="destdir" default="${build.classes.dir}"/>
             <attribute name="classpath" default="${javac.classpath}"/>
             <attribute name="debug" default="${javac.debug}"/>
@@ -174,9 +173,7 @@ is divided into following sections:
             <attribute name="includes" default="**/*Test.java"/>
             <sequential>
                 <junit showoutput="true" fork="true" dir="${basedir}" failureproperty="tests.failed" errorproperty="tests.failed" jvm="${platform.java}">
-                    <batchtest todir="${build.test.results.dir}">
-                        <fileset dir="${test.test.dir}" includes="@{includes}"/>
-                    </batchtest>
+                    <batchtest todir="${build.test.results.dir}"/>
                     <classpath>
                         <path path="${run.test.classpath}"/>
                     </classpath>
@@ -287,6 +284,7 @@ is divided into following sections:
             <fileset dir="${jOMiSCID2.dir}" excludes="${build.classes.excludes}"/>
             <fileset dir="${dnssd-src.dir}" excludes="${build.classes.excludes}"/>
             <fileset dir="${generated-src.dir}" excludes="${build.classes.excludes}"/>
+            <fileset dir="${src.test.dir}" excludes="${build.classes.excludes}"/>
         </copy>
     </target>
     <target name="-post-compile">
@@ -440,15 +438,18 @@ is divided into following sections:
                 <pathelement location="${jOMiSCID2.dir}"/>
                 <pathelement location="${dnssd-src.dir}"/>
                 <pathelement location="${generated-src.dir}"/>
+                <pathelement location="${src.test.dir}"/>
             </sourcepath>
             <packageset dir="${src.dir}" includes="*/**"/>
             <packageset dir="${jOMiSCID2.dir}" includes="*/**"/>
             <packageset dir="${dnssd-src.dir}" includes="*/**"/>
             <packageset dir="${generated-src.dir}" includes="*/**"/>
+            <packageset dir="${src.test.dir}" includes="*/**"/>
             <fileset dir="${src.dir}" includes="*.java"/>
             <fileset dir="${jOMiSCID2.dir}" includes="*.java"/>
             <fileset dir="${dnssd-src.dir}" includes="*.java"/>
             <fileset dir="${generated-src.dir}" includes="*.java"/>
+            <fileset dir="${src.test.dir}" includes="*.java"/>
         </javadoc>
     </target>
     <target name="-javadoc-browse" if="netbeans.home" unless="no.javadoc.preview" depends="init,-javadoc-build">
@@ -468,10 +469,8 @@ is divided into following sections:
         <!-- You can override this target in the ../build.xml file. -->
     </target>
     <target name="-do-compile-test" if="have.tests" depends="init,compile,-pre-pre-compile-test,-pre-compile-test">
-        <j2seproject3:javac srcdir="${test.test.dir}" destdir="${build.test.classes.dir}" debug="true" classpath="${javac.test.classpath}"/>
-        <copy todir="${build.test.classes.dir}">
-            <fileset dir="${test.test.dir}" excludes="**/*.java"/>
-        </copy>
+        <j2seproject3:javac srcdir="" destdir="${build.test.classes.dir}" debug="true" classpath="${javac.test.classpath}"/>
+        <copy todir="${build.test.classes.dir}"/>
     </target>
     <target name="-post-compile-test">
         <!-- Empty placeholder for easier customization. -->
@@ -484,14 +483,12 @@ is divided into following sections:
     </target>
     <target name="-do-compile-test-single" if="have.tests" depends="init,compile,-pre-pre-compile-test,-pre-compile-test-single">
         <fail unless="javac.includes">Must select some files in the IDE or set javac.includes</fail>
-        <j2seproject3:javac srcdir="${test.test.dir}" destdir="${build.test.classes.dir}" debug="true" classpath="${javac.test.classpath}">
+        <j2seproject3:javac srcdir="" destdir="${build.test.classes.dir}" debug="true" classpath="${javac.test.classpath}">
             <customize>
                 <patternset includes="${javac.includes}"/>
             </customize>
         </j2seproject3:javac>
-        <copy todir="${build.test.classes.dir}">
-            <fileset dir="${test.test.dir}" excludes="**/*.java"/>
-        </copy>
+        <copy todir="${build.test.classes.dir}"/>
     </target>
     <target name="-post-compile-test-single">
         <!-- Empty placeholder for easier customization. -->

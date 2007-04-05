@@ -11,10 +11,9 @@
                 <root id="jOMiSCID2.dir"/>
                 <root id="dnssd-src.dir"/>
                 <root id="generated-src.dir"/>
+                <root id="src.test.dir"/>
             </source-roots>
-            <test-roots>
-                <root id="test.test.dir"/>
-            </test-roots>
+            <test-roots/>
         </data>
     </configuration>
 </project>
