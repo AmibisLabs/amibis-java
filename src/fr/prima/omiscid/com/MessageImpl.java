@@ -70,9 +70,7 @@ public class MessageImpl implements Message {
         this.messageId = messageId;
         this.peerId = peerId;
         buffer = new byte[length];
-        for (int i = 0; i < length; ++i) {
-            buffer[i] = source[i + offset];
-        }
+        System.arraycopy(source, offset, buffer, 0, length);
     }
 
     /*
