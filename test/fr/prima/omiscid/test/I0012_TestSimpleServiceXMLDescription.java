@@ -37,7 +37,7 @@ public class I0012_TestSimpleServiceXMLDescription {
     
     public static void main(String[] args) throws InvalidDescriptionException, IOException {
         String serviceDotXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-                "<service name=\"fromXMLDesc\" xmlns=\"http://www-prima.inrialpes.fr/schemas/bip/service.xsd\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www-prima.inrialpes.fr/schemas/bip/service.xsd service.xsd \">\n" + 
+                "<service name=\"I0012Service\" xmlns=\"http://www-prima.inrialpes.fr/schemas/bip/service.xsd\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www-prima.inrialpes.fr/schemas/bip/service.xsd service.xsd \">\n" + 
                 "   <output name=\"sinus\">\n" + 
                 "       <description>Stream of points (sinus fonction)</description>\n" + 
                 "   </output>\n" + 

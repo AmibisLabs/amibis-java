@@ -49,7 +49,7 @@ public class I0011_StressTestManyBigMessages {
     public static void main(String[] args) throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("ServerBigMessages");
+            final Service server = factory.create("I0011Server");
             server.addConnector("c", "big messages", ConnectorType.INOUTPUT);
             server.addConnectorListener("c", new ConnectorListener() {
             
@@ -75,7 +75,7 @@ public class I0011_StressTestManyBigMessages {
         final Vector<Object> ended = new Vector<Object>();
         final Vector<Object> started = new Vector<Object>();
         for (int i = 0; i < clientsToStart; i++) {
-            Service client = factory.create("Client");
+            Service client = factory.create("I0011Client");
             client.addConnector("c", "big messages", ConnectorType.INOUTPUT);
             client.addConnectorListener("c", new ConnectorListener() {
                 int count = 0;
@@ -103,7 +103,7 @@ public class I0011_StressTestManyBigMessages {
             
             });
             client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("ServerBigMessages"));
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0011Server"));
             client.connectTo("c", proxy, "c");
             client.sendToAllClients("c", new byte[smallSize]);
             started.add(client);
