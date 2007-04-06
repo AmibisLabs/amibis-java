@@ -47,6 +47,8 @@ bundle:
 	rm -rf ../jOMiSCIDBundle/native/*
 	scp ,,rel/$(release-omiscid-jar) $(patsubst %,lib/%,$(release-bundle-jars)) ../jOMiSCIDBundle/embeddedlibs/
 	scp $(patsubst %,lib/%,$(release-libs)) ../jOMiSCIDBundle/native/
+# clean the build dir
+	rm -rf ../jOMiSCIDBundle/build
 # patch manifest file
 	cat ../jOMiSCIDBundle/manifest/manifest.mf | awk "/^Bundle-Version:/ {print \"Bundle-Version: $(release-bundle-version)\" ; next} /^Bundle-ClassPath:/ {print \"Bundle-ClassPath: $(release-bundle-classpath)\" ; next} /^Bundle-NativeCode:/ {print \"Bundle-NativeCode: $(release-bundle-native-code)\" ; next} // {print}" > ,,.mf
 	cp ,,.mf ../jOMiSCIDBundle/manifest/manifest.mf
