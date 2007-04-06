@@ -43,7 +43,7 @@ public class StressTestManyBigMessages {
     private static final int bigSize = 1024*1024;
 
     private static final int clientsToStart = 3;
-    private static final int messagesToSend = 20;
+    private static final int messagesToSend = 100;
     private static final int timeToWait = 5000;
     
     public static void main(String[] args) throws IOException, InterruptedException {

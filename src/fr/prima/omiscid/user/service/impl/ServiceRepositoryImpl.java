@@ -57,7 +57,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
         serviceBrowser.start();
     }
     
-    public void stop() {
+    public synchronized void stop() {
         serviceBrowser.stop();
     }
     
@@ -72,9 +72,11 @@ public class ServiceRepositoryImpl implements ServiceRepository {
     private synchronized void serviceFound(ServiceEvent e) {
         // This should be different in a real integration or layering to omiscid
         ServiceProxy serviceProxy = ServiceProxyImpl.forService(service, new OmiscidService(((ServiceImpl)service).getPeerId(), e.getServiceInformation()));
-        services.add(serviceProxy);
-        for (ServiceRepositoryListener listener : serviceRepositoryListeners) {
-            listener.serviceAdded(serviceProxy);
+        if (serviceProxy != null) {
+            services.add(serviceProxy);
+            for (ServiceRepositoryListener listener : serviceRepositoryListeners) {
+                listener.serviceAdded(serviceProxy);
+            }
         }
     }
 
@@ -93,16 +95,18 @@ public class ServiceRepositoryImpl implements ServiceRepository {
                 listener.serviceRemoved(matching);
             }
         } else {
-            // Should not happen
-            System.err.println("PeerId not found in ServiceRepository");
+            // This happens when the ServiceProxy could not be built in #serviceFound
+            // For example, when a service appears only for a short time,
+            // it can be visible under dnssd and disappear before it could be queried for its description.
+            // In such a case, it is not added to the repository by #serviceFound.
         }
     }
     
-    public void addListener(ServiceRepositoryListener listener) {
+    public synchronized void addListener(ServiceRepositoryListener listener) {
         addListener(listener, false);
     }
 
-    public void addListener(ServiceRepositoryListener listener, boolean notifyOnlyNewEvents) {
+    public synchronized void addListener(ServiceRepositoryListener listener, boolean notifyOnlyNewEvents) {
         if (!notifyOnlyNewEvents) {
             for (ServiceProxy proxy : services) {
                 listener.serviceAdded(proxy);
@@ -111,11 +115,11 @@ public class ServiceRepositoryImpl implements ServiceRepository {
         serviceRepositoryListeners.add(listener);
     }
 
-    public void removeListener(ServiceRepositoryListener listener) {
+    public synchronized void removeListener(ServiceRepositoryListener listener) {
         removeListener(listener, false);
     }
 
-    public void removeListener(ServiceRepositoryListener listener, boolean notifyAsIfExistingServicesDisappear) {
+    public synchronized void removeListener(ServiceRepositoryListener listener, boolean notifyAsIfExistingServicesDisappear) {
         boolean present = serviceRepositoryListeners.remove(listener);
         if (present && notifyAsIfExistingServicesDisappear) {
             for (ServiceProxy proxy : services) {
