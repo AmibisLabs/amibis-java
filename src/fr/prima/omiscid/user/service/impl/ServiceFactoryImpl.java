@@ -90,6 +90,12 @@ public class ServiceFactoryImpl implements ServiceFactory {
         return new ServiceRepositoryImpl((ServiceImpl)service);
     }
 
+    public ServiceRepository createServiceRepositoy() {
+        // Creates a new service with a dummy name
+        // Logically the service name isn't used anywhere and should be indifferent
+        return createServiceRepositoy(create("ServiceRepository"));
+    }
+    
 	/**
 	 * @param bipComponent
 	 */

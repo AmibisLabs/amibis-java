@@ -79,8 +79,29 @@ public interface ServiceFactory {
 	 */
 	public Service createFromXML(InputStream stream) throws InvalidDescriptionException;
     
+    /**
+     * Creates a new {@link ServiceRepository} based on a already created service.
+     * A service repository is used to mainting automatically a list of running services and can notify of services apparition and disapparition.
+     * If you are only willing to look for services at a given instant, using {@link Service#findService} methods is simpler.
+     * Connections that may be necessary for the service repository will be done in the name of the provided service.
+     * 
+     * @param service a {@link Service} in the name of which the connection necessary for the service repository will be done
+     * @return an operational {@link ServiceRepository}
+     */
     public ServiceRepository createServiceRepositoy(Service service);
-    
+
+    /**
+     * Creates a new {@link ServiceRepository}.
+     * A service repository is used to mainting automatically a list of running services and can notify of services apparition and disapparition.
+     * If you are only willing to look for services at a given instant, using {@link Service#findService} methods is simpler.
+     * 
+     * A new {@link Service} instance will be hiddenly created. If you already have a {@link Service} instance, you should probably prefer {@link #createServiceRepositoy(Service)}.
+     * Connections that may be necessary for the service repository will be done in the name of the hiddenly created service.
+     * 
+     * @return an operational {@link ServiceRepository}
+     */
+    public ServiceRepository createServiceRepositoy();
+
     /**
      * Future extension : used by the service Binder to detect incoming new bundled services
      * @param bundle
