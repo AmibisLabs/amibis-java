@@ -44,7 +44,7 @@ public class I0003_ListenersNotPropagatedOnConnectTo {
     public static void main(String[] args) throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("BugI0003Server");
+            final Service server = factory.create("I0003Server");
             server.addConnector("c", "messages", ConnectorType.INOUTPUT);
             server.addConnectorListener("c", new ConnectorListener() {
             
@@ -67,7 +67,7 @@ public class I0003_ListenersNotPropagatedOnConnectTo {
         }
         final Vector<Object> received = new Vector<Object>();
         {
-            Service client = factory.create("BugI0003Client");
+            Service client = factory.create("I0003Client");
             client.addConnector("c", "this is c", ConnectorType.INOUTPUT);
             client.addConnectorListener("c", new ConnectorListener() {
                 int count = 0;
@@ -93,7 +93,7 @@ public class I0003_ListenersNotPropagatedOnConnectTo {
             
             });
             client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("BugI0003Server"));
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0003Server"));
             client.connectTo("c", proxy, "c");
             client.sendToAllClients("c", new byte[1]);
         }

@@ -42,7 +42,7 @@ public class I0002_SafeListenerCalls {
     public static void main(String[] args) throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("BugI0002Server");
+            final Service server = factory.create("I0002Server");
             server.addConnector("bug", "", ConnectorType.INPUT);
             server.addConnectorListener("bug", new ConnectorListener() {
                 public void messageReceived(Service service,
@@ -78,10 +78,10 @@ public class I0002_SafeListenerCalls {
             });
             server.start();
         }{
-            Service client = factory.create("BugI0002Client");
+            Service client = factory.create("I0002Client");
             client.addConnector("bug", "", ConnectorType.OUTPUT);
             client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("BugI0002Server"));
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0002Server"));
             client.connectTo("bug", proxy, "bug");
             client.sendToAllClients("bug", Utility.stringToByteArray("hiiiii"));
             try {

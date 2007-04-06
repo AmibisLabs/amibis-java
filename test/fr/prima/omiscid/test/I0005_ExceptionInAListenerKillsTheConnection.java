@@ -48,7 +48,7 @@ public class I0005_ExceptionInAListenerKillsTheConnection {
     public static void main(String[] args) throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("BugI0005Server");
+            final Service server = factory.create("I0005Server");
             server.addConnector("bug", "", ConnectorType.INPUT);
             server.addConnectorListener("bug", new ConnectorListener() {
                 int count = 0;
@@ -68,7 +68,7 @@ public class I0005_ExceptionInAListenerKillsTheConnection {
             server.start();
         }
         {
-            Service client = factory.create("BugI0005Client");
+            Service client = factory.create("I0005Client");
             client.addConnector("bug", "", ConnectorType.OUTPUT);
             client.addConnectorListener("bug", new ConnectorListener() {
                 public void messageReceived(Service service, String localConnectorName, Message message) {
@@ -81,7 +81,7 @@ public class I0005_ExceptionInAListenerKillsTheConnection {
                 }
             });
             client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("BugI0005Server"));
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0005Server"));
             client.connectTo("bug", proxy, "bug");
             client.sendToAllClients("bug", Utility.stringToByteArray("hiiiii"));
             try {

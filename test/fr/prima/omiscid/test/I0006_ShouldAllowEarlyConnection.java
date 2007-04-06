@@ -42,7 +42,7 @@ public class I0006_ShouldAllowEarlyConnection {
     public static void main(String[] args) throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("BugI0006Server");
+            final Service server = factory.create("I0006Server");
             server.addConnector("bug", "", ConnectorType.INPUT);
             server.addConnectorListener("bug", new ConnectorListener() {
                 
@@ -68,7 +68,7 @@ public class I0006_ShouldAllowEarlyConnection {
             final Vector<Object> ended = new Vector<Object>();
             final Vector<Object> started = new Vector<Object>();
             for (int i = 0; i < 3; i++) {
-                Service client = factory.create("BugI0006Client");
+                Service client = factory.create("I0006Client");
                 client.addConnector("bug", "", ConnectorType.OUTPUT);
                 client.addConnectorListener("bug", new ConnectorListener() {
                     int count = 0;
@@ -88,7 +88,7 @@ public class I0006_ShouldAllowEarlyConnection {
                     public void connected(Service service, String localConnectorName, int peerId) {
                     }
                 });
-                final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("BugI0006Server"));
+                final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0006Server"));
                 client.connectTo("bug", proxy, "bug");
                 client.sendToAllClients("bug", Utility.stringToByteArray("hiiiii"));
                 started.add(client);

@@ -48,10 +48,10 @@ public class I0009_ParallelFindShouldBePossible {
     public static void main(String[] args) throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service client = factory.create("BugI0009Client");
+            final Service client = factory.create("I0009Client");
             client.addConnector("bug", "plop", ConnectorType.INPUT);
             client.start();
-            client.findService(ServiceFilters.nameIs("BugI0009Client"));
+            client.findService(ServiceFilters.nameIs("I0009Client"));
             final Vector<String> done = new Vector<String>();
             final Vector<String> started = new Vector<String>();
             for (int i = 0; i < parallelCount; i++) {

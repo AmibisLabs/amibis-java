@@ -41,7 +41,7 @@ public class I0001_CheckRemoteVariableRefresh {
     public static void main(String[] args) {
         ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("BugI0001Server");
+            final Service server = factory.create("I0001Server");
             server.addVariable("bug", "", "an allway moving variable", VariableAccessType.READ);
             server.start();
             new Thread() {
@@ -61,9 +61,9 @@ public class I0001_CheckRemoteVariableRefresh {
             }.start();
         }
         {
-            Service client = factory.create("BugI0001Client");
+            Service client = factory.create("I0001Client");
             client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("BugI0001Server"));
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0001Server"));
             new Thread() {
                 @Override
                 public void run() {

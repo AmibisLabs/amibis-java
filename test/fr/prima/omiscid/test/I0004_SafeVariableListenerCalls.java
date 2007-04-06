@@ -41,7 +41,7 @@ public class I0004_SafeVariableListenerCalls {
     public static void main(String[] args) throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("BugI0004Server");
+            final Service server = factory.create("I0004Server");
             server.addVariable("bug", "Bug", "plop", VariableAccessType.READ_WRITE);
             server.addLocalVariableListener("bug", new LocalVariableListener() {
                 public boolean isValid(Service service, String currentValue, String newValue) {
@@ -67,9 +67,9 @@ public class I0004_SafeVariableListenerCalls {
             });
             server.start();
         }{
-            Service client = factory.create("BugI0004Client");
+            Service client = factory.create("I0004Client");
             client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("BugI0004Server"));
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0004Server"));
             proxy.setVariableValue("bug", "ga");
             try {
                 Thread.sleep(500);

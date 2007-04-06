@@ -39,14 +39,14 @@ public class I0007_HasConnectorFilterDoesNotHandleNonFullDescription {
     public static void main(String[] args) throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("BugI0007Server");
+            final Service server = factory.create("I0007Server");
             server.addConnector("bug", "", ConnectorType.INPUT);
             server.addVariable("thisIsAnObfuscatingVariable", "string", "plop", VariableAccessType.CONSTANT);
             server.setVariableValue("thisIsAnObfuscatingVariable", times("A",300));
             server.start();
         }
         {
-            final Service client = factory.create("BugI0007Client");
+            final Service client = factory.create("I0007Client");
             client.start();
             new Thread(new Runnable() {
                 public void run() {

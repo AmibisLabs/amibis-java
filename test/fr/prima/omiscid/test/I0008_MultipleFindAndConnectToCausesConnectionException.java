@@ -51,7 +51,7 @@ public class I0008_MultipleFindAndConnectToCausesConnectionException {
         final ServiceFactory factory = FactoryFactory.factory();
         final Vector<String> startedServices = new Vector<String>();
         for (int i = 0; i<30; i++) {
-            String name = "BugI0008Server"+i;
+            String name = "I0008Server"+i;
             startedServices.add(name);
         }
         for (final String name : startedServices) {
@@ -91,10 +91,10 @@ public class I0008_MultipleFindAndConnectToCausesConnectionException {
             }, "Starter-"+name).start();
         }
         {
-            final Service client = factory.create("BugI0008Client");
+            final Service client = factory.create("I0008Client");
             client.addConnector("bug", "plop", ConnectorType.INPUT);
             client.start();
-            //client.findService(ServiceFilters.nameIs("BugI0008Client"));
+            //client.findService(ServiceFilters.nameIs("I0008Client"));
             final Vector<String> done = new Vector<String>();
             for (final String name : startedServices) {
                 new Thread(new Runnable() {
