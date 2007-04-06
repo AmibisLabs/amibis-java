@@ -45,6 +45,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
     private final Vector<ServiceRepositoryListener> serviceRepositoryListeners = new Vector<ServiceRepositoryListener>();
     private ServiceImpl service;
     private ServiceBrowser serviceBrowser;
+    private boolean stopped = false;
 
     public ServiceRepositoryImpl(ServiceImpl service) {
         this.service = service;
@@ -58,10 +59,22 @@ public class ServiceRepositoryImpl implements ServiceRepository {
     }
     
     public synchronized void stop() {
+        if (stopped) {
+            return;
+        }
         serviceBrowser.stop();
+        serviceRepositoryListeners.clear();
+        services.clear();
+        stopped = true;
+    }
+    private void checkRunning() {
+        if (stopped) {
+            throw new RuntimeException("ServiceRepository used after being stopped");
+        }
     }
     
     public synchronized List<ServiceProxy> getAllServices() {
+        checkRunning();
         Vector<ServiceProxy> res = new Vector<ServiceProxy>();
         res.addAll(services);
         return res;
@@ -70,6 +83,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
 
 
     private synchronized void serviceFound(ServiceEvent e) {
+        checkRunning();
         // This should be different in a real integration or layering to omiscid
         ServiceProxy serviceProxy = ServiceProxyImpl.forService(service, new OmiscidService(((ServiceImpl)service).getPeerId(), e.getServiceInformation()));
         if (serviceProxy != null) {
@@ -81,6 +95,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
     }
 
     private synchronized void serviceLost(ServiceEvent e) {
+        checkRunning();
         int peerId = new OmiscidService(e.getServiceInformation()).getRemotePeerId();
         ServiceProxy matching = null;
         for (ServiceProxy proxy : services) {
@@ -107,6 +122,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
     }
 
     public synchronized void addListener(ServiceRepositoryListener listener, boolean notifyOnlyNewEvents) {
+        checkRunning();
         if (!notifyOnlyNewEvents) {
             for (ServiceProxy proxy : services) {
                 listener.serviceAdded(proxy);
@@ -120,6 +136,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
     }
 
     public synchronized void removeListener(ServiceRepositoryListener listener, boolean notifyAsIfExistingServicesDisappear) {
+        checkRunning();
         boolean present = serviceRepositoryListeners.remove(listener);
         if (present && notifyAsIfExistingServicesDisappear) {
             for (ServiceProxy proxy : services) {

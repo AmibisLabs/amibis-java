@@ -26,10 +26,26 @@
 
 package fr.prima.omiscid.user.service;
 
-
+/**
+ * Defines the interface to be implemented by {@link ServiceRepository} listeners.
+ * This basically contains two methods: one for service apparition and one for service disapparition.
+ * For a given service appearing and then disappearing, the parameter passed to {@link #serviceAdded(ServiceProxy)} and {@link #serviceRemoved(ServiceProxy)} methods will be the same object.
+ *
+ */
 public interface ServiceRepositoryListener {
 
-    void serviceAdded(ServiceProxy serviceProxy);
-    void serviceRemoved(ServiceProxy serviceProxy);
+    /**
+     * Processes a service addition event.
+     * 
+     * @param serviceProxy the {@link ServiceProxy} that appeared
+     */
+    public void serviceAdded(ServiceProxy serviceProxy);
+    
+    /**
+     * Processes a service removal event.
+     * 
+     * @param serviceProxy the {@link ServiceProxy} that disappeared
+     */
+    public void serviceRemoved(ServiceProxy serviceProxy);
     
 }

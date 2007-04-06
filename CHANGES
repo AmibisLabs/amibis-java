@@ -6,10 +6,10 @@ In this files, you will find changes between java OMiSCID versions.
 
 *must: solve the castor proliferation problem
 *should: do not query full description before needed
+*should: review, optimize and make safer the queries present under ServiceProxy (e.g. 2 queries are done to get a service global description)
 *could: add an heuristic on whether avahi registration will be accepted based on the size of the properties
 *could: dnssd client auto connect/reconnect
 *could: dnssd client has a list of expected servers
-*should: review, optimize and make safer the queries present under ServiceProxy (e.g. 2 queries are done to get a service global description)
 
 1.0.4
 r
