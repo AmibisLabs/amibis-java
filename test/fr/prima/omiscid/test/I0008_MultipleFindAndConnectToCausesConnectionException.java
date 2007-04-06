@@ -39,7 +39,7 @@ import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 
-public class BugI0008_MultipleFindAndConnectToCausesConnectionException {
+public class I0008_MultipleFindAndConnectToCausesConnectionException {
     
     // This tries to replicate a problem seen with Marina's osgi code.
     // The original code just looks for 2 services and connects to them.

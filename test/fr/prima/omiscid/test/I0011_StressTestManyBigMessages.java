@@ -37,19 +37,26 @@ import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 
-public class BugI0003_ListenersNotPropagatedOnConnectTo {
+public class I0011_StressTestManyBigMessages {
     
+    private static final int smallSize = 1;
+    private static final int bigSize = 1024*1024;
+
+    private static final int clientsToStart = 3;
     private static final int messagesToSend = 100;
+    private static final int timeToWait = 5000;
     
     public static void main(String[] args) throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("BugI0003Server");
-            server.addConnector("c", "messages", ConnectorType.INOUTPUT);
+            final Service server = factory.create("ServerBigMessages");
+            server.addConnector("c", "big messages", ConnectorType.INOUTPUT);
             server.addConnectorListener("c", new ConnectorListener() {
             
                 public void messageReceived(final Service service, final String localConnectorName, final Message message) {
-                    service.sendToOneClient(localConnectorName, new byte[1], message.getPeerId());
+                    System.out.println("server received");
+                    service.sendToAllClients(localConnectorName, new byte[bigSize]/*, message.getPeerId()*/);
+                    System.out.println("server sent");
                 }
             
                 public void disconnected(Service service, String localConnectorName, int peerId) {
@@ -65,19 +72,22 @@ public class BugI0003_ListenersNotPropagatedOnConnectTo {
             });
             server.start();
         }
-        final Vector<Object> received = new Vector<Object>();
-        {
-            Service client = factory.create("BugI0003Client");
-            client.addConnector("c", "this is c", ConnectorType.INOUTPUT);
+        final Vector<Object> ended = new Vector<Object>();
+        final Vector<Object> started = new Vector<Object>();
+        for (int i = 0; i < clientsToStart; i++) {
+            Service client = factory.create("Client");
+            client.addConnector("c", "big messages", ConnectorType.INOUTPUT);
             client.addConnectorListener("c", new ConnectorListener() {
                 int count = 0;
             
                 public void messageReceived(final Service service, String localConnectorName, Message message) {
-                    service.sendToAllClients("c", new byte[1]);
+                    System.out.println("client received, count is "+count);
+                    service.sendToAllClients("c", new byte[smallSize]);
+                    System.out.println("client sent");
                     count++;
-                    received.add(count);
                     if (count >= messagesToSend) {
                         service.stop();
+                        ended.add(service);
                     }
                 }
             
@@ -93,15 +103,18 @@ public class BugI0003_ListenersNotPropagatedOnConnectTo {
             
             });
             client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("BugI0003Server"));
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("ServerBigMessages"));
             client.connectTo("c", proxy, "c");
-            client.sendToAllClients("c", new byte[1]);
+            client.sendToAllClients("c", new byte[smallSize]);
+            started.add(client);
+            Thread.sleep(1000);
         }
-        Thread.sleep(2000);
-        if (received.size() == messagesToSend) {
-            FactoryFactory.passed(received.size()+" received ok");
+        Thread.sleep(timeToWait);
+        int endedSize = ended.size();
+        if (endedSize == started.size()) {
+            FactoryFactory.passed("all "+started.size()+" ok");
         } else {
-            FactoryFactory.failed(received.size()+" ended, "+messagesToSend+" expected");
+            FactoryFactory.failed("started is "+started.size()+" and only "+endedSize+" ended");
         }
         System.exit(0);
     }

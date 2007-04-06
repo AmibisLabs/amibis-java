@@ -35,7 +35,7 @@ import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 
-public class BugI0009_ParallelFindShouldBePossible {
+public class I0009_ParallelFindShouldBePossible {
     
     // This is not a bug at the time of writing.
     // This test ensures that searchs can be done in parallel.
