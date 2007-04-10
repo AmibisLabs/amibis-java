@@ -45,10 +45,10 @@ public class I0004_SafeVariableListenerCalls {
             server.addVariable("bug", "Bug", "plop", VariableAccessType.READ_WRITE);
             server.addLocalVariableListener("bug", new LocalVariableListener() {
                 public boolean isValid(Service service, String currentValue, String newValue) {
-                    throw new UnsupportedOperationException("Not supported yet.");
+                    throw new UnsupportedOperationException("Not supported yet: isValid");
                 }
                 public void variableChanged(Service service, String name, String value) {
-                    throw new UnsupportedOperationException("Not supported yet.");
+                    throw new UnsupportedOperationException("Not supported yet: changed");
                 }
             });
             server.addLocalVariableListener("bug", new LocalVariableListener() {

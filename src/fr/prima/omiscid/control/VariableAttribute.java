@@ -290,7 +290,8 @@ public class VariableAttribute extends Attribute {
                 try {
                     listener.variableChanged(this);
                 } catch (Exception e) {
-                    // FIXME: should log
+                    System.err.println("Omiscid caught an exception thrown by a listener on variable modification notification, it is shown here:");
+                    e.printStackTrace();
                 }
             }
         }

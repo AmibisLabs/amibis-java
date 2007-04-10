@@ -48,32 +48,32 @@ public class I0002_SafeListenerCalls {
                 public void messageReceived(Service service,
                                             String localConnectorName,
                                             Message message) {
-                    throw new UnsupportedOperationException("Not supported yet.");
+                    throw new UnsupportedOperationException("Not supported yet: message");
                 }
 
                 public void disconnected(Service service,
                                          String localConnectorName, int peerId) {
-                    throw new UnsupportedOperationException("Not supported yet.");
+                    throw new UnsupportedOperationException("Not supported yet: disconnection");
                 }
 
                 public void connected(Service service, String localConnectorName,
                                       int peerId) {
-                    throw new UnsupportedOperationException("Not supported yet.");
+                    throw new UnsupportedOperationException("Not supported yet: connection");
                 }
             });
             server.addConnectorListener("bug", new ConnectorListener() {
-                boolean passedOnce = false;
+                int state = 0;
                 public void connected(Service service, String localConnectorName, int peerId) {
+                    state += 1000;
                 }
                 public void disconnected(Service service, String localConnectorName, int peerId) {
-                }
-                public void messageReceived(Service service, String localConnectorName, Message message) {
-                    if (passedOnce) {
+                    if (state == 1002) {
                         FactoryFactory.passed("Two messages received by the clean listener");
                         System.exit(0);
-                    } else {
-                        passedOnce = true;
                     }
+                }
+                public void messageReceived(Service service, String localConnectorName, Message message) {
+                    state++;
                 }
             });
             server.start();
@@ -88,6 +88,10 @@ public class I0002_SafeListenerCalls {
                 Thread.sleep(500);
             } catch (InterruptedException e) {}
             client.sendToAllClients("bug", Utility.stringToByteArray("hellllowwwwww"));
+            try {
+                Thread.sleep(150);
+            } catch (InterruptedException e) {}
+            client.stop();
         }
         try {
             Thread.sleep(1500);

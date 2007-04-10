@@ -614,8 +614,8 @@ public class ControlServer extends MessageManager implements VariableChangeListe
                         break;
                     }
                 } catch (Exception e) {
+                    System.err.println("Omiscid caught an exception thrown by a listener on variable modification control (modification has been considered accepted by this listener), it is shown here:");
                     e.printStackTrace();
-                    // FIXME: should log
                 }
             }
             if (doModification) {

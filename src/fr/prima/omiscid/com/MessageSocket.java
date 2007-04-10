@@ -316,8 +316,8 @@ public abstract class MessageSocket {
                     try {
                         listener.connected(remotePeerId);
                     } catch (Exception e) {
+                        System.err.println("Omiscid caught an exception thrown by a listener on connection, it is shown here:");
                         e.printStackTrace();
-                        // FIXME: should log
                     }
                 }
             }
@@ -408,8 +408,8 @@ public abstract class MessageSocket {
                 try {
                     listener.receivedBipMessage(message);
                 } catch (Exception e) {
+                    System.err.println("Omiscid caught an exception thrown by a listener on message reception, it is shown here:");
                     e.printStackTrace();
-                    // FIXME: should log
                 }
             }
         }
@@ -424,8 +424,8 @@ public abstract class MessageSocket {
                 try {
                     listener.disconnected(remotePeerId);
                 } catch (Exception e) {
+                    System.err.println("Omiscid caught an exception thrown by a listener on disconnection, it is shown here:");
                     e.printStackTrace();
-                    // FIXME: should log
                 }
             }
         }
