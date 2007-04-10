@@ -27,7 +27,6 @@
 package fr.prima.omiscid.dnssd.interf;
 
 import java.util.Arrays;
-import java.util.MissingResourceException;
 import java.util.Stack;
 
 import fr.prima.omiscid.dnssd.common.SharedFactory;
@@ -114,8 +113,6 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
                         if (sharedTrueValue.equals(shared)) {
                             factory = new SharedFactory(factory);
                         }
-                    } catch (MissingResourceException e) {
-                        System.out.println("Problem while testing for shared factory: key '"+sharedKey+"' not found, using non-shared by default");
                     } catch (Exception e) {
                         System.out.println("Problem while testing for shared factory");
                     } 
