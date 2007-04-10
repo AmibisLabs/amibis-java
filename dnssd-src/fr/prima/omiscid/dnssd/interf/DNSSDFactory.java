@@ -59,7 +59,6 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
     public static final class DefaultFactory {
         private static final String propertyBundle = "cfg";
         private static final String dnssdFactoryKey = "dnssdFactory";
-        private static final String sharedKey = "sharedFactory";
 
         private static final String factoryEnvironmentVariable = "OMISCID_DNSSD_FACTORY";
         private static final String sharedFactoryEnvironmentVariable = "OMISCID_DNSSD_SHARED_FACTORY";
