@@ -63,6 +63,7 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
         private static final String factoryEnvironmentVariable = "OMISCID_DNSSD_FACTORY";
         private static final String sharedFactoryEnvironmentVariable = "OMISCID_DNSSD_SHARED_FACTORY";
         private static final String sharedTrueValue = "true";
+        private static final String sharedDefaultValue = sharedTrueValue;
 
         private static DNSSDFactory instance = null;
 
@@ -99,9 +100,10 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
                     continue;
                 }
                 try {
+                    //System.out.println(factoryClass.getCanonicalName());
                     DNSSDFactory factory = (DNSSDFactory) factoryClass.newInstance();
                     try {
-                        String shared = sharedTrueValue;
+                        String shared = sharedDefaultValue;
                         try {
                             if (System.getenv(sharedFactoryEnvironmentVariable) != null) {
                                 shared = System.getenv(sharedFactoryEnvironmentVariable);
