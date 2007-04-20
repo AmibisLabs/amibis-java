@@ -1,5 +1,6 @@
-#Thu May 11 14:57:29 CEST 2006
+#Fri Apr 20 13:15:28 CEST 2007
 eclipse.preferences.version=1
 formatter_profile=_java with space for tabs
 formatter_settings_version=10
+internal.default.compliance=default
 org.eclipse.jdt.ui.text.custom_code_templates=<?xml version\="1.0" encoding\="UTF-8"?><templates/>
