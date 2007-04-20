@@ -27,6 +27,7 @@
 package fr.prima.omiscid.dnssd.interf;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Stack;
 
 import fr.prima.omiscid.dnssd.common.SharedFactory;
@@ -62,23 +63,47 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
 
         private static final String factoryEnvironmentVariable = "OMISCID_DNSSD_FACTORY";
         private static final String sharedFactoryEnvironmentVariable = "OMISCID_DNSSD_SHARED_FACTORY";
+        private static final String verboseEnvironmentVariable = "OMISCID_DNSSD_FACTORY_VERBOSE_MODE";
         private static final String sharedTrueValue = "true";
         private static final String sharedDefaultValue = sharedTrueValue;
+        private static final PatchedIdentity<String> factoryRewriter = new PatchedIdentity<String>();
+
+        private static boolean verboseMode = false;
+        
+        static {
+            factoryRewriter.put("jmdns", "fr.prima.omiscid.dnssd.jmdns.DNSSDFactoryJmdns");
+            factoryRewriter.put("mdns", "fr.prima.omiscid.dnssd.mdns.DNSSDFactoryMdns");
+            factoryRewriter.put("avahi", "fr.prima.omiscid.dnssd.avahi.DNSSDFactoryAvahi");
+            try {
+                if (System.getenv(verboseEnvironmentVariable) != null) {
+                    verboseMode = true;
+                }
+            } catch (SecurityException e) {
+                // Access to environment variable is forbidden
+            }
+        }
 
         private static DNSSDFactory instance = null;
 
         public static synchronized DNSSDFactory instance() {
             return instance != null ? instance : (instance = makeInstance());
         }
+        
+        private static class PatchedIdentity<V> extends HashMap<V,V> {
+            @Override public V get(Object key) {
+                V res = super.get(key);
+                return res == null ? (V)key : res;
+            }
+        }
 
         private static DNSSDFactory makeInstance() {
             Stack<String> factories = new Stack<String>();
-            factories.push("fr.prima.omiscid.dnssd.jmdns.DNSSDFactoryJmdns");
-            factories.push("fr.prima.omiscid.dnssd.mdns.DNSSDFactoryMdns");
-            factories.push("fr.prima.omiscid.dnssd.avahi.DNSSDFactoryAvahi");
+            factories.push(factoryRewriter.get("jmdns"));
+            factories.push(factoryRewriter.get("mdns"));
+            factories.push(factoryRewriter.get("avahi"));
             try {
                 if (System.getenv(factoryEnvironmentVariable) != null) {
-                    factories.push(System.getenv(factoryEnvironmentVariable));
+                    factories.push(factoryRewriter.get(System.getenv(factoryEnvironmentVariable)));
                 }
             } catch (SecurityException e) {
                 // Access to environment variable is forbidden
@@ -87,6 +112,9 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
             Class factoryClass = null;
             String className;
             while (!factories.isEmpty() && null != (className = factories.pop())) {
+                if (verboseMode) {
+                    System.out.println(className);
+                }
                 try {
                     factoryClass = Class.forName(className);
                 } catch (Throwable e) {
@@ -125,5 +153,6 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
             System.err.println("Could not get any operational DNSSDFactory ... will badly throw a NPE soon");
             return null;
         }
+
     }
 }
