@@ -60,11 +60,11 @@ public final class Utility {
     
     public static int connectorPeerIdFromIndex(int rootPeerId, int connectorIndex) {
         if (rootPeerId != rootPeerIdFromConnectorPeerId(rootPeerId)) {
-            throw new RuntimeException("TODO");
+            throw new RuntimeException("OMiSCID Internal Problem with connector peerId attribution (step1)");
         }
         int res = rootPeerId | connectorIndex;
         if (connectorIndex != connectorIndexFromPeerId(res)) {
-            throw new RuntimeException("TODO 2");
+            throw new RuntimeException("OMiSCID Internal Problem with connector peerId attribution (step2)");
         }
         return res;
     }

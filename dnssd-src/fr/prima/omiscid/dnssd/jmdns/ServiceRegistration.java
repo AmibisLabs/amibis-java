@@ -42,6 +42,8 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
 
     private String registrationType;
 
+    private String registeredName;
+
     private final Hashtable<String, String> properties = new Hashtable<String, String>();
 
     private boolean registered;
@@ -64,6 +66,7 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
         try {
             jmdns.registerService(serviceInfo);
             registered = true;
+            registeredName = clean(serviceInfo.getQualifiedName());
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -82,6 +85,7 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
                 jmdns.registerService(serviceInfo);
                 if (serviceInfo.getName().equals(serviceName)) {
                     registered = true;
+                    registeredName = clean(serviceInfo.getQualifiedName());
                     break;
                 } else {
                     jmdns.unregisterService(serviceInfo);
@@ -104,7 +108,7 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
     }
 
     public String getRegisteredName() {
-        return serviceInfo.getQualifiedName();
+        return registeredName;
     }
 
     public void setName(String serviceName) {
@@ -117,6 +121,11 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
     
     public void setHostName(String serviceHostName) {
         throw new NotImplementedException();
+    }
+
+    private String clean(String registeredName) {
+        String pattern = ("."+registrationType).replaceAll("(.)", "[$1]")+"$";
+        return registeredName.replaceFirst(pattern, "");
     }
 
 }

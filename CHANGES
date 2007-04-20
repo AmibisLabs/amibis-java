@@ -11,7 +11,7 @@ In this files, you will find changes between java OMiSCID versions.
 *could: dnssd client auto connect/reconnect
 *could: dnssd client has a list of expected servers
 
-1.0.4
+1.1.0
 r
 API MINOR CHANGE!!!! added a ConnectionRefused exception on connectTo
 API ADDITION!!!! added ServiceRepository
