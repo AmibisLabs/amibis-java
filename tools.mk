@@ -3,7 +3,6 @@ include release.conf
 
 BASEJAR=omiscid.jar
 INTERFACEJAR=omiscidService.jar
-CLASSDIR=bin
 
 dist: prepare
 # builds the omiscid jar (BASEJAR) file using 'prepare'
@@ -60,7 +59,8 @@ checkdomain:
 
 prepare:
 	rm -rf ,,build
-	cp -r $(CLASSDIR) ,,build
+	ant compile
+	cp -r build/classes ,,build
 	cp CHANGES ,,build/
 	cd src            && find . -name \*.java -exec cp {} ../,,build/{} \;
 	cd dnssd-src      && find . -name \*.java -exec cp {} ../,,build/{} \;
