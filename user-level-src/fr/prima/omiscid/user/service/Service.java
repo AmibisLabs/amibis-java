@@ -26,6 +26,7 @@
 
 package fr.prima.omiscid.user.service;
 
+import fr.prima.omiscid.user.connector.Message;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -49,7 +50,7 @@ import fr.prima.omiscid.user.variable.VariableAccessType;
 public interface Service {
     
     /**
-     * Adds a new connector to the Bip service.
+     * Adds a new connector to the service.
      * @param connectorName the name of the connector
      * @param connectorDescription the description of the connector
      * @param connectorKind connector type. This can be input, output or input-output
@@ -78,7 +79,7 @@ public interface Service {
     public void start();
     
     /**
-     * Stops the bip service : closes all the connections and unregisters the service
+     * Stops the service : closes all the connections and unregisters the service
      */
     public void stop() ;
     
@@ -87,7 +88,7 @@ public interface Service {
      * Sends a message to a particular client. This client is identified by its Peer id (pid).
      * This method is usually used to answer a request coming from another service that
      * has requested a connexion with us. We know this service from its pid inside its request message. We
-     * do not have a bipServiceProxy for it because we have not found this service to initiate the connexion.
+     * do not have a ServiceProxy for it because we have not found this service to initiate the connexion.
      * @param connectorName the name of the connector that will send the message
      * @param msg the message to send
      * @param pid peer id : the identification of the client that must receive the message
@@ -102,7 +103,7 @@ public interface Service {
      * Sends a message to a particular client. This client is identified by its Peer id (pid).
      * This method is usually used to answer a request coming from another service that
      * has requested a connexion with us. We know this service from its pid inside its request message. We
-     * do not have a bipServiceProxy for it because we have not found this service to initiate the connexion.
+     * do not have a ServiceProxy for it because we have not found this service to initiate the connexion.
      * Defaults to reliable send.
      * @param connectorName the name of the connector that will send the message
      * @param msg the message to send
@@ -144,7 +145,6 @@ public interface Service {
      * @param connectorName the name of the connector sending the message
      * @param msg the message to send
      * @param unreliableButFastSend not implemented yet
-     * @throws UnknownBipService thrown if serviceId is not a declared service
      * @throws UnknownConnector thrown if the service has not declared this connector
      */
     public void sendToAllClients(String connectorName, byte[] msg, boolean unreliableButFastSend)
@@ -155,12 +155,57 @@ public interface Service {
      * Defaults to reliable send.
      * @param connectorName the name of the connector sending the message
      * @param msg the message to send
-     * @throws UnknownBipService thrown if serviceId is not a declared service
      * @throws UnknownConnector thrown if the service has not declared this connector
      */
     public void sendToAllClients(String connectorName, byte[] msg)
     throws UnknownConnector;
+
+    /**
+     * Sends a message back to the sender of a message just received.
+     * Allows to specify on which connector to send the answer.
+     * @param connectorName the name of the connector sending the message
+     * @param msg the message to send
+     * @param message the message to reply to
+     * @param unreliableButFastSend not implemented yet
+     * @throws UnknownConnector thrown if the service has not declared this connector
+     */
+    public void sendReplyToMessage(String connectorName, byte[] msg, Message message, boolean unreliableButFastSend)
+    throws UnknownConnector;
     
+    /**
+     * Sends a message to all the clients connected to the service.
+     * Allows to specify on which connector to send the answer.
+     * Defaults to reliable send.
+     * @param connectorName the name of the connector sending the message
+     * @param msg the message to send
+     * @param message the message to reply to
+     * @throws UnknownConnector thrown if the service has not declared this connector
+     */
+    public void sendReplyToMessage(String connectorName, byte[] msg, Message message)
+    throws UnknownConnector;
+
+    /**
+     * Sends a message back to the sender of a message just received.
+     * The message is sent on the connector on which the message to reply to
+     * was received.
+     * @param msg the message to send
+     * @param message the message to reply to
+     * @param unreliableButFastSend not implemented yet
+     * @throws UnknownConnector thrown if the service has not declared this connector
+     */
+    public void sendReplyToMessage(byte[] msg, Message message, boolean unreliableButFastSend);
+    
+    /**
+     * Sends a message to all the clients connected to the service.
+     * Defaults to reliable send.
+     * The message is sent on the connector on which the message to reply to
+     * was received.
+     * @param msg the message to send
+     * @param message the message to reply to
+     * @throws UnknownConnector thrown if the service has not declared this connector
+     */
+    public void sendReplyToMessage(byte[] msg, Message message);
+
     /**
      * Sets the value of a service variable
      * @param varName the variable name
@@ -182,7 +227,7 @@ public interface Service {
     throws UnknownVariable ;
     
     /**
-     * Creates a new Bip Variable
+     * Creates a new variable for this service.
      * @param varName the variable name
      * @param type the variable type (or null if no type is associated)
      * @param description the variable description

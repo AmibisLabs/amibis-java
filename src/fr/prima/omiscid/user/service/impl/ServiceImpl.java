@@ -26,6 +26,7 @@
 
 package fr.prima.omiscid.user.service.impl;
 
+import fr.prima.omiscid.user.exception.MessageInterpretationException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -59,6 +60,7 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.util.Utility;
 import fr.prima.omiscid.user.variable.LocalVariableListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
+import org.w3c.dom.Element;
 
 /**
  * @author Patrick Reignier (UJF/Gravir)
@@ -69,6 +71,41 @@ public class ServiceImpl implements Service {
     private static class VariableListenerBridge {
         public VariableChangeListener variableChangeListener ;
         public VariableChangeQueryListener variableChangeQueryListener ;
+    }
+    private static class MessageOnConnector implements Message {
+        private Message message;
+        private String connectorName;
+        MessageOnConnector(Message message, String connectorName) {
+            this.message = message;
+            this.connectorName = connectorName;
+        }
+        public String getBufferAsString() throws MessageInterpretationException {
+            return message.getBufferAsString();
+        }
+        public String getBufferAsStringUnchecked() {
+            return message.getBufferAsStringUnchecked();
+        }
+        public Element getBufferAsXML() throws MessageInterpretationException {
+            return message.getBufferAsXML();
+        }
+        public Element getBufferAsXMLUnchecked() {
+            return message.getBufferAsXMLUnchecked();
+        }
+        public byte[] getBuffer() {
+            return message.getBuffer();
+        }
+        public int getPeerId() {
+            return message.getPeerId();
+        }
+        public int getMessageId() {
+            return message.getMessageId();
+        }
+    }
+    private static Message wrap(Message message, String connectorName) {
+        return new MessageOnConnector(message, connectorName);
+    }
+    private static String connector(Message message) {
+        return ((MessageOnConnector)message).connectorName;
     }
     
     private Object lock = new Object() ;
@@ -150,7 +187,7 @@ public class ServiceImpl implements Service {
             }
             
             public void receivedBipMessage(Message message) {
-                msgListener.messageReceived(ServiceImpl.this, connectorName, message) ;
+                msgListener.messageReceived(ServiceImpl.this, connectorName, wrap(message, connectorName)) ;
             }
         };
         
@@ -267,6 +304,25 @@ public class ServiceImpl implements Service {
     public void sendToOneClient(String connectorName, byte[] msg, int pid) throws UnknownConnector {
         sendToOneClient(connectorName, msg, pid, false);
     }
+    
+    public void sendReplyToMessage(String connectorName, byte[] msg, Message message, boolean unreliableButFastSend) throws UnknownConnector {
+        sendToOneClient(connectorName, msg, message.getPeerId(), unreliableButFastSend);
+    }
+
+    public void sendReplyToMessage(String connectorName, byte[] msg, Message message) throws UnknownConnector {
+        sendToOneClient(connectorName, msg, message.getPeerId());
+    }
+
+    public void sendReplyToMessage(byte[] msg, Message message, boolean unreliableButFastSend) {
+        String connectorName = connector(message);
+        sendReplyToMessage(connectorName, msg, message, unreliableButFastSend);
+    }
+
+    public void sendReplyToMessage(byte[] msg, Message message) {
+        String connectorName = connector(message);
+        sendReplyToMessage(connectorName, msg, message);
+    }
+
     /**
      * Finds a tcpServer from the service reference and the connector name
      * @param connectorName the connector name
