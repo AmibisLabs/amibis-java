@@ -43,72 +43,72 @@ import fr.prima.omiscid.user.service.ServiceRepository;
  *
  */
 public class ServiceFactoryImpl implements ServiceFactory {
-	
-	/** default class name of a service if no class name is specified on the service creation 
-	 * @see #create(String)
-	 * */
-	public static final String DEFAULTCLASS = "Service";
-
-	/* (non-Javadoc)
-	 * @see fr.prima.bip.service.ServiceFactory#create(java.lang.String)
-	 */
-	synchronized  public Service create(String serviceName) {
-		return create(serviceName, ServiceFactoryImpl.DEFAULTCLASS);
-	}
-
-	/* (non-Javadoc)
-	 * @see fr.prima.bip.service.ServiceFactory#createFromXml()
-	 */
-	synchronized  public Service createFromXML(InputStream stream) throws InvalidDescriptionException {
-		ControlServer ctrlServer;
-		try {
-			ctrlServer = (ControlServer) new ServiceFromXml(stream);
-		} catch (Exception e) {
-			e.printStackTrace() ;
-		  throw new InvalidDescriptionException("Invalid XML service description file");
-		}
-		
-		Service service = new ServiceImpl(ctrlServer) ;
-		
-		return service ;
-	}
-	
-	/* (non-Javadoc)
-	 * @see fr.prima.omiscid.service.ServiceFactory#create(java.lang.String, java.lang.String)
-	 */
-	public Service create(String serviceName, String className) {
-		ControlServer ctrlServer = new ControlServer(serviceName) ;
-		Service service = new ServiceImpl(ctrlServer) ;
-		
-		VariableAttribute classVar = ctrlServer.findVariable(GlobalConstants.constantNameForClass);
-		classVar.setValueStr(className);
-		
-		return service ;
-	}
+    
+    /** default class name of a service if no class name is specified on the service creation
+     * @see #create(String)
+     * */
+    public static final String DEFAULTCLASS = "Service";
+    
+        /* (non-Javadoc)
+         * @see fr.prima.bip.service.ServiceFactory#create(java.lang.String)
+         */
+    synchronized  public Service create(String serviceName) {
+        return create(serviceName, ServiceFactoryImpl.DEFAULTCLASS);
+    }
+    
+        /* (non-Javadoc)
+         * @see fr.prima.bip.service.ServiceFactory#createFromXml()
+         */
+    synchronized  public Service createFromXML(InputStream stream) throws InvalidDescriptionException {
+        ControlServer ctrlServer;
+        try {
+            ctrlServer = (ControlServer) new ServiceFromXml(stream);
+        } catch (Exception e) {
+            e.printStackTrace() ;
+            throw new InvalidDescriptionException("Invalid XML service description file");
+        }
+        
+        Service service = new ServiceImpl(ctrlServer) ;
+        
+        return service ;
+    }
+    
+        /* (non-Javadoc)
+         * @see fr.prima.omiscid.service.ServiceFactory#create(java.lang.String, java.lang.String)
+         */
+    public Service create(String serviceName, String className) {
+        ControlServer ctrlServer = new ControlServer(serviceName) ;
+        Service service = new ServiceImpl(ctrlServer) ;
+        
+        VariableAttribute classVar = ctrlServer.findVariable(GlobalConstants.constantNameForClass);
+        classVar.setValueStr(className);
+        
+        return service ;
+    }
     
     public ServiceRepository createServiceRepositoy(Service service) {
         return new ServiceRepositoryImpl((ServiceImpl)service);
     }
-
+    
     public ServiceRepository createServiceRepositoy() {
         // Creates a new service with a dummy name
         // Logically the service name isn't used anywhere and should be indifferent
         return createServiceRepositoy(create("ServiceRepository"));
     }
     
-	/**
-	 * @param bipComponent
-	 */
-	public void addMainClass(MainClass bipComponent) {
-	    System.err.println("Debug : Omiscid arriving");
-	}
-
-	/**
-	 * @param bipComponent
-	 */
-	public void removeMainClass(MainClass bipComponent) {
-	    System.err.println("Debug : Omiscid  leaving");
-	}
-
+    /**
+     * @param bipComponent
+     */
+    public void addMainClass(MainClass bipComponent) {
+        System.err.println("Debug : Omiscid arriving");
+    }
+    
+    /**
+     * @param bipComponent
+     */
+    public void removeMainClass(MainClass bipComponent) {
+        System.err.println("Debug : Omiscid  leaving");
+    }
+    
     
 }
