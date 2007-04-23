@@ -31,8 +31,7 @@ package fr.prima.omiscid.user.exception;
  *
  */
 public class UnknownVariable extends RuntimeException {
-	public UnknownVariable(String message)
-	{
-		super(message) ;
-	}
+    public UnknownVariable(String message) {
+        super(message) ;
+    }
 }

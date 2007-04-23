@@ -32,12 +32,12 @@ package fr.prima.omiscid.user.exception;
  * Incorrect XML service specification. The xml file is not compliant to the XML schema
  */
 public class InvalidDescriptionException extends Exception {
-
-
-	/**
-	 * @param message
-	 */
-	public InvalidDescriptionException(String message) {
-		super(message);
-	}
+    
+    
+    /**
+     * @param message
+     */
+    public InvalidDescriptionException(String message) {
+        super(message);
+    }
 }

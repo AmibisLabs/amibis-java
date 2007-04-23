@@ -31,8 +31,7 @@ package fr.prima.omiscid.user.exception;
  *
  */
 public class IncorrectConnectorType extends RuntimeException {
-	public IncorrectConnectorType(String message)
-	{
-		super(message) ;
-	}
+    public IncorrectConnectorType(String message) {
+        super(message) ;
+    }
 }

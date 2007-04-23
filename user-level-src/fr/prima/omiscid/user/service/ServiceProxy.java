@@ -45,37 +45,37 @@ import fr.prima.omiscid.user.variable.VariableAccessType;
  * @see ServiceProxy#updateDescription()
  */
 public interface ServiceProxy {
-
-	/**
-	 * Returns the service name (as it appears in DNS-SD)
-	 * @return the service name
-	 */
-	public String getName() ;
-
-   /**
-	 * Returns the list of variables
-	 * @return the list of variables
-	 */
-	public Set<String> getVariables() ;
-
-	/**
-	 * Returns the list of connectors (input type)
-	 * @return the list of connectors
-	 */
-	public Set<String> getInputConnectors() ;
-
+    
+    /**
+     * Returns the service name (as it appears in DNS-SD)
+     * @return the service name
+     */
+    public String getName() ;
+    
+    /**
+     * Returns the list of variables
+     * @return the list of variables
+     */
+    public Set<String> getVariables() ;
+    
+    /**
+     * Returns the list of connectors (input type)
+     * @return the list of connectors
+     */
+    public Set<String> getInputConnectors() ;
+    
     /**
      * Returns the list of connectors (output type)
      * @return the list of connectors
      */
     public Set<String> getOutputConnectors() ;
-
+    
     /**
      * Returns the list of connectors (input-output type)
      * @return the list of connectors
      */
     public Set<String> getInputOutputConnectors() ;
-
+    
     /**
      * Updates the local view of a remote bip service :
      * <ul>
@@ -84,19 +84,19 @@ public interface ServiceProxy {
      * </ul>
      */
     public void updateDescription() ;
-
+    
     /**
      * Host name where the remote service is located
      * @return the host name
      */
     public String getHostName() ;
-
+    
     /**
      * The Peer Id of the remote bip service
      * @return the peer id
      */
     public int getPeerId() ;
-
+    
     /**
      * Sets the new value of a remote variable
      * @param varName the name of the remote variable
@@ -104,7 +104,7 @@ public interface ServiceProxy {
      */
     public void setVariableValue(String varName, String value)
     throws UnknownVariable;
-
+    
     /**
      * Gets the value of a remote variable
      * @param varName
@@ -112,7 +112,7 @@ public interface ServiceProxy {
      */
     public String getVariableValue(String varName)
     throws UnknownVariable;
-
+    
     /**
      * Gets the access type of a remote variable
      * @param varName
@@ -120,7 +120,7 @@ public interface ServiceProxy {
      */
     public VariableAccessType getVariableAccessType(String varName)
     throws UnknownVariable;
-
+    
     /**
      * Registers a listener that will be triggered when the remote variable value will change
      * @param varName the remote variable that must be monitored
@@ -131,7 +131,7 @@ public interface ServiceProxy {
      */
     public void addRemoteVariableChangeListener(String varName, final  RemoteVariableChangeListener remoteVariableChangeListener)
     throws UnknownVariable;
-
+    
     /**
      * Unregisters a listener on a remote variable value change
      * @param varName the name of the variable
@@ -141,9 +141,9 @@ public interface ServiceProxy {
      * @see RemoteVariableChangeListener
      */
     public void removeRemoteVariableChangeListener(String varName,
-    																							   RemoteVariableChangeListener remoteVariableChangeListener)
-    throws UnknownVariable;
-
+            RemoteVariableChangeListener remoteVariableChangeListener)
+            throws UnknownVariable;
+    
     /**
      * Extract the connector name of a remote service from its peerId. This peerId can be obtained from a message
      * sent by the remote service.

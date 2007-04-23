@@ -31,8 +31,7 @@ package fr.prima.omiscid.user.exception;
  *
  */
 public class WrongVariableAccessType extends RuntimeException {
-	public WrongVariableAccessType(String message)
-	{
-		super(message);
-	}
+    public WrongVariableAccessType(String message) {
+        super(message);
+    }
 }

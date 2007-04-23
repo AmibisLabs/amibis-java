@@ -34,7 +34,7 @@ import fr.prima.omiscid.user.service.ServiceProxy;
  * Jul 6, 2006
  */
 public interface ConnectorListener {
-	  /**
+    /**
      * Processes a received BIP message. As a given message could be processed
      * by several others listeners, the message must not be modified by its
      * processing.
@@ -44,7 +44,7 @@ public interface ConnectorListener {
      *            the BIP message to process
      */
     public void messageReceived(Service service, String localConnectorName , Message message);
-
+    
     /**
      * Called when the connexion between the local service and the remote
      * service is broken.
@@ -53,7 +53,7 @@ public interface ConnectorListener {
      * @param peerId the disconnected remote service
      */
     public void disconnected(Service service, String localConnectorName, int peerId);
-
+    
     /**
      * Called when a remote service connects to the local connector.
      * The peerId is a unique pair (service + remote connector). The
@@ -65,5 +65,5 @@ public interface ConnectorListener {
      * @see ServiceProxy#findConnector(int)
      */
     public void connected(Service service, String localConnectorName, int peerId);
-
+    
 }

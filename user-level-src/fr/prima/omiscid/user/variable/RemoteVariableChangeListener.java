@@ -33,8 +33,8 @@ import fr.prima.omiscid.user.service.ServiceProxy;
  *
  */
 public interface RemoteVariableChangeListener {
-
-	/**
+    
+    /**
      * This method is called when the value of a variable
      * changes
      *

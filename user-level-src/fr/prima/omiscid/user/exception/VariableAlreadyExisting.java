@@ -31,8 +31,7 @@ package fr.prima.omiscid.user.exception;
  *
  */
 public class VariableAlreadyExisting extends RuntimeException {
-	public VariableAlreadyExisting(String message)
-	{
-		super(message) ;
-	}
+    public VariableAlreadyExisting(String message) {
+        super(message) ;
+    }
 }

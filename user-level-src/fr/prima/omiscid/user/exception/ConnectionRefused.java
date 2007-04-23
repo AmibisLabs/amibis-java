@@ -31,8 +31,7 @@ package fr.prima.omiscid.user.exception;
  *
  */
 public class ConnectionRefused extends RuntimeException {
-	public ConnectionRefused(Exception e)
-	{
-		super(e) ;
-	}
+    public ConnectionRefused(Exception e) {
+        super(e) ;
+    }
 }

@@ -31,8 +31,7 @@ package fr.prima.omiscid.user.exception;
  *
  */
 public class ServiceRunning extends RuntimeException {
-	public ServiceRunning(String message)
-	{
-		super(message);
-	}
+    public ServiceRunning(String message) {
+        super(message);
+    }
 }

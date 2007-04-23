@@ -31,8 +31,7 @@ package fr.prima.omiscid.user.exception;
  *
  */
 public class UnknownConnector extends RuntimeException {
-	public UnknownConnector(String message)
-	{
-		super(message) ;
-	}
+    public UnknownConnector(String message) {
+        super(message) ;
+    }
 }
