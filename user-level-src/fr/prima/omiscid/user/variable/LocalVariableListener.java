@@ -35,19 +35,22 @@ import fr.prima.omiscid.user.service.Service;
  */
 public interface LocalVariableListener {
 
-	/**
+    /**
      * This method is called when the value of a variable
      * changes
      *
      * @param service the service owning the variable
      * @param name the variable name
-     *  @param value the new variable value
+     * @param value the new variable value
      */
     public void variableChanged(Service service, String name, String value);
     
     /**
-     * This method is called when a new value is request on a variable. This method must
-     * check that this new value is a valid value.
+     * This method is called when a new value is requested on a variable.
+     * This method must check that this new value is a valid value.
+     * A listener throwing an exception in the #isValid call will be considered
+     * as agreeing the change/returning true.
+     *
      * @param service the service owning the variable
      * @param currentValue the current value of the variable
      * @param newValue the new requested value
