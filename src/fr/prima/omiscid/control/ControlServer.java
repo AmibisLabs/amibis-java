@@ -67,7 +67,7 @@ import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
 import fr.prima.omiscid.user.connector.ConnectorType;
 import fr.prima.omiscid.user.connector.Message;
-import fr.prima.omiscid.user.util.Constants;
+import fr.prima.omiscid.user.util.impl.Constants;
 import fr.prima.omiscid.user.util.Utility;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
@@ -250,9 +250,9 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             if (registerTheService(tcpServer.getTcpPort())) {
                 tcpServer.setPeerId(getPeerId());
                 for (InOutputAttribute io : inoutputsSet) {
-                    int connectorIndex = Utility.connectorIndexFromPeerId(io.getPeerId());
-                    io.setPeerId(Utility.connectorPeerIdFromIndex(getPeerId(), connectorIndex));
-                    assert Utility.rootPeerIdFromConnectorPeerId(io.getPeerId()) == peerId;
+                    int connectorIndex = Utility.PeerId.connectorIndexFromPeerId(io.getPeerId());
+                    io.setPeerId(Utility.PeerId.connectorPeerIdFromIndex(getPeerId(), connectorIndex));
+                    assert Utility.PeerId.rootPeerIdFromConnectorPeerId(io.getPeerId()) == peerId;
                 };
                 tcpServer.addBipMessageListener(this);
                 tcpServer.start();

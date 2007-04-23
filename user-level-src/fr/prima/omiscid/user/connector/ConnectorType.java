@@ -26,7 +26,7 @@
 
 package fr.prima.omiscid.user.connector;
 
-import fr.prima.omiscid.user.util.Constants;
+import fr.prima.omiscid.user.util.impl.Constants;
 
 /**
  * Enumeration of kind of input/output

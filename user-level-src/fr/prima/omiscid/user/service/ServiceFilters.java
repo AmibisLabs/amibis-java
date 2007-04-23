@@ -98,7 +98,7 @@ public final class ServiceFilters {
         private int peerId;
 
         public PeerId(int peerId) {
-            this.peerId = Utility.rootPeerIdFromConnectorPeerId(peerId);
+            this.peerId = Utility.PeerId.rootPeerIdFromConnectorPeerId(peerId);
         }
 
         public boolean acceptService(ServiceProxy s) {

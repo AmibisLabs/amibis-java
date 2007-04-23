@@ -51,22 +51,24 @@ public final class Utility {
 
     private static final String encoding = "utf-8";
 
-    public static int rootPeerIdFromConnectorPeerId(int peerId) {
-        return peerId & 0xFFFFFF00;
-    }
-    public static int connectorIndexFromPeerId(int connectorPeerId) {
-        return connectorPeerId & 0xFF;
-    }
-    
-    public static int connectorPeerIdFromIndex(int rootPeerId, int connectorIndex) {
-        if (rootPeerId != rootPeerIdFromConnectorPeerId(rootPeerId)) {
-            throw new RuntimeException("OMiSCID Internal Problem with connector peerId attribution (step1)");
+    public static class PeerId {
+        public static int rootPeerIdFromConnectorPeerId(int peerId) {
+            return peerId & 0xFFFFFF00;
         }
-        int res = rootPeerId | connectorIndex;
-        if (connectorIndex != connectorIndexFromPeerId(res)) {
-            throw new RuntimeException("OMiSCID Internal Problem with connector peerId attribution (step2)");
+        public static int connectorIndexFromPeerId(int connectorPeerId) {
+            return connectorPeerId & 0xFF;
         }
-        return res;
+        
+        public static int connectorPeerIdFromIndex(int rootPeerId, int connectorIndex) {
+            if (rootPeerId != rootPeerIdFromConnectorPeerId(rootPeerId)) {
+                throw new RuntimeException("OMiSCID Internal Problem with connector peerId attribution (step1)");
+            }
+            int res = rootPeerId | connectorIndex;
+            if (connectorIndex != connectorIndexFromPeerId(res)) {
+                throw new RuntimeException("OMiSCID Internal Problem with connector peerId attribution (step2)");
+            }
+            return res;
+        }
     }
 
 
@@ -121,6 +123,18 @@ public final class Utility {
         }
         // System.out.println("str:["+str+"] ("+cstr[0]+"):"+res);
         return res;
+    }
+
+     /**
+     * Builds a byte array from the given string using the default OMiSCID encoding for string messages.
+      *
+     * @param message
+     *            the string message to encode as a byte array
+     * @return the encoded byte array or null if the encoding couldn't be
+     *         found (or if message is null)
+     */
+    public static byte[] message(String message) {
+        return stringToByteArray(message);
     }
 
     /**

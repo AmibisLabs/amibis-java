@@ -30,6 +30,7 @@ unnecessary marshalling avoided
         impr: allows dnssd browser sharing to improve performance of applications using multiple browsers
         impr: cleaner affectation of peer id for searchs and connections before .start()
         impr: in order to handle mDNSResponder vs avahi daemons conflict happening on some configurations, the possible trailing "-2" on the hostname is removed when needed
+        impr: Utility class will now be accessible from OSGi and now contains a shortcut Utility.message(String) to Utility.stringToByteArray()
 
 1.0.3
 r1700

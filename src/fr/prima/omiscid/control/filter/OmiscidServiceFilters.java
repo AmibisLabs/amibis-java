@@ -90,7 +90,7 @@ public final class OmiscidServiceFilters {
         private int peerId;
 
         public PeerId(int peerId) {
-            this.peerId = Utility.rootPeerIdFromConnectorPeerId(peerId);
+            this.peerId = Utility.PeerId.rootPeerIdFromConnectorPeerId(peerId);
         }
 
         public boolean isAGoodService(OmiscidService s) {

@@ -26,7 +26,7 @@
 
 package fr.prima.omiscid.user.variable;
 
-import fr.prima.omiscid.user.util.Constants;
+import fr.prima.omiscid.user.util.impl.Constants;
 
 public enum VariableAccessType {
     CONSTANT(
