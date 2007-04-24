@@ -161,7 +161,7 @@ public interface Service {
     throws UnknownConnector;
 
     /**
-     * Sends a message back to the sender of a message just received.
+     * 
      * Allows to specify on which connector to send the answer.
      * @param connectorName the name of the connector sending the message
      * @param msg the message to send
@@ -173,7 +173,7 @@ public interface Service {
     throws UnknownConnector;
     
     /**
-     * Sends a message to all the clients connected to the service.
+     * Sends a message back to the sender of a message just received.
      * Allows to specify on which connector to send the answer.
      * Defaults to reliable send.
      * @param connectorName the name of the connector sending the message
@@ -196,7 +196,7 @@ public interface Service {
     public void sendReplyToMessage(byte[] msg, Message message, boolean unreliableButFastSend);
     
     /**
-     * Sends a message to all the clients connected to the service.
+     * Sends a message back to the sender of a message just received.
      * Defaults to reliable send.
      * The message is sent on the connector on which the message to reply to
      * was received.
