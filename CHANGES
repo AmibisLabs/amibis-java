@@ -4,26 +4,17 @@
 
 In this files, you will find changes between java OMiSCID versions.
 
-*must: solve the castor proliferation problem
-*should: do not query full description before needed
-*should: review, optimize and make safer the queries present under ServiceProxy (e.g. 2 queries are done to get a service global description)
-*could: add an heuristic on whether avahi registration will be accepted based on the size of the properties
-*could: dnssd client auto connect/reconnect
-*could: dnssd client has a list of expected servers
-
 1.1.0
-r
-API MINOR CHANGE!!!! added a ConnectionRefused exception on connectTo
-API ADDITION!!!! added ServiceRepository
-API ADDITION!!!! added Service#sendReplyToMessage methods
-revisited synchronization procedure in ServiceProxyImpl cache (better handling of updateDescription problem)
-minor (unperceptible/mostly code cleaning) performance improvement in ServiceImpl.findService
+r2441
         fix:  default "class" variable value is now "Service" as intended
         fix:  getting a remote variable now properly ask the remote service (wrong caching policy)
         fix:  service xml description now uses proper castor version
         fix:  added a try catch around listener callbacks (was trusting listeners) (connector and variable listeners)
         fix:  listener added before connectTo are now properly listening
         fix:  connectors peer id where wrongly generated in some cases
+        impr: (API) minor change adding a ConnectionRefused exception on Service#connectTo
+        impr: (API) added ServiceRepository class
+        impr: (API) added Service#sendReplyToMessage methods
         impr: sensible performance improvement on high bandwidth message receptions
         impr: performance improvement on Service initialisation
         impr: have different options to access dnssd (mdnsResponder, avahi, jmdns, custom proxy for lightweight devices)

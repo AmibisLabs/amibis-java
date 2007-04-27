@@ -24,7 +24,8 @@ dist: prepare
 	scp licences $(patsubst %,lib/%,$(release-jars)) $(patsubst %,lib/%,$(release-libs)) ,,rel/
 	scp licences $(patsubst %,lib/%,$(release-jars)) $(patsubst %,lib/%,$(release-libs)) $(release-diston)/$(release-version)/
 # builds the tgz version and replicates it remotely
-	cd ,,rel/ && tar cvfz ../$(release-all-tgz) *
+	mv ,,rel/ omiscid && tar cvfz $(release-all-tgz) omiscid/ && mv omiscid/ ,,rel
+#	cd ,,rel/ && tar cvfz ../$(release-all-tgz) *
 	scp $(release-all-tgz) $(release-diston)/
 
 # builds the bundle tgz
