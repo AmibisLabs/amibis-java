@@ -42,6 +42,7 @@ public class I0012_TestSimpleServiceXMLDescription {
                 "       <description>Stream of points (sinus fonction)</description>\n" + 
                 "   </output>\n" + 
                 "   <inoutput name=\"f\"></inoutput>\n" + 
+                "   <input name=\"fin\"></input>\n" + 
                 "   <variable name=\"w\">\n" + 
                 "       <access>readWrite</access>\n" + 
                 "   </variable>\n" + 
