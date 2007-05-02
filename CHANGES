@@ -4,6 +4,10 @@
 
 In this files, you will find changes between java OMiSCID versions.
 
+1.1.1
+r
+        fix:  problem with avahi and big txt records (services with many variables (~100))
+
 1.1.0
 r2441
         fix:  default "class" variable value is now "Service" as intended

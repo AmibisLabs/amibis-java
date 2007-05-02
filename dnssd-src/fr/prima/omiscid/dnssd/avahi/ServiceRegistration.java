@@ -44,7 +44,7 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
     private String hostName;
 
     private Hashtable<String, byte[]> properties = new Hashtable<String, byte[]>();
-    
+    private int estimatedPropertiesSize = 50; // maximum estimated size of the avahi cookie
 
     private int port;
 
@@ -56,7 +56,21 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
 
     public void addProperty(String name, String value) {
         try {
-            properties.put(name, value.getBytes("utf-8"));
+            byte[] prop = value.getBytes("utf-8");
+            byte[] old = properties.put(name, value.getBytes("utf-8"));
+            estimatedPropertiesSize += prop.length;
+            if (old != null) {
+                estimatedPropertiesSize -= old.length;
+            } else {
+                estimatedPropertiesSize += name.length() + 2; // [size]name=... (one byte for size, one for '=')
+            }
+            if (estimatedPropertiesSize > 1024) {
+                // It seems that avahi can support more but not much
+                properties.remove(name);
+                estimatedPropertiesSize -= name.length() + 2;
+                estimatedPropertiesSize -= prop.length;
+                throw new RuntimeException("Maximum overall properties size reached in dnssd access implementation using avahi");
+            }
         } catch (UnsupportedEncodingException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
