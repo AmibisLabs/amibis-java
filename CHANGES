@@ -6,7 +6,8 @@ In this files, you will find changes between java OMiSCID versions.
 
 1.1.1
 r
-        fix:  problem with avahi and big txt records (services with many variables (~100))
+        fix:  problem with avahi and big txt records (services with many variables)
+        fix:  problem with jmdns and big txt records (services with many variables)
 
 1.1.0
 r2441

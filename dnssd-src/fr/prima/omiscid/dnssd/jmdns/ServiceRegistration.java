@@ -43,6 +43,7 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
     private String registeredName;
 
     private final Hashtable<String, String> properties = new Hashtable<String, String>();
+    private int estimatedPropertiesSize = 0;
 
     private boolean registered;
 
@@ -55,7 +56,20 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
     }
 
     public void addProperty(String name, String value) {
-        properties.put(name, value);
+        String old = properties.put(name, value);
+        estimatedPropertiesSize += value.length();
+        if (old != null) {
+            estimatedPropertiesSize -= old.length();
+        } else {
+            estimatedPropertiesSize += name.length() + 2; // [size]name=... (one byte for size, one for '=')
+        }
+        if (estimatedPropertiesSize > 1024) {
+            // It seems that jmdns can support more but not much
+            properties.remove(name);
+            estimatedPropertiesSize -= name.length() + 2;
+            estimatedPropertiesSize -= value.length();
+            throw new RuntimeException("Maximum overall properties size reached in dnssd access implementation using jmdns");
+        }
     }
 
     public boolean register(int port) {

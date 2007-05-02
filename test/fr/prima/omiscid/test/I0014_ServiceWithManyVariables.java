@@ -57,18 +57,27 @@ import fr.prima.omiscid.user.variable.VariableAccessType;
  *  -- ~= 1388
  *  - fixed by ensuring a maximum size for properties in avahi dnssd implementation
  *  -- taken some safety margin on size
- *  -- now works correctly with full service description until 113 variables (was 162)
+ *  -- now works correctly with full service description until 113 variables (was 161)
+ *  -- with partial service description after (was crashing)
+ * 
+ * Failure with jmdns:
+ *  - 160: visible after declaration
+ *  - 161: java.io.IOException: buffer full during declaration on a jmdns thread
+ *  - about the same size ... use a similar solution
+ *  -- now works correctly with full service description until 119 variables (was 160)
  *  -- with partial service description after (was crashing)
  */
 public class I0014_ServiceWithManyVariables {
     
-    private static int customVariableCount = 113;
+    private static int customVariableCount = 1000;
+    private static String[] chars = new String[]{"V","v","a","b","c","d","e","f","g","h"}; // ten digits (at ten-thousands level)
+    
     public static void main(String[] args) throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0014Server");
             for (int i = 0; i < customVariableCount; i++) {
-                server.addVariable("V"+(i%10000 / 1000)+(i%1000 / 100)+(i%100 / 10)+(i%10), "void", "non", VariableAccessType.READ_WRITE);
+                server.addVariable(chars[i/10000]+(i%10000 / 1000)+(i%1000 / 100)+(i%100 / 10)+(i%10), "void", "non", VariableAccessType.READ_WRITE);
             }
             server.start();
         }{
@@ -77,7 +86,7 @@ public class I0014_ServiceWithManyVariables {
                 public void serviceAdded(ServiceProxy serviceProxy) {
                     if (serviceProxy.getName().equals("I0014Server") && serviceProxy.getVariables().size() > customVariableCount) {
                         FactoryFactory.passed("service with many variables (more than "+customVariableCount+") was found");
-                        //System.exit(0);
+                        System.exit(0);
                     }
                 }
                 public void serviceRemoved(ServiceProxy serviceProxy) {
