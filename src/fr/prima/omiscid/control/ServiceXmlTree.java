@@ -267,7 +267,8 @@ public class ServiceXmlTree implements ServiceEventListener {
 
     protected Element elementFromService(OmiscidService s) {
         Element elt = null;
-
+        throw new RuntimeException("Not implemented any more");
+        /*
         ControlClient ctrlClient = s.initControlClient();
         if (ctrlClient != null) {
             if (ctrlClient.queryGlobalDescription() || ctrlClient.queryGlobalDescription()) {
@@ -311,6 +312,7 @@ public class ServiceXmlTree implements ServiceEventListener {
             s.closeControlClient();
         }
         return elt;
+         */
     }
 
     private void addElementFromIOSet(Element elt, java.util.Set<InOutputAttribute> set, ConnectorType kind) {
