@@ -28,7 +28,7 @@ package fr.prima.omiscid.control;
 
 import java.util.EventListener;
 
-import fr.prima.omiscid.com.XmlMessage;
+import fr.prima.omiscid.user.connector.Message;
 
 /**
  * Listener for control events. Interface to implement to receive control
@@ -46,5 +46,5 @@ public interface ControlEventListener extends EventListener {
      *            an BIP message converted in an XML tree containing the control
      *            event
      */
-    public void receivedControlEvent(XmlMessage xmlMessage);
+    public void receivedControlEvent(Message message);
 }
