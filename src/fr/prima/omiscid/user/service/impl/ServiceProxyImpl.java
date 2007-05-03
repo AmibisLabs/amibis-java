@@ -104,17 +104,17 @@ public class ServiceProxyImpl implements ServiceProxy {
         }
     }
     
-        /* (non-Javadoc)
-         * @see fr.prima.bip.service.BipServiceProxy#getVariables()
-         */
+    /* (non-Javadoc)
+     * @see fr.prima.bip.service.BipServiceProxy#getVariables()
+     */
     synchronized  public Set<String> getVariables() {
         return omiscidService.getVariableNamesSet() ;
         
     }
     
-        /* (non-Javadoc)
-         * @see fr.prima.bip.service.BipServiceProxy#getInputConnectors()
-         */
+    /* (non-Javadoc)
+     * @see fr.prima.bip.service.BipServiceProxy#getInputConnectors()
+     */
     synchronized  public Set<String> getInputConnectors() {
         return omiscidService.getInputNamesSet();
     }
@@ -150,25 +150,23 @@ public class ServiceProxyImpl implements ServiceProxy {
      * @see fr.prima.bip.service.BipServiceProxy#getHostName()
      */
     synchronized  public String getHostName() {
-        // TODO Auto-generated method stub
         return omiscidService.getHostName();
     }
-    
-        /* (non-Javadoc)
-         * @see fr.prima.bip.service.BipServiceProxy#getPeerId()
-         */
+
+    /* (non-Javadoc)
+     * @see fr.prima.bip.service.BipServiceProxy#getPeerId()
+     */
     synchronized  public int getPeerId() {
-        // TODO Auto-generated method stub
         return omiscidService.getRemotePeerId();
     }
-    
+
     synchronized  public String toString() {
         return omiscidService.toString() + " " + getInputOutputConnectors() ;
     }
-    
-        /* (non-Javadoc)
-         * @see fr.prima.bip.service.BipServiceProxy#setVariableValue(java.lang.String, java.lang.String)
-         */
+
+    /* (non-Javadoc)
+     * @see fr.prima.bip.service.BipServiceProxy#setVariableValue(java.lang.String, java.lang.String)
+     */
     synchronized  public void setVariableValue(String varName, String value) throws UnknownVariable {
         getVariable(varName); // This checks for the variable existence
         omiscidService.queryVariableModification(varName, value) ;
@@ -189,11 +187,11 @@ public class ServiceProxyImpl implements ServiceProxy {
         return getVariable(varName).getAccess();
     }
     
-        /* (non-Javadoc)
-         * @see fr.prima.omiscid.service.ServiceProxy#addRemoteVariableChangeListener(String, fr.prima.omiscid.variable.RemoteVariableChangeListener)
-         */
+    /* (non-Javadoc)
+     * @see fr.prima.omiscid.service.ServiceProxy#addRemoteVariableChangeListener(String, fr.prima.omiscid.variable.RemoteVariableChangeListener)
+     */
     synchronized  public void addRemoteVariableChangeListener(String varName, final RemoteVariableChangeListener remoteVariableChangeListener)
-    throws UnknownVariable {
+            throws UnknownVariable {
         getVariable(varName); // This checks for the variable existence
         
         HashMap<RemoteVariableChangeListener, VariableChangeListener> listeners =
@@ -204,7 +202,7 @@ public class ServiceProxyImpl implements ServiceProxy {
             listeners = new HashMap< RemoteVariableChangeListener, VariableChangeListener>();
             remoteVariableListeners.put(varName, listeners);
         }
-        
+
         VariableChangeListener variableChangeListener = new VariableChangeListener() {
             public void variableChanged(VariableAttribute var) {
                 remoteVariableChangeListener.variableChanged(ServiceProxyImpl.this, var.getValueStr());
@@ -213,18 +211,18 @@ public class ServiceProxyImpl implements ServiceProxy {
         listeners.put(remoteVariableChangeListener, variableChangeListener);
         omiscidService.subscribe(varName, variableChangeListener);
     }
-    
-        /* (non-Javadoc)
-         * @see fr.prima.omiscid.service.ServiceProxy#removeRemoteVariableChangeListener(String, fr.prima.omiscid.variable.RemoteVariableChangeListener)
-         */
+
+    /* (non-Javadoc)
+     * @see fr.prima.omiscid.service.ServiceProxy#removeRemoteVariableChangeListener(String, fr.prima.omiscid.variable.RemoteVariableChangeListener)
+     */
     synchronized  public void removeRemoteVariableChangeListener(String varName,
             RemoteVariableChangeListener remoteVariableChangeListener)
             throws UnknownVariable {
         getVariable(varName); // This checks for the variable existence
-        
+
         HashMap<RemoteVariableChangeListener, VariableChangeListener> listeners =
                 remoteVariableListeners.get(varName);
-        
+
         if (listeners != null) {
             VariableChangeListener varListener = listeners.get(remoteVariableChangeListener);
             omiscidService.unsubscribe(varName, varListener);
