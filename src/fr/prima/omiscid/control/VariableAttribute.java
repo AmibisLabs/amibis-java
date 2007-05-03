@@ -94,6 +94,12 @@ public class VariableAttribute extends Attribute {
     public VariableAttribute(String name) {
         super(name);
     }
+    
+    public VariableAttribute(String name, VariableAccessType variableAccessType, String value) {
+        super(name);
+        this.accessKind = variableAccessType;
+        this.valueStr = value;
+    }
 
     public VariableAttribute(Variable variable) {
         super(variable.getName());
@@ -349,37 +355,6 @@ public class VariableAttribute extends Attribute {
         return Collections.unmodifiableSet(peerInterestedIn);
     }
 
-//    /**
-//     * Generates a short description of the variable. The description has an XML
-//     * format, and contains only the name of the variable. It is used in control
-//     * server to generate a short global description of the service.
-//     *
-//     * @return &lt;variable name=&quot;variable_name&quot;/&gt;
-//     */
-//    public String generateShortDescription() {
-//        return generateHeaderDescription("variable", true);
-//    }
-//
-//    /**
-//     * Generates a long description of the variable. The description has an XML
-//     * format, and contains all the information available about the variable. It
-//     * is used by the control server to answer to query about variable
-//     *
-//     * @return the XML description of the variable
-//     * @see ControlServer
-//     */
-//    public String generateLongDescription() {
-//        String str = generateHeaderDescription("variable", false);
-//        str += "<value>" + XmlUtils.generateCDataSection(getValueStr()) + "</value>";
-//        if (defaultValue != null && !defaultValue.equals(""))
-//            str += "<default>" + XmlUtils.generateCDataSection(defaultValue) + "</default>";
-//        str += "<access>" + getAccessString() + "</access>";
-//        str += "<type>" + getType() + "</type>";
-//        str += generateTagDescriptionToStr();
-//        str += "</variable>";
-//        return str;
-//    }
-
     /**
      * Generates a XML message containing the variable name and its value. The
      * message has the following form: <br>
@@ -407,43 +382,6 @@ public class VariableAttribute extends Attribute {
     }
 
     /**
-     * Extracts the information to initialize the field of the variable from a
-     * XML document.
-     *
-     * @param elt
-     *            the element of the XML description
-     */
-    public void extractInfoFromXML(Element elt) {
-//      XERCES
-//        String tmpValue = null;
-//        NodeList nodeList = elt.getChildNodes();
-//        for (int i = 0; i < nodeList.getLength(); i++) {
-//            Node current = nodeList.item(i);
-//            if (current.getNodeType() == Node.ELEMENT_NODE) {
-//                String currentName = current.getNodeName();
-//                if (currentName.equals("description")) {
-//                    setDescription(current.getTextContent());
-//                } else if (currentName.equals("formatDescription")) {
-//                    setFormatDescription(current.getTextContent());
-//                } else if (currentName.equals("value")) {
-//                    tmpValue = current.getTextContent();
-//                } else if (currentName.equals("default")) {
-//                    setDefaultValue(current.getTextContent());
-//                } else if (currentName.equals("type")) {
-//                    setType(current.getTextContent());
-//                } else if (currentName.equals("access")) {
-//                    setAccess(current.getTextContent());
-//                } else {
-//                    System.err.println("Warning: VariableAttribute#extractInfoFromXml: Unexpected Tag : " + currentName);
-//                }
-//            }
-//        }
-//        if (tmpValue != null) {
-//            setValueStr(tmpValue);
-//        }
-    }
-
-    /**
      * Defines the kind of access according to the string representation.
      */
     protected void setAccess(String accessStr) {
@@ -455,49 +393,5 @@ public class VariableAttribute extends Attribute {
             setAccessType(VariableAccessType.CONSTANT);
         }
     }
-
-    public Element createXmlElement(Document doc) {
-//      XERCES
-        Element eltVar = doc.createElement("variable");
-//        eltVar.setAttribute("name", getName());
-//
-//        Element elt = null;
-//        CDATASection cdata = null;
-//
-//        elt = doc.createElement("access");
-//        elt.setTextContent(getAccessString());
-//        eltVar.appendChild(elt);
-//
-//        elt = doc.createElement("value");
-//        cdata = doc.createCDATASection(getValueStr());
-//        elt.appendChild(cdata);
-//        eltVar.appendChild(elt);
-//
-//        if (defaultValue != null && !defaultValue.equals("")) {
-//            elt = doc.createElement("default");
-//            cdata = doc.createCDATASection(defaultValue);
-//            elt.appendChild(cdata);
-//            eltVar.appendChild(elt);
-//        }
-//
-//        elt = doc.createElement("type");
-//        elt.setTextContent(getType());
-//        eltVar.appendChild(elt);
-//
-//        if (getDescription() != null && !getDescription().equals("")) {
-//            elt = doc.createElement("description");
-//            cdata = doc.createCDATASection(getDescription());
-//            elt.appendChild(cdata);
-//            eltVar.appendChild(elt);
-//        }
-//        if (getFormatDescription() != null && !getFormatDescription().equals("")) {
-//            elt = doc.createElement("formatDescription");
-//            cdata = doc.createCDATASection(getFormatDescription());
-//            elt.appendChild(cdata);
-//            eltVar.appendChild(elt);
-//        }
-        return eltVar;
-    }
-
 
 }

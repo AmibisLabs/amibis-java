@@ -89,6 +89,12 @@ public class InOutputAttribute extends Attribute {
         super(aName);
     }
 
+    public InOutputAttribute(String aName, ConnectorType type, int tcpPort) {
+        super(aName);
+        this.connectorType = type;
+        this.tcpPort = tcpPort;
+    }
+
     /**
      * Creates a new instance of InOutputAttribute.
      *
@@ -284,16 +290,6 @@ public class InOutputAttribute extends Attribute {
         }
     }
 
-//    /**
-//     * Generates a short XML description of the in/output.
-//     *
-//     * @return the name of the in/output as &lt;inoutput_kind
-//     *         name=&quot;inoutput_name&quot;/&gt;
-//     */
-//    public String generateShortDescription() {
-//        return generateHeaderDescription(connectorType.getXMLTag(), true);
-//    }
-
     /**
      * Accesses the list of the id of the connected peer
      *
@@ -317,37 +313,6 @@ public class InOutputAttribute extends Attribute {
     public void addPeer(int peer) {
         peerVector.add(new Integer(peer));
     }
-
-//    /**
-//     * Generates a long XML description of the in/output.
-//     *
-//     * @return the XML description as a String
-//     */
-//    public String generateLongDescription() {
-//        String str = generateHeaderDescription(connectorType.getXMLTag(), false);
-//        if (getTcpPort() != 0) {
-//            str += "<tcp>" + getTcpPort() + "</tcp>";
-//        }
-//        if (getUdpPort() != 0) {
-//            str += "<udp>" + getUdpPort() + "</udp>";
-//        }
-//        str += generateTagDescriptionToStr();
-//        str += "<peers>";
-//        for (Integer peerId : getPeerVector()) {
-//            str += "<peer>" + BipUtils.intTo8HexString(peerId) + "</peer>";
-//        }
-//        str += "</peers></" + connectorType.getXMLTag() + ">";
-//        return str;
-//    }
-
-//    /**
-//     * Generates a string containing the answer to a connect query.
-//     *
-//     * @return the answer to a connect query
-//     */
-//    public String generateConnectAnswer() {
-//        return generateLongDescription();
-//    }
 
     /**
      * Generates a string with port number.
@@ -375,99 +340,6 @@ public class InOutputAttribute extends Attribute {
     public String toString() {
         return getName();
     }
-
-    /**
-     * Extracts the information to initialize the field of the input/output
-     * description from a XML document.
-     *
-     * @param elt
-     *            the element of the XML description
-     */
-    public void extractInfoFromXML(Element elt) {
-//      XERCES
-//        NodeList nodeList = elt.getChildNodes();
-//        for (int i = 0; i < nodeList.getLength(); i++) {
-//            Node current = nodeList.item(i);
-//            if (current.getNodeType() == Node.ELEMENT_NODE) {
-//                String currentName = current.getNodeName();
-//                if (currentName.equals("description")) {
-//                    setDescription(current.getTextContent());
-//                } else if (currentName.equals("formatDescription")) {
-//                    setFormatDescription(current.getTextContent());
-//                } else if (currentName.equals("tcp")) {
-//                    setTcpPort(Integer.parseInt(current.getTextContent()));
-//                } else if (currentName.equals("udp")) {
-//                    setUdpPort(Integer.parseInt(current.getTextContent()));
-//                } else if (currentName.equals("peers")) {
-//                    NodeList listPeer = current.getChildNodes();
-//                    for (int p = 0; p < listPeer.getLength(); p++) {
-//                        Node peerNode = listPeer.item(p);
-//                        if (peerNode.getNodeName().equals("peer")) {
-//                            addPeer(BipUtils.hexStringToInt(peerNode.getTextContent()));
-//                        }
-//                    }
-//                } else {
-//                    System.err.println("InOutputAttribute::extractInfoFromXML : Unexpected Tag : " + currentName);
-//                }
-//            }
-//        }
-    }
-
-    static public ConnectorType IOKindFromName(String str) {
-        if (str.equals(ConnectorType.INOUTPUT.getXMLTag())) {
-            return ConnectorType.INOUTPUT;
-        } else if (str.equals(ConnectorType.OUTPUT.getXMLTag())) {
-            return ConnectorType.OUTPUT;
-        } else if (str.equals(ConnectorType.INPUT.getXMLTag())) {
-            return ConnectorType.INPUT;
-        } else {
-            return null;
-        }
-    }
-
-//    public Element createXmlElement(Document doc) {
-//
-//        Element eltIo = doc.createElement(connectorType.getXMLTag());
-////      XERCES
-////        eltIo.setAttribute("name", getName());
-////
-////        Element elt = null;
-////        CDATASection cdata = null;
-////
-////        elt = doc.createElement("tcp");
-////        elt.setTextContent(Integer.toString(getTcpPort()));
-////        eltIo.appendChild(elt);
-////
-////        elt = doc.createElement("udp");
-////        elt.setTextContent(Integer.toString(getUdpPort()));
-////        eltIo.appendChild(elt);
-////
-////        if (getDescription() != null && !getDescription().equals("")) {
-////            elt = doc.createElement("description");
-////            cdata = doc.createCDATASection(getDescription());
-////            elt.appendChild(cdata);
-////            eltIo.appendChild(elt);
-////        }
-////        if (getFormatDescription() != null && !getFormatDescription().equals("")) {
-////            elt = doc.createElement("formatDescription");
-////            cdata = doc.createCDATASection(getFormatDescription());
-////            elt.appendChild(cdata);
-////            eltIo.appendChild(elt);
-////        }
-////
-////        List<Integer> v = getPeerVector();
-////        if (!v.isEmpty()) {
-////            Element eltPeers = doc.createElement("peers");
-////            for (Integer peerId : v) {
-////                elt = doc.createElement("peer");
-////                elt.setTextContent(BipUtils.intTo8HexString(peerId));
-////                eltPeers.appendChild(elt);
-////            }
-////            eltIo.appendChild(eltPeers);
-////        }
-//
-//        return eltIo;
-//    }
 
     public CommunicationServer getCommunicationServer() {
         return communicationServer;
