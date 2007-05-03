@@ -64,26 +64,26 @@ public class ServiceFactoryImpl implements ServiceFactory {
         try {
             ctrlServer = (ControlServer) new ServiceFromXml(stream);
         } catch (Exception e) {
-            e.printStackTrace() ;
+            e.printStackTrace();
             throw new InvalidDescriptionException("Invalid XML service description file");
         }
         
-        Service service = new ServiceImpl(ctrlServer) ;
+        Service service = new ServiceImpl(ctrlServer);
         
-        return service ;
+        return service;
     }
     
         /* (non-Javadoc)
          * @see fr.prima.omiscid.service.ServiceFactory#create(java.lang.String, java.lang.String)
          */
     public Service create(String serviceName, String className) {
-        ControlServer ctrlServer = new ControlServer(serviceName) ;
-        Service service = new ServiceImpl(ctrlServer) ;
+        ControlServer ctrlServer = new ControlServer(serviceName);
+        Service service = new ServiceImpl(ctrlServer);
         
         VariableAttribute classVar = ctrlServer.findVariable(GlobalConstants.constantNameForClass);
         classVar.setValueStr(className);
         
-        return service ;
+        return service;
     }
     
     public ServiceRepository createServiceRepositoy(Service service) {

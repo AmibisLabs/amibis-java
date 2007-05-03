@@ -521,12 +521,12 @@ public class ServiceImpl implements Service {
         
         ConnectorType remoteKind = null ;
         OmiscidService omiscidService = ((ServiceProxyImpl) proxy).getOmiscidService() ;
-        InOutputAttribute remoteAttribut = omiscidService.findOutput(remoteConnector) ;
-        if (remoteAttribut == null) {
-            remoteAttribut = omiscidService.findInOutput(remoteConnector) ;
-            if (remoteAttribut == null) {
-                remoteAttribut = omiscidService.findInput(remoteConnector) ;
-                if (remoteAttribut == null)
+        InOutputAttribute remoteAttribute = omiscidService.findOutput(remoteConnector) ;
+        if (remoteAttribute == null) {
+            remoteAttribute = omiscidService.findInOutput(remoteConnector);
+            if (remoteAttribute == null) {
+                remoteAttribute = omiscidService.findInput(remoteConnector);
+                if (remoteAttribute == null)
                     // the connector does not exist
                     throw new UnknownConnector(Utility.intTo8HexString(this.getPeerId()) + " : Unknown remote connector : " + remoteConnector + " on "+Utility.intTo8HexString(proxy.getPeerId())) ;
                 else
@@ -552,7 +552,7 @@ public class ServiceImpl implements Service {
         }
         
         try {
-            localClientServer.connectTo(proxy.getHostName(), remoteAttribut.getTcpPort());
+            localClientServer.connectTo(proxy.getHostName(), remoteAttribute.getTcpPort());
         } catch(Exception e) {
             throw new ConnectionRefused(e);
         }

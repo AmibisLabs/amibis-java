@@ -48,7 +48,7 @@ import fr.prima.omiscid.user.variable.VariableAccessType;
  */
 public class ServiceProxyImpl implements ServiceProxy {
     protected HashMap<String, HashMap<RemoteVariableChangeListener, VariableChangeListener>> remoteVariableListeners;
-    protected OmiscidService omiscidService ;
+    protected OmiscidService omiscidService;
     
     
     /**/
@@ -97,18 +97,15 @@ public class ServiceProxyImpl implements ServiceProxy {
      * @param omiscidService
      */
     private ServiceProxyImpl(OmiscidService omiscidService) {
-        this.omiscidService = omiscidService ;
+        this.omiscidService = omiscidService;
         remoteVariableListeners = new HashMap<String, HashMap<RemoteVariableChangeListener, VariableChangeListener>>();
-        if (!checkedUpdateDescription()) {
-            throw new RuntimeException("Could not update service description");
-        }
     }
     
     /* (non-Javadoc)
      * @see fr.prima.bip.service.BipServiceProxy#getVariables()
      */
     synchronized  public Set<String> getVariables() {
-        return omiscidService.getVariableNamesSet() ;
+        return omiscidService.getVariableNamesSet();
         
     }
     
@@ -126,13 +123,13 @@ public class ServiceProxyImpl implements ServiceProxy {
         checkedUpdateDescription();
     }
     synchronized  public boolean checkedUpdateDescription() {
-        return omiscidService.updateDescription() ;
+        return omiscidService.updateDescription();
     }
     /* (non-Javadoc)
      * @see fr.prima.bip.service.BipServiceProxy#getInputOutputConnectors()
      */
     synchronized  public Set<String> getInputOutputConnectors() {
-        return omiscidService.getInOutputNamesSet() ;
+        return omiscidService.getInOutputNamesSet();
     }
     
     /* (non-Javadoc)
@@ -161,7 +158,7 @@ public class ServiceProxyImpl implements ServiceProxy {
     }
 
     synchronized  public String toString() {
-        return omiscidService.toString() + " " + getInputOutputConnectors() ;
+        return omiscidService.toString() + " " + getInputOutputConnectors();
     }
 
     /* (non-Javadoc)
@@ -169,7 +166,7 @@ public class ServiceProxyImpl implements ServiceProxy {
      */
     synchronized  public void setVariableValue(String varName, String value) throws UnknownVariable {
         getVariable(varName); // This checks for the variable existence
-        omiscidService.queryVariableModification(varName, value) ;
+        omiscidService.queryVariableModification(varName, value);
     }
     
     /* (non-Javadoc)
@@ -207,7 +204,7 @@ public class ServiceProxyImpl implements ServiceProxy {
             public void variableChanged(VariableAttribute var) {
                 remoteVariableChangeListener.variableChanged(ServiceProxyImpl.this, var.getValueStr());
             }
-        } ;
+        };
         listeners.put(remoteVariableChangeListener, variableChangeListener);
         omiscidService.subscribe(varName, variableChangeListener);
     }
