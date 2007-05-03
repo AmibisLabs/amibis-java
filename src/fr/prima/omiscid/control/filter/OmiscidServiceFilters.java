@@ -114,7 +114,8 @@ public final class OmiscidServiceFilters {
         }
 
         public boolean isAGoodService(OmiscidService s) {
-            return s.hasVariable(variableName, variableAccessType, variableValueRegexp);
+            throw new RuntimeException("not implemented any more");
+//            return s.hasVariable(variableName, variableAccessType, variableValueRegexp);
         }
     }
 
@@ -131,7 +132,8 @@ public final class OmiscidServiceFilters {
             this.connectorType = connectorType;
         }
         public boolean isAGoodService(OmiscidService s) {
-            return s.hasConnector(connectorName, connectorType);
+            throw new RuntimeException("not implemented any more");
+//            return s.hasConnector(connectorName, connectorType);
         }
     }
 

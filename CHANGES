@@ -4,10 +4,23 @@
 
 In this files, you will find changes between java OMiSCID versions.
 
+
+*must: big constants are properly generated under dnssd but not properly read
+*must: solve the castor proliferation problem
+*must: find and kill all "< (that is manually generated xml)
+*Q: how is reflected in the dnssd txt record the fact that a connector has an udp port?
+*should: do not query full description before needed
+*should: review, optimize and make safer the queries present under ServiceProxy (e.g. 2 queries are done to get a service global description)
+*should: make configurable (through Java and C++) the timeout for control queries
+*could: dnssd client auto connect/reconnect
+*could: dnssd client has a list of expected servers
+
+
 1.1.1
 r
         fix:  problem with avahi and big txt records (services with many variables)
         fix:  problem with jmdns and big txt records (services with many variables)
+        impr: now queries complete service description only when needed (was basically asking to every service)
 
 1.1.0
 r2441
