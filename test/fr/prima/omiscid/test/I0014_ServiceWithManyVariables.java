@@ -85,7 +85,7 @@ public class I0014_ServiceWithManyVariables {
             serviceRepository.addListener(new ServiceRepositoryListener() {
                 public void serviceAdded(ServiceProxy serviceProxy) {
                     if (serviceProxy.getName().equals("I0014Server") && serviceProxy.getVariables().size() > customVariableCount) {
-                        FactoryFactory.passed("service with many variables (more than "+customVariableCount+") was found");
+                        FactoryFactory.passed("service with many variables ("+serviceProxy.getVariables().size()+" is more than "+customVariableCount+") was found");
                         System.exit(0);
                     }
                 }
