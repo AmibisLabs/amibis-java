@@ -58,7 +58,7 @@ public enum VariableAccessType {
     }
 
     public static VariableAccessType fromDnssdValue(String propertyValue) {
-        if (propertyValue.startsWith(CONSTANT.prefixInDnssd)) {
+        if (propertyValue.startsWith(CONSTANT.prefixInDnssd) || propertyValue.equals(Constants.valueForLongConstantsInDnssd)) {
             return CONSTANT;
         } else if (propertyValue.startsWith(READ.prefixInDnssd)) {
             return READ;
@@ -72,6 +72,12 @@ public enum VariableAccessType {
         VariableAccessType variableAccessType = fromDnssdValue(propertyValue);
         return variableAccessType == null ?
                 "$$$ERROR$$$" : propertyValue.replaceFirst(variableAccessType.getPrefixInDnssd(), "");
+    }
+
+    public static String constantValueFromDnssdValue(String propertyValue) {
+        VariableAccessType variableAccessType = fromDnssdValue(propertyValue);
+        return variableAccessType == CONSTANT && !propertyValue.equals(Constants.valueForLongConstantsInDnssd) ?
+            propertyValue.replaceFirst(variableAccessType.getPrefixInDnssd(), "") : null;
     }
 
 //    public static VariableAccessType fromControlString(String accessTypeName) {
