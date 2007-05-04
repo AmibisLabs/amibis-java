@@ -29,6 +29,7 @@ package fr.prima.omiscid.dnssd.mdns;
 import java.util.Vector;
 
 import com.apple.dnssd.TXTRecord;
+import java.util.Collections;
 
 /**
  * @author emonet initial build from Service by pesnel
@@ -92,6 +93,9 @@ public class ServiceInformation implements fr.prima.omiscid.dnssd.interf.Service
     }
 
     public Iterable<String> getPropertyKeys() {
+        if (txtRecord == null) {
+            return Collections.emptyList();
+        }
         Vector<String> res = new Vector<String>();
         for (int i = 0; i < txtRecord.size(); i++) {
             res.add(txtRecord.getKey(i));
