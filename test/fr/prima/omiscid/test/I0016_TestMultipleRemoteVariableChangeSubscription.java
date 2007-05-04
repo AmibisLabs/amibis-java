@@ -37,13 +37,14 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.variable.RemoteVariableChangeListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
-public class I0015_TestRemoteVariableChangeSubscription {
+public class I0016_TestMultipleRemoteVariableChangeSubscription {
     
     public static void main(String[] args) {
         ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("I0015Server");
-            server.addVariable("bug", "", "an allway moving variable", VariableAccessType.READ);
+            final Service server = factory.create("I0016Server");
+            server.addVariable("bug1", "", "an allway moving variable", VariableAccessType.READ);
+            server.addVariable("bug2", "", "an allway moving variable", VariableAccessType.READ);
             server.start();
             new Thread() {
                 @Override
@@ -52,8 +53,9 @@ public class I0015_TestRemoteVariableChangeSubscription {
                     while (true) {
                         i++;
                         try {
-                            Thread.sleep(100);
-                            server.setVariableValue("bug", ""+i);
+                            Thread.sleep(10);
+                            server.setVariableValue("bug1", ""+i);
+                            server.setVariableValue("bug2", ""+(1000000+i));
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -61,25 +63,58 @@ public class I0015_TestRemoteVariableChangeSubscription {
                 }
             }.start();
         }
+        final Vector<String> passed = new Vector<String>();
         {
-            Service client = factory.create("I0015Client");
+            Service client = factory.create("I0016Client");
             client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0015Server"));
-            proxy.addRemoteVariableChangeListener("bug",new RemoteVariableChangeListener() {
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0016Server"));
+            proxy.addRemoteVariableChangeListener("bug1",new RemoteVariableChangeListener() {
                 private Vector<String> values = new Vector<String>();
                 public void variableChanged(ServiceProxy serviceProxy, String value) {
+                    if (values.contains(value)) {
+                        FactoryFactory.failed("duplicate value received for bug1: "+value+" isIn "+Arrays.toString(values.toArray()));
+                        System.exit(1);
+                    }
                     values.add(value);
-                    if (values.size() > 10) {
-                        FactoryFactory.passed(Arrays.toString(values.toArray()));
-                        System.exit(0);
+                    int v = Integer.valueOf(value);
+                    if (v > 1000000) {
+                        FactoryFactory.failed("modification of bug2 received by bug1 listener: "+v);
+                        System.exit(1);
+                    }
+                    if (values.size() == 100) {
+                        passed.add("bug1");
+                    }
+                }
+            });
+            proxy.addRemoteVariableChangeListener("bug2",new RemoteVariableChangeListener() {
+                private Vector<String> values = new Vector<String>();
+                public void variableChanged(ServiceProxy serviceProxy, String value) {
+                    if (values.contains(value)) {
+                        FactoryFactory.failed("duplicate value received for bug2: "+value+" isIn "+Arrays.toString(values.toArray()));
+                        System.exit(1);
+                    }
+                    values.add(value);
+                    int v = Integer.valueOf(value);
+                    if (v < 1000000) {
+                        FactoryFactory.failed("modification of bug1 received by bug2 listener: "+v);
+                        System.exit(1);
+                    }
+                    if (values.size() == 100) {
+                        passed.add("bug2");
                     }
                 }
             });
         }
-        try {
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        for (int i = 0; i < 10; i++) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (passed.size() == 2) {
+                FactoryFactory.passed(Arrays.toString(passed.toArray()));
+                System.exit(0);
+            }
         }
         FactoryFactory.failed("Timed out while waiting for change notifications");
         System.exit(1);

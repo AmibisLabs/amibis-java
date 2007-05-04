@@ -58,6 +58,7 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Vector;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
@@ -97,6 +98,7 @@ public class OmiscidService {
     
     private final Map<String, VariableAttribute> variables = new HashMap<String, VariableAttribute>();
     private final Map<String, InOutputAttribute> connectors = new HashMap<String, InOutputAttribute>();
+    private final Vector<String> variableSubscriptions = new Vector<String>();
     
     /**
      * Object used to synchronize the access to the controlClient, and the
@@ -654,19 +656,29 @@ public class OmiscidService {
     }
 
     public boolean subscribe(String varName, VariableChangeListener variableChangeListener) {
-        //could hold a count of the allready subscribed variables ... to handle multiple subscribe to a same variable
         initControlClient();
-        VariableAttribute va = findVariable(varName);
-        if (va != null) {
-            boolean subscribe = subscribe(varName);
-            if (!subscribe) {
-                closeControlClient();
+        if (ctrlClient != null) {
+            VariableAttribute va = findVariable(varName);
+            if (va != null) {
+                if (variableSubscriptions.contains(varName)) {
+                    variableSubscriptions.add(varName);
+                    va.addListenerChange(variableChangeListener);
+                    return true;
+                } else {
+                    boolean subscribe = subscribe(varName);
+                    if (!subscribe) {
+                        closeControlClient();
+                    } else {
+                        variableSubscriptions.add(varName);
+                        va.addListenerChange(variableChangeListener);
+                    }
+                    return subscribe;
+                }
             } else {
-                va.addListenerChange(variableChangeListener);
+                closeControlClient();
+                return false;
             }
-            return subscribe;
         } else {
-            closeControlClient();
             return false;
         }
     }
@@ -674,12 +686,18 @@ public class OmiscidService {
     public boolean unsubscribe(String varName, VariableChangeListener varListener) {
         VariableAttribute va = findVariable(varName);
         if (va != null) {
-            boolean unsubscribe = unsubscribe(varName);
-            if (unsubscribe) {
+            variableSubscriptions.remove(varName);
+            if (variableSubscriptions.contains(varName)) {
                 va.removeListenerChange(varListener);
-                closeControlClient();
+                return true;
+            } else {
+                boolean unsubscribe = unsubscribe(varName);
+                if (unsubscribe) {
+                    va.removeListenerChange(varListener);
+                    closeControlClient();
+                }
+                return unsubscribe;
             }
-            return unsubscribe;
         } else {
             return false;
         }

@@ -45,11 +45,15 @@ public class I0010_ServiceRepositoryBasicTests {
             int count = 0;
             public void serviceRemoved(ServiceProxy serviceProxy) {
                 count--;
-                System.out.println("(-)\t"+Utility.intTo8HexString(serviceProxy.getPeerId())+" \t"+count);
+                System.out.println("(-)\t"+Utility.intTo8HexString(serviceProxy.getPeerId())+" \t"+serviceProxy.hashCode()+" \t"+count);
             }
             public void serviceAdded(ServiceProxy serviceProxy) {
                 count++;
-                System.out.println("(+)\t"+Utility.intTo8HexString(serviceProxy.getPeerId())+" \t"+count);
+                serviceProxy.getVariables();
+                serviceProxy.getInputConnectors();
+                serviceProxy.getInputOutputConnectors();
+                serviceProxy.getOutputConnectors();
+                System.out.println("(+)\t"+Utility.intTo8HexString(serviceProxy.getPeerId())+" \t"+serviceProxy.hashCode()+" \t"+count);
             }
         };
         Thread.sleep(1000);
