@@ -524,9 +524,12 @@ public class OmiscidService {
     private ControlAnswer queryToServer(ControlQuery controlQuery, boolean expectAnswer)
     throws MarshalException, ValidationException {
         initControlClient();
-        ControlAnswer res = ctrlClient.queryToServer(controlQuery, expectAnswer);
-        closeControlClient();
-        return res;
+        if (ctrlClient != null) {
+            ControlAnswer res = ctrlClient.queryToServer(controlQuery, expectAnswer);
+            closeControlClient();
+            return res;
+        }
+        return null;
     }
     
     /**
