@@ -70,12 +70,16 @@ public class I0016_TestMultipleRemoteVariableChangeSubscription {
             final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0016Server"));
             proxy.addRemoteVariableChangeListener("bug1",new RemoteVariableChangeListener() {
                 private Vector<String> values = new Vector<String>();
-                public void variableChanged(ServiceProxy serviceProxy, String value) {
+                public void variableChanged(ServiceProxy serviceProxy, String variableName, String value) {
                     if (values.contains(value)) {
                         FactoryFactory.failed("duplicate value received for bug1: "+value+" isIn "+Arrays.toString(values.toArray()));
                         System.exit(1);
                     }
                     values.add(value);
+                    if (!variableName.equals("bug1")) {
+                        FactoryFactory.failed("modification of a non-bug1 variable received by first listener: "+variableName);
+                        System.exit(1);
+                    }
                     int v = Integer.valueOf(value);
                     if (v > 1000000) {
                         FactoryFactory.failed("modification of bug2 received by bug1 listener: "+v);
@@ -88,12 +92,16 @@ public class I0016_TestMultipleRemoteVariableChangeSubscription {
             });
             proxy.addRemoteVariableChangeListener("bug2",new RemoteVariableChangeListener() {
                 private Vector<String> values = new Vector<String>();
-                public void variableChanged(ServiceProxy serviceProxy, String value) {
+                public void variableChanged(ServiceProxy serviceProxy, String variableName, String value) {
                     if (values.contains(value)) {
                         FactoryFactory.failed("duplicate value received for bug2: "+value+" isIn "+Arrays.toString(values.toArray()));
                         System.exit(1);
                     }
                     values.add(value);
+                    if (!variableName.equals("bug2")) {
+                        FactoryFactory.failed("modification of a non-bug2 variable received by second listener: "+variableName);
+                        System.exit(1);
+                    }
                     int v = Integer.valueOf(value);
                     if (v < 1000000) {
                         FactoryFactory.failed("modification of bug1 received by bug2 listener: "+v);

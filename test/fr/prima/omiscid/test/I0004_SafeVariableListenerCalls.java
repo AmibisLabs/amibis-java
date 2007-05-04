@@ -43,17 +43,38 @@ public class I0004_SafeVariableListenerCalls {
         {
             final Service server = factory.create("I0004Server");
             server.addVariable("bug", "Bug", "plop", VariableAccessType.READ_WRITE);
+            server.setVariableValue("bug", "12");
             server.addLocalVariableListener("bug", new LocalVariableListener() {
-                public boolean isValid(Service service, String currentValue, String newValue) {
+                public boolean isValid(Service service, String variableName, String currentValue, String newValue) {
+                    if (!variableName.equals("bug")) {
+                        FactoryFactory.failed("Wrong variable name received: "+variableName);
+                        System.exit(1);
+                    }
+                    if (currentValue.length() != 2) {
+                        FactoryFactory.failed("Wrong variable current value received: "+currentValue);
+                        System.exit(1);
+                    }
+                    if (newValue.length() != 2) {
+                        FactoryFactory.failed("Wrong variable new value received: "+newValue);
+                        System.exit(1);
+                    }
                     throw new UnsupportedOperationException("Not supported yet: isValid");
                 }
-                public void variableChanged(Service service, String name, String value) {
+                public void variableChanged(Service service, String variableName, String value) {
+                    if (!variableName.equals("bug")) {
+                        FactoryFactory.failed("Wrong variable name received, in changed: "+variableName);
+                        System.exit(1);
+                    }
+                    if (value.length() != 2) {
+                        FactoryFactory.failed("Wrong variable set value received, in changed: "+value);
+                        System.exit(1);
+                    }
                     throw new UnsupportedOperationException("Not supported yet: changed");
                 }
             });
             server.addLocalVariableListener("bug", new LocalVariableListener() {
                 boolean passedOnce = false;
-                public boolean isValid(Service service, String currentValue, String newValue) {
+                public boolean isValid(Service service, String variableName, String currentValue, String newValue) {
                     return true;
                 }
                 public void variableChanged(Service service, String name, String value) {

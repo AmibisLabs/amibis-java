@@ -29,7 +29,7 @@ package fr.prima.omiscid.user.variable;
 import fr.prima.omiscid.user.service.ServiceProxy;
 
 /**
- * @author reignier
+ * @author reignier, emonet
  *
  */
 public interface RemoteVariableChangeListener {
@@ -39,7 +39,8 @@ public interface RemoteVariableChangeListener {
      * changes
      *
      * @param serviceProxy the service owning the variable
+     * @param variableName the name of the variable that just changed
      * @param value the new variable value
      */
-    public void variableChanged(ServiceProxy serviceProxy, String value);
+    public void variableChanged(ServiceProxy serviceProxy, String variableName, String value);
 }

@@ -67,7 +67,7 @@ public class I0015_TestRemoteVariableChangeSubscription {
             final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0015Server"));
             proxy.addRemoteVariableChangeListener("bug",new RemoteVariableChangeListener() {
                 private Vector<String> values = new Vector<String>();
-                public void variableChanged(ServiceProxy serviceProxy, String value) {
+                public void variableChanged(ServiceProxy serviceProxy, String variableName, String value) {
                     values.add(value);
                     if (values.size() > 10) {
                         FactoryFactory.passed(Arrays.toString(values.toArray()));

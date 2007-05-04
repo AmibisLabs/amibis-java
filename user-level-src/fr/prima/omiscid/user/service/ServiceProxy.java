@@ -28,7 +28,6 @@ package fr.prima.omiscid.user.service;
 
 import java.util.Set;
 
-import fr.prima.omiscid.user.connector.ConnectorListener;
 import fr.prima.omiscid.user.exception.UnknownConnector;
 import fr.prima.omiscid.user.exception.UnknownVariable;
 import fr.prima.omiscid.user.variable.RemoteVariableChangeListener;

@@ -202,7 +202,7 @@ public class ServiceProxyImpl implements ServiceProxy {
 
         VariableChangeListener variableChangeListener = new VariableChangeListener() {
             public void variableChanged(VariableAttribute var) {
-                remoteVariableChangeListener.variableChanged(ServiceProxyImpl.this, var.getValueStr());
+                remoteVariableChangeListener.variableChanged(ServiceProxyImpl.this, var.getName(), var.getValueStr());
             }
         };
         listeners.put(remoteVariableChangeListener, variableChangeListener);

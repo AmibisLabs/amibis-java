@@ -70,7 +70,7 @@ public class I0018_TestMultipleListenersOnOneRemoteVariableWithUnsubscribe {
             final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0017Server"));
             proxy.addRemoteVariableChangeListener("bug2",new RemoteVariableChangeListener() {
                 private Vector<String> values = new Vector<String>();
-                public void variableChanged(ServiceProxy serviceProxy, String value) {
+                public void variableChanged(ServiceProxy serviceProxy, String variableName, String value) {
                     if (values.contains(value)) {
                         FactoryFactory.failed("duplicate value received for first bug2: "+value+" isIn "+Arrays.toString(values.toArray()));
                         System.exit(1);
@@ -93,7 +93,7 @@ public class I0018_TestMultipleListenersOnOneRemoteVariableWithUnsubscribe {
             });
             proxy.addRemoteVariableChangeListener("bug2",new RemoteVariableChangeListener() {
                 private Vector<String> values = new Vector<String>();
-                public void variableChanged(ServiceProxy serviceProxy, String value) {
+                public void variableChanged(ServiceProxy serviceProxy, String variableName, String value) {
                     if (values.contains(value)) {
                         FactoryFactory.failed("duplicate value received for second bug2: "+value+" isIn "+Arrays.toString(values.toArray()));
                         System.exit(1);

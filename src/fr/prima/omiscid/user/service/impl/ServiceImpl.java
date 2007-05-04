@@ -475,7 +475,7 @@ public class ServiceImpl implements Service {
             VariableChangeQueryListener queryListener = new VariableChangeQueryListener() {
                 public boolean isAccepted(VariableAttribute currentVariable, String newValue) {
                     // TODO Auto-generated method stub
-                    return listener.isValid(ServiceImpl.this, currentVariable.generateValueMessage(), newValue) ;
+                    return listener.isValid(ServiceImpl.this, currentVariable.getName(), currentVariable.getValueStr(), newValue) ;
                 }
             };
             
