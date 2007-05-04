@@ -23,6 +23,7 @@ r
         fix:  problem with jmdns and big txt records (services with many variables)
         fix:  can now safely listen to one variable multiple times with proper notification (was sending multiple notifications to each listener)
         impr: now queries complete service description only when needed (was basically asking to every service)
+        impr: it is now possible for RemoteVariableChangeListener to unsubscribe itself when it is called back
         fix:  (gui) in case of subscription to remote variable changes, gui was not handling properly empty new value (it now does)
 
 1.1.0

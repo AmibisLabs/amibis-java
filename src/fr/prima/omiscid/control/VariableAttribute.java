@@ -39,6 +39,7 @@ import fr.prima.omiscid.control.message.answer.ControlAnswerItem;
 import fr.prima.omiscid.control.message.answer.Variable;
 import fr.prima.omiscid.control.message.answer.types.AccessType;
 import fr.prima.omiscid.user.variable.VariableAccessType;
+import java.util.Vector;
 
 /**
  * Stores a variable description. The variable description is composed of a
@@ -292,7 +293,9 @@ public class VariableAttribute extends Attribute {
      */
     private void valueChanged() {
         synchronized (listenersSet) {
-            for (VariableChangeListener listener : listenersSet) {
+            // make a copy to allow listeners to unregister themselve
+            Vector<VariableChangeListener> copy = new Vector<VariableChangeListener>(listenersSet);
+            for (VariableChangeListener listener : copy) {
                 try {
                     listener.variableChanged(this);
                 } catch (Exception e) {
