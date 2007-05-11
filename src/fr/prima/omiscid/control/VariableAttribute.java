@@ -229,8 +229,10 @@ public class VariableAttribute extends Attribute {
      *            the new value for the variable
      */
     public void setValueStr(String str) {
-        valueStr = str;
-        valueChanged();
+        if (str == null ? valueStr != null : !str.equals(valueStr)) {
+            valueStr = str;
+            valueChanged();
+        }
     }
 
     /**

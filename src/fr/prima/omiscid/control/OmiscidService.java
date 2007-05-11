@@ -426,39 +426,10 @@ public class OmiscidService {
     }
 
     public String getVariableValue(String variableName) {
-        if (queryState == QueryState.UNQUERIED) {
-            // we have no queried description available, just try to answer with txt record
-            String property = serviceInformation.getStringProperty(variableName);
-            if (property != null) {
-                VariableAccessType variableAccessType = VariableAccessType.fromDnssdValue(property);
-                if (variableAccessType != null) {
-                    // txt record contains such a variable, try to extract its value
-                    // this can be done only for constants with reasonable length
-                    if (variableAccessType == VariableAccessType.CONSTANT) {
-                        String value = VariableAccessType.realValueFromDnssdValue(property);
-                        if (value != null) {
-                            return value;
-                        }
-                        // this is a constant but with too lengthy
-                    }
-                } else {
-                    // there is a property but it does not correspond to a variable
-                    // safety first so we fallback on the query mode
-                    //return null;
-                }
-            } else {
-                // property is null, check whether the service information is full
-                if (isServiceInformationDescriptionFull()) {
-                    // service does not have such a variable
-                    return null;
-                }
-            }
-            // we got no answer using only with txt record, query the value directly
-        }
         VariableAttribute variable = variables.get(variableName);
-        if (variable != null && variable.getAccess() == VariableAccessType.CONSTANT) {
+        if (variable != null && variable.getValueStr() != null && variable.getAccess() == VariableAccessType.CONSTANT) {
             // the variable has already been queried (either as part as the whole or individually)
-            // it is also constant so we must have its value in cache
+            // it is also constant so we must have its correct value in cache
             return variable.getValueStr();
         }
         // finally we query the variable and return the obtained value
