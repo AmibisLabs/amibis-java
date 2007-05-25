@@ -15,10 +15,13 @@ In this files, you will find changes between java OMiSCID versions.
 
 1.1.1
 r
+        fix:  (API) (WARNING) fixing bug #3271 from gforge causes programs using LocalVariableListener#isValid to compile but with changed semantic (second parameter is now the variable name, not the variable current value anymore; current being accessible using Service#getVariableValue)
         fix:  (API) added missing variable names on Local and Remote VariableListeners
         fix:  problem with avahi and big txt records (services with many variables)
         fix:  problem with jmdns and big txt records (services with many variables)
         fix:  can now safely listen to one variable multiple times with proper notification (was sending multiple notifications to each listener)
+        fix:  removed interferences between variable modifications and variable consultation causing multiple notifications of some variable modifications
+        fix:  problem with readdition of remote variable change listeners
         impr: now queries complete service description only when needed (was basically asking to every service)
         impr: it is now possible for RemoteVariableChangeListener to unsubscribe itself when it is called back
         fix:  (gui) in case of subscription to remote variable changes, gui was not handling properly empty new value (it now does)

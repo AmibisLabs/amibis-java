@@ -45,16 +45,12 @@ public class I0004_SafeVariableListenerCalls {
             server.addVariable("bug", "Bug", "plop", VariableAccessType.READ_WRITE);
             server.setVariableValue("bug", "12");
             server.addLocalVariableListener("bug", new LocalVariableListener() {
-                public boolean isValid(Service service, String variableName, String currentValue, String newValue) {
+                public boolean isValid(Service service, String variableName, String newValue) {
                     if (!variableName.equals("bug")) {
                         FactoryFactory.failed("Wrong variable name received: "+variableName);
                         System.exit(1);
                     }
-                    if (currentValue.length() != 2) {
-                        FactoryFactory.failed("Wrong variable current value received: "+currentValue);
-                        System.exit(1);
-                    }
-                    if (newValue.length() != 2) {
+                    if (newValue.length() != 4) {
                         FactoryFactory.failed("Wrong variable new value received: "+newValue);
                         System.exit(1);
                     }
@@ -65,7 +61,7 @@ public class I0004_SafeVariableListenerCalls {
                         FactoryFactory.failed("Wrong variable name received, in changed: "+variableName);
                         System.exit(1);
                     }
-                    if (value.length() != 2) {
+                    if (value.length() != 4) {
                         FactoryFactory.failed("Wrong variable set value received, in changed: "+value);
                         System.exit(1);
                     }
@@ -74,7 +70,7 @@ public class I0004_SafeVariableListenerCalls {
             });
             server.addLocalVariableListener("bug", new LocalVariableListener() {
                 boolean passedOnce = false;
-                public boolean isValid(Service service, String variableName, String currentValue, String newValue) {
+                public boolean isValid(Service service, String variableName, String newValue) {
                     return true;
                 }
                 public void variableChanged(Service service, String name, String value) {
@@ -91,11 +87,11 @@ public class I0004_SafeVariableListenerCalls {
             Service client = factory.create("I0004Client");
             client.start();
             final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0004Server"));
-            proxy.setVariableValue("bug", "ga");
+            proxy.setVariableValue("bug", "gaga");
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {}
-            proxy.setVariableValue("bug", "bu");
+            proxy.setVariableValue("bug", "bubu");
         }
         try {
             Thread.sleep(1500);

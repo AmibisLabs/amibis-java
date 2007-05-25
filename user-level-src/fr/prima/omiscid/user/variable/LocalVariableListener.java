@@ -53,9 +53,8 @@ public interface LocalVariableListener {
      *
      * @param service the service owning the variable
      * @param variableName the name of the variable on which the modification requested is happening
-     * @param currentValue the current value of the variable
      * @param newValue the new requested value
      * @return true if the new value is accepted, false if rejected.
      */
-    public boolean isValid(Service service, String variableName, String currentValue, String newValue);
+    public boolean isValid(Service service, String variableName, String newValue);
 }
