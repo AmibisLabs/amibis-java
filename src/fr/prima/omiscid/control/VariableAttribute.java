@@ -31,9 +31,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.control.message.answer.ControlAnswerItem;
 import fr.prima.omiscid.control.message.answer.Variable;
@@ -107,7 +104,7 @@ public class VariableAttribute extends Attribute {
         init(variable);
     }
 
-    public void init(Variable variable) {
+    public synchronized void init(Variable variable) {
         this.setName(variable.getName());
         switch (variable.getAccess().getType()) {
         case AccessType.CONSTANT_TYPE: this.setAccessType(VariableAccessType.CONSTANT); break;
@@ -122,7 +119,7 @@ public class VariableAttribute extends Attribute {
         this.setFormatDescription(variable.getFormatDescription());
     }
 
-    public ControlAnswerItem generateControlAnswer() {
+    public synchronized ControlAnswerItem generateControlAnswer() {
         ControlAnswerItem controlAnswerItem = new ControlAnswerItem();
         Variable variable = new Variable();
         switch (getAccess()) {
@@ -141,7 +138,7 @@ public class VariableAttribute extends Attribute {
         return controlAnswerItem;
     }
 
-    public void init(fr.prima.omiscid.control.message.servicexml.Variable variable) {
+    public synchronized void init(fr.prima.omiscid.control.message.servicexml.Variable variable) {
         this.setName(variable.getName());
         switch (variable.getAccess().getType()) {
         case fr.prima.omiscid.control.message.servicexml.types.AccessType.CONSTANT_TYPE: this.setAccessType(VariableAccessType.CONSTANT); break;
@@ -157,7 +154,7 @@ public class VariableAttribute extends Attribute {
     }
 
 
-    public ControlAnswerItem generateShortControlAnswer() {
+    public synchronized ControlAnswerItem generateShortControlAnswer() {
         ControlAnswerItem controlAnswerItem = new ControlAnswerItem();
         Variable variable = new Variable();
         variable.setName(getName());
@@ -170,7 +167,7 @@ public class VariableAttribute extends Attribute {
      *
      * @return the value contained in this VariableAttribute object
      */
-    public String getValueStr() {
+    public synchronized String getValueStr() {
         return valueStr;
     }
 
@@ -228,7 +225,7 @@ public class VariableAttribute extends Attribute {
      * @param str
      *            the new value for the variable
      */
-    public void setValueStr(String str) {
+    public synchronized void setValueStr(String str) {
         if (str == null ? valueStr != null : !str.equals(valueStr)) {
             valueStr = str;
             valueChanged();

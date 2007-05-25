@@ -37,6 +37,15 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.variable.RemoteVariableChangeListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
+/*
+ * Variable queries using getVariableValue causes some variable modifications
+ * to be received on the client side. This is manifesting by having the client
+ * side listener being notified twice with a same variable value.
+ * 
+ * This could probably be done with a simpler test case. It has been tried.
+ * However it seems it is not: I0020 is passing at current time whereas I0019
+ * is not.
+ */
 public class I0019_TestGetRemoteVariableValueAndSubscribe {
     
     public static void main(String[] args) {
@@ -70,7 +79,7 @@ public class I0019_TestGetRemoteVariableValueAndSubscribe {
                 private Vector<String> values = new Vector<String>();
                 public void variableChanged(ServiceProxy serviceProxy, String variableName, String value) {
                     if (values.contains(value)) {
-                        FactoryFactory.failed("Duplicate notification received: "+value+" isIn "+Arrays.toString(values.toArray()));
+                        FactoryFactory.failed("Duplicate notification received: "+value+" is already in "+Arrays.toString(values.toArray()));
                         System.exit(1);
                     }
                     values.add(value);
