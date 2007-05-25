@@ -295,6 +295,7 @@ public class OmiscidService {
             if (nbUserForControl == 0) {
                 if (ctrlClient != null) {
                     ctrlClient.close();
+                    ctrlClient = null;
                 }
             }
         }
