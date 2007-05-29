@@ -474,7 +474,6 @@ public class ServiceImpl implements Service {
             // bridge between VariableListener et VariableChangeQueryListener
             VariableChangeQueryListener queryListener = new VariableChangeQueryListener() {
                 public boolean isAccepted(VariableAttribute currentVariable, String newValue) {
-                    // TODO Auto-generated method stub
                     return listener.isValid(ServiceImpl.this, currentVariable.getName(), newValue) ;
                 }
             };

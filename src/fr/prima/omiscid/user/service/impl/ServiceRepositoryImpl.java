@@ -80,6 +80,22 @@ public class ServiceRepositoryImpl implements ServiceRepository {
         return res;
     }
 
+    private void added(ServiceRepositoryListener listener, ServiceProxy serviceProxy) {
+        try {
+            listener.serviceAdded(serviceProxy);
+        } catch (Exception e) {
+            System.err.println("Omiscid caught an exception thrown by a listener on addition in a service repository, it is shown here:");
+            e.printStackTrace();
+        }
+    }
+    private void removed(ServiceRepositoryListener listener, ServiceProxy serviceProxy) {
+        try {
+            listener.serviceRemoved(serviceProxy);
+        } catch (Exception e) {
+            System.err.println("Omiscid caught an exception thrown by a listener on removal from a service repository, it is shown here:");
+            e.printStackTrace();
+        }
+    }
 
 
     private synchronized void serviceFound(ServiceEvent e) {
@@ -89,7 +105,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
         if (serviceProxy != null) {
             services.add(serviceProxy);
             for (ServiceRepositoryListener listener : serviceRepositoryListeners) {
-                listener.serviceAdded(serviceProxy);
+                added(listener, serviceProxy);
             }
         }
     }
@@ -107,7 +123,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
         if (matching != null) {
             services.remove(matching);
             for (ServiceRepositoryListener listener : serviceRepositoryListeners) {
-                listener.serviceRemoved(matching);
+                removed(listener, matching);
             }
         } else {
             // This happens when the ServiceProxy could not be built in #serviceFound
@@ -125,7 +141,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
         checkRunning();
         if (!notifyOnlyNewEvents) {
             for (ServiceProxy proxy : services) {
-                listener.serviceAdded(proxy);
+                added(listener, proxy);
             }
         }
         serviceRepositoryListeners.add(listener);
@@ -140,7 +156,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
         boolean present = serviceRepositoryListeners.remove(listener);
         if (present && notifyAsIfExistingServicesDisappear) {
             for (ServiceProxy proxy : services) {
-                listener.serviceRemoved(proxy);
+                removed(listener, proxy);
             }
         }
     }
