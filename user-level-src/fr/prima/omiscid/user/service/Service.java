@@ -81,7 +81,7 @@ public interface Service {
     /**
      * Stops the service : closes all the connections and unregisters the service
      */
-    public void stop() ;
+    public void stop();
     
     
     /**
@@ -214,7 +214,7 @@ public interface Service {
      * @see Service#addVariable
      */
     public void setVariableValue(String varName, String varValue)
-    throws UnknownVariable, WrongVariableAccessType ;
+    throws UnknownVariable, WrongVariableAccessType;
     
     /**
      * Returns the variable value
@@ -224,7 +224,7 @@ public interface Service {
      * @see Service#addVariable
      */
     public String getVariableValue(String varName)
-    throws UnknownVariable ;
+    throws UnknownVariable;
     
     /**
      * Creates a new variable for this service.
@@ -237,7 +237,7 @@ public interface Service {
      *
      */
     public void addVariable(String varName, String type, String description, VariableAccessType accessType)
-    throws VariableAlreadyExisting, ServiceRunning ;
+    throws VariableAlreadyExisting, ServiceRunning;
     
     /**
      * Associate a description to an existing variable
@@ -246,7 +246,7 @@ public interface Service {
      * @throws UnknownVariable thrown if the variable has not been created
      */
     public void setVariableDescription(String varName, String varDescription)
-    throws UnknownVariable ;
+    throws UnknownVariable;
     
     /**
      * Returns the description associated to a variable
@@ -256,7 +256,7 @@ public interface Service {
      * @see Service#addVariable(String, String, String, VariableAccessType)
      */
     public String getVariableDescription(String varName)
-    throws UnknownVariable ;
+    throws UnknownVariable;
     
     /**
      * Returns the variable access type
@@ -266,7 +266,7 @@ public interface Service {
      * @see Service#addVariable(String, String, String, VariableAccessType)
      */
     public String getVariableAccessType(String varName)
-    throws UnknownVariable ;
+    throws UnknownVariable;
     
     /**
      * Returns the string version of the variable type
@@ -276,7 +276,7 @@ public interface Service {
      * @see Service#addVariable(String, String, String, VariableAccessType)
      */
     public String getVariableType(String varName)
-    throws UnknownVariable ;
+    throws UnknownVariable;
     
     /**
      * Adds a listener that will be triggered at every variable change. The listener must
@@ -289,7 +289,7 @@ public interface Service {
      * @see Service#addVariable(String, String, String, VariableAccessType)
      */
     public void addLocalVariableListener(String varName, final LocalVariableListener listener)
-    throws UnknownVariable ;
+    throws UnknownVariable;
     
     /**
      * Removes a listener on a variable change
@@ -299,7 +299,7 @@ public interface Service {
      * @see Service#addVariable(String, String, String, VariableAccessType)
      */
     public void removeLocalVariableListener(String varName, LocalVariableListener listener)
-    throws UnknownVariable ;
+    throws UnknownVariable;
     
     /**
      * Removes a connector listener
@@ -307,7 +307,7 @@ public interface Service {
      * @param listener the connector listener
      * @throws UnknownConnector the connector does not exist
      */
-    public void removeConnectorListener(String connector, ConnectorListener listener) throws UnknownConnector ;
+    public void removeConnectorListener(String connector, ConnectorListener listener) throws UnknownConnector;
     
     /**
      * Connects a local connector to a remote connector of a remote service
@@ -317,6 +317,7 @@ public interface Service {
      * @throws UnknownConnector thrown if one of the connector does not exist
      * @throws IncorrectConnectorType thrown if the coonnectors cannot connect : for instance : trying to connect an input
      * connector on another input connector.
+     * @throws fr.prima.omiscid.user.exception.ConnectionRefused 
      */
     public void connectTo(String localConnector, ServiceProxy proxy, String remoteConnector)
     throws UnknownConnector, IncorrectConnectorType, ConnectionRefused;
@@ -327,7 +328,7 @@ public interface Service {
      * @return the service Proxy
      * @see ServiceProxy
      */
-    public ServiceProxy findService(ServiceFilter filter) ;
+    public ServiceProxy findService(ServiceFilter filter);
     
     /**
      * Finds a list of services on the network.
@@ -335,7 +336,7 @@ public interface Service {
      * @return the list of associated services proxy
      * @see ServiceProxy
      */
-    public HashMap<ServiceFilter, ServiceProxy> findServices(ServiceFilter[] filters) ;
+    public HashMap<ServiceFilter, ServiceProxy> findServices(ServiceFilter[] filters);
     
     /**
      * Finds a service on the network.
@@ -344,7 +345,7 @@ public interface Service {
      * @return the service Proxy or null if the search timed out
      * @see ServiceProxy
      */
-    public ServiceProxy findService(ServiceFilter filter, long timeout) ;
+    public ServiceProxy findService(ServiceFilter filter, long timeout);
     
     /**
      * Finds a list of services on the network.
@@ -353,5 +354,5 @@ public interface Service {
      * @return the list of associated services proxy
      * @see ServiceProxy
      */
-    public HashMap<ServiceFilter, ServiceProxy> findServices(ServiceFilter[] filters, long timeout) ;
+    public HashMap<ServiceFilter, ServiceProxy> findServices(ServiceFilter[] filters, long timeout);
 }

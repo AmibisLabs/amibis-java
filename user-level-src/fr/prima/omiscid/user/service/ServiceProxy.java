@@ -49,31 +49,31 @@ public interface ServiceProxy {
      * Returns the service name (as it appears in DNS-SD)
      * @return the service name
      */
-    public String getName() ;
+    public String getName();
     
     /**
      * Returns the list of variables
      * @return the list of variables
      */
-    public Set<String> getVariables() ;
+    public Set<String> getVariables();
     
     /**
      * Returns the list of connectors (input type)
      * @return the list of connectors
      */
-    public Set<String> getInputConnectors() ;
+    public Set<String> getInputConnectors();
     
     /**
      * Returns the list of connectors (output type)
      * @return the list of connectors
      */
-    public Set<String> getOutputConnectors() ;
+    public Set<String> getOutputConnectors();
     
     /**
      * Returns the list of connectors (input-output type)
      * @return the list of connectors
      */
-    public Set<String> getInputOutputConnectors() ;
+    public Set<String> getInputOutputConnectors();
     
     /**
      * Updates the local view of a remote bip service :
@@ -82,23 +82,24 @@ public interface ServiceProxy {
      * <li> the list of connectors</li>
      * </ul>
      */
-    public void updateDescription() ;
+    public void updateDescription();
     
     /**
      * Host name where the remote service is located
      * @return the host name
      */
-    public String getHostName() ;
+    public String getHostName();
     
     /**
-     * The Peer Id of the remote bip service
+     * The peer identifier of the remote service
      * @return the peer id
      */
-    public int getPeerId() ;
+    public int getPeerId();
     
     /**
      * Sets the new value of a remote variable
      * @param varName the name of the remote variable
+     * @throws fr.prima.omiscid.user.exception.UnknownVariable 
      * @param value the value (String format)
      */
     public void setVariableValue(String varName, String value)
