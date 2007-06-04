@@ -424,6 +424,7 @@ public class OmiscidService {
                 }
             }
         }
+        variables.put(GlobalConstants.constantNameForPeerId, new VariableAttribute(GlobalConstants.constantNameForPeerId, VariableAccessType.CONSTANT, OmiscidService.cleanName(serviceInformation.getFullName())));
     }
 
     public String getVariableValue(String variableName) {
@@ -513,7 +514,6 @@ public class OmiscidService {
      * variables and attributes.
      */
     public boolean queryCompleteDescription() {
-        System.out.println("query");
         ControlQuery controlQuery = new ControlQuery();
         FullDescription fullDescription = new FullDescription();
         ControlQueryItem controlQueryItem = new ControlQueryItem();
