@@ -355,4 +355,18 @@ public interface Service {
      * @see ServiceProxy
      */
     public HashMap<ServiceFilter, ServiceProxy> findServices(ServiceFilter[] filters, long timeout);
+    
+    /**
+     * The peer identifier of the local service.
+     * @return the peer id
+     */
+    public int getPeerId();
+
+    /**
+     * The peer identifier of the local service as a hexadecimal string.
+     * The peer identifier is formated as a 8 character long string
+     * containing the lower case hexadecimal representation of the integer peer id.
+     * @return the peer id
+     */
+    public String getPeerIdAsString();
 }

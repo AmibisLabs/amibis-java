@@ -137,7 +137,11 @@ public class ServiceImpl implements Service {
     public int getPeerId() {
         return ctrlServer.getPeerId();
     }
-    
+
+    public String getPeerIdAsString() {
+        return Utility.intTo8HexString(ctrlServer.getPeerId()).toLowerCase();
+    }
+
         /* (non-Javadoc)
          * @see fr.prima.omiscid.service.Service#addConnector(java.lang.String, fr.prima.omiscid.control.interf.ChannelType)
          */

@@ -26,6 +26,7 @@
 
 package fr.prima.omiscid.user.service.impl;
 
+import fr.prima.omiscid.com.BipUtils;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -39,6 +40,7 @@ import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.user.exception.UnknownConnector;
 import fr.prima.omiscid.user.exception.UnknownVariable;
 import fr.prima.omiscid.user.service.ServiceProxy;
+import fr.prima.omiscid.user.util.Utility;
 import fr.prima.omiscid.user.variable.RemoteVariableChangeListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
@@ -155,6 +157,13 @@ public class ServiceProxyImpl implements ServiceProxy {
      */
     synchronized  public int getPeerId() {
         return omiscidService.getRemotePeerId();
+    }
+
+    /* (non-Javadoc)
+     * @see fr.prima.bip.service.BipServiceProxy#getPeerId()
+     */
+    synchronized  public String getPeerIdAsString() {
+        return Utility.intTo8HexString(getPeerId()).toLowerCase();
     }
 
     synchronized  public String toString() {

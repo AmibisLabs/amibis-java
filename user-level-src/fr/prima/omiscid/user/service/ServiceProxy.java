@@ -91,11 +91,19 @@ public interface ServiceProxy {
     public String getHostName();
     
     /**
-     * The peer identifier of the remote service
+     * The peer identifier of the remote service.
      * @return the peer id
      */
     public int getPeerId();
-    
+
+    /**
+     * The peer identifier of the remote service as a hexadecimal string.
+     * The peer identifier is formated as a 8 character long string
+     * containing the lower case hexadecimal representation of the integer peer id.
+     * @return the peer id
+     */
+    public String getPeerIdAsString();
+
     /**
      * Sets the new value of a remote variable
      * @param varName the name of the remote variable
