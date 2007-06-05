@@ -27,14 +27,9 @@
 package fr.prima.omiscid.test;
 
 import java.io.IOException;
-import java.util.Vector;
 
-import fr.prima.omiscid.user.connector.ConnectorListener;
-import fr.prima.omiscid.user.connector.ConnectorType;
-import fr.prima.omiscid.user.connector.Message;
 import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceFactory;
-import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.service.ServiceRepository;
 import fr.prima.omiscid.user.service.ServiceRepositoryListener;

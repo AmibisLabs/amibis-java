@@ -42,7 +42,7 @@ public class I0018_TestMultipleListenersOnOneRemoteVariableWithUnsubscribe {
     public static void main(String[] args) {
         ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("I0017Server");
+            final Service server = factory.create("I0018Server");
             server.addVariable("bug1", "", "an allway moving variable", VariableAccessType.READ);
             server.addVariable("bug2", "", "an allway moving variable", VariableAccessType.READ);
             server.start();
@@ -67,7 +67,7 @@ public class I0018_TestMultipleListenersOnOneRemoteVariableWithUnsubscribe {
         {
             Service client = factory.create("I0017Client");
             client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0017Server"));
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0018Server"));
             proxy.addRemoteVariableChangeListener("bug2",new RemoteVariableChangeListener() {
                 private Vector<String> values = new Vector<String>();
                 public void variableChanged(ServiceProxy serviceProxy, String variableName, String value) {
