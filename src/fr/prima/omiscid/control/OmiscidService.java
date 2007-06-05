@@ -33,7 +33,6 @@ import java.util.TimerTask;
 
 import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.TcpClient;
-import fr.prima.omiscid.com.XmlMessage;
 import fr.prima.omiscid.com.interf.BipMessageListener;
 import fr.prima.omiscid.control.interf.GlobalConstants;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
@@ -55,6 +54,7 @@ import fr.prima.omiscid.user.util.Utility;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -96,8 +96,8 @@ public class OmiscidService {
     private enum QueryState {UNQUERIED, QUERIED, FAILED, RECEIVED};
     private QueryState queryState = QueryState.UNQUERIED;
     
-    private final Map<String, VariableAttribute> variables = new HashMap<String, VariableAttribute>();
-    private final Map<String, InOutputAttribute> connectors = new HashMap<String, InOutputAttribute>();
+    private final Map<String, VariableAttribute> variables = Collections.synchronizedMap(new HashMap<String, VariableAttribute>());
+    private final Map<String, InOutputAttribute> connectors = Collections.synchronizedMap(new HashMap<String, InOutputAttribute>());
     private final Vector<String> variableSubscriptions = new Vector<String>();
     
     /**
@@ -105,6 +105,9 @@ public class OmiscidService {
      * number of user
      */
     private final Object controlClientSync = new Object();
+
+    private final Object variableSubscriptionsSync = new Object();
+    private final Object queryDescriptionSync = new Object();
     
     /** A control client to interrogate the service */
     private ControlClient ctrlClient = null;
@@ -155,7 +158,7 @@ public class OmiscidService {
      *            the id to use
      * @see OmiscidService#initControlClient()
      */
-    public void setServiceId(int peerId) {
+    public synchronized void setServiceId(int peerId) {
         if (this.peerId != 0) {
             if (this.peerId != peerId) {
                 System.err.println("Warning: peer id already set in OmiscidService (was " + Utility.intTo8HexString(this.peerId) + "), setting anyway (to "+Utility.intTo8HexString(peerId)+")");
@@ -402,6 +405,10 @@ public class OmiscidService {
         return queryCompleteDescription();
     }
     
+    /*
+     * This method is just a delegate for the constructors.
+     * It is unsynchronized on some code blocks because it is considered constructor code.
+     */
     private void parseServiceInformation() {
         if (serviceInformation != null) {
             for (String key : serviceInformation.getPropertyKeys()) {
@@ -457,12 +464,8 @@ public class OmiscidService {
         if (variable != null) {
             return variable;
         } else {
-            if (queryState == QueryState.UNQUERIED && !isServiceInformationDescriptionFull()) {
-                queryCompleteDescription();
-                return variables.get(name);
-            } else {
-                return null;
-            }
+            shouldHaveCompleteDescription();
+            return variables.get(name);
         }
     }
     
@@ -475,12 +478,8 @@ public class OmiscidService {
         if (attribute != null) {
             return attribute;
         } else {
-            if (queryState == QueryState.UNQUERIED && !isServiceInformationDescriptionFull()) {
-                queryCompleteDescription();
-                return connectors.get(name);
-            } else {
-                return null;
-            }
+            shouldHaveCompleteDescription();
+            return connectors.get(name);
         }
     }
     
@@ -512,35 +511,47 @@ public class OmiscidService {
      * {@link #queryGlobalDescription()} must have been called before calling
      * this method. This description contains the names and descriptions of all
      * variables and attributes.
+     * @return a boolean telling whether an answer has been received
      */
     public boolean queryCompleteDescription() {
-        ControlQuery controlQuery = new ControlQuery();
-        FullDescription fullDescription = new FullDescription();
-        ControlQueryItem controlQueryItem = new ControlQueryItem();
-        controlQueryItem.setFullDescription(fullDescription);
-        controlQuery.addControlQueryItem(controlQueryItem);
-        
-        try {
-            queryState = QueryState.QUERIED;
-            ControlAnswer controlAnswer = queryToServer(controlQuery, true);
-            if (controlAnswer != null) {
-                for (ControlAnswerItem item : controlAnswer.getControlAnswerItem()) {
-                    processControlAnswerItem(item);
-                }
-                queryState = QueryState.RECEIVED;
+        synchronized (queryDescriptionSync) {
+            if (queryState == QueryState.QUERIED) {
                 return true;
             } else {
-                queryState = QueryState.FAILED;
+                ControlQuery controlQuery = new ControlQuery();
+                FullDescription fullDescription = new FullDescription();
+                ControlQueryItem controlQueryItem = new ControlQueryItem();
+                controlQueryItem.setFullDescription(fullDescription);
+                controlQuery.addControlQueryItem(controlQueryItem);
+                
+                try {
+                    queryState = QueryState.QUERIED;
+                    ControlAnswer controlAnswer = queryToServer(controlQuery, true);
+                    if (controlAnswer != null) {
+                        for (ControlAnswerItem item : controlAnswer.getControlAnswerItem()) {
+                            processControlAnswerItem(item);
+                        }
+                        queryState = QueryState.RECEIVED;
+                        return true;
+                    } else {
+                        queryState = QueryState.FAILED;
+                        return false;
+                    }
+                } catch (MarshalException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (ValidationException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
                 return false;
             }
-        } catch (MarshalException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ValidationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
-        return false;
+    }
+    private void shouldHaveCompleteDescription() {
+        if (!isServiceInformationDescriptionFull()) {
+            queryCompleteDescription();
+        }
     }
     private void processControlAnswerItem(ControlAnswerItem item) {
         Object choice = item.getChoiceValue();
@@ -632,19 +643,21 @@ public class OmiscidService {
         if (ctrlClient != null) {
             VariableAttribute va = findVariable(varName);
             if (va != null) {
-                if (variableSubscriptions.contains(varName)) {
-                    variableSubscriptions.add(varName);
-                    va.addListenerChange(variableChangeListener);
-                    return true;
-                } else {
-                    boolean subscribe = subscribe(varName);
-                    if (!subscribe) {
-                        closeControlClient();
-                    } else {
+                synchronized (variableSubscriptionsSync) {
+                    if (variableSubscriptions.contains(varName)) {
                         variableSubscriptions.add(varName);
                         va.addListenerChange(variableChangeListener);
+                        return true;
+                    } else {
+                        boolean subscribe = subscribe(varName);
+                        if (!subscribe) {
+                            closeControlClient();
+                        } else {
+                            variableSubscriptions.add(varName);
+                            va.addListenerChange(variableChangeListener);
+                        }
+                        return subscribe;
                     }
-                    return subscribe;
                 }
             } else {
                 closeControlClient();
@@ -658,17 +671,19 @@ public class OmiscidService {
     public boolean unsubscribe(String varName, VariableChangeListener varListener) {
         VariableAttribute va = findVariable(varName);
         if (va != null) {
-            variableSubscriptions.remove(varName);
-            if (variableSubscriptions.contains(varName)) {
-                va.removeListenerChange(varListener);
-                return true;
-            } else {
-                boolean unsubscribe = unsubscribe(varName);
-                if (unsubscribe) {
+            synchronized (variableSubscriptionsSync) {
+                variableSubscriptions.remove(varName);
+                if (variableSubscriptions.contains(varName)) {
                     va.removeListenerChange(varListener);
-                    closeControlClient();
+                    return true;
+                } else {
+                    boolean unsubscribe = unsubscribe(varName);
+                    if (unsubscribe) {
+                        va.removeListenerChange(varListener);
+                        closeControlClient();
+                    }
+                    return unsubscribe;
                 }
-                return unsubscribe;
             }
         } else {
             return false;
@@ -732,8 +747,8 @@ public class OmiscidService {
             ControlQueryItem controlQueryItem = new ControlQueryItem();
             Unsubscribe unsubscribe = new Unsubscribe();
             unsubscribe.setName(varName);
-            controlQueryItem.setUnsubscribe(unsubscribe );
-            controlQuery.addControlQueryItem(controlQueryItem );
+            controlQueryItem.setUnsubscribe(unsubscribe);
+            controlQuery.addControlQueryItem(controlQueryItem);
             //          String request = "<unsubscribe name=\"" + va.getName() + "\"/>";
             //          queryToServer(request, false);
             try {
@@ -851,27 +866,19 @@ public class OmiscidService {
         return res;
     }
     public Set<String> getInOutputNamesSet() {
-        if (queryState == QueryState.UNQUERIED && !isServiceInformationDescriptionFull()) {
-            queryCompleteDescription();
-        }
+        shouldHaveCompleteDescription();
         return filteredCopy(connectors, ConnectorType.INOUTPUT);
     }
     public Set<String> getInputNamesSet() {
-        if (queryState == QueryState.UNQUERIED && !isServiceInformationDescriptionFull()) {
-            queryCompleteDescription();
-        }
+        shouldHaveCompleteDescription();
         return filteredCopy(connectors, ConnectorType.INPUT);
     }
     public Set<String> getOutputNamesSet() {
-        if (queryState == QueryState.UNQUERIED && !isServiceInformationDescriptionFull()) {
-            queryCompleteDescription();
-        }
+        shouldHaveCompleteDescription();
         return filteredCopy(connectors, ConnectorType.OUTPUT);
     }
     public Set<String> getVariableNamesSet() {
-        if (queryState == QueryState.UNQUERIED && !isServiceInformationDescriptionFull()) {
-            queryCompleteDescription();
-        }
+        shouldHaveCompleteDescription();
         Set<String> res = new HashSet<String>();
         res.addAll(variables.keySet());
         return res;

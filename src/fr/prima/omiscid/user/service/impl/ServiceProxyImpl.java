@@ -26,7 +26,6 @@
 
 package fr.prima.omiscid.user.service.impl;
 
-import fr.prima.omiscid.com.BipUtils;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -106,7 +105,7 @@ public class ServiceProxyImpl implements ServiceProxy {
     /* (non-Javadoc)
      * @see fr.prima.bip.service.BipServiceProxy#getVariables()
      */
-    synchronized  public Set<String> getVariables() {
+    public Set<String> getVariables() {
         return omiscidService.getVariableNamesSet();
         
     }
@@ -114,66 +113,66 @@ public class ServiceProxyImpl implements ServiceProxy {
     /* (non-Javadoc)
      * @see fr.prima.bip.service.BipServiceProxy#getInputConnectors()
      */
-    synchronized  public Set<String> getInputConnectors() {
+    public Set<String> getInputConnectors() {
         return omiscidService.getInputNamesSet();
     }
     
     /* (non-Javadoc)
      * @see fr.prima.bip.service.BipServiceProxy#updateDescription()
      */
-    synchronized  public void updateDescription() {
+    public void updateDescription() {
         checkedUpdateDescription();
     }
-    synchronized  public boolean checkedUpdateDescription() {
+    public boolean checkedUpdateDescription() {
         return omiscidService.updateDescription();
     }
     /* (non-Javadoc)
      * @see fr.prima.bip.service.BipServiceProxy#getInputOutputConnectors()
      */
-    synchronized  public Set<String> getInputOutputConnectors() {
+    public Set<String> getInputOutputConnectors() {
         return omiscidService.getInOutputNamesSet();
     }
     
     /* (non-Javadoc)
      * @see fr.prima.bip.service.BipServiceProxy#getOutputConnectors()
      */
-    synchronized  public Set<String> getOutputConnectors() {
+    public Set<String> getOutputConnectors() {
         return omiscidService.getOutputNamesSet();
     }
     
-    synchronized OmiscidService getOmiscidService() {
+    OmiscidService getOmiscidService() {
         return omiscidService;
     }
     
     /* (non-Javadoc)
      * @see fr.prima.bip.service.BipServiceProxy#getHostName()
      */
-    synchronized  public String getHostName() {
+    public String getHostName() {
         return omiscidService.getHostName();
     }
 
     /* (non-Javadoc)
      * @see fr.prima.bip.service.BipServiceProxy#getPeerId()
      */
-    synchronized  public int getPeerId() {
+    public int getPeerId() {
         return omiscidService.getRemotePeerId();
     }
 
     /* (non-Javadoc)
      * @see fr.prima.bip.service.BipServiceProxy#getPeerId()
      */
-    synchronized  public String getPeerIdAsString() {
+    public String getPeerIdAsString() {
         return Utility.intTo8HexString(getPeerId()).toLowerCase();
     }
 
-    synchronized  public String toString() {
+    public String toString() {
         return omiscidService.toString() + " " + getInputOutputConnectors();
     }
 
     /* (non-Javadoc)
      * @see fr.prima.bip.service.BipServiceProxy#setVariableValue(java.lang.String, java.lang.String)
      */
-    synchronized  public void setVariableValue(String varName, String value) throws UnknownVariable {
+    public void setVariableValue(String varName, String value) throws UnknownVariable {
         getVariable(varName); // This checks for the variable existence
         omiscidService.queryVariableModification(varName, value);
     }
@@ -181,7 +180,7 @@ public class ServiceProxyImpl implements ServiceProxy {
     /* (non-Javadoc)
      * @see fr.prima.omiscid.service.ServiceProxy#getVariableValue(java.lang.String)
      */
-    synchronized  public String getVariableValue(String varName) throws UnknownVariable {
+    public String getVariableValue(String varName) throws UnknownVariable {
         //    return getVariable(varName).getValueStr();
         return omiscidService.getVariableValue(getVariable(varName).getName());
     }
@@ -189,14 +188,14 @@ public class ServiceProxyImpl implements ServiceProxy {
     /* (non-Javadoc)
      * @see fr.prima.omiscid.service.ServiceProxy#getVariableValue(java.lang.String)
      */
-    synchronized  public VariableAccessType getVariableAccessType(String varName) throws UnknownVariable {
+    public VariableAccessType getVariableAccessType(String varName) throws UnknownVariable {
         return getVariable(varName).getAccess();
     }
     
     /* (non-Javadoc)
      * @see fr.prima.omiscid.service.ServiceProxy#addRemoteVariableChangeListener(String, fr.prima.omiscid.variable.RemoteVariableChangeListener)
      */
-    synchronized  public void addRemoteVariableChangeListener(String varName, final RemoteVariableChangeListener remoteVariableChangeListener)
+    synchronized public void addRemoteVariableChangeListener(String varName, final RemoteVariableChangeListener remoteVariableChangeListener)
             throws UnknownVariable {
         getVariable(varName); // This checks for the variable existence
         
@@ -221,7 +220,7 @@ public class ServiceProxyImpl implements ServiceProxy {
     /* (non-Javadoc)
      * @see fr.prima.omiscid.service.ServiceProxy#removeRemoteVariableChangeListener(String, fr.prima.omiscid.variable.RemoteVariableChangeListener)
      */
-    synchronized  public void removeRemoteVariableChangeListener(String varName,
+    synchronized public void removeRemoteVariableChangeListener(String varName,
             RemoteVariableChangeListener remoteVariableChangeListener)
             throws UnknownVariable {
         getVariable(varName); // This checks for the variable existence
@@ -246,7 +245,7 @@ public class ServiceProxyImpl implements ServiceProxy {
     /* (non-Javadoc)
      * @see fr.prima.omiscid.service.ServiceProxy#findConnector(int)
      */
-    synchronized  public String findConnector(int peerId) throws UnknownConnector {
+    public String findConnector(int peerId) throws UnknownConnector {
         return getConnector(peerId).getName();
     }
     
