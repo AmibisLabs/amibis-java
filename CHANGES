@@ -5,7 +5,7 @@
 In this files, you will find changes between java OMiSCID versions.
 
 1.2.0
-r2608
+r2609
         fix:  (API) (WARNING) fixing bug #3271 from gforge causes programs using LocalVariableListener#isValid to compile but with changed semantic (second parameter is now the variable name, not the variable current value anymore; current value being accessible using Service#getVariableValue)
         fix:  (API) added missing variable names on Local and Remote VariableListeners
         fix:  problem with avahi and big txt records (services with many variables)

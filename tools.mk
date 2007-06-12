@@ -60,7 +60,7 @@ checkdomain:
 
 prepare:
 	rm -rf ,,build
-	ant compile
+	ant -Dfile.encoding=utf-8 compile
 	cp -r build/classes ,,build
 	cp CHANGES ,,build/
 	cd src            && find . -name \*.java -exec cp {} ../,,build/{} \;
