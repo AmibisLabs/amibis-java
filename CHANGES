@@ -4,19 +4,9 @@
 
 In this files, you will find changes between java OMiSCID versions.
 
-
-*must: solve the castor proliferation problem
-*must: find and kill all "< (that is manually generated xml)
-*Q: should a txt record be "part" when a big constant is present? I don't think so.
-*Q: how is reflected in the dnssd txt record the fact that a connector has an udp port? I think that we always use tcp to init connections so this is not a real question
-*should: make configurable (through Java and C++) the timeout for control queries
-*could: dnssd client auto connect/reconnect
-*could: dnssd client has a list of expected servers
-
-
-1.1.1
-r
-        fix:  (API) (WARNING) fixing bug #3271 from gforge causes programs using LocalVariableListener#isValid to compile but with changed semantic (second parameter is now the variable name, not the variable current value anymore; current being accessible using Service#getVariableValue)
+1.2.0
+r2608
+        fix:  (API) (WARNING) fixing bug #3271 from gforge causes programs using LocalVariableListener#isValid to compile but with changed semantic (second parameter is now the variable name, not the variable current value anymore; current value being accessible using Service#getVariableValue)
         fix:  (API) added missing variable names on Local and Remote VariableListeners
         fix:  problem with avahi and big txt records (services with many variables)
         fix:  problem with jmdns and big txt records (services with many variables)
