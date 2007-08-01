@@ -35,41 +35,47 @@ import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
+import fr.prima.omiscid.user.util.Utility;
 import java.util.Arrays;
 import java.util.Vector;
 
-public class I0027_TestNonStartedServiceConnectorPeerId {
+public class I0028_TestSingleDisconnectKeepListeners {
     
     /*
      * This tests the new disconnection feature.
-     * It tests disconnection notification for remotely-closed locally-initiated connections.
+     * It tests remote-reconnection (remote listener receive (connection) notifications after reconnection)
+     * for a single remotely-closed locally-initiated connections.
      */
     public static void main(String[] args) throws IOException {
-        final Vector<Integer> connections = new Vector<Integer>();
         ServiceFactory factory = FactoryFactory.factory();
-        final int numberOfConnectors = 10;
+        final Vector<String> events = new Vector<String>();
         {
-            final Service server = factory.create("I0027Server");
+            final Service server = factory.create("I0028Server");
             server.addConnector("bug", "", ConnectorType.INPUT);
             server.addConnectorListener("bug", new ConnectorListener() {
+                boolean passed = false;
                 public void messageReceived(Service service,
                                             String localConnectorName,
                                             Message message) {
-                }
-
-                public void disconnected(Service service,
-                                         String localConnectorName, int peerId) {
-                }
-
-                public void connected(Service service, String localConnectorName, int peerId) {
-                    if (!connections.isEmpty() && peerId != 1+connections.lastElement()) {
-                        connections.add(peerId);
-                        FactoryFactory.failed("Not a regular sequence of peerIds found, "+Arrays.toString(connections.toArray()));
+                    events.add("SV REC "+passed);
+                    if (passed) {
+                        System.out.println(Arrays.toString(events.toArray()));
+                        FactoryFactory.failed("Second message received while connection should have been closed");
                         System.exit(1);
                     }
-                    connections.add(peerId);
-                    if (connections.size() >= numberOfConnectors) {
-                        FactoryFactory.passed("All connections received, "+Arrays.toString(connections.toArray()));
+                    passed = true;
+                    service.closeConnection(localConnectorName, message.getPeerId());
+                }
+
+                public void disconnected(Service service, String localConnectorName, int peerId) {
+                    events.add("SV DIS "+passed);
+                }
+
+                public void connected(final Service service, final String localConnectorName, final int peerId) {
+                    events.add("SV CON "+passed);
+                    if (passed) {
+                        System.out.println(Arrays.toString(events.toArray()));
+                        FactoryFactory.passed("Second connection occured");
                         System.exit(0);
                     }
                 }
@@ -77,30 +83,26 @@ public class I0027_TestNonStartedServiceConnectorPeerId {
             server.start();
         }
         {
-            final Service client = factory.create("I0027Client");
-            for (int i = 0; i < numberOfConnectors; i++) {
-                client.addConnector("bug"+i, "", ConnectorType.OUTPUT);
-            }
+            final Service client = factory.create("I0028Client");
+            client.addConnector("bug", "", ConnectorType.OUTPUT);
             //client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0027Server"));
-            for (int i = 0; i < numberOfConnectors/2; i++) {
-                client.connectTo("bug"+i, proxy, "bug");
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {}
-            }
-            client.start(); // starting does not cause connector peerids to be changed
-            for (int i = 0; i < numberOfConnectors/2; i++) {
-                client.connectTo("bug"+(numberOfConnectors/2+i), proxy, "bug");
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {}
-            }
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0028Server"));
+            client.connectTo("bug", proxy, "bug");
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {}
+            client.sendToAllClients("bug", Utility.stringToByteArray("<plop/>"));
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {}
+            client.connectTo("bug", proxy, "bug");
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {}
+            System.out.println(Arrays.toString(events.toArray()));
+            FactoryFactory.failed("Timeout logically due to problematic reconnection");
+            System.exit(1);
         }
-        try {
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {}
-        FactoryFactory.failed("Timeout logically due to a problem in connection/disconnections");
-        System.exit(1);
     }
+
 }

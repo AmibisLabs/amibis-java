@@ -62,7 +62,103 @@ public class AudioServer {
     private final long startTime = System.currentTimeMillis();
     private long lastTime = System.nanoTime()/1000000;
 
-    private void process(){
+    private void process() {
+        timeLength = (nbSamples*1000/(double)sampleRate);
+        data = new byte[33+2*nbSamples];
+        data[0] = '<';
+        data[1] = 'd';
+        data[2] = 'a';
+        data[3] = 't';
+        data[4] = 'a';
+        data[5] = ' ';
+        data[6] = 't';
+        data[7] = 'i';
+        data[8] = 'm';
+        data[9] = 'e';
+        data[10] = '=';
+        data[11] = '"';
+        data[12] = '1';
+        data[13] = '2';
+        data[14] = '3';
+        data[15] = '"';
+        data[16] = ' ';
+        data[17] = 'n';
+        data[18] = 'b';
+        data[19] = 'E';
+        data[20] = 'c';
+        data[21] = 'h';
+        data[22] = '=';
+        data[23] = '"';
+        data[24] = '2';
+        data[25] = '5';
+        data[26] = '6';
+        data[27] = '"';
+        data[28] = ' ';
+        data[29] = '/';
+        data[30] = '>';
+        data[31] = '\r';
+        data[32] = '\n';
+        long current_time = 0;
+        int nbsample_byte = 2*nbSamples;
+        double coeff = .2*2*Math.PI/nbsample_byte;
+        boolean first = true;
+        int j=0;
+        int delta = 1;
+        while (true) {
+            current_time = System.nanoTime()/1000000;
+            //System.out.println(timeLength);
+            //System.out.println(current_time);
+            //System.out.println(lastTime);
+            if (first || (current_time - lastTime > timeLength)) {
+                while (current_time - lastTime > 4*timeLength) {
+                    // too much behind of schedule, just skip
+                    lastTime += timeLength;
+                }
+                //double time = (double)(current_time - startTime);
+                //System.out.println("init : time = " + time);
+                for(int i = 33; i<nbsample_byte + 33; i+=2){
+
+                    short value = (short)((1<<12)*Math.sin(j*(i-33)*coeff));
+
+                    data[i] = (byte)(0x00FF & value);
+                    data[i+1] = (byte)((0xFF00 & value)>>8);
+
+                }
+                //System.out.println("end : time = " + time);
+                service.sendToAllClients(audioOutputName, data);
+
+
+                if (delta<0){
+                    if(j<100){
+                        delta = -1;
+                    }
+                    if(j<10){
+                        delta = 1;
+                        j = 20;
+                    }
+                } else {
+                    if(j>100){
+                        delta = 4;
+                    }
+                    if(j>300){
+                        delta = -4;
+                        j = 300;
+                    }
+                }
+                j+=delta;
+
+                //lastTime = current_time;
+                lastTime += timeLength;
+                first = false;
+            } else {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {}
+            }
+        }
+    }
+    
+    private void processOld() {
         data[0] = 'c';
         data[1] = 'h';
         data[2] = 'a';
