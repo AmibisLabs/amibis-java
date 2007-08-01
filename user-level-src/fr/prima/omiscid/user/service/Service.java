@@ -315,9 +315,11 @@ public interface Service {
      * @param proxy the proxy of the remote service
      * @param remoteConnector the name of the remote connector on the remote service
      * @throws UnknownConnector thrown if one of the connector does not exist
-     * @throws IncorrectConnectorType thrown if the coonnectors cannot connect : for instance : trying to connect an input
-     * connector on another input connector.
-     * @throws fr.prima.omiscid.user.exception.ConnectionRefused 
+     * @throws IncorrectConnectorType thrown if the coonnectors cannot connect:
+     * for instance : trying to connect an input connector on another input connector.
+     * @throws ConnectionRefused when connection is refused by remote host. This
+     * can because of network problem or to remote service (it can have been stopped
+     * since it has been found or it can have refused the connection really fast).
      */
     public void connectTo(String localConnector, ServiceProxy proxy, String remoteConnector)
     throws UnknownConnector, IncorrectConnectorType, ConnectionRefused;
@@ -369,4 +371,24 @@ public interface Service {
      * @return the peer id
      */
     public String getPeerIdAsString();
+
+    /**
+     * Closes a connection on a given connector to a given remote peer.
+     * @param connectorName the connector on which connection will be closed
+     * @param peerId the id of the remote peer which connection is to be closed
+     */
+    public void closeConnection(String localConnector, int peerId) throws UnknownConnector;
+    
+    /**
+     * Closes all connections on a given connector.
+     * @param connectorName the connector on which connections will be closed
+     */
+    public void closeAllConnections(String localConnector) throws UnknownConnector;
+    
+    /**
+     * Removes all listeners on a given connector.
+     * @param connectorName the connector on which listeners will be removed.
+     */
+    public void removeAllConnectorListeners(String localConnector) throws UnknownConnector;
+    
 }

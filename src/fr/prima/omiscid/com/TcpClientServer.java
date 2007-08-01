@@ -50,6 +50,28 @@ public class TcpClientServer extends TcpServer {
     public TcpClientServer(int peerId) throws IOException {
         super(peerId, 0);
     }
+
+    public void closeAllConnections() {
+        super.closeAllConnections();
+        synchronized (this) {
+            for (TcpClient tcpClient : clientsList.values()) {
+                tcpClient.closeConnection();
+            }
+            clientsList.clear();
+        }        
+    }
+
+    @Override
+    public void closeConnection(int peerId) {
+        super.closeConnection(peerId);
+        synchronized (this) {
+            TcpClient tcpClient = clientsList.get(peerId);
+            if (tcpClient != null) {
+                tcpClient.closeConnection();
+                clientsList.remove(peerId);
+            }
+        }
+    }
     
     public int getPeer() {return peerId;}
 
@@ -72,12 +94,20 @@ public class TcpClientServer extends TcpServer {
             // done differently (small sleep?)
         }
         synchronized (this) {
-            clientsList.put(tcpClient.getRemotePeerId(), tcpClient);
-            for (BipMessageListener listener : listenersSet) {
-                tcpClient.addBipMessageListener(listener);
+            if (tcpClient.isConnected()) {
+                clientsList.put(tcpClient.getRemotePeerId(), tcpClient);
+                for (BipMessageListener listener : listenersSet) {
+                    tcpClient.addBipMessageListener(listener);
+                }
+            } else {
+                throw new RuntimeException("Connection closed just after being created");
             }
         }
         return tcpClient.getRemotePeerId();
+    }
+
+    public void removeAllBIPMessageListeners() {
+        listenersSet.clear();
     }
 
     /*
@@ -220,10 +250,11 @@ public class TcpClientServer extends TcpServer {
      * @see fr.prima.omiscid.com.TcpServer#close()
      */
     @Override
-    public void close() {
+    public synchronized void close() {
         super.close();
         for (TcpClient client : clientsList.values()) {
             client.closeConnection();
         }
+        clientsList.clear();
     }
 }

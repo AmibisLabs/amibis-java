@@ -163,9 +163,9 @@ public class ServiceImpl implements Service {
                 alreadyExisting = false ;
             }
             
-            if (alreadyExisting)
+            if (alreadyExisting) {
                 throw new ConnectorAlreadyExisting("Connector already defined : " + connectorName) ;
-            else {
+            } else {
                 tcpClientServer = new fr.prima.omiscid.com.TcpClientServer(ctrlServer.getPeerId());
                 tcpClientServers.put(connectorName, tcpClientServer) ;
                 ioa = ctrlServer.addInOutput(connectorName, tcpClientServer, connectorKind);
@@ -674,5 +674,38 @@ public class ServiceImpl implements Service {
             }
         }
         return result ;
+    }
+
+    public void closeConnection(String localConnector, int peerId) throws UnknownConnector {
+        // we first check if we can find the connectors
+        TcpClientServer localClientServer = null ;
+        try {
+            localClientServer = getTcpClientServer(localConnector) ;
+        } catch (UnknownConnector e) {
+            throw new UnknownConnector("Unknown local connector : " + localConnector) ;
+        }
+        localClientServer.closeConnection(peerId);
+    }
+
+    public void closeAllConnections(String localConnector) throws UnknownConnector {
+        // we first check if we can find the connectors
+        TcpClientServer localClientServer = null ;
+        try {
+            localClientServer = getTcpClientServer(localConnector) ;
+        } catch (UnknownConnector e) {
+            throw new UnknownConnector("Unknown local connector : " + localConnector) ;
+        }
+        localClientServer.closeAllConnections();
+    }
+
+    public void removeAllConnectorListeners(String localConnector) throws UnknownConnector {
+        // we first check if we can find the connectors
+        TcpClientServer localClientServer = null ;
+        try {
+            localClientServer = getTcpClientServer(localConnector) ;
+        } catch (UnknownConnector e) {
+            throw new UnknownConnector("Unknown local connector : " + localConnector) ;
+        }
+        localClientServer.removeAllBIPMessageListeners();
     }
 }

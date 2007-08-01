@@ -14,7 +14,8 @@ In this files, you will find changes between java OMiSCID versions.
 
 1.
 r
-
+        fix:  problem of wrong peerId passed to connector listeners when the client is an non-started service and has multiple connectors connected to a same connector
+        impr: (API) added closeConnection, closeAllConnections and removeAllConnectorListeners method to the Service interface
 
 1.2.0
 r2609

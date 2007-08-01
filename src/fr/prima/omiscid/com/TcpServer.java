@@ -117,6 +117,27 @@ public class TcpServer implements CommunicationServer {
         }
     }
 
+    public void closeConnection(int peerId) {
+        synchronized (connectionsSet) {
+            for (MessageSocketTCP socket : connectionsSet) {
+                if (socket.getRemotePeerId() == peerId) {
+                    socket.closeConnection();
+                    connectionsSet.remove(socket);
+                    break;
+                }
+            }
+        }
+    }
+
+    void closeAllConnections() {
+        synchronized (connectionsSet) {
+            for (MessageSocketTCP socket : connectionsSet) {
+                socket.closeConnection();
+            }
+            connectionsSet.clear();
+        }
+    }
+
     /**
      * Method run by the listening thread to accept new connections and
      * initialize {@link MessageSocketTCP}.
