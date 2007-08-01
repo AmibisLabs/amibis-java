@@ -43,6 +43,7 @@ import org.exolab.castor.xml.ValidationException;
 import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.CommunicationServer;
 import fr.prima.omiscid.com.MessageManager;
+import fr.prima.omiscid.com.TcpClientServer;
 import fr.prima.omiscid.com.TcpServer;
 import fr.prima.omiscid.control.interf.GlobalConstants;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
@@ -544,13 +545,14 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      *         object can be manipulate to specify the in/output description for
      *         example.
      */
-    public InOutputAttribute addInOutput(String name, CommunicationServer communicationServer, ConnectorType ioKind) {
+    public InOutputAttribute addInOutput(String name, TcpClientServer tcpClientServer, ConnectorType ioKind) {
         int connectorPeerId = getPeerId() + inoutputIndexCounter;
         inoutputIndexCounter++;
         if (inoutputIndexCounter > 255) {
             System.err.println("max inoutput count reached");
         }
-        InOutputAttribute ioa = new InOutputAttribute(name, communicationServer, connectorPeerId);
+        tcpClientServer.setPeerId(connectorPeerId);
+        InOutputAttribute ioa = new InOutputAttribute(name, tcpClientServer, connectorPeerId);
         ioa.setConnectorType(ioKind);
         inoutputsSet.add(ioa);
         return ioa;
