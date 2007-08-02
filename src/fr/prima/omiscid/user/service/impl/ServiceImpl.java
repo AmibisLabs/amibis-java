@@ -48,6 +48,7 @@ import fr.prima.omiscid.user.connector.ConnectorType;
 import fr.prima.omiscid.user.connector.Message;
 import fr.prima.omiscid.user.exception.ConnectionRefused;
 import fr.prima.omiscid.user.exception.ConnectorAlreadyExisting;
+import fr.prima.omiscid.user.exception.ConnectorLimitReached;
 import fr.prima.omiscid.user.exception.IncorrectConnectorType;
 import fr.prima.omiscid.user.exception.ServiceRunning;
 import fr.prima.omiscid.user.exception.UnknownConnector;
@@ -146,7 +147,7 @@ public class ServiceImpl implements Service {
          * @see fr.prima.omiscid.service.Service#addConnector(java.lang.String, fr.prima.omiscid.control.interf.ChannelType)
          */
     synchronized  public void addConnector(String connectorName,
-            String connectorDescription, ConnectorType connectorKind) throws ConnectorAlreadyExisting, IOException, ServiceRunning {
+            String connectorDescription, ConnectorType connectorKind) throws ConnectorAlreadyExisting, IOException, ServiceRunning, ConnectorLimitReached {
         
         if (started)
             throw new ServiceRunning("addConnector");
@@ -167,8 +168,12 @@ public class ServiceImpl implements Service {
                 throw new ConnectorAlreadyExisting("Connector already defined : " + connectorName) ;
             } else {
                 tcpClientServer = new fr.prima.omiscid.com.TcpClientServer(ctrlServer.getPeerId());
+                try {
+                    ioa = ctrlServer.addInOutput(connectorName, tcpClientServer, connectorKind);
+                } catch (ControlServer.MaxInoutputCountReached e) {
+                    throw new ConnectorLimitReached("Maximum connector count reached");
+                }
                 tcpClientServers.put(connectorName, tcpClientServer) ;
-                ioa = ctrlServer.addInOutput(connectorName, tcpClientServer, connectorKind);
                 ioa.setDescription(connectorDescription);
                 tcpClientServer.start() ;
             }

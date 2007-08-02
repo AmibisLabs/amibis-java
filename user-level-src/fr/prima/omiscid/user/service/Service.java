@@ -34,6 +34,7 @@ import fr.prima.omiscid.user.connector.ConnectorListener;
 import fr.prima.omiscid.user.connector.ConnectorType;
 import fr.prima.omiscid.user.exception.ConnectionRefused;
 import fr.prima.omiscid.user.exception.ConnectorAlreadyExisting;
+import fr.prima.omiscid.user.exception.ConnectorLimitReached;
 import fr.prima.omiscid.user.exception.IncorrectConnectorType;
 import fr.prima.omiscid.user.exception.ServiceRunning;
 import fr.prima.omiscid.user.exception.UnknownConnector;
@@ -57,10 +58,11 @@ public interface Service {
      * @throws ConnectorAlreadyExisting thrown if we try to recreate an already existing connector
      * @throws IOException thrown if there is an error in the tcp socket creation
      * @throws ServiceRunning It is not possible to add a new connector if the service is already running. You have to stop it before
+     * @throws ConnectorLimitReached when no more connectors can be added to the service.
      */
     public void addConnector(String connectorName,
             String connectorDescription,
-            ConnectorType connectorKind) throws ConnectorAlreadyExisting, IOException, ServiceRunning;
+            ConnectorType connectorKind) throws ConnectorAlreadyExisting, IOException, ServiceRunning, ConnectorLimitReached;
     
     /**
      * Add a message listener to a connector

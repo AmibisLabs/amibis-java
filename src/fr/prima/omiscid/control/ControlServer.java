@@ -549,7 +549,8 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         int connectorPeerId = getPeerId() + inoutputIndexCounter;
         inoutputIndexCounter++;
         if (inoutputIndexCounter > 255) {
-            System.err.println("max inoutput count reached");
+            inoutputIndexCounter--;
+            throw new MaxInoutputCountReached();
         }
         tcpClientServer.setPeerId(connectorPeerId);
         InOutputAttribute ioa = new InOutputAttribute(name, tcpClientServer, connectorPeerId);
@@ -557,6 +558,8 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         inoutputsSet.add(ioa);
         return ioa;
     }
+    
+    public static class MaxInoutputCountReached extends RuntimeException {}
 
 //    /**
 //     * Generates a short global description for the service. Used to answer to
