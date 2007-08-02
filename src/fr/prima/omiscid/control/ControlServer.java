@@ -41,7 +41,6 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
 import fr.prima.omiscid.com.BipUtils;
-import fr.prima.omiscid.com.CommunicationServer;
 import fr.prima.omiscid.com.MessageManager;
 import fr.prima.omiscid.com.TcpClientServer;
 import fr.prima.omiscid.com.TcpServer;
@@ -254,7 +253,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
                     int connectorIndex = Utility.PeerId.connectorIndexFromPeerId(io.getPeerId());
                     io.setPeerId(Utility.PeerId.connectorPeerIdFromIndex(getPeerId(), connectorIndex));
                     assert Utility.PeerId.rootPeerIdFromConnectorPeerId(io.getPeerId()) == peerId;
-                };
+                }
                 tcpServer.addBipMessageListener(this);
                 tcpServer.start();
                 return true;
@@ -464,6 +463,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         processMessagesThreadRunning = true;
         if (threadProcessMessages == null || !threadProcessMessages.isAlive()) {
             threadProcessMessages = new Thread() {
+                @Override
                 public void run() {
                     while (ControlServer.this.processMessagesThreadRunning) {
                         if (waitForMessages()) {
@@ -547,11 +547,13 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      */
     public InOutputAttribute addInOutput(String name, TcpClientServer tcpClientServer, ConnectorType ioKind) {
         int connectorPeerId = getPeerId() + inoutputIndexCounter;
-        inoutputIndexCounter++;
+        // we can have only 255 connectors (from 01 to FF)
+        // inoutputIndexCounter starts at 1
         if (inoutputIndexCounter > 255) {
             inoutputIndexCounter--;
             throw new MaxInoutputCountReached();
         }
+        inoutputIndexCounter++;
         tcpClientServer.setPeerId(connectorPeerId);
         InOutputAttribute ioa = new InOutputAttribute(name, tcpClientServer, connectorPeerId);
         ioa.setConnectorType(ioKind);
