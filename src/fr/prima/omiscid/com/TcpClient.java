@@ -81,9 +81,9 @@ public class TcpClient extends MessageSocketTCP {
         try {
             socket.connect(endpoint);
         } catch (UnknownHostException e) {
-            String removalPattern = "-[0-9][0-9]?$";
+            String removalPattern = "^(.*)-[0-9][0-9]?$";
             if (host.matches(removalPattern)) {
-                host = host.replaceFirst(removalPattern, "");
+                host = host.replaceFirst(removalPattern, "$1");
                 endpoint = new InetSocketAddress(host, port);
                 socket.connect(endpoint);
             } else {
