@@ -18,6 +18,7 @@ r
         fix:  no exception was thrown when adding too many connectors (more than 255) (see associated API impr below)
         impr: (API) added closeConnection, closeAllConnections and removeAllConnectorListeners method to the Service interface
         impr: (API) added a ConnectorLimitReached runtime exception on Service#addConnector that is thrown when too many connectors are added to a service
+        impr: on the model of removing the possible trailing "-2" on the hostname, all "-" followed by a one or two digit number is removed if needed
 
 1.2.0
 r2609
