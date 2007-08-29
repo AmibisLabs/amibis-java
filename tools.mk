@@ -83,3 +83,7 @@ headers:
 	find dnssd-src -name \*.java -exec ./set-header.sh {} \;
 	find user-level-src -name \*.java -exec ./set-header.sh {} \;
 	find test -name \*.java -exec ./set-header.sh {} \;
+
+tests:
+	ant -Dfile.encoding=utf-8 jar
+	@./tests.sh "$(patsubst %,lib/%,$(release-jars))"

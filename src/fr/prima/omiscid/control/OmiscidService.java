@@ -441,6 +441,12 @@ public class OmiscidService {
             // it is also constant so we must have its correct value in cache
             return variable.getValueStr();
         }
+        synchronized (variableSubscriptionsSync) {
+            if (variableSubscriptions.contains(variableName)) {
+                // if we have a subscription to this variable we can return the current value
+                return variable.getValueStr();
+            }
+        }
         // finally we query the variable and return the obtained value
         queryVariableDescription(variableName);
         variable = variables.get(variableName);

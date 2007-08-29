@@ -35,7 +35,7 @@ import fr.prima.omiscid.user.service.ServiceRepository;
 import fr.prima.omiscid.user.service.ServiceRepositoryListener;
 import fr.prima.omiscid.user.util.Utility;
 
-/*- INTERACTIVE -*/
+/*- IGNORE -*/
 public class I0010_ServiceRepositoryBasicTests {
     
     public static void main(String[] args) throws IOException, InterruptedException {

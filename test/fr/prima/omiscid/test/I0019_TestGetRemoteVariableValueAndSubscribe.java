@@ -45,6 +45,9 @@ import fr.prima.omiscid.user.variable.VariableAccessType;
  * This could probably be done with a simpler test case. It has been tried.
  * However it seems it is not: I0020 is passing at current time whereas I0019
  * is not.
+ * 
+ * Before the fix, this test passes some times but less than 2 times over 3.
+ * 
  */
 public class I0019_TestGetRemoteVariableValueAndSubscribe {
     

@@ -16,6 +16,7 @@ In this files, you will find changes between java OMiSCID versions.
 r
         fix:  problem of wrong peerId passed to connector listeners when the client is an non-started service and has multiple connectors connected to a same connector
         fix:  no exception was thrown when adding too many connectors (more than 255) (see associated API impr below)
+        fix:  querying variable value while having subscribe to its modifications was causing unnecessary remote variable listener notifications
         impr: (API) added closeConnection, closeAllConnections and removeAllConnectorListeners method to the Service interface
         impr: (API) added a ConnectorLimitReached runtime exception on Service#addConnector that is thrown when too many connectors are added to a service
         impr: on the model of removing the possible trailing "-2" on the hostname, all "-" followed by a one or two digit number is removed if needed

@@ -29,6 +29,7 @@ package fr.prima.omiscid.test;
 import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.impl.ServiceFactoryImpl;
 
+/*- IGNORE -*/
 public class FactoryFactory {
 
     /*package*/ static ServiceFactory factory() {

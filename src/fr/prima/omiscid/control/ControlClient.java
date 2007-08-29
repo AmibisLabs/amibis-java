@@ -31,12 +31,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.exolab.castor.xml.MarshalException;
@@ -48,22 +46,8 @@ import fr.prima.omiscid.com.XmlMessage;
 import fr.prima.omiscid.com.interf.BipMessageListener;
 import fr.prima.omiscid.control.interf.GlobalConstants;
 import fr.prima.omiscid.control.message.answer.ControlAnswer;
-import fr.prima.omiscid.control.message.answer.ControlAnswerItem;
-import fr.prima.omiscid.control.message.answer.ControlEvent;
-import fr.prima.omiscid.control.message.answer.types.CA_LockResultType;
 import fr.prima.omiscid.control.message.query.ControlQuery;
-import fr.prima.omiscid.control.message.query.ControlQueryItem;
-import fr.prima.omiscid.control.message.query.FullDescription;
-import fr.prima.omiscid.control.message.query.Inoutput;
-import fr.prima.omiscid.control.message.query.Input;
-import fr.prima.omiscid.control.message.query.Lock;
-import fr.prima.omiscid.control.message.query.Output;
-import fr.prima.omiscid.control.message.query.Subscribe;
-import fr.prima.omiscid.control.message.query.Unlock;
-import fr.prima.omiscid.control.message.query.Unsubscribe;
-import fr.prima.omiscid.control.message.query.Variable;
 import fr.prima.omiscid.user.connector.Message;
-import fr.prima.omiscid.user.exception.MessageInterpretationException;
 import fr.prima.omiscid.user.util.Utility;
 
 /**

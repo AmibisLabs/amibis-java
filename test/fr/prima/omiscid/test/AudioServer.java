@@ -31,10 +31,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author emonet
- */
+/*- IGNORE -*/
 public class AudioServer {
 
     private final static String serviceName = "AudioRouter";
