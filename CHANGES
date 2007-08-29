@@ -19,6 +19,7 @@ r
         impr: (API) added closeConnection, closeAllConnections and removeAllConnectorListeners method to the Service interface
         impr: (API) added a ConnectorLimitReached runtime exception on Service#addConnector that is thrown when too many connectors are added to a service
         impr: on the model of removing the possible trailing "-2" on the hostname, all "-" followed by a one or two digit number is removed if needed
+        impr: was using 100% cpu when waiting to connectTo (or when trying to connect to connector of buggous/nasty service)
 
 1.2.0
 r2609

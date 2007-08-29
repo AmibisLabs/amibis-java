@@ -89,9 +89,11 @@ public class TcpClientServer extends TcpServer {
         TcpClient tcpClient = new TcpClient(peerId);
         tcpClient.connectTo(host, port); // throws the IOException
         while (tcpClient.getRemotePeerId() == 0) {
-            Thread.yield();
-            // \REVIEWTASK probably 100% cpu usage, should be tested and
-            // done differently (small sleep?)
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         synchronized (this) {
             if (tcpClient.isConnected()) {
