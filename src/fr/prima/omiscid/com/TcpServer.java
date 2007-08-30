@@ -117,15 +117,16 @@ public class TcpServer implements CommunicationServer {
         }
     }
 
-    public void closeConnection(int peerId) {
+    public boolean closeConnection(int peerId) {
         synchronized (connectionsSet) {
             for (MessageSocketTCP socket : connectionsSet) {
                 if (socket.getRemotePeerId() == peerId) {
                     socket.closeConnection();
                     connectionsSet.remove(socket);
-                    break;
+                    return true;
                 }
             }
+            return false;
         }
     }
 

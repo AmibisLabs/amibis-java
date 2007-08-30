@@ -573,11 +573,11 @@ public class ServiceImpl implements Service {
         for (String remoteConnectorName : serviceProxy.getInputConnectors()) {
             int remotePeerId = ((ServiceProxyImpl)serviceProxy).getOmiscidService().findInput(remoteConnectorName).getPeerId();
             sendToOneClient(connectorName, msg, remotePeerId,unreliableButFastSend) ;
-        };
+        }
         for (String remoteConnectorName : serviceProxy.getInputOutputConnectors()) {
             int remotePeerId = ((ServiceProxyImpl)serviceProxy).getOmiscidService().findInOutput(remoteConnectorName).getPeerId();
             sendToOneClient(connectorName, msg, remotePeerId,unreliableButFastSend) ;
-        };
+        }
     }
     synchronized  public void sendToOneClient(String connectorName, byte[] msg, ServiceProxy serviceProxy) throws UnknownConnector {
         sendToOneClient(connectorName, msg, serviceProxy, false);
@@ -596,6 +596,7 @@ public class ServiceImpl implements Service {
         }
     }
     
+    @Override
     synchronized  public String toString() {
         return ctrlServer.getServiceName() + " : " + Integer.toHexString(ctrlServer.getPeerId()) ;
     }
@@ -681,7 +682,7 @@ public class ServiceImpl implements Service {
         return result ;
     }
 
-    public void closeConnection(String localConnector, int peerId) throws UnknownConnector {
+    synchronized public boolean closeConnection(String localConnector, int peerId) throws UnknownConnector {
         // we first check if we can find the connectors
         TcpClientServer localClientServer = null ;
         try {
@@ -689,10 +690,27 @@ public class ServiceImpl implements Service {
         } catch (UnknownConnector e) {
             throw new UnknownConnector("Unknown local connector : " + localConnector) ;
         }
-        localClientServer.closeConnection(peerId);
+        return localClientServer.closeConnection(peerId);
     }
 
-    public void closeAllConnections(String localConnector) throws UnknownConnector {
+    synchronized public boolean closeConnection(String localConnector, ServiceProxy serviceProxy) throws UnknownConnector {
+        boolean res = false;
+        for (String remoteConnectorName : serviceProxy.getInputConnectors()) {
+            int remotePeerId = ((ServiceProxyImpl)serviceProxy).getOmiscidService().findInput(remoteConnectorName).getPeerId();
+            res |= closeConnection(localConnector, remotePeerId);
+        }
+        for (String remoteConnectorName : serviceProxy.getInputOutputConnectors()) {
+            int remotePeerId = ((ServiceProxyImpl)serviceProxy).getOmiscidService().findInOutput(remoteConnectorName).getPeerId();
+            res |= closeConnection(localConnector, remotePeerId);
+        }
+        for (String remoteConnectorName : serviceProxy.getOutputConnectors()) {
+            int remotePeerId = ((ServiceProxyImpl)serviceProxy).getOmiscidService().findOutput(remoteConnectorName).getPeerId();
+            res |= closeConnection(localConnector, remotePeerId);
+        }
+        return res;
+    }
+
+    synchronized public void closeAllConnections(String localConnector) throws UnknownConnector {
         // we first check if we can find the connectors
         TcpClientServer localClientServer = null ;
         try {
@@ -703,7 +721,13 @@ public class ServiceImpl implements Service {
         localClientServer.closeAllConnections();
     }
 
-    public void removeAllConnectorListeners(String localConnector) throws UnknownConnector {
+    synchronized public void closeAllConnections() {
+        for (String connectorName : tcpClientServers.keySet()) {
+            closeAllConnections(connectorName);
+        }
+    }
+
+    synchronized public void removeAllConnectorListeners(String localConnector) throws UnknownConnector {
         // we first check if we can find the connectors
         TcpClientServer localClientServer = null ;
         try {
@@ -712,5 +736,11 @@ public class ServiceImpl implements Service {
             throw new UnknownConnector("Unknown local connector : " + localConnector) ;
         }
         localClientServer.removeAllBIPMessageListeners();
+    }
+
+    synchronized public void removeAllConnectorListeners() {
+        for (String connectorName : tcpClientServers.keySet()) {
+            removeAllConnectorListeners(connectorName);
+        }
     }
 }

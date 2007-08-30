@@ -62,15 +62,19 @@ public class TcpClientServer extends TcpServer {
     }
 
     @Override
-    public void closeConnection(int peerId) {
-        super.closeConnection(peerId);
+    public boolean closeConnection(int peerId) {
+        if (super.closeConnection(peerId)) {
+            return true;
+        }
         synchronized (this) {
             TcpClient tcpClient = clientsList.get(peerId);
             if (tcpClient != null) {
                 tcpClient.closeConnection();
                 clientsList.remove(peerId);
+                return true;
             }
         }
+        return false;
     }
     
     public int getPeer() {return peerId;}

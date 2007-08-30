@@ -378,9 +378,18 @@ public interface Service {
      * Closes a connection on a given connector to a given remote peer.
      * @param connectorName the connector on which connection will be closed
      * @param peerId the id of the remote peer which connection is to be closed
+     * @return whether the connection existed and have been closed
      */
-    public void closeConnection(String localConnector, int peerId) throws UnknownConnector;
+    public boolean closeConnection(String localConnector, int peerId) throws UnknownConnector;
     
+    /**
+     * Closes a connection on a given connector to a given remote peer.
+     * @param connectorName the connector on which connection will be closed
+     * @param serviceProxy the ServiceProxy which connection is to be closed
+     * @return whether the connection existed and have been closed
+     */
+    public boolean closeConnection(String localConnector, ServiceProxy serviceProxy) throws UnknownConnector;
+
     /**
      * Closes all connections on a given connector.
      * @param connectorName the connector on which connections will be closed
@@ -388,9 +397,18 @@ public interface Service {
     public void closeAllConnections(String localConnector) throws UnknownConnector;
     
     /**
+     * Closes all connections on all connectors.
+     */
+    public void closeAllConnections();
+    
+    /**
      * Removes all listeners on a given connector.
      * @param connectorName the connector on which listeners will be removed.
      */
     public void removeAllConnectorListeners(String localConnector) throws UnknownConnector;
     
+    /**
+     * Removes all listeners on all connectors.
+     */
+    public void removeAllConnectorListeners();
 }
