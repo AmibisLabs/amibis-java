@@ -4,6 +4,7 @@ export LD_LIBRARY_PATH=/usr/lib:./lib/
 cp=$(echo "$1" | sed 's@ @:@g')
 
 failures=""
+passed=""
 tests=""
 
 function runTest() {
@@ -15,6 +16,11 @@ function runTest() {
         then
         failures=$(echo "${failures}" ; echo "$1")
     fi
+    echo "$out" | grep 'Test Passed' > /dev/null
+    if test $? -eq 0
+        then
+        passed=$(echo "${passed}" ; echo "$1")
+    fi
     tests=$(echo "${tests}" ; echo "$1")
 }
 
@@ -24,7 +30,9 @@ for i in $(find test -name \*.java | sed 's@^test/@@g' | sort)
 done
 
 failuresCount=$(printf "%s"  "$failures" | wc -l)
+passedCount=$(printf "%s"  "$passed" | wc -l)
 testsCount=$(printf "%s" "$tests" | wc -l)
 
+echo "Passed:   ${passedCount}/${testsCount}"
 echo "Failures: ${failuresCount}/${testsCount}"
 printf "%s\\n" "$failures" | egrep -v -e '^$' | sed 's@^@   @g'

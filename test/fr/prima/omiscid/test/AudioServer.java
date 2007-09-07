@@ -101,7 +101,10 @@ public class AudioServer {
         boolean first = true;
         int j=0;
         int delta = 1;
+        double phase = 0;
+        double oldPhase;
         while (true) {
+            oldPhase = phase;
             current_time = System.nanoTime()/1000000;
             //System.out.println(timeLength);
             //System.out.println(current_time);
@@ -113,14 +116,16 @@ public class AudioServer {
                 }
                 //double time = (double)(current_time - startTime);
                 //System.out.println("init : time = " + time);
-                for(int i = 33; i<nbsample_byte + 33; i+=2){
-
-                    short value = (short)((1<<12)*Math.sin(j*(i-33)*coeff));
+                int i;
+                for (i = 33; i < nbsample_byte + 33; i += 2) {
+                    phase = j*(i-33)*coeff + oldPhase;
+                    short value = (short)((1<<12)*Math.sin(phase));
 
                     data[i] = (byte)(0x00FF & value);
                     data[i+1] = (byte)((0xFF00 & value)>>8);
 
                 }
+                phase = j*(i-33)*coeff + oldPhase;
                 //System.out.println("end : time = " + time);
                 service.sendToAllClients(audioOutputName, data);
 
