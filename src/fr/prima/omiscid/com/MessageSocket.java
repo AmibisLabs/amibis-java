@@ -335,7 +335,7 @@ public abstract class MessageSocket {
     /**
      * the object who manage the byte reception and the OMiSCID detection
      */
-    protected ReceiveBuffer receiveBuffer = null;
+    ReceiveBuffer receiveBuffer = null;
 
     /** Set of listener to call when a BIP message is received */
     private Set<BipMessageListener> listenersSet;
@@ -401,7 +401,7 @@ public abstract class MessageSocket {
             listenersSet.remove(listener);
         }
     }
-
+    
     public void newMessageReceived(Message message) {
         synchronized (listenersSet) {
             for (BipMessageListener listener : listenersSet) {

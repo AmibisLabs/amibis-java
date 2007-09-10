@@ -320,8 +320,7 @@ public interface Service {
      * @throws IncorrectConnectorType thrown if the coonnectors cannot connect:
      * for instance : trying to connect an input connector on another input connector.
      * @throws ConnectionRefused when connection is refused by remote host. This
-     * can because of network problem or to remote service (it can have been stopped
-     * since it has been found or it can have refused the connection really fast).
+     * can because of network problem.
      */
     public void connectTo(String localConnector, ServiceProxy proxy, String remoteConnector)
     throws UnknownConnector, IncorrectConnectorType, ConnectionRefused;

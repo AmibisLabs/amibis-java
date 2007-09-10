@@ -91,6 +91,9 @@ public class TcpClientServer extends TcpServer {
      */
     public int connectTo(String host, int port) throws IOException {
         TcpClient tcpClient = new TcpClient(peerId);
+        for (BipMessageListener listener : listenersSet) {
+            tcpClient.addBipMessageListener(listener);
+        }
         tcpClient.connectTo(host, port); // throws the IOException
         while (tcpClient.getRemotePeerId() == 0) {
             try {
@@ -102,11 +105,6 @@ public class TcpClientServer extends TcpServer {
         synchronized (this) {
             if (tcpClient.isConnected()) {
                 clientsList.put(tcpClient.getRemotePeerId(), tcpClient);
-                for (BipMessageListener listener : listenersSet) {
-                    tcpClient.addBipMessageListener(listener);
-                }
-            } else {
-                throw new RuntimeException("Connection closed just after being created");
             }
         }
         return tcpClient.getRemotePeerId();
