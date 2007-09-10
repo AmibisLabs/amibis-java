@@ -46,6 +46,8 @@ public class I0032_TestMultipleConnectionRefusalImmediateDisconnect {
      * This tests the new disconnection feature.
      * It tests disconnection notification
      * for repeated in-connect remotely-closed locally-initiated connections.
+     * The Exception that happened on fast disconnections has been removed
+     * so this only test a simple disconnection feature.
      */
     public static void main(String[] args) throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
