@@ -54,6 +54,7 @@ public class AudioServer {
     private final int sampleRate = 16000;
     private double timeLength = (nbSamples*1000/(double)sampleRate); //milliseconds
     //private double timeSample = (1000/(double)sampleRate); //milliseconds
+    private boolean stereo = false;
 
     private byte data[] = new byte[2*nbChannels*nbSamples + 27];
     private final long startTime = System.currentTimeMillis();
@@ -61,7 +62,8 @@ public class AudioServer {
 
     private void process() {
         timeLength = (nbSamples*1000/(double)sampleRate);
-        data = new byte[33+2*nbSamples];
+        int nbsample_byte = 2*nbSamples;
+        data = new byte[33+nbsample_byte];
         data[0] = '<';
         data[1] = 'd';
         data[2] = 'a';
@@ -96,7 +98,6 @@ public class AudioServer {
         data[31] = '\r';
         data[32] = '\n';
         long current_time = 0;
-        int nbsample_byte = 2*nbSamples;
         double coeff = .2*2*Math.PI/nbsample_byte;
         boolean first = true;
         int j=0;
@@ -127,7 +128,19 @@ public class AudioServer {
                 }
                 phase = j*(i-33)*coeff + oldPhase;
                 //System.out.println("end : time = " + time);
-                service.sendToAllClients(audioOutputName, data);
+                if (!stereo) {
+                    service.sendToAllClients(audioOutputName, data);
+                } else {
+                    byte[] stereoData = new byte[data.length+nbsample_byte];
+                    System.arraycopy(data, 0, stereoData, 0, 33);
+                    for (int k = 33; k < nbsample_byte + 33; k+=2) {
+                        stereoData[k+(k-33)] = data[k];
+                        stereoData[k+(k-33)+1] = data[k+1];
+                        stereoData[k+(k-33)+2] = data[k];
+                        stereoData[k+(k-33)+3] = data[k+1];
+                    }
+                    service.sendToAllClients(audioOutputName, stereoData);
+                }
 
 
                 if (delta<0){
