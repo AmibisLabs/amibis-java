@@ -14,7 +14,8 @@ In this files, you will find changes between java OMiSCID versions.
 
 1.***
 r
-
+        fix:  problem occuring when a server sends message in response to connectTo notification. Some messages where arriving too soon and client side listeners where not receiving it.
+        impr: (API) removed possibility to have a ConnectionRefused exception on connectTo when a connection was closed really fast. As one still have to handle the case where a connected/disconnected notification pair happen in place of this exception, it has been removed.
 
 1.3.0
 r2907
