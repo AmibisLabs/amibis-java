@@ -28,6 +28,7 @@ package fr.prima.omiscid.test;
 
 import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.util.Utility;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,7 +42,8 @@ public class Radio {
     private final static String serviceName = "Radio";
     private final static String audioOutputName = "AudioForMovies";
     private final static String titleVariableName = "Titre chanson";
-    private final int sampleRate = 44100;
+    private int sampleRate = 44100;
+    private int channels = 2;
 
     private Radio(String[] userArgs) {
         String pipe = "/tmp/radio";
@@ -56,10 +58,13 @@ public class Radio {
             Service service = FactoryFactory.factory().create(serviceName);
             service.addVariable("SampleRate", "integer", "sample rate", fr.prima.omiscid.user.variable.VariableAccessType.CONSTANT);
             service.setVariableValue("SampleRate", java.lang.Integer.toString(sampleRate));
+            service.addVariable("Channels", "integer", "sample rate", fr.prima.omiscid.user.variable.VariableAccessType.CONSTANT);
+            service.setVariableValue("Channels", java.lang.Integer.toString(channels));
             service.addVariable(titleVariableName, "integer", "Titre de la Chanson", fr.prima.omiscid.user.variable.VariableAccessType.READ);
             service.setVariableValue(titleVariableName, "nono le robot");
             service.addConnector(audioOutputName, "output for sound", fr.prima.omiscid.user.connector.ConnectorType.OUTPUT);
             Runtime.getRuntime().exec(new String[]{"mkfifo", pipe}).waitFor();
+            new File(pipe).deleteOnExit();
             Process mplayer = Runtime.getRuntime().exec(args.toArray(new String[0]));
             consume(mplayer.getInputStream());
             consume(mplayer.getErrorStream());
@@ -74,7 +79,7 @@ public class Radio {
             }
              */
             byte[] buffer = new byte[sampleRate];
-            long frameLength = 1000 /*ms in a second*/ * buffer.length / 2/*channels*/ / 2/*bytes per sample*/ / sampleRate;
+            long frameLength = 1000 /*ms in a second*/ * buffer.length / channels / 2/*bytes per sample*/ / sampleRate;
             if (frameLength * 2*2*sampleRate != 1000 * buffer.length) {
                 System.err.println("Warning "+ (frameLength * 2*2*sampleRate)+ "!="+ (1000 * buffer.length));
             }

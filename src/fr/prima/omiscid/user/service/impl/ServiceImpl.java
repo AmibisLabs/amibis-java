@@ -569,14 +569,14 @@ public class ServiceImpl implements Service {
         /* (non-Javadoc)
          * @see fr.prima.omiscid.service.Service#sendToOneClient(java.lang.String, byte[], fr.prima.omiscid.service.ServiceProxy, boolean)
          */
-    synchronized  public void sendToOneClient(String connectorName, byte[] msg, ServiceProxy serviceProxy,boolean unreliableButFastSend) throws UnknownConnector {
+    synchronized  public void sendToOneClient(String connectorName, byte[] msg, ServiceProxy serviceProxy, boolean unreliableButFastSend) throws UnknownConnector {
         for (String remoteConnectorName : serviceProxy.getInputConnectors()) {
-            int remotePeerId = ((ServiceProxyImpl)serviceProxy).getOmiscidService().findInput(remoteConnectorName).getPeerId();
-            sendToOneClient(connectorName, msg, remotePeerId,unreliableButFastSend) ;
+            int remotePeerId = ((ServiceProxyImpl)serviceProxy).getConnectorPeerId(remoteConnectorName);
+            sendToOneClient(connectorName, msg, remotePeerId, unreliableButFastSend) ;
         }
         for (String remoteConnectorName : serviceProxy.getInputOutputConnectors()) {
-            int remotePeerId = ((ServiceProxyImpl)serviceProxy).getOmiscidService().findInOutput(remoteConnectorName).getPeerId();
-            sendToOneClient(connectorName, msg, remotePeerId,unreliableButFastSend) ;
+            int remotePeerId = ((ServiceProxyImpl)serviceProxy).getConnectorPeerId(remoteConnectorName);
+            sendToOneClient(connectorName, msg, remotePeerId, unreliableButFastSend) ;
         }
     }
     synchronized  public void sendToOneClient(String connectorName, byte[] msg, ServiceProxy serviceProxy) throws UnknownConnector {

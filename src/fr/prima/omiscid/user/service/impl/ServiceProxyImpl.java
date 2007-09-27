@@ -249,6 +249,14 @@ public class ServiceProxyImpl implements ServiceProxy {
         return getConnector(peerId).getName();
     }
     
+    public int getConnectorPeerId(String connectorName) {
+        InOutputAttribute connector = omiscidService.findConnector(connectorName);
+        if (connector == null) {
+            throw new UnknownConnector("Unknown connector: '"+connectorName+"'");
+        }
+        return connector.getPeerId();
+    }
+    
     private Attribute getConnector(int peerId) throws UnknownConnector {
         InOutputAttribute connector = omiscidService.findConnector(peerId);
         if (connector == null) {

@@ -389,18 +389,6 @@ public class OmiscidService {
         return GlobalConstants.keyForFullTextRecordFull.equals(serviceInformation.getStringProperty(GlobalConstants.keyForFullTextRecord));
     }
 
-    public InOutputAttribute findConnector(int peerId) {
-        if (queryState == QueryState.UNQUERIED) {
-            queryCompleteDescription();
-        }
-        for (InOutputAttribute inOutputAttribute : connectors.values()) {
-            if (inOutputAttribute.getPeerId() == peerId) {
-                return inOutputAttribute;
-            }
-        }
-        return null;
-    }
-    
     public boolean updateDescription() {
         return queryCompleteDescription();
     }
@@ -480,13 +468,22 @@ public class OmiscidService {
         return res != null && res.getConnectorType() == targetType ? res : null;
     }
     public InOutputAttribute findConnector(String name) {
-        InOutputAttribute attribute = connectors.get(name);
-        if (attribute != null) {
-            return attribute;
-        } else {
-            shouldHaveCompleteDescription();
-            return connectors.get(name);
+        if (queryState == QueryState.UNQUERIED) {
+            queryCompleteDescription();
         }
+        return connectors.get(name);
+    }
+    
+    public InOutputAttribute findConnector(int peerId) {
+        if (queryState == QueryState.UNQUERIED) {
+            queryCompleteDescription();
+        }
+        for (InOutputAttribute inOutputAttribute : connectors.values()) {
+            if (inOutputAttribute.getPeerId() == peerId) {
+                return inOutputAttribute;
+            }
+        }
+        return null;
     }
     
     public InOutputAttribute findInput(String name) {
