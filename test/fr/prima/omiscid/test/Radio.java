@@ -46,7 +46,14 @@ public class Radio {
     private int channels = 2;
 
     private Radio(String[] userArgs) {
+        File pipeFile = null;
         String pipe = "/tmp/radio";
+        try {
+            pipeFile = File.createTempFile("radio", null);
+            pipeFile.delete();
+            pipe = pipeFile.getAbsolutePath();
+        } catch (IOException ex) {
+        }
         Vector<String> args = new Vector<String>();
         args.addAll(Arrays.asList(new String[]{
             "mplayer", "-ao", "pcm:nowaveheader:file="+pipe, "-vc", "null", "-vo", "null",
