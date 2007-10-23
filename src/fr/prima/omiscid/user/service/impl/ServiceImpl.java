@@ -148,6 +148,11 @@ public class ServiceImpl implements Service {
          */
     synchronized  public void addConnector(String connectorName,
             String connectorDescription, ConnectorType connectorKind) throws ConnectorAlreadyExisting, IOException, ServiceRunning, ConnectorLimitReached {
+        addConnector(connectorName, connectorDescription, connectorKind, 0);
+    }
+    
+    synchronized public void addConnector(String connectorName,
+            String connectorDescription, ConnectorType connectorKind, int port) throws ConnectorAlreadyExisting, IOException, ServiceRunning, ConnectorLimitReached {
         
         if (started)
             throw new ServiceRunning("addConnector");
@@ -167,7 +172,7 @@ public class ServiceImpl implements Service {
             if (alreadyExisting) {
                 throw new ConnectorAlreadyExisting("Connector already defined : " + connectorName) ;
             } else {
-                tcpClientServer = new fr.prima.omiscid.com.TcpClientServer(ctrlServer.getPeerId());
+                tcpClientServer = new fr.prima.omiscid.com.TcpClientServer(ctrlServer.getPeerId(), port);
                 try {
                     ioa = ctrlServer.addInOutput(connectorName, tcpClientServer, connectorKind);
                 } catch (ControlServer.MaxInoutputCountReached e) {
@@ -175,7 +180,7 @@ public class ServiceImpl implements Service {
                 }
                 tcpClientServers.put(connectorName, tcpClientServer) ;
                 ioa.setDescription(connectorDescription);
-                tcpClientServer.start() ;
+                tcpClientServer.start();
             }
         }
     }
@@ -559,13 +564,26 @@ public class ServiceImpl implements Service {
                 throw new IncorrectConnectorType("Cannot connect two output connectors : " + localConnector + " to " + remoteConnector) ;
         }
         
+        connectTo(localClientServer, proxy.getHostName(), remoteAttribute.getTcpPort());
+    }
+    private void connectTo(TcpClientServer localClientServer, String hostName, int tcpPort)
+    throws ConnectionRefused {
         try {
-            localClientServer.connectTo(proxy.getHostName(), remoteAttribute.getTcpPort());
-        } catch(Exception e) {
+            localClientServer.connectTo(hostName, tcpPort);
+        } catch (Exception e) {
             throw new ConnectionRefused(e);
         }
     }
-    
+    synchronized  public void connectTo(String localConnector, String hostName, int tcpPort)
+    throws UnknownConnector, ConnectionRefused {
+        TcpClientServer localClientServer = null;
+        try {
+            localClientServer = getTcpClientServer(localConnector) ;
+        } catch (UnknownConnector e) {
+            throw new UnknownConnector("Unknown local connector : " + localConnector) ;
+        }
+        connectTo(localClientServer, hostName, tcpPort);
+    }
         /* (non-Javadoc)
          * @see fr.prima.omiscid.service.Service#sendToOneClient(java.lang.String, byte[], fr.prima.omiscid.service.ServiceProxy, boolean)
          */

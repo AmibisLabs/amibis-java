@@ -51,6 +51,10 @@ public class TcpClientServer extends TcpServer {
         super(peerId, 0);
     }
 
+    public TcpClientServer(int peerId, int port) throws IOException {
+        super(peerId, port);
+    }
+
     public void closeAllConnections() {
         super.closeAllConnections();
         synchronized (this) {
