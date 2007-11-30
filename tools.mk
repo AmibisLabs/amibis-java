@@ -65,7 +65,7 @@ prepare:
 	cp CHANGES ,,build/
 	cd src            && find . -name \*.java -exec cp {} ../,,build/{} \;
 	cd dnssd-src      && find . -name \*.java -exec cp {} ../,,build/{} \;
-	cd generated-src  && find . -name \*.java -exec cp {} ../,,build/{} \;
+#cd generated-src  && find . -name \*.java -exec cp {} ../,,build/{} \;
 	cd user-level-src && find . -name \*.java -exec cp {} ../,,build/{} \;
 	cd ,,build && jar cvf ../$(BASEJAR) .
 	cd ,,build && ( \

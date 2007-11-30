@@ -36,6 +36,7 @@ import org.w3c.dom.Element;
 import fr.prima.omiscid.com.interf.BipMessageListener;
 import fr.prima.omiscid.user.connector.Message;
 import fr.prima.omiscid.user.util.Utility;
+import java.util.ArrayList;
 
 /**
  * Manages the buffer to store bytes and parsed BIP messages. The buffer can
@@ -403,14 +404,16 @@ public abstract class MessageSocket {
     }
     
     public void newMessageReceived(Message message) {
+        ArrayList<BipMessageListener> listeners;
         synchronized (listenersSet) {
-            for (BipMessageListener listener : listenersSet) {
-                try {
-                    listener.receivedBipMessage(message);
-                } catch (Exception e) {
-                    System.err.println("Omiscid caught an exception thrown by a listener on message reception, it is shown here:");
-                    e.printStackTrace();
-                }
+            listeners = new ArrayList<BipMessageListener>(listenersSet);
+        }
+        for (BipMessageListener listener : listeners) {
+            try {
+                listener.receivedBipMessage(message);
+            } catch (Exception e) {
+                System.err.println("Omiscid caught an exception thrown by a listener on message reception, it is shown here:");
+                e.printStackTrace();
             }
         }
     }
@@ -419,14 +422,16 @@ public abstract class MessageSocket {
         while (connected) {
             receive();
         }
+        ArrayList<BipMessageListener> listeners;
         synchronized (listenersSet) {
-            for (BipMessageListener listener : listenersSet) {
-                try {
-                    listener.disconnected(remotePeerId);
-                } catch (Exception e) {
-                    System.err.println("Omiscid caught an exception thrown by a listener on disconnection, it is shown here:");
-                    e.printStackTrace();
-                }
+            listeners = new ArrayList<BipMessageListener>(listenersSet);
+        }
+        for (BipMessageListener listener : listeners) {
+            try {
+                listener.disconnected(remotePeerId);
+            } catch (Exception e) {
+                System.err.println("Omiscid caught an exception thrown by a listener on disconnection, it is shown here:");
+                e.printStackTrace();
             }
         }
     }

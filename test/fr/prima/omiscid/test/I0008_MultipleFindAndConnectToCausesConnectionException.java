@@ -47,6 +47,8 @@ public class I0008_MultipleFindAndConnectToCausesConnectionException {
     // tries to connect to itself to get its own description (which is normal) but cannot establish the connection (which is not).
     
     // This works (at the time of writing)
+    // This once failed while running non regression (but only once) and was not reproducible afterwards
+    // This instantiate many services so underlying dnssd might have failed
     public static void main(String[] args) throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         final Vector<String> startedServices = new Vector<String>();
