@@ -41,7 +41,7 @@ import java.util.Vector;
 
 public class I0046_RemoveConnectorListenerOnDisconnect {
     
-    // At the time of writting, removing a listener from a disconnected call
+    // At the time of writting (1.3.1), removing a listener from a disconnected call
     // causes a concurrent modification (when there is more than one listener).
     // There are 2 cases: TCPClient cases (initiated locally) and TCPServer ones.
     // There are also multiple cases depending on which side closes the connection.

@@ -114,10 +114,6 @@ public class TcpClientServer extends TcpServer {
         return tcpClient.getRemotePeerId();
     }
 
-    public void removeAllBIPMessageListeners() {
-        listenersSet.clear();
-    }
-
     /*
      * (non-Javadoc)
      *
@@ -169,6 +165,24 @@ public class TcpClientServer extends TcpServer {
             }
         }
     }
+
+    @Override
+    public void removeAllBIPMessageListeners() {
+        synchronized (listenersSet) {
+            for (BipMessageListener listener : listenersSet) {
+                synchronized (this) {
+                    cleanListOfClients();
+                    for (TcpClient client : clientsList.values()) {
+                        if (client.isConnected()) {
+                            client.removeBipMessageListener(listener);
+                        }
+                    }
+                }
+            }
+        }
+        super.removeAllBIPMessageListeners();
+    }
+
 
     /*
      * (non-Javadoc)

@@ -39,7 +39,7 @@ import java.util.Vector;
 
 public class I0045_RemoveConnectorListenerOnNewMessage {
     
-    // At the time of writting, removing a listener from a messageReceived call
+    // At the time of writting (1.3.1), removing a listener from a messageReceived call
     // causes a concurrent modification (when there is more than one listener)
     public static void main(String[] args) throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();

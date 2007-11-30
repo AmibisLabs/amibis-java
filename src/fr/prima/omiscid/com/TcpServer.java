@@ -315,6 +315,25 @@ public class TcpServer implements CommunicationServer {
             }
         }
     }
+    
+    void removeAllBIPMessageListeners() {
+        synchronized (listenersSet) {
+            for (BipMessageListener listener : listenersSet) {
+                synchronized (connectionsSet) {
+                    Set<MessageSocketTCP> disconnectedClients = new HashSet<MessageSocketTCP>();
+                    for (MessageSocketTCP client : connectionsSet) {
+                        if (client.isConnected()) {
+                            client.removeBipMessageListener(listener);
+                        } else {
+                            disconnectedClients.add(client);
+                        }
+                    }
+                    connectionsSet.removeAll(disconnectedClients);
+                }
+            }
+            listenersSet.clear();
+        }
+    }
 
     /**
      * Removes a listener for the received OMiSCID messages.

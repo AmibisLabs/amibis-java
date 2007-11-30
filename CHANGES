@@ -15,6 +15,7 @@ In this files, you will find changes between java OMiSCID versions.
 1.3.
 r
         fix:  a connector listener can now properly remove itself (stop listening) without throwing a concurrent modification exception
+        fix:  problem in some cases when using removeAllConnectorListeners, some listeners might keep listening
 
 1.3.1
 r3063
