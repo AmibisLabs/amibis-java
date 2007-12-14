@@ -30,7 +30,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
-import org.w3c.dom.Element;
 
 import fr.prima.omiscid.com.CommunicationServer;
 import fr.prima.omiscid.com.TcpServer;

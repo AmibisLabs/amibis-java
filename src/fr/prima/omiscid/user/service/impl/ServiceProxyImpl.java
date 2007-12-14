@@ -42,6 +42,7 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.util.Utility;
 import fr.prima.omiscid.user.variable.RemoteVariableChangeListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
+import java.util.Vector;
 
 /**
  * @author reignier
@@ -269,5 +270,15 @@ public class ServiceProxyImpl implements ServiceProxy {
      */
     public String getName() {
         return omiscidService.getSimplifiedName();
+    }
+    
+    public Iterable<Integer> getPeers(String connectorName) {
+        omiscidService.requeryCompleteDescription();
+        InOutputAttribute connector = omiscidService.findConnector(connectorName);
+        if (connector == null) {
+            throw new UnknownConnector("Unknown connector: '"+connectorName+"'");
+        }
+        Vector<Integer> peers = new Vector<Integer>(connector.getPeerVector());
+        return peers;
     }
 }

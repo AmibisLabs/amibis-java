@@ -551,6 +551,14 @@ public class OmiscidService {
             }
         }
     }
+    public boolean requeryCompleteDescription() {
+        synchronized (queryDescriptionSync) {
+            if (queryState == QueryState.QUERIED) {
+                queryState = QueryState.UNQUERIED;
+            }
+            return queryCompleteDescription();
+        }
+    }
     private void shouldHaveCompleteDescription() {
         if (!isServiceInformationDescriptionFull()) {
             queryCompleteDescription();
