@@ -61,7 +61,7 @@ public interface ServiceRepository {
     
     /**
      * Removes a previously added listener.
-     * Behaves like calling {@link #addListener(ServiceRepositoryListener, boolean)} with false.
+     * Behaves like calling {@link #removeListener(ServiceRepositoryListener, boolean)} with false.
      * 
      * @param listener the listener to be removed
      */

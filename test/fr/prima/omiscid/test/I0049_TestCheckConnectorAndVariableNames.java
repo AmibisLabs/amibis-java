@@ -31,6 +31,7 @@ import fr.prima.omiscid.user.connector.ConnectorType;
 import java.io.IOException;
 import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceFactory;
+import fr.prima.omiscid.user.variable.VariableAccessType;
 import java.util.Vector;
 
 public class I0049_TestCheckConnectorAndVariableNames {
@@ -43,12 +44,13 @@ public class I0049_TestCheckConnectorAndVariableNames {
     public static void main(String[] args) throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         final Service server = factory.create("I0049Server");
+        server.addVariable("bugvar", "", "", VariableAccessType.CONSTANT);
         server.addConnector("bug", "", ConnectorType.OUTPUT);
         server.addConnector("dash-bug", "", ConnectorType.OUTPUT);
         Vector<String> problems = new Vector<String>();
-        for (String name : new String[]{"noé", "no=", "no\n", "no\t", ""}) {
+        for (String name : new String[]{"noé", "no=", "no\t", "", "desc", "name", "owner", "class", "lock", "id", "host", "BUG", "BuGvAr", "bug", "bugvar", "no\n"}) {
             try {
-                server.addConnector(name, "", ConnectorType.OUTPUT);
+                server.addConnector(name, "", ConnectorType.INPUT);
             } catch (Exception e) {
                 System.out.println("'"+name+"' properly refused");
                 continue;

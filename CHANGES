@@ -18,6 +18,9 @@ r
         fix:  problem in some cases when using removeAllConnectorListeners, some listeners might keep listening
 TODO connector name check (see new failing tests) and the same with variables
 TODO add also check for unicity (case insensitive)
+TODO c++ exposes an "id" variable in txtrecord
+TODO update old gui starting message to redirect to http://gforge.inria.fr/frs/?group_id=363
+TODO createServiceRepositoy !!!! (toy -> tory) see ~/projects/servicetoyusage
 
 1.3.1
 r3063
