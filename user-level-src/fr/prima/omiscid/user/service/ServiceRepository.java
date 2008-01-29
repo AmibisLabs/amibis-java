@@ -30,7 +30,7 @@ import java.util.List;
 
 /**
  * Represents a service repository containing an up-to-date list of running services.
- * Concrete ServiceRepository instances should be obtained from {@link ServiceFactory#createServiceRepositoy(Service)}.
+ * Concrete ServiceRepository instances should be obtained from {@link ServiceFactory#createServiceRepository(Service)}.
  * A service repository basic use case is to register some listeners to listen for appearing and disappearing services.
  * A service repository can also be queried for a list of running services (a snapshot taken when the {@link #getAllServices()} method is called.
  * 

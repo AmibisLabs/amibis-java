@@ -86,14 +86,14 @@ public class ServiceFactoryImpl implements ServiceFactory {
         return service;
     }
     
-    public ServiceRepository createServiceRepositoy(Service service) {
+    public ServiceRepository createServiceRepository(Service service) {
         return new ServiceRepositoryImpl((ServiceImpl)service);
     }
     
-    public ServiceRepository createServiceRepositoy() {
+    public ServiceRepository createServiceRepository() {
         // Creates a new service with a dummy name
         // Logically the service name isn't used anywhere and should be indifferent
-        return createServiceRepositoy(create("ServiceRepository"));
+        return createServiceRepository(create("ServiceRepository"));
     }
     
     /**

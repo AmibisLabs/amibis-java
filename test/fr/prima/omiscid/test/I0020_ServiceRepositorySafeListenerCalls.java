@@ -40,7 +40,7 @@ public class I0020_ServiceRepositorySafeListenerCalls {
     public static void main(String[] args) throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         final Service service = factory.create("I0020Repository");
-        final ServiceRepository repository = factory.createServiceRepositoy(service);
+        final ServiceRepository repository = factory.createServiceRepository(service);
         ServiceRepositoryListener listener1 = new ServiceRepositoryListener() {
             public void serviceRemoved(ServiceProxy serviceProxy) {
                 throw new UnsupportedOperationException("Not supported yet: serviceRemoved");

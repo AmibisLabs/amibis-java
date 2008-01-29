@@ -76,7 +76,7 @@ public class I0014_ServiceWithManyVariables {
             }
             server.start();
         }{
-            ServiceRepository serviceRepository = factory.createServiceRepositoy();
+            ServiceRepository serviceRepository = factory.createServiceRepository();
             serviceRepository.addListener(new ServiceRepositoryListener() {
                 public void serviceAdded(ServiceProxy serviceProxy) {
                     if (serviceProxy.getName().equals("I0014Server") && serviceProxy.getVariables().size() > customVariableCount) {

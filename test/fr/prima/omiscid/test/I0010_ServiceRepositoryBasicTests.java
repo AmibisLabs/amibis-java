@@ -41,7 +41,7 @@ public class I0010_ServiceRepositoryBasicTests {
     public static void main(String[] args) throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         final Service service = factory.create("I0010Repository");
-        final ServiceRepository repository = factory.createServiceRepositoy(service);
+        final ServiceRepository repository = factory.createServiceRepository(service);
         ServiceRepositoryListener listener = new ServiceRepositoryListener() {
             int count = 0;
             public void serviceRemoved(ServiceProxy serviceProxy) {
