@@ -26,7 +26,6 @@
 
 package fr.prima.omiscid.test;
 
-import fr.prima.omiscid.user.exception.UnknownConnector;
 import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.util.Utility;
 import java.io.File;
@@ -40,7 +39,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /*- IGNORE -*/
-/*- IGNORE -*/
 public class Radio {
     private final static String serviceName = "Radio";
     private final static String audioOutputName = "AudioForMovies";
@@ -48,7 +46,7 @@ public class Radio {
     private int sampleRate = 44100;
     private int channels = 2;
 
-    private Radio(String[] userArgs) {
+    public Radio(String[] userArgs) {
         File pipeFile = null;
         String pipe = "/tmp/radio";
         try {
@@ -71,7 +69,7 @@ public class Radio {
             service.addVariable("Channels", "integer", "sample rate", fr.prima.omiscid.user.variable.VariableAccessType.CONSTANT);
             service.setVariableValue("Channels", java.lang.Integer.toString(channels));
             service.addVariable(titleVariableName, "integer", "Titre de la Chanson", fr.prima.omiscid.user.variable.VariableAccessType.READ);
-            service.setVariableValue(titleVariableName, "nono le robot");
+            service.setVariableValue(titleVariableName, userArgs[0]);
             service.addConnector(audioOutputName, "output for sound", fr.prima.omiscid.user.connector.ConnectorType.OUTPUT);
             service.start();
             while (true) {
