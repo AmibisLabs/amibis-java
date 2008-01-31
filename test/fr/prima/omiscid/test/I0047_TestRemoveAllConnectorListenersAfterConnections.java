@@ -45,7 +45,7 @@ public class I0047_TestRemoveAllConnectorListenersAfterConnections {
      * It tests addition and removal of connector listeners.
      * Comparing to I0033, it first connects some clients and then
      * remove all listeners.
-     * At the time of writting (1.3.1) this is a bug.
+     * At the time of writting (1.3.1) this was a bug.
      */
     public static void main(String[] args) throws IOException {
         final Vector<String> events = new Vector<String>();

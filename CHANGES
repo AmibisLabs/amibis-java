@@ -16,10 +16,12 @@ In this files, you will find changes between java OMiSCID versions.
 r
         fix:  a connector listener can now properly remove itself (stop listening) without throwing a concurrent modification exception
         fix:  problem in some cases when using removeAllConnectorListeners, some listeners might keep listening
-        fix:  (API) createServiceRepository was improperly spelled in ServiceFactory
+        fix:  (API) createServiceRepository was improperly spelled (createServiceRepositoy) in ServiceFactory
+        fix:  problem with netbeans when release contains castor generated .java files (these .java are not included any more)
 TODO connector name check (see new failing tests) and the same with variables
 TODO add also check for unicity (case insensitive)
 TODO c++ exposes an "id" variable in txtrecord
+ADDED? addConnector and connectTo with some port number
 
 1.3.1
 r3063

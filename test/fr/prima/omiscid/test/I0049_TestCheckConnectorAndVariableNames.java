@@ -45,14 +45,32 @@ public class I0049_TestCheckConnectorAndVariableNames {
         ServiceFactory factory = FactoryFactory.factory();
         final Service server = factory.create("I0049Server");
         server.addVariable("bugvar", "", "", VariableAccessType.CONSTANT);
+        server.addVariable("  ", "", "", VariableAccessType.CONSTANT);
+        server.addVariable("  a", "", "", VariableAccessType.CONSTANT);
+        server.addVariable("a  ", "", "", VariableAccessType.CONSTANT);
+        server.addVariable(" a ", "", "", VariableAccessType.CONSTANT);
+        server.addVariable("more-var_!/\\!\"", "", "", VariableAccessType.CONSTANT);
         server.addConnector("bug", "", ConnectorType.OUTPUT);
         server.addConnector("dash-bug", "", ConnectorType.OUTPUT);
+        server.addConnector("more-bug_!/\\!\"", "", ConnectorType.OUTPUT);
+        server.addConnector(" ", "", ConnectorType.OUTPUT);
+        server.addConnector(" a", "", ConnectorType.OUTPUT);
+        server.addConnector("a ", "", ConnectorType.OUTPUT);
         Vector<String> problems = new Vector<String>();
         for (String name : new String[]{"noé", "no=", "no\t", "", "desc", "name", "owner", "class", "lock", "id", "host", "BUG", "BuGvAr", "bug", "bugvar", "no\n"}) {
             try {
                 server.addConnector(name, "", ConnectorType.INPUT);
             } catch (Exception e) {
-                System.out.println("'"+name+"' properly refused");
+                System.out.println("Connector '"+name+"' properly refused");
+                continue;
+            }
+            problems.add(name);
+        }
+        for (String name : new String[]{"noé", "no=", "no\t", "", "desc", "name", "owner", "class", "lock", "id", "host", "BUG", "BuGvAr", "bug", "bugvar", "no\n"}) {
+            try {
+                server.addVariable(name, "", "", VariableAccessType.READ);
+            } catch (Exception e) {
+                System.out.println("Variable '"+name+"' properly refused");
                 continue;
             }
             problems.add(name);

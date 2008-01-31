@@ -52,6 +52,7 @@ public class I0048_TestConnectorWithDash {
             final Service server = factory.create("I0048Server");
             server.addConnector("bug", "", ConnectorType.OUTPUT);
             server.addConnector("dash-bug", "", ConnectorType.OUTPUT);
+            server.addConnector("more-bug_!/\\`\"~", "", ConnectorType.OUTPUT);
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
