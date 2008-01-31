@@ -33,7 +33,6 @@ import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.service.ServiceRepository;
 import fr.prima.omiscid.user.service.ServiceRepositoryListener;
-import fr.prima.omiscid.user.util.Utility;
 
 public class I0020_ServiceRepositorySafeListenerCalls {
     

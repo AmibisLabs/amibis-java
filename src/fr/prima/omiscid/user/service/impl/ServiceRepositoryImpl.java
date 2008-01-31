@@ -26,6 +26,7 @@
 
 package fr.prima.omiscid.user.service.impl;
 
+import fr.prima.omiscid.user.service.ServiceFilter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -146,6 +147,15 @@ public class ServiceRepositoryImpl implements ServiceRepository {
         }
         serviceRepositoryListeners.add(listener);
     }
+
+    public void addListener(ServiceFilter filter, ServiceRepositoryListener listener) {
+        addListener(filter, listener, false);
+    }
+
+    public void addListener(ServiceFilter filter, ServiceRepositoryListener listener, boolean notifyOnlyNewEvents) {
+        addListener(new FilteredServiceRepositoryListener(filter, listener), notifyOnlyNewEvents);
+    }
+
 
     public synchronized void removeListener(ServiceRepositoryListener listener) {
         removeListener(listener, false);

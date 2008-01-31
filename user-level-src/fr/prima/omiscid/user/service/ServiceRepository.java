@@ -40,7 +40,7 @@ import java.util.List;
 public interface ServiceRepository {
 
     /**
-     * Adds a listener to be notified of service apparition and disapparition.
+     * Adds a listener to be notified of service apparitions and disapparitions.
      * This listener will be notified of currently running services (see {@link #addListener(ServiceRepositoryListener, boolean)} for details).
      * Behaves like calling {@link #addListener(ServiceRepositoryListener, boolean)} with false.
      * 
@@ -49,7 +49,7 @@ public interface ServiceRepository {
     public void addListener(ServiceRepositoryListener listener);
     
     /**
-     * Adds a listener to be notified of service apparition and disapparition.
+     * Adds a listener to be notified of service apparitions and disapparitions.
      * From this addition, the listener will be notified of each service event (see {@link ServiceRepositoryListener}).
      * When a listener is added to the repository, this latter can already contain some services.
      * The boolean parameter tells whether the listener should be notified of these services as if they were appearing.
@@ -58,6 +58,34 @@ public interface ServiceRepository {
      * @param notifyOnlyNewEvents a boolean used to ignore services running at the time of listener addition. Setting it to false will cause the listener to be immediately notified of services already present in the repository
      */
     public void addListener(ServiceRepositoryListener listener, boolean notifyOnlyNewEvents);
+    
+    /**
+     * Adds a listener to be notified of service apparitions and disapparitions.
+     * Apparition notifications will only happen for services matching given filter.
+     * Disapparition notifications will only happen for services that have been notified of apparition.
+     * 
+     * This listener will be notified of currently running services (see {@link #addListener(ServiceFilter, ServiceRepositoryListener, boolean)} for details).
+     * Behaves like calling {@link #addListener(ServiceFilter, ServiceRepositoryListener, boolean)} with false.
+     * 
+     * @param filter the filter to apply to service apparition
+     * @param listener the listener that will be notified of service events
+     */
+    public void addListener(ServiceFilter filter, ServiceRepositoryListener listener);
+
+    /**
+     * Adds a listener to be notified of service apparitions and disapparitions.
+     * Apparition notifications will only happen for services matching given filter.
+     * Disapparition notifications will only happen for services that have been notified of apparition.
+     * 
+     * From this addition, the listener will be notified of each service event (see {@link ServiceRepositoryListener}).
+     * When a listener is added to the repository, this latter can already contain some services.
+     * The boolean parameter tells whether the listener should be notified of these services as if they were appearing.
+     * 
+     * @param filter the filter to apply to service apparition
+     * @param listener the listener that will be notified of service events
+     * @param notifyOnlyNewEvents a boolean used to ignore services running at the time of listener addition. Setting it to false will cause the listener to be immediately notified of services already present in the repository
+     */
+    public void addListener(ServiceFilter filter, ServiceRepositoryListener listener, boolean notifyOnlyNewEvents);
     
     /**
      * Removes a previously added listener.
