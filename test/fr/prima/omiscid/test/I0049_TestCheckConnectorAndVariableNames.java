@@ -49,6 +49,7 @@ public class I0049_TestCheckConnectorAndVariableNames {
         server.addVariable("  a", "", "", VariableAccessType.CONSTANT);
         server.addVariable("a  ", "", "", VariableAccessType.CONSTANT);
         server.addVariable(" a ", "", "", VariableAccessType.CONSTANT);
+        server.addVariable("id", "", "", VariableAccessType.CONSTANT);
         server.addVariable("more-var_!/\\!\"", "", "", VariableAccessType.CONSTANT);
         server.addConnector("bug", "", ConnectorType.OUTPUT);
         server.addConnector("dash-bug", "", ConnectorType.OUTPUT);
@@ -57,7 +58,7 @@ public class I0049_TestCheckConnectorAndVariableNames {
         server.addConnector(" a", "", ConnectorType.OUTPUT);
         server.addConnector("a ", "", ConnectorType.OUTPUT);
         Vector<String> problems = new Vector<String>();
-        for (String name : new String[]{"noé", "no=", "no\t", "", "desc", "name", "owner", "class", "lock", "id", "host", "BUG", "BuGvAr", "bug", "bugvar", "no\n"}) {
+        for (String name : new String[]{"noé", "no=", "no\t", "", "desc", "name", "owner", "class", "lock", "peerId", "host", "BUG", "BuGvAr", "bug", "bugvar", "no\n"}) {
             try {
                 server.addConnector(name, "", ConnectorType.INPUT);
             } catch (Exception e) {
@@ -66,7 +67,7 @@ public class I0049_TestCheckConnectorAndVariableNames {
             }
             problems.add(name);
         }
-        for (String name : new String[]{"noé", "no=", "no\t", "", "desc", "name", "owner", "class", "lock", "id", "host", "BUG", "BuGvAr", "bug", "bugvar", "no\n"}) {
+        for (String name : new String[]{"noé", "no=", "no\t", "", "desc", "name", "owner", "class", "lock", "peerId", "host", "BUG", "BuGvAr", "bug", "bugvar", "no\n"}) {
             try {
                 server.addVariable(name, "", "", VariableAccessType.READ);
             } catch (Exception e) {
