@@ -52,26 +52,27 @@ public class I0049_TestCheckConnectorAndVariableNames {
         server.addVariable("id", "", "", VariableAccessType.CONSTANT);
         server.addVariable("more-var_!/\\!\"", "", "", VariableAccessType.CONSTANT);
         server.addConnector("bug", "", ConnectorType.OUTPUT);
+        server.addConnector("host", "", ConnectorType.OUTPUT);
         server.addConnector("dash-bug", "", ConnectorType.OUTPUT);
         server.addConnector("more-bug_!/\\!\"", "", ConnectorType.OUTPUT);
         server.addConnector(" ", "", ConnectorType.OUTPUT);
         server.addConnector(" a", "", ConnectorType.OUTPUT);
         server.addConnector("a ", "", ConnectorType.OUTPUT);
         Vector<String> problems = new Vector<String>();
-        for (String name : new String[]{"noé", "no=", "no\t", "", "desc", "name", "owner", "class", "lock", "peerId", "host", "BUG", "BuGvAr", "bug", "bugvar", "no\n"}) {
+        for (String name : new String[]{"noé", "no=", "no\t", "", "desc", "name", "owner", "class", "OwNeR", "lock", "peerId", "BUG", "BuGvAr", "bug", "bugvar", "no\n"}) {
             try {
                 server.addConnector(name, "", ConnectorType.INPUT);
             } catch (Exception e) {
-                System.out.println("Connector '"+name+"' properly refused");
+                System.err.println("Connector '"+name+"' properly refused");
                 continue;
             }
             problems.add(name);
         }
-        for (String name : new String[]{"noé", "no=", "no\t", "", "desc", "name", "owner", "class", "lock", "peerId", "host", "BUG", "BuGvAr", "bug", "bugvar", "no\n"}) {
+        for (String name : new String[]{"noé", "no=", "no\t", "", "desc", "name", "owner", "class", "OwNeR", "lock", "peerId", "BUG", "BuGvAr", "bug", "bugvar", "no\n"}) {
             try {
                 server.addVariable(name, "", "", VariableAccessType.READ);
             } catch (Exception e) {
-                System.out.println("Variable '"+name+"' properly refused");
+                System.err.println("Variable '"+name+"' properly refused");
                 continue;
             }
             problems.add(name);

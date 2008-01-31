@@ -41,6 +41,7 @@ import fr.prima.omiscid.control.OmiscidService;
 import fr.prima.omiscid.control.VariableAttribute;
 import fr.prima.omiscid.control.WaitForOmiscidServices;
 import fr.prima.omiscid.control.filter.OmiscidServiceFilter;
+import fr.prima.omiscid.control.interf.GlobalConstants;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.control.interf.VariableChangeQueryListener;
 import fr.prima.omiscid.user.connector.ConnectorListener;
@@ -61,6 +62,11 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.util.Utility;
 import fr.prima.omiscid.user.variable.LocalVariableListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import org.w3c.dom.Element;
 
 /**
@@ -68,6 +74,12 @@ import org.w3c.dom.Element;
  *
  */
 public class ServiceImpl implements Service {
+    
+    private static Set<String> bannedVariables = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER){{
+        addAll(Arrays.asList(GlobalConstants.specialVariablesNames));
+        add(GlobalConstants.constantNameForPeerId);
+        add(GlobalConstants.keyForFullTextRecord);
+    }};
     
     private static class VariableListenerBridge {
         public VariableChangeListener variableChangeListener ;
@@ -109,7 +121,7 @@ public class ServiceImpl implements Service {
         return ((MessageOnConnector)message).connectorName;
     }
     
-    private Object lock = new Object() ;
+    private Object lock = new Object(); // TODO: review, Couldn't this be removed?
     
     /* the Bip Control Server : this is the heart of the bip service */
     private ControlServer ctrlServer ;
@@ -117,18 +129,18 @@ public class ServiceImpl implements Service {
     private boolean started = false ;
     
     /** The input output type for each connector of each service */
-    private HashMap<String, TcpClientServer>  tcpClientServers ;
+    private Map<String, TcpClientServer>  tcpClientServers ;
     
-    private HashMap<String,HashMap<LocalVariableListener,  VariableListenerBridge> > variableListeners ;
+    private Map<String, HashMap<LocalVariableListener, VariableListenerBridge>> variableListeners;
     
     /** Association between a connector name and an associated listener */
-    private HashMap<String, HashMap<ConnectorListener, BipMessageListener> > msgListeners ;
+    private Map<String, HashMap<ConnectorListener, BipMessageListener> > msgListeners ;
     
     public ServiceImpl(ControlServer ctrlServer) {
         this.ctrlServer = ctrlServer ;
-        tcpClientServers = new HashMap<String, TcpClientServer>() ;
-        variableListeners = new HashMap<String, HashMap<LocalVariableListener, VariableListenerBridge> >() ;
-        msgListeners = new HashMap<String, HashMap<ConnectorListener, BipMessageListener> >() ;
+        tcpClientServers = new TreeMap<String, TcpClientServer>(String.CASE_INSENSITIVE_ORDER);
+        variableListeners = new TreeMap<String, HashMap<LocalVariableListener, VariableListenerBridge> >(String.CASE_INSENSITIVE_ORDER) ;
+        msgListeners = new TreeMap<String, HashMap<ConnectorListener, BipMessageListener> >(String.CASE_INSENSITIVE_ORDER) ;
         
         for (InOutputAttribute inoutput : ctrlServer.getConnectors()) {
             tcpClientServers.put(inoutput.getName(), (TcpClientServer) inoutput.getCommunicationServer());
@@ -143,45 +155,49 @@ public class ServiceImpl implements Service {
         return Utility.intTo8HexString(ctrlServer.getPeerId()).toLowerCase();
     }
 
-        /* (non-Javadoc)
-         * @see fr.prima.omiscid.service.Service#addConnector(java.lang.String, fr.prima.omiscid.control.interf.ChannelType)
-         */
-    synchronized  public void addConnector(String connectorName,
-            String connectorDescription, ConnectorType connectorKind) throws ConnectorAlreadyExisting, IOException, ServiceRunning, ConnectorLimitReached {
+    private synchronized void checkAvailableConnectorOrVariable(String elementName) throws ConnectorAlreadyExisting, VariableAlreadyExisting, ServiceRunning {
+        if (started) {
+            throw new ServiceRunning("While adding '"+elementName+"'");
+        }
+        if (!elementName.matches("[\\x20-\\x3C\\x3E-\\x7E]+")) {
+            throw new RuntimeException("Wrong connector or variable name '"+elementName+"', should match [\\x20-\\x3C\\x3E-\\x7E]+");
+        }
+        if (bannedVariables.contains(elementName)) {
+            throw new RuntimeException("Reserved connector or variable name '"+elementName+"'");
+        }
+        try {
+            getTcpClientServer(elementName);
+            throw new ConnectorAlreadyExisting(elementName);
+        } catch (UnknownConnector e) {
+        }
+        if (ctrlServer.findVariable(elementName) != null) {
+            throw new VariableAlreadyExisting(elementName);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see fr.prima.omiscid.service.Service#addConnector(java.lang.String, fr.prima.omiscid.control.interf.ChannelType)
+     */
+    synchronized public void addConnector(String connectorName,
+            String connectorDescription, ConnectorType connectorKind) throws ConnectorAlreadyExisting, VariableAlreadyExisting, IOException, ServiceRunning, ConnectorLimitReached {
         addConnector(connectorName, connectorDescription, connectorKind, 0);
     }
     
     synchronized public void addConnector(String connectorName,
-            String connectorDescription, ConnectorType connectorKind, int port) throws ConnectorAlreadyExisting, IOException, ServiceRunning, ConnectorLimitReached {
-        
-        if (started)
-            throw new ServiceRunning("addConnector");
-        
-        InOutputAttribute ioa = null;
-        TcpClientServer tcpClientServer = null ;
-        
+            String connectorDescription, ConnectorType connectorKind, int port) throws ConnectorAlreadyExisting, VariableAlreadyExisting, IOException, ServiceRunning, ConnectorLimitReached {
+
         synchronized (lock) {
-            boolean alreadyExisting = true ;
+            checkAvailableConnectorOrVariable(connectorName);
+            TcpClientServer tcpClientServer = new TcpClientServer(ctrlServer.getPeerId(), port);
+            InOutputAttribute ioa = null;
             try {
-                tcpClientServer = getTcpClientServer(connectorName) ;
-            } catch (UnknownConnector e) {
-                // TODO Auto-generated catch block
-                alreadyExisting = false ;
+                ioa = ctrlServer.addInOutput(connectorName, tcpClientServer, connectorKind);
+            } catch (ControlServer.MaxInoutputCountReached e) {
+                throw new ConnectorLimitReached("Maximum connector count reached");
             }
-            
-            if (alreadyExisting) {
-                throw new ConnectorAlreadyExisting("Connector already defined : " + connectorName) ;
-            } else {
-                tcpClientServer = new fr.prima.omiscid.com.TcpClientServer(ctrlServer.getPeerId(), port);
-                try {
-                    ioa = ctrlServer.addInOutput(connectorName, tcpClientServer, connectorKind);
-                } catch (ControlServer.MaxInoutputCountReached e) {
-                    throw new ConnectorLimitReached("Maximum connector count reached");
-                }
-                tcpClientServers.put(connectorName, tcpClientServer) ;
-                ioa.setDescription(connectorDescription);
-                tcpClientServer.start();
-            }
+            tcpClientServers.put(connectorName, tcpClientServer);
+            ioa.setDescription(connectorDescription);
+            tcpClientServer.start();
         }
     }
     
@@ -380,15 +396,9 @@ public class ServiceImpl implements Service {
         /* (non-Javadoc)
          * @see fr.prima.omiscid.service.Service#addVariable(java.lang.String,java.lang.String, java.lang.String)
          */
-    synchronized  public void addVariable(String varName, String type, String description, VariableAccessType accessType) throws VariableAlreadyExisting, ServiceRunning {
+    synchronized  public void addVariable(String varName, String type, String description, VariableAccessType accessType) throws ConnectorAlreadyExisting, VariableAlreadyExisting, ServiceRunning {
         
-        if (started) {
-            throw new ServiceRunning("addVariable");
-        }
-        
-        if (ctrlServer.findVariable(varName) != null)
-            // the variable already exists
-            throw new VariableAlreadyExisting("Variable already declared : " + varName) ;
+        checkAvailableConnectorOrVariable(varName);
         ctrlServer.addVariable(varName) ;
         VariableAttribute var = ctrlServer.findVariable(varName) ;
         var.setDescription(description);

@@ -56,13 +56,30 @@ public interface Service {
      * @param connectorDescription the description of the connector
      * @param connectorKind connector type. This can be input, output or input-output
      * @throws ConnectorAlreadyExisting thrown if we try to recreate an already existing connector
+     * @throws VariableAlreadyExisting thrown if there is already a variable with this name
      * @throws IOException thrown if there is an error in the tcp socket creation
      * @throws ServiceRunning It is not possible to add a new connector if the service is already running. You have to stop it before
      * @throws ConnectorLimitReached when no more connectors can be added to the service.
      */
     public void addConnector(String connectorName,
             String connectorDescription,
-            ConnectorType connectorKind) throws ConnectorAlreadyExisting, IOException, ServiceRunning, ConnectorLimitReached;
+            ConnectorType connectorKind) throws ConnectorAlreadyExisting, VariableAlreadyExisting, IOException, ServiceRunning, ConnectorLimitReached;
+    
+    /**
+     * Adds a new connector to the service specifying a preferred tcp port for it.
+     * @param connectorName the name of the connector
+     * @param connectorDescription the description of the connector
+     * @param connectorKind connector type. This can be input, output or input-output
+     * @param port the preferred port number
+     * @throws ConnectorAlreadyExisting thrown if we try to recreate an already existing connector
+     * @throws VariableAlreadyExisting thrown if there is already a variable with this name
+     * @throws IOException thrown if there is an error in the tcp socket creation (e.g. port already in use)
+     * @throws ServiceRunning It is not possible to add a new connector if the service is already running. You have to stop it before
+     * @throws ConnectorLimitReached when no more connectors can be added to the service.
+     */
+    public void addConnector(String connectorName,
+            String connectorDescription,
+            ConnectorType connectorKind, int port) throws ConnectorAlreadyExisting, VariableAlreadyExisting, IOException, ServiceRunning, ConnectorLimitReached;
     
     /**
      * Add a message listener to a connector
@@ -239,7 +256,7 @@ public interface Service {
      *
      */
     public void addVariable(String varName, String type, String description, VariableAccessType accessType)
-    throws VariableAlreadyExisting, ServiceRunning;
+    throws ConnectorAlreadyExisting, VariableAlreadyExisting, ServiceRunning;
     
     /**
      * Associate a description to an existing variable
@@ -324,6 +341,17 @@ public interface Service {
      */
     public void connectTo(String localConnector, ServiceProxy proxy, String remoteConnector)
     throws UnknownConnector, IncorrectConnectorType, ConnectionRefused;
+    
+    /**
+     * 
+     * @param localConnector
+     * @param hostName the host name of the remote service
+     * @param tcpPort the port number for the remote connector
+     * @throws fr.prima.omiscid.user.exception.UnknownConnector
+     * @throws fr.prima.omiscid.user.exception.ConnectionRefused thrown in case of connection problem
+     */
+    public void connectTo(String localConnector, String hostName, int tcpPort)
+            throws UnknownConnector, ConnectionRefused;
     
     /**
      * Finds a service on the network.

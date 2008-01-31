@@ -63,7 +63,7 @@ public class I0048_TestConnectorWithDash {
         }
         {
             Service client = factory.create("I0048Client");
-            client.addConnector("bug", "", ConnectorType.OUTPUT);
+            client.addConnector("bug", "", ConnectorType.INPUT);
             client.start();
             final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0048Server"));
             try {

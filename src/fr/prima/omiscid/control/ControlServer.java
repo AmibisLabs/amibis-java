@@ -1001,7 +1001,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      */
     public VariableAttribute findVariable(String name) {
         for (VariableAttribute variable : variablesSet) {
-            if (variable.getName().equals(name)) {
+            if (variable.getName().equalsIgnoreCase(name)) {
                 return variable;
             }
         }
