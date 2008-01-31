@@ -20,6 +20,7 @@ r
         fix:  problem with netbeans when release contains castor generated .java files (these .java are not included any more)
         fix:  problem with connector and variable names containing non letter characters
         fix:  it is now impossible to add variables and connectors having problematic names (duplicate names, reserved ones, ...)
+        impr: now using JiveDNS in place of JmDNS (JiveDNS is a fork of JmDNS incorporating submitted patches and bug fixes)
         impr: (API) can now specify a service filter when adding a listener to a service repository
         impr: (API) can now specify preferred service connector port and ask for connection to a remote host+port pair
 

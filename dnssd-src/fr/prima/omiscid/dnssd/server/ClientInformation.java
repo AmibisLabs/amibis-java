@@ -33,8 +33,6 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import javax.jmdns.JmDNS;
-
 import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.dnssd.interf.ServiceBrowser;
 import fr.prima.omiscid.dnssd.interf.ServiceEvent;
@@ -44,7 +42,7 @@ import fr.prima.omiscid.dnssd.interf.ServiceRegistration.ServiceNameProducer;
 
 /**
  * Contains informations about a client connected to the {@link OmiscidDnssdServer}.
- * Each client has a socket and knows the shared {@link JmDNS} object to use for registration and unregistration.
+ * Each client has a socket and knows the shared object to use for registration and unregistration.
  * Each client is listening for a particular kind of dnssd services (registration type). This kind can be null.
  * 
  * Communications between the client and the {@link OmiscidDnssdServer} are done (in both way) through serialisation of {@link ServiceInformation} instances.

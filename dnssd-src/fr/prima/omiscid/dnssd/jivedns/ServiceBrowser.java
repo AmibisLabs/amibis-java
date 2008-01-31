@@ -24,28 +24,27 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package fr.prima.omiscid.dnssd.jmdns;
+package fr.prima.omiscid.dnssd.jivedns;
 
 import java.util.List;
 import java.util.Vector;
 
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceListener;
-
 import fr.prima.omiscid.dnssd.interf.ServiceEvent;
 import fr.prima.omiscid.dnssd.interf.ServiceEventListener;
 import fr.prima.omiscid.dnssd.interf.ServiceInformation;
+import org.jivedns.JiveDNS;
+import org.jivedns.ServiceListener;
 
 public class ServiceBrowser implements fr.prima.omiscid.dnssd.interf.ServiceBrowser, ServiceListener {
 
     private List<ServiceEventListener> listeners = new Vector<ServiceEventListener>();
 
-    private JmDNS jmdns;
+    private JiveDNS JiveDNS;
 
     private String registrationType;
 
-    /* package */ServiceBrowser(JmDNS jmdns, String registrationType) {
-        this.jmdns = jmdns;
+    /* package */ServiceBrowser(JiveDNS JiveDNS, String registrationType) {
+        this.JiveDNS = JiveDNS;
         this.registrationType = registrationType;
     }
 
@@ -58,28 +57,28 @@ public class ServiceBrowser implements fr.prima.omiscid.dnssd.interf.ServiceBrow
     }
 
     public void start() {
-        jmdns.addServiceListener(registrationType, this);
-        jmdns.list(registrationType);
+        JiveDNS.addServiceListener(registrationType, this);
+        JiveDNS.list(registrationType);
     }
 
     public void stop() {
-        jmdns.removeServiceListener(registrationType, this);
+        JiveDNS.removeServiceListener(registrationType, this);
     }
 
-    private ServiceInformation infoOf(javax.jmdns.ServiceEvent event) {
-        return new fr.prima.omiscid.dnssd.jmdns.ServiceInformation(event.getType(), event.getName());
+    private ServiceInformation infoOf(org.jivedns.ServiceEvent event) {
+        return new fr.prima.omiscid.dnssd.jivedns.ServiceInformation(event.getType(), event.getName());
     }
 
-    private ServiceInformation fullInfoOf(javax.jmdns.ServiceEvent event) {
-        return new fr.prima.omiscid.dnssd.jmdns.ServiceInformation(event.getInfo());
+    private ServiceInformation fullInfoOf(org.jivedns.ServiceEvent event) {
+        return new fr.prima.omiscid.dnssd.jivedns.ServiceInformation(event.getInfo());
     }
 
-    public void serviceAdded(javax.jmdns.ServiceEvent event) {
+    public void serviceAdded(org.jivedns.ServiceEvent event) {
         // System.out.println("s added: "+event.getName());
-        // jmdns.requestServiceInfo(event.getType(), event.getName(),1);
+        // JiveDNS.requestServiceInfo(event.getType(), event.getName(),1);
     }
 
-    public void serviceRemoved(javax.jmdns.ServiceEvent event) {
+    public void serviceRemoved(org.jivedns.ServiceEvent event) {
         // System.out.println("s removed: "+event.getName());
         ServiceEvent ev = new ServiceEvent(infoOf(event), ServiceEvent.LOST);
         for (ServiceEventListener listener : listeners) {
@@ -87,7 +86,7 @@ public class ServiceBrowser implements fr.prima.omiscid.dnssd.interf.ServiceBrow
         }
     }
 
-    public void serviceResolved(javax.jmdns.ServiceEvent event) {
+    public void serviceResolved(org.jivedns.ServiceEvent event) {
         // System.out.println("s registered: "+event.getName());
         ServiceEvent ev = new ServiceEvent(fullInfoOf(event), ServiceEvent.FOUND);
         for (ServiceEventListener listener : listeners) {

@@ -24,17 +24,16 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package fr.prima.omiscid.dnssd.jmdns;
+package fr.prima.omiscid.dnssd.jivedns;
 
 import java.io.IOException;
 import java.util.Hashtable;
-
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceInfo;
+import org.jivedns.JiveDNS;
+import org.jivedns.ServiceInfo;
 
 public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.ServiceRegistration {
 
-    private JmDNS jmdns;
+    private JiveDNS JiveDNS;
 
     private String serviceName;
 
@@ -49,8 +48,8 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
 
     private ServiceInfo serviceInfo;
 
-    /* package */ServiceRegistration(JmDNS jmdns, String serviceName, String registrationType) {
-        this.jmdns = jmdns;
+    /* package */ServiceRegistration(JiveDNS JiveDNS, String serviceName, String registrationType) {
+        this.JiveDNS = JiveDNS;
         this.registrationType = registrationType;
         this.serviceName = serviceName;
     }
@@ -64,11 +63,11 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
             estimatedPropertiesSize += name.length() + 2; // [size]name=... (one byte for size, one for '=')
         }
         if (estimatedPropertiesSize > 1024) {
-            // It seems that jmdns can support more but not much
+            // It seems that JiveDNS can support more but not much
             properties.remove(name);
             estimatedPropertiesSize -= name.length() + 2;
             estimatedPropertiesSize -= value.length();
-            throw new RuntimeException("Maximum overall properties size reached in dnssd access implementation using jmdns");
+            throw new RuntimeException("Maximum overall properties size reached in dnssd access implementation using jivedns");
         }
     }
 
@@ -76,7 +75,7 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
         registered = false;
         serviceInfo = new ServiceInfo(registrationType, serviceName, port, 0, 0, properties);
         try {
-            jmdns.registerService(serviceInfo);
+            JiveDNS.registerService(serviceInfo);
             registered = true;
             registeredName = clean(serviceInfo.getQualifiedName());
         } catch (IOException e) {
@@ -94,13 +93,13 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
                 return registered;
             }
             try {
-                jmdns.registerService(serviceInfo);
+                JiveDNS.registerService(serviceInfo);
                 if (serviceInfo.getName().equals(serviceName)) {
                     registered = true;
                     registeredName = clean(serviceInfo.getQualifiedName());
                     break;
                 } else {
-                    jmdns.unregisterService(serviceInfo);
+                    JiveDNS.unregisterService(serviceInfo);
                 }
             } catch (IOException e) {
                 // TODO Auto-generated catch block
@@ -115,7 +114,7 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
     }
 
     public void unregister() {
-        jmdns.unregisterService(serviceInfo);
+        JiveDNS.unregisterService(serviceInfo);
         registered = false;
     }
 
@@ -132,7 +131,7 @@ public class ServiceRegistration implements fr.prima.omiscid.dnssd.interf.Servic
     }
     
     public void setHostName(String serviceHostName) {
-        throw new RuntimeException("OMiSCID DNSSD Server unsupported with jmdns");
+        throw new RuntimeException("OMiSCID DNSSD Server unsupported with jivedns");
     }
 
     private String clean(String registeredName) {

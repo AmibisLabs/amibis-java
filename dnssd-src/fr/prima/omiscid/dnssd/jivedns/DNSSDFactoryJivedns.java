@@ -24,24 +24,23 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package fr.prima.omiscid.dnssd.jmdns;
+package fr.prima.omiscid.dnssd.jivedns;
 
 import java.io.IOException;
 import java.net.InetAddress;
 
-import javax.jmdns.JmDNS;
-
 import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.dnssd.interf.ServiceBrowser;
 import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
+import org.jivedns.JiveDNS;
 
-public class DNSSDFactoryJmdns implements DNSSDFactory {
+public class DNSSDFactoryJivedns implements DNSSDFactory {
 
-    private JmDNS jmdns;
+    private JiveDNS jiveDns;
 
-    public DNSSDFactoryJmdns() {
+    public DNSSDFactoryJivedns() {
         try {
-            this.jmdns = new JmDNS(InetAddress.getLocalHost());
+            this.jiveDns = new JiveDNS(InetAddress.getLocalHost());
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -49,11 +48,11 @@ public class DNSSDFactoryJmdns implements DNSSDFactory {
     }
 
     public ServiceBrowser createServiceBrowser(String registrationType) {
-        return new fr.prima.omiscid.dnssd.jmdns.ServiceBrowser(jmdns, registrationType + ".local.");
+        return new fr.prima.omiscid.dnssd.jivedns.ServiceBrowser(jiveDns, registrationType + ".local.");
     }
 
     public ServiceRegistration createServiceRegistration(String serviceName, String registrationType) {
-        return new fr.prima.omiscid.dnssd.jmdns.ServiceRegistration(jmdns, serviceName, registrationType + ".local.");
+        return new fr.prima.omiscid.dnssd.jivedns.ServiceRegistration(jiveDns, serviceName, registrationType + ".local.");
     }
 
 }

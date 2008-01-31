@@ -28,7 +28,6 @@ package fr.prima.omiscid.com;
 
 import java.util.Random;
 
-import fr.prima.omiscid.user.util.Utility;
 
 /**
  * Utility class containing BIP related constants and some Com Layer tools.

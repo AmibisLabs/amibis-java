@@ -24,12 +24,11 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package fr.prima.omiscid.dnssd.jmdns;
+package fr.prima.omiscid.dnssd.jivedns;
 
 import java.util.Enumeration;
 import java.util.Vector;
-
-import javax.jmdns.ServiceInfo;
+import org.jivedns.ServiceInfo;
 
 public class ServiceInformation implements fr.prima.omiscid.dnssd.interf.ServiceInformation {
 
