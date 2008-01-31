@@ -1,20 +1,11 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.5</a>, using an XML
  * Schema.
  * $Id$
  */
 
 package fr.prima.omiscid.control.message.servicexml;
-
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
-
-import org.exolab.castor.mapping.AccessMode;
-import org.exolab.castor.xml.TypeValidator;
-import org.exolab.castor.xml.XMLFieldDescriptor;
-import org.exolab.castor.xml.validators.*;
 
 /**
  * Class ServiceItemDescriptor.
@@ -222,7 +213,7 @@ public class ServiceItemDescriptor extends org.exolab.castor.xml.util.XMLClassDe
      * 
      * 
      * 
-     * @return AccessMode
+     * @return the access mode specified for this class.
      */
     public org.exolab.castor.mapping.AccessMode getAccessMode()
     {
@@ -234,7 +225,8 @@ public class ServiceItemDescriptor extends org.exolab.castor.xml.util.XMLClassDe
      * 
      * 
      * 
-     * @return ClassDescriptor
+     * @return the class descriptor of the class extended by this
+     * class.
      */
     public org.exolab.castor.mapping.ClassDescriptor getExtends()
     {
@@ -246,7 +238,8 @@ public class ServiceItemDescriptor extends org.exolab.castor.xml.util.XMLClassDe
      * 
      * 
      * 
-     * @return FieldDescriptor
+     * @return the identity field, null if this class has no
+     * identity.
      */
     public org.exolab.castor.mapping.FieldDescriptor getIdentity()
     {
@@ -258,7 +251,7 @@ public class ServiceItemDescriptor extends org.exolab.castor.xml.util.XMLClassDe
      * 
      * 
      * 
-     * @return Class
+     * @return the Java class represented by this descriptor.
      */
     public java.lang.Class getJavaClass()
     {
@@ -270,7 +263,7 @@ public class ServiceItemDescriptor extends org.exolab.castor.xml.util.XMLClassDe
      * 
      * 
      * 
-     * @return String
+     * @return the namespace prefix to use when marshalling as XML.
      */
     public java.lang.String getNameSpacePrefix()
     {
@@ -282,7 +275,8 @@ public class ServiceItemDescriptor extends org.exolab.castor.xml.util.XMLClassDe
      * 
      * 
      * 
-     * @return String
+     * @return the namespace URI used when marshalling and
+     * unmarshalling as XML.
      */
     public java.lang.String getNameSpaceURI()
     {
@@ -294,7 +288,8 @@ public class ServiceItemDescriptor extends org.exolab.castor.xml.util.XMLClassDe
      * 
      * 
      * 
-     * @return TypeValidator
+     * @return a specific validator for the class described by this
+     * ClassDescriptor.
      */
     public org.exolab.castor.xml.TypeValidator getValidator()
     {
@@ -306,7 +301,7 @@ public class ServiceItemDescriptor extends org.exolab.castor.xml.util.XMLClassDe
      * 
      * 
      * 
-     * @return String
+     * @return the XML Name for the Class being described.
      */
     public java.lang.String getXMLName()
     {
@@ -318,7 +313,9 @@ public class ServiceItemDescriptor extends org.exolab.castor.xml.util.XMLClassDe
      * 
      * 
      * 
-     * @return boolean
+     * @return true if XML schema definition of this Class is that
+     * of a global
+     * element or element with anonymous type definition.
      */
     public boolean isElementDefinition()
     {

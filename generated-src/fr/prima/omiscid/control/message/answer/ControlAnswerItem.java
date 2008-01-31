@@ -1,19 +1,11 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.5</a>, using an XML
  * Schema.
  * $Id$
  */
 
 package fr.prima.omiscid.control.message.answer;
-
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
-
-import java.io.Serializable;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 
 /**
  * Class ControlAnswerItem.
@@ -82,8 +74,7 @@ public class ControlAnswerItem implements java.io.Serializable {
      * 'choiceValue' has the following description: Internal choice
      * value storage
      * 
-     * @return Object
-     * @return the value of field 'choiceValue'.
+     * @return the value of field 'ChoiceValue'.
      */
     public java.lang.Object getChoiceValue()
     {
@@ -93,8 +84,7 @@ public class ControlAnswerItem implements java.io.Serializable {
     /**
      * Returns the value of field 'inoutput'.
      * 
-     * @return Inoutput
-     * @return the value of field 'inoutput'.
+     * @return the value of field 'Inoutput'.
      */
     public fr.prima.omiscid.control.message.answer.Inoutput getInoutput()
     {
@@ -104,8 +94,7 @@ public class ControlAnswerItem implements java.io.Serializable {
     /**
      * Returns the value of field 'input'.
      * 
-     * @return Input
-     * @return the value of field 'input'.
+     * @return the value of field 'Input'.
      */
     public fr.prima.omiscid.control.message.answer.Input getInput()
     {
@@ -115,8 +104,7 @@ public class ControlAnswerItem implements java.io.Serializable {
     /**
      * Returns the value of field 'lock'.
      * 
-     * @return Lock
-     * @return the value of field 'lock'.
+     * @return the value of field 'Lock'.
      */
     public fr.prima.omiscid.control.message.answer.Lock getLock()
     {
@@ -126,8 +114,7 @@ public class ControlAnswerItem implements java.io.Serializable {
     /**
      * Returns the value of field 'output'.
      * 
-     * @return Output
-     * @return the value of field 'output'.
+     * @return the value of field 'Output'.
      */
     public fr.prima.omiscid.control.message.answer.Output getOutput()
     {
@@ -137,8 +124,7 @@ public class ControlAnswerItem implements java.io.Serializable {
     /**
      * Returns the value of field 'unlock'.
      * 
-     * @return Unlock
-     * @return the value of field 'unlock'.
+     * @return the value of field 'Unlock'.
      */
     public fr.prima.omiscid.control.message.answer.Unlock getUnlock()
     {
@@ -148,8 +134,7 @@ public class ControlAnswerItem implements java.io.Serializable {
     /**
      * Returns the value of field 'variable'.
      * 
-     * @return Variable
-     * @return the value of field 'variable'.
+     * @return the value of field 'Variable'.
      */
     public fr.prima.omiscid.control.message.answer.Variable getVariable()
     {

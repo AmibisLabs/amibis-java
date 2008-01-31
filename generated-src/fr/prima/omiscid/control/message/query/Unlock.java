@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.5</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -11,15 +11,8 @@ package fr.prima.omiscid.control.message.query;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.Writer;
-import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.ContentHandler;
 
 /**
  * Class Unlock.
@@ -48,7 +41,7 @@ public class Unlock implements java.io.Serializable {
      * 
      * 
      * 
-     * @return boolean
+     * @return true if this object is valid according to the schema
      */
     public boolean isValid()
     {
@@ -62,11 +55,13 @@ public class Unlock implements java.io.Serializable {
     } //-- boolean isValid() 
 
     /**
-     * Method marshal
-     * 
      * 
      * 
      * @param out
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
      */
     public void marshal(java.io.Writer out)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
@@ -76,11 +71,15 @@ public class Unlock implements java.io.Serializable {
     } //-- void marshal(java.io.Writer) 
 
     /**
-     * Method marshal
-     * 
      * 
      * 
      * @param handler
+     * @throws java.io.IOException if an IOException occurs during
+     * marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
      */
     public void marshal(org.xml.sax.ContentHandler handler)
         throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
@@ -95,7 +94,12 @@ public class Unlock implements java.io.Serializable {
      * 
      * 
      * @param reader
-     * @return Unlock
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
+     * @return the unmarshaled
+     * fr.prima.omiscid.control.message.query.Unlock
      */
     public static fr.prima.omiscid.control.message.query.Unlock unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
@@ -104,8 +108,10 @@ public class Unlock implements java.io.Serializable {
     } //-- fr.prima.omiscid.control.message.query.Unlock unmarshal(java.io.Reader) 
 
     /**
-     * Method validate
      * 
+     * 
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
      */
     public void validate()
         throws org.exolab.castor.xml.ValidationException

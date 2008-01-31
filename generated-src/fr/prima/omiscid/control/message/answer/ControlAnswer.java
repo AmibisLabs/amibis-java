@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.5</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -11,17 +11,8 @@ package fr.prima.omiscid.control.message.answer;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.Writer;
-import java.util.Enumeration;
-import java.util.Vector;
-import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.ContentHandler;
 
 /**
  * Class ControlAnswer.
@@ -53,7 +44,7 @@ public class ControlAnswer implements java.io.Serializable {
     public ControlAnswer() 
      {
         super();
-        _items = new Vector();
+        this._items = new java.util.Vector();
     } //-- fr.prima.omiscid.control.message.answer.ControlAnswer()
 
 
@@ -62,30 +53,30 @@ public class ControlAnswer implements java.io.Serializable {
     //-----------/
 
     /**
-     * Method addControlAnswerItem
-     * 
      * 
      * 
      * @param vControlAnswerItem
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
      */
     public void addControlAnswerItem(fr.prima.omiscid.control.message.answer.ControlAnswerItem vControlAnswerItem)
         throws java.lang.IndexOutOfBoundsException
     {
-        _items.addElement(vControlAnswerItem);
+        this._items.addElement(vControlAnswerItem);
     } //-- void addControlAnswerItem(fr.prima.omiscid.control.message.answer.ControlAnswerItem) 
 
     /**
-     * Method addControlAnswerItem
-     * 
      * 
      * 
      * @param index
      * @param vControlAnswerItem
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
      */
     public void addControlAnswerItem(int index, fr.prima.omiscid.control.message.answer.ControlAnswerItem vControlAnswerItem)
         throws java.lang.IndexOutOfBoundsException
     {
-        _items.insertElementAt(vControlAnswerItem, index);
+        this._items.add(index, vControlAnswerItem);
     } //-- void addControlAnswerItem(int, fr.prima.omiscid.control.message.answer.ControlAnswerItem) 
 
     /**
@@ -93,11 +84,13 @@ public class ControlAnswer implements java.io.Serializable {
      * 
      * 
      * 
-     * @return Enumeration
+     * @return an Enumeration over all
+     * fr.prima.omiscid.control.message.answer.ControlAnswerItem
+     * elements
      */
     public java.util.Enumeration enumerateControlAnswerItem()
     {
-        return _items.elements();
+        return this._items.elements();
     } //-- java.util.Enumeration enumerateControlAnswerItem() 
 
     /**
@@ -106,17 +99,21 @@ public class ControlAnswer implements java.io.Serializable {
      * 
      * 
      * @param index
-     * @return ControlAnswerItem
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
+     * @return the value of the
+     * fr.prima.omiscid.control.message.answer.ControlAnswerItem at
+     * the given index
      */
     public fr.prima.omiscid.control.message.answer.ControlAnswerItem getControlAnswerItem(int index)
         throws java.lang.IndexOutOfBoundsException
     {
-        //-- check bounds for index
-        if ((index < 0) || (index >= _items.size())) {
-            throw new IndexOutOfBoundsException("getControlAnswerItem: Index value '"+index+"' not in range [0.."+(_items.size() - 1) + "]");
+        // check bounds for index
+        if (index < 0 || index >= this._items.size()) {
+            throw new IndexOutOfBoundsException("getControlAnswerItem: Index value '" + index + "' not in range [0.." + (this._items.size() - 1) + "]");
         }
         
-        return (fr.prima.omiscid.control.message.answer.ControlAnswerItem) _items.elementAt(index);
+        return (fr.prima.omiscid.control.message.answer.ControlAnswerItem) _items.get(index);
     } //-- fr.prima.omiscid.control.message.answer.ControlAnswerItem getControlAnswerItem(int) 
 
     /**
@@ -124,16 +121,17 @@ public class ControlAnswer implements java.io.Serializable {
      * 
      * 
      * 
-     * @return ControlAnswerItem
+     * @return this collection as an Array
      */
     public fr.prima.omiscid.control.message.answer.ControlAnswerItem[] getControlAnswerItem()
     {
-        int size = _items.size();
-        fr.prima.omiscid.control.message.answer.ControlAnswerItem[] mArray = new fr.prima.omiscid.control.message.answer.ControlAnswerItem[size];
-        for (int index = 0; index < size; index++) {
-            mArray[index] = (fr.prima.omiscid.control.message.answer.ControlAnswerItem) _items.elementAt(index);
+        int size = this._items.size();
+        fr.prima.omiscid.control.message.answer.ControlAnswerItem[] array = new fr.prima.omiscid.control.message.answer.ControlAnswerItem[size];
+        for (int index = 0; index < size; index++){
+            array[index] = (fr.prima.omiscid.control.message.answer.ControlAnswerItem) _items.get(index);
         }
-        return mArray;
+        
+        return array;
     } //-- fr.prima.omiscid.control.message.answer.ControlAnswerItem[] getControlAnswerItem() 
 
     /**
@@ -141,18 +139,17 @@ public class ControlAnswer implements java.io.Serializable {
      * 
      * 
      * 
-     * @return int
+     * @return the size of this collection
      */
     public int getControlAnswerItemCount()
     {
-        return _items.size();
+        return this._items.size();
     } //-- int getControlAnswerItemCount() 
 
     /**
      * Returns the value of field 'id'.
      * 
-     * @return String
-     * @return the value of field 'id'.
+     * @return the value of field 'Id'.
      */
     public java.lang.String getId()
     {
@@ -164,7 +161,7 @@ public class ControlAnswer implements java.io.Serializable {
      * 
      * 
      * 
-     * @return boolean
+     * @return true if this object is valid according to the schema
      */
     public boolean isValid()
     {
@@ -178,11 +175,13 @@ public class ControlAnswer implements java.io.Serializable {
     } //-- boolean isValid() 
 
     /**
-     * Method marshal
-     * 
      * 
      * 
      * @param out
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
      */
     public void marshal(java.io.Writer out)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
@@ -192,11 +191,15 @@ public class ControlAnswer implements java.io.Serializable {
     } //-- void marshal(java.io.Writer) 
 
     /**
-     * Method marshal
-     * 
      * 
      * 
      * @param handler
+     * @throws java.io.IOException if an IOException occurs during
+     * marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
      */
     public void marshal(org.xml.sax.ContentHandler handler)
         throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
@@ -206,12 +209,10 @@ public class ControlAnswer implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Method removeAllControlAnswerItem
-     * 
      */
     public void removeAllControlAnswerItem()
     {
-        _items.removeAllElements();
+        this._items.clear();
     } //-- void removeAllControlAnswerItem() 
 
     /**
@@ -219,47 +220,60 @@ public class ControlAnswer implements java.io.Serializable {
      * 
      * 
      * 
-     * @param index
-     * @return ControlAnswerItem
+     * @param vControlAnswerItem
+     * @return true if the object was removed from the collection.
      */
-    public fr.prima.omiscid.control.message.answer.ControlAnswerItem removeControlAnswerItem(int index)
+    public boolean removeControlAnswerItem(fr.prima.omiscid.control.message.answer.ControlAnswerItem vControlAnswerItem)
     {
-        java.lang.Object obj = _items.elementAt(index);
-        _items.removeElementAt(index);
-        return (fr.prima.omiscid.control.message.answer.ControlAnswerItem) obj;
-    } //-- fr.prima.omiscid.control.message.answer.ControlAnswerItem removeControlAnswerItem(int) 
+        boolean removed = _items.remove(vControlAnswerItem);
+        return removed;
+    } //-- boolean removeControlAnswerItem(fr.prima.omiscid.control.message.answer.ControlAnswerItem) 
 
     /**
-     * Method setControlAnswerItem
+     * Method removeControlAnswerItemAt
      * 
+     * 
+     * 
+     * @param index
+     * @return the element removed from the collection
+     */
+    public fr.prima.omiscid.control.message.answer.ControlAnswerItem removeControlAnswerItemAt(int index)
+    {
+        Object obj = this._items.remove(index);
+        return (fr.prima.omiscid.control.message.answer.ControlAnswerItem) obj;
+    } //-- fr.prima.omiscid.control.message.answer.ControlAnswerItem removeControlAnswerItemAt(int) 
+
+    /**
      * 
      * 
      * @param index
      * @param vControlAnswerItem
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
      */
     public void setControlAnswerItem(int index, fr.prima.omiscid.control.message.answer.ControlAnswerItem vControlAnswerItem)
         throws java.lang.IndexOutOfBoundsException
     {
-        //-- check bounds for index
-        if ((index < 0) || (index >= _items.size())) {
-            throw new IndexOutOfBoundsException("setControlAnswerItem: Index value '"+index+"' not in range [0.." + (_items.size() - 1) + "]");
+        // check bounds for index
+        if (index < 0 || index >= this._items.size()) {
+            throw new IndexOutOfBoundsException("setControlAnswerItem: Index value '" + index + "' not in range [0.." + (this._items.size() - 1) + "]");
         }
-        _items.setElementAt(vControlAnswerItem, index);
+        
+        this._items.set(index, vControlAnswerItem);
     } //-- void setControlAnswerItem(int, fr.prima.omiscid.control.message.answer.ControlAnswerItem) 
 
     /**
-     * Method setControlAnswerItem
      * 
      * 
-     * 
-     * @param controlAnswerItemArray
+     * @param vControlAnswerItemArray
      */
-    public void setControlAnswerItem(fr.prima.omiscid.control.message.answer.ControlAnswerItem[] controlAnswerItemArray)
+    public void setControlAnswerItem(fr.prima.omiscid.control.message.answer.ControlAnswerItem[] vControlAnswerItemArray)
     {
         //-- copy array
-        _items.removeAllElements();
-        for (int i = 0; i < controlAnswerItemArray.length; i++) {
-            _items.addElement(controlAnswerItemArray[i]);
+        _items.clear();
+        
+        for (int i = 0; i < vControlAnswerItemArray.length; i++) {
+                this._items.add(vControlAnswerItemArray[i]);
         }
     } //-- void setControlAnswerItem(fr.prima.omiscid.control.message.answer.ControlAnswerItem) 
 
@@ -279,7 +293,12 @@ public class ControlAnswer implements java.io.Serializable {
      * 
      * 
      * @param reader
-     * @return ControlAnswer
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
+     * @return the unmarshaled
+     * fr.prima.omiscid.control.message.answer.ControlAnswer
      */
     public static fr.prima.omiscid.control.message.answer.ControlAnswer unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
@@ -288,8 +307,10 @@ public class ControlAnswer implements java.io.Serializable {
     } //-- fr.prima.omiscid.control.message.answer.ControlAnswer unmarshal(java.io.Reader) 
 
     /**
-     * Method validate
      * 
+     * 
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
      */
     public void validate()
         throws org.exolab.castor.xml.ValidationException

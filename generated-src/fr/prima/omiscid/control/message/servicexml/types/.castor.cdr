@@ -1,2 +1,2 @@
--- listing properties --
-fr.prima.omiscid.control.message.servicexml.types.AccessType=fr.prima.omiscid.control.message.serv...
+#Thu Jan 31 11:32:00 CET 2008
+fr.prima.omiscid.control.message.servicexml.types.AccessType=fr.prima.omiscid.control.message.servicexml.types.AccessTypeDescriptor

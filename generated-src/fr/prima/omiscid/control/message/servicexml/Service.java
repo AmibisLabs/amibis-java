@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.5</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -11,17 +11,8 @@ package fr.prima.omiscid.control.message.servicexml;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.Writer;
-import java.util.Enumeration;
-import java.util.Vector;
-import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.ContentHandler;
 
 /**
  * Class Service.
@@ -63,7 +54,7 @@ public class Service implements java.io.Serializable {
     public Service() 
      {
         super();
-        _items = new Vector();
+        this._items = new java.util.Vector();
     } //-- fr.prima.omiscid.control.message.servicexml.Service()
 
 
@@ -72,30 +63,30 @@ public class Service implements java.io.Serializable {
     //-----------/
 
     /**
-     * Method addServiceItem
-     * 
      * 
      * 
      * @param vServiceItem
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
      */
     public void addServiceItem(fr.prima.omiscid.control.message.servicexml.ServiceItem vServiceItem)
         throws java.lang.IndexOutOfBoundsException
     {
-        _items.addElement(vServiceItem);
+        this._items.addElement(vServiceItem);
     } //-- void addServiceItem(fr.prima.omiscid.control.message.servicexml.ServiceItem) 
 
     /**
-     * Method addServiceItem
-     * 
      * 
      * 
      * @param index
      * @param vServiceItem
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
      */
     public void addServiceItem(int index, fr.prima.omiscid.control.message.servicexml.ServiceItem vServiceItem)
         throws java.lang.IndexOutOfBoundsException
     {
-        _items.insertElementAt(vServiceItem, index);
+        this._items.add(index, vServiceItem);
     } //-- void addServiceItem(int, fr.prima.omiscid.control.message.servicexml.ServiceItem) 
 
     /**
@@ -103,18 +94,19 @@ public class Service implements java.io.Serializable {
      * 
      * 
      * 
-     * @return Enumeration
+     * @return an Enumeration over all
+     * fr.prima.omiscid.control.message.servicexml.ServiceItem
+     * elements
      */
     public java.util.Enumeration enumerateServiceItem()
     {
-        return _items.elements();
+        return this._items.elements();
     } //-- java.util.Enumeration enumerateServiceItem() 
 
     /**
      * Returns the value of field 'clazz'.
      * 
-     * @return String
-     * @return the value of field 'clazz'.
+     * @return the value of field 'Clazz'.
      */
     public java.lang.String getClazz()
     {
@@ -124,8 +116,7 @@ public class Service implements java.io.Serializable {
     /**
      * Returns the value of field 'docURL'.
      * 
-     * @return String
-     * @return the value of field 'docURL'.
+     * @return the value of field 'DocURL'.
      */
     public java.lang.String getDocURL()
     {
@@ -135,8 +126,7 @@ public class Service implements java.io.Serializable {
     /**
      * Returns the value of field 'name'.
      * 
-     * @return String
-     * @return the value of field 'name'.
+     * @return the value of field 'Name'.
      */
     public java.lang.String getName()
     {
@@ -149,17 +139,21 @@ public class Service implements java.io.Serializable {
      * 
      * 
      * @param index
-     * @return ServiceItem
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
+     * @return the value of the
+     * fr.prima.omiscid.control.message.servicexml.ServiceItem at
+     * the given index
      */
     public fr.prima.omiscid.control.message.servicexml.ServiceItem getServiceItem(int index)
         throws java.lang.IndexOutOfBoundsException
     {
-        //-- check bounds for index
-        if ((index < 0) || (index >= _items.size())) {
-            throw new IndexOutOfBoundsException("getServiceItem: Index value '"+index+"' not in range [0.."+(_items.size() - 1) + "]");
+        // check bounds for index
+        if (index < 0 || index >= this._items.size()) {
+            throw new IndexOutOfBoundsException("getServiceItem: Index value '" + index + "' not in range [0.." + (this._items.size() - 1) + "]");
         }
         
-        return (fr.prima.omiscid.control.message.servicexml.ServiceItem) _items.elementAt(index);
+        return (fr.prima.omiscid.control.message.servicexml.ServiceItem) _items.get(index);
     } //-- fr.prima.omiscid.control.message.servicexml.ServiceItem getServiceItem(int) 
 
     /**
@@ -167,16 +161,17 @@ public class Service implements java.io.Serializable {
      * 
      * 
      * 
-     * @return ServiceItem
+     * @return this collection as an Array
      */
     public fr.prima.omiscid.control.message.servicexml.ServiceItem[] getServiceItem()
     {
-        int size = _items.size();
-        fr.prima.omiscid.control.message.servicexml.ServiceItem[] mArray = new fr.prima.omiscid.control.message.servicexml.ServiceItem[size];
-        for (int index = 0; index < size; index++) {
-            mArray[index] = (fr.prima.omiscid.control.message.servicexml.ServiceItem) _items.elementAt(index);
+        int size = this._items.size();
+        fr.prima.omiscid.control.message.servicexml.ServiceItem[] array = new fr.prima.omiscid.control.message.servicexml.ServiceItem[size];
+        for (int index = 0; index < size; index++){
+            array[index] = (fr.prima.omiscid.control.message.servicexml.ServiceItem) _items.get(index);
         }
-        return mArray;
+        
+        return array;
     } //-- fr.prima.omiscid.control.message.servicexml.ServiceItem[] getServiceItem() 
 
     /**
@@ -184,11 +179,11 @@ public class Service implements java.io.Serializable {
      * 
      * 
      * 
-     * @return int
+     * @return the size of this collection
      */
     public int getServiceItemCount()
     {
-        return _items.size();
+        return this._items.size();
     } //-- int getServiceItemCount() 
 
     /**
@@ -196,7 +191,7 @@ public class Service implements java.io.Serializable {
      * 
      * 
      * 
-     * @return boolean
+     * @return true if this object is valid according to the schema
      */
     public boolean isValid()
     {
@@ -210,11 +205,13 @@ public class Service implements java.io.Serializable {
     } //-- boolean isValid() 
 
     /**
-     * Method marshal
-     * 
      * 
      * 
      * @param out
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
      */
     public void marshal(java.io.Writer out)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
@@ -224,11 +221,15 @@ public class Service implements java.io.Serializable {
     } //-- void marshal(java.io.Writer) 
 
     /**
-     * Method marshal
-     * 
      * 
      * 
      * @param handler
+     * @throws java.io.IOException if an IOException occurs during
+     * marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
      */
     public void marshal(org.xml.sax.ContentHandler handler)
         throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
@@ -238,12 +239,10 @@ public class Service implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Method removeAllServiceItem
-     * 
      */
     public void removeAllServiceItem()
     {
-        _items.removeAllElements();
+        this._items.clear();
     } //-- void removeAllServiceItem() 
 
     /**
@@ -251,15 +250,28 @@ public class Service implements java.io.Serializable {
      * 
      * 
      * 
-     * @param index
-     * @return ServiceItem
+     * @param vServiceItem
+     * @return true if the object was removed from the collection.
      */
-    public fr.prima.omiscid.control.message.servicexml.ServiceItem removeServiceItem(int index)
+    public boolean removeServiceItem(fr.prima.omiscid.control.message.servicexml.ServiceItem vServiceItem)
     {
-        java.lang.Object obj = _items.elementAt(index);
-        _items.removeElementAt(index);
+        boolean removed = _items.remove(vServiceItem);
+        return removed;
+    } //-- boolean removeServiceItem(fr.prima.omiscid.control.message.servicexml.ServiceItem) 
+
+    /**
+     * Method removeServiceItemAt
+     * 
+     * 
+     * 
+     * @param index
+     * @return the element removed from the collection
+     */
+    public fr.prima.omiscid.control.message.servicexml.ServiceItem removeServiceItemAt(int index)
+    {
+        Object obj = this._items.remove(index);
         return (fr.prima.omiscid.control.message.servicexml.ServiceItem) obj;
-    } //-- fr.prima.omiscid.control.message.servicexml.ServiceItem removeServiceItem(int) 
+    } //-- fr.prima.omiscid.control.message.servicexml.ServiceItem removeServiceItemAt(int) 
 
     /**
      * Sets the value of field 'clazz'.
@@ -292,36 +304,36 @@ public class Service implements java.io.Serializable {
     } //-- void setName(java.lang.String) 
 
     /**
-     * Method setServiceItem
-     * 
      * 
      * 
      * @param index
      * @param vServiceItem
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
      */
     public void setServiceItem(int index, fr.prima.omiscid.control.message.servicexml.ServiceItem vServiceItem)
         throws java.lang.IndexOutOfBoundsException
     {
-        //-- check bounds for index
-        if ((index < 0) || (index >= _items.size())) {
-            throw new IndexOutOfBoundsException("setServiceItem: Index value '"+index+"' not in range [0.." + (_items.size() - 1) + "]");
+        // check bounds for index
+        if (index < 0 || index >= this._items.size()) {
+            throw new IndexOutOfBoundsException("setServiceItem: Index value '" + index + "' not in range [0.." + (this._items.size() - 1) + "]");
         }
-        _items.setElementAt(vServiceItem, index);
+        
+        this._items.set(index, vServiceItem);
     } //-- void setServiceItem(int, fr.prima.omiscid.control.message.servicexml.ServiceItem) 
 
     /**
-     * Method setServiceItem
      * 
      * 
-     * 
-     * @param serviceItemArray
+     * @param vServiceItemArray
      */
-    public void setServiceItem(fr.prima.omiscid.control.message.servicexml.ServiceItem[] serviceItemArray)
+    public void setServiceItem(fr.prima.omiscid.control.message.servicexml.ServiceItem[] vServiceItemArray)
     {
         //-- copy array
-        _items.removeAllElements();
-        for (int i = 0; i < serviceItemArray.length; i++) {
-            _items.addElement(serviceItemArray[i]);
+        _items.clear();
+        
+        for (int i = 0; i < vServiceItemArray.length; i++) {
+                this._items.add(vServiceItemArray[i]);
         }
     } //-- void setServiceItem(fr.prima.omiscid.control.message.servicexml.ServiceItem) 
 
@@ -331,7 +343,12 @@ public class Service implements java.io.Serializable {
      * 
      * 
      * @param reader
-     * @return Service
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
+     * @return the unmarshaled
+     * fr.prima.omiscid.control.message.servicexml.Service
      */
     public static fr.prima.omiscid.control.message.servicexml.Service unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
@@ -340,8 +357,10 @@ public class Service implements java.io.Serializable {
     } //-- fr.prima.omiscid.control.message.servicexml.Service unmarshal(java.io.Reader) 
 
     /**
-     * Method validate
      * 
+     * 
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
      */
     public void validate()
         throws org.exolab.castor.xml.ValidationException

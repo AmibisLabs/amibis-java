@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.5</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -11,11 +11,7 @@ package fr.prima.omiscid.control.message.servicexml.types;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.Serializable;
-import java.util.Enumeration;
 import java.util.Hashtable;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 
 /**
  * Class AccessType.
@@ -97,7 +93,8 @@ public class AccessType implements java.io.Serializable {
      * Returns an enumeration of all possible instances of
      * AccessType
      * 
-     * @return Enumeration
+     * @return an Enumeration over all possible instances of
+     * AccessType
      */
     public static java.util.Enumeration enumerate()
     {
@@ -109,7 +106,7 @@ public class AccessType implements java.io.Serializable {
      * 
      * Returns the type of this AccessType
      * 
-     * @return int
+     * @return the type of this AccessType
      */
     public int getType()
     {
@@ -121,7 +118,7 @@ public class AccessType implements java.io.Serializable {
      * 
      * 
      * 
-     * @return Hashtable
+     * @return the initialized Hashtable for the member table
      */
     private static java.util.Hashtable init()
     {
@@ -137,9 +134,8 @@ public class AccessType implements java.io.Serializable {
      * 
      *  will be called during deserialization to replace the
      * deserialized object with the correct constant instance.
-     * <br/>
      * 
-     * @return Object
+     * @return this deserialized object
      */
     private java.lang.Object readResolve()
     {
@@ -151,7 +147,7 @@ public class AccessType implements java.io.Serializable {
      * 
      * Returns the String representation of this AccessType
      * 
-     * @return String
+     * @return the String representation of this AccessType
      */
     public java.lang.String toString()
     {
@@ -164,7 +160,7 @@ public class AccessType implements java.io.Serializable {
      * Returns a new AccessType based on the given String value.
      * 
      * @param string
-     * @return AccessType
+     * @return the AccessType value of parameter 'string'
      */
     public static fr.prima.omiscid.control.message.servicexml.types.AccessType valueOf(java.lang.String string)
     {

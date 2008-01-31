@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.5</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -11,11 +11,7 @@ package fr.prima.omiscid.control.message.answer.types;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.Serializable;
-import java.util.Enumeration;
 import java.util.Hashtable;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 
 /**
  * Class CA_LockResultType.
@@ -87,7 +83,8 @@ public class CA_LockResultType implements java.io.Serializable {
      * Returns an enumeration of all possible instances of
      * CA_LockResultType
      * 
-     * @return Enumeration
+     * @return an Enumeration over all possible instances of
+     * CA_LockResultType
      */
     public static java.util.Enumeration enumerate()
     {
@@ -99,7 +96,7 @@ public class CA_LockResultType implements java.io.Serializable {
      * 
      * Returns the type of this CA_LockResultType
      * 
-     * @return int
+     * @return the type of this CA_LockResultType
      */
     public int getType()
     {
@@ -111,7 +108,7 @@ public class CA_LockResultType implements java.io.Serializable {
      * 
      * 
      * 
-     * @return Hashtable
+     * @return the initialized Hashtable for the member table
      */
     private static java.util.Hashtable init()
     {
@@ -126,9 +123,8 @@ public class CA_LockResultType implements java.io.Serializable {
      * 
      *  will be called during deserialization to replace the
      * deserialized object with the correct constant instance.
-     * <br/>
      * 
-     * @return Object
+     * @return this deserialized object
      */
     private java.lang.Object readResolve()
     {
@@ -140,7 +136,7 @@ public class CA_LockResultType implements java.io.Serializable {
      * 
      * Returns the String representation of this CA_LockResultType
      * 
-     * @return String
+     * @return the String representation of this CA_LockResultType
      */
     public java.lang.String toString()
     {
@@ -154,7 +150,7 @@ public class CA_LockResultType implements java.io.Serializable {
      * value.
      * 
      * @param string
-     * @return CA_LockResultType
+     * @return the CA_LockResultType value of parameter 'string'
      */
     public static fr.prima.omiscid.control.message.answer.types.CA_LockResultType valueOf(java.lang.String string)
     {

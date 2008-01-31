@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.5</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -11,17 +11,8 @@ package fr.prima.omiscid.control.message.query;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.Writer;
-import java.util.Enumeration;
-import java.util.Vector;
-import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.ContentHandler;
 
 /**
  * Class ControlQuery.
@@ -53,7 +44,7 @@ public class ControlQuery implements java.io.Serializable {
     public ControlQuery() 
      {
         super();
-        _items = new Vector();
+        this._items = new java.util.Vector();
     } //-- fr.prima.omiscid.control.message.query.ControlQuery()
 
 
@@ -62,30 +53,30 @@ public class ControlQuery implements java.io.Serializable {
     //-----------/
 
     /**
-     * Method addControlQueryItem
-     * 
      * 
      * 
      * @param vControlQueryItem
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
      */
     public void addControlQueryItem(fr.prima.omiscid.control.message.query.ControlQueryItem vControlQueryItem)
         throws java.lang.IndexOutOfBoundsException
     {
-        _items.addElement(vControlQueryItem);
+        this._items.addElement(vControlQueryItem);
     } //-- void addControlQueryItem(fr.prima.omiscid.control.message.query.ControlQueryItem) 
 
     /**
-     * Method addControlQueryItem
-     * 
      * 
      * 
      * @param index
      * @param vControlQueryItem
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
      */
     public void addControlQueryItem(int index, fr.prima.omiscid.control.message.query.ControlQueryItem vControlQueryItem)
         throws java.lang.IndexOutOfBoundsException
     {
-        _items.insertElementAt(vControlQueryItem, index);
+        this._items.add(index, vControlQueryItem);
     } //-- void addControlQueryItem(int, fr.prima.omiscid.control.message.query.ControlQueryItem) 
 
     /**
@@ -93,11 +84,13 @@ public class ControlQuery implements java.io.Serializable {
      * 
      * 
      * 
-     * @return Enumeration
+     * @return an Enumeration over all
+     * fr.prima.omiscid.control.message.query.ControlQueryItem
+     * elements
      */
     public java.util.Enumeration enumerateControlQueryItem()
     {
-        return _items.elements();
+        return this._items.elements();
     } //-- java.util.Enumeration enumerateControlQueryItem() 
 
     /**
@@ -106,17 +99,21 @@ public class ControlQuery implements java.io.Serializable {
      * 
      * 
      * @param index
-     * @return ControlQueryItem
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
+     * @return the value of the
+     * fr.prima.omiscid.control.message.query.ControlQueryItem at
+     * the given index
      */
     public fr.prima.omiscid.control.message.query.ControlQueryItem getControlQueryItem(int index)
         throws java.lang.IndexOutOfBoundsException
     {
-        //-- check bounds for index
-        if ((index < 0) || (index >= _items.size())) {
-            throw new IndexOutOfBoundsException("getControlQueryItem: Index value '"+index+"' not in range [0.."+(_items.size() - 1) + "]");
+        // check bounds for index
+        if (index < 0 || index >= this._items.size()) {
+            throw new IndexOutOfBoundsException("getControlQueryItem: Index value '" + index + "' not in range [0.." + (this._items.size() - 1) + "]");
         }
         
-        return (fr.prima.omiscid.control.message.query.ControlQueryItem) _items.elementAt(index);
+        return (fr.prima.omiscid.control.message.query.ControlQueryItem) _items.get(index);
     } //-- fr.prima.omiscid.control.message.query.ControlQueryItem getControlQueryItem(int) 
 
     /**
@@ -124,16 +121,17 @@ public class ControlQuery implements java.io.Serializable {
      * 
      * 
      * 
-     * @return ControlQueryItem
+     * @return this collection as an Array
      */
     public fr.prima.omiscid.control.message.query.ControlQueryItem[] getControlQueryItem()
     {
-        int size = _items.size();
-        fr.prima.omiscid.control.message.query.ControlQueryItem[] mArray = new fr.prima.omiscid.control.message.query.ControlQueryItem[size];
-        for (int index = 0; index < size; index++) {
-            mArray[index] = (fr.prima.omiscid.control.message.query.ControlQueryItem) _items.elementAt(index);
+        int size = this._items.size();
+        fr.prima.omiscid.control.message.query.ControlQueryItem[] array = new fr.prima.omiscid.control.message.query.ControlQueryItem[size];
+        for (int index = 0; index < size; index++){
+            array[index] = (fr.prima.omiscid.control.message.query.ControlQueryItem) _items.get(index);
         }
-        return mArray;
+        
+        return array;
     } //-- fr.prima.omiscid.control.message.query.ControlQueryItem[] getControlQueryItem() 
 
     /**
@@ -141,18 +139,17 @@ public class ControlQuery implements java.io.Serializable {
      * 
      * 
      * 
-     * @return int
+     * @return the size of this collection
      */
     public int getControlQueryItemCount()
     {
-        return _items.size();
+        return this._items.size();
     } //-- int getControlQueryItemCount() 
 
     /**
      * Returns the value of field 'id'.
      * 
-     * @return String
-     * @return the value of field 'id'.
+     * @return the value of field 'Id'.
      */
     public java.lang.String getId()
     {
@@ -164,7 +161,7 @@ public class ControlQuery implements java.io.Serializable {
      * 
      * 
      * 
-     * @return boolean
+     * @return true if this object is valid according to the schema
      */
     public boolean isValid()
     {
@@ -178,11 +175,13 @@ public class ControlQuery implements java.io.Serializable {
     } //-- boolean isValid() 
 
     /**
-     * Method marshal
-     * 
      * 
      * 
      * @param out
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
      */
     public void marshal(java.io.Writer out)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
@@ -192,11 +191,15 @@ public class ControlQuery implements java.io.Serializable {
     } //-- void marshal(java.io.Writer) 
 
     /**
-     * Method marshal
-     * 
      * 
      * 
      * @param handler
+     * @throws java.io.IOException if an IOException occurs during
+     * marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
      */
     public void marshal(org.xml.sax.ContentHandler handler)
         throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
@@ -206,12 +209,10 @@ public class ControlQuery implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Method removeAllControlQueryItem
-     * 
      */
     public void removeAllControlQueryItem()
     {
-        _items.removeAllElements();
+        this._items.clear();
     } //-- void removeAllControlQueryItem() 
 
     /**
@@ -219,47 +220,60 @@ public class ControlQuery implements java.io.Serializable {
      * 
      * 
      * 
-     * @param index
-     * @return ControlQueryItem
+     * @param vControlQueryItem
+     * @return true if the object was removed from the collection.
      */
-    public fr.prima.omiscid.control.message.query.ControlQueryItem removeControlQueryItem(int index)
+    public boolean removeControlQueryItem(fr.prima.omiscid.control.message.query.ControlQueryItem vControlQueryItem)
     {
-        java.lang.Object obj = _items.elementAt(index);
-        _items.removeElementAt(index);
-        return (fr.prima.omiscid.control.message.query.ControlQueryItem) obj;
-    } //-- fr.prima.omiscid.control.message.query.ControlQueryItem removeControlQueryItem(int) 
+        boolean removed = _items.remove(vControlQueryItem);
+        return removed;
+    } //-- boolean removeControlQueryItem(fr.prima.omiscid.control.message.query.ControlQueryItem) 
 
     /**
-     * Method setControlQueryItem
+     * Method removeControlQueryItemAt
      * 
+     * 
+     * 
+     * @param index
+     * @return the element removed from the collection
+     */
+    public fr.prima.omiscid.control.message.query.ControlQueryItem removeControlQueryItemAt(int index)
+    {
+        Object obj = this._items.remove(index);
+        return (fr.prima.omiscid.control.message.query.ControlQueryItem) obj;
+    } //-- fr.prima.omiscid.control.message.query.ControlQueryItem removeControlQueryItemAt(int) 
+
+    /**
      * 
      * 
      * @param index
      * @param vControlQueryItem
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
      */
     public void setControlQueryItem(int index, fr.prima.omiscid.control.message.query.ControlQueryItem vControlQueryItem)
         throws java.lang.IndexOutOfBoundsException
     {
-        //-- check bounds for index
-        if ((index < 0) || (index >= _items.size())) {
-            throw new IndexOutOfBoundsException("setControlQueryItem: Index value '"+index+"' not in range [0.." + (_items.size() - 1) + "]");
+        // check bounds for index
+        if (index < 0 || index >= this._items.size()) {
+            throw new IndexOutOfBoundsException("setControlQueryItem: Index value '" + index + "' not in range [0.." + (this._items.size() - 1) + "]");
         }
-        _items.setElementAt(vControlQueryItem, index);
+        
+        this._items.set(index, vControlQueryItem);
     } //-- void setControlQueryItem(int, fr.prima.omiscid.control.message.query.ControlQueryItem) 
 
     /**
-     * Method setControlQueryItem
      * 
      * 
-     * 
-     * @param controlQueryItemArray
+     * @param vControlQueryItemArray
      */
-    public void setControlQueryItem(fr.prima.omiscid.control.message.query.ControlQueryItem[] controlQueryItemArray)
+    public void setControlQueryItem(fr.prima.omiscid.control.message.query.ControlQueryItem[] vControlQueryItemArray)
     {
         //-- copy array
-        _items.removeAllElements();
-        for (int i = 0; i < controlQueryItemArray.length; i++) {
-            _items.addElement(controlQueryItemArray[i]);
+        _items.clear();
+        
+        for (int i = 0; i < vControlQueryItemArray.length; i++) {
+                this._items.add(vControlQueryItemArray[i]);
         }
     } //-- void setControlQueryItem(fr.prima.omiscid.control.message.query.ControlQueryItem) 
 
@@ -279,7 +293,12 @@ public class ControlQuery implements java.io.Serializable {
      * 
      * 
      * @param reader
-     * @return ControlQuery
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
+     * @return the unmarshaled
+     * fr.prima.omiscid.control.message.query.ControlQuery
      */
     public static fr.prima.omiscid.control.message.query.ControlQuery unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
@@ -288,8 +307,10 @@ public class ControlQuery implements java.io.Serializable {
     } //-- fr.prima.omiscid.control.message.query.ControlQuery unmarshal(java.io.Reader) 
 
     /**
-     * Method validate
      * 
+     * 
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
      */
     public void validate()
         throws org.exolab.castor.xml.ValidationException

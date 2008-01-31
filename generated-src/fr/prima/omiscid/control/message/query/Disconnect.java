@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.5</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -11,17 +11,8 @@ package fr.prima.omiscid.control.message.query;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.Writer;
-import java.util.Enumeration;
-import java.util.Vector;
-import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.ContentHandler;
 
 /**
  * Class Disconnect.
@@ -53,7 +44,7 @@ public class Disconnect implements java.io.Serializable {
     public Disconnect() 
      {
         super();
-        _peerList = new Vector();
+        this._peerList = new java.util.Vector();
     } //-- fr.prima.omiscid.control.message.query.Disconnect()
 
 
@@ -62,30 +53,30 @@ public class Disconnect implements java.io.Serializable {
     //-----------/
 
     /**
-     * Method addPeer
-     * 
      * 
      * 
      * @param vPeer
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
      */
     public void addPeer(java.lang.String vPeer)
         throws java.lang.IndexOutOfBoundsException
     {
-        _peerList.addElement(vPeer);
+        this._peerList.addElement(vPeer);
     } //-- void addPeer(java.lang.String) 
 
     /**
-     * Method addPeer
-     * 
      * 
      * 
      * @param index
      * @param vPeer
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
      */
     public void addPeer(int index, java.lang.String vPeer)
         throws java.lang.IndexOutOfBoundsException
     {
-        _peerList.insertElementAt(vPeer, index);
+        this._peerList.add(index, vPeer);
     } //-- void addPeer(int, java.lang.String) 
 
     /**
@@ -93,18 +84,17 @@ public class Disconnect implements java.io.Serializable {
      * 
      * 
      * 
-     * @return Enumeration
+     * @return an Enumeration over all java.lang.String elements
      */
     public java.util.Enumeration enumeratePeer()
     {
-        return _peerList.elements();
+        return this._peerList.elements();
     } //-- java.util.Enumeration enumeratePeer() 
 
     /**
      * Returns the value of field 'name'.
      * 
-     * @return String
-     * @return the value of field 'name'.
+     * @return the value of field 'Name'.
      */
     public java.lang.String getName()
     {
@@ -117,17 +107,19 @@ public class Disconnect implements java.io.Serializable {
      * 
      * 
      * @param index
-     * @return String
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
+     * @return the value of the java.lang.String at the given index
      */
     public java.lang.String getPeer(int index)
         throws java.lang.IndexOutOfBoundsException
     {
-        //-- check bounds for index
-        if ((index < 0) || (index >= _peerList.size())) {
-            throw new IndexOutOfBoundsException("getPeer: Index value '"+index+"' not in range [0.."+(_peerList.size() - 1) + "]");
+        // check bounds for index
+        if (index < 0 || index >= this._peerList.size()) {
+            throw new IndexOutOfBoundsException("getPeer: Index value '" + index + "' not in range [0.." + (this._peerList.size() - 1) + "]");
         }
         
-        return (String)_peerList.elementAt(index);
+        return (String)_peerList.get(index);
     } //-- java.lang.String getPeer(int) 
 
     /**
@@ -135,16 +127,17 @@ public class Disconnect implements java.io.Serializable {
      * 
      * 
      * 
-     * @return String
+     * @return this collection as an Array
      */
     public java.lang.String[] getPeer()
     {
-        int size = _peerList.size();
-        java.lang.String[] mArray = new java.lang.String[size];
-        for (int index = 0; index < size; index++) {
-            mArray[index] = (String)_peerList.elementAt(index);
+        int size = this._peerList.size();
+        java.lang.String[] array = new java.lang.String[size];
+        for (int index = 0; index < size; index++){
+            array[index] = (String)_peerList.get(index);
         }
-        return mArray;
+        
+        return array;
     } //-- java.lang.String[] getPeer() 
 
     /**
@@ -152,11 +145,11 @@ public class Disconnect implements java.io.Serializable {
      * 
      * 
      * 
-     * @return int
+     * @return the size of this collection
      */
     public int getPeerCount()
     {
-        return _peerList.size();
+        return this._peerList.size();
     } //-- int getPeerCount() 
 
     /**
@@ -164,7 +157,7 @@ public class Disconnect implements java.io.Serializable {
      * 
      * 
      * 
-     * @return boolean
+     * @return true if this object is valid according to the schema
      */
     public boolean isValid()
     {
@@ -178,11 +171,13 @@ public class Disconnect implements java.io.Serializable {
     } //-- boolean isValid() 
 
     /**
-     * Method marshal
-     * 
      * 
      * 
      * @param out
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
      */
     public void marshal(java.io.Writer out)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
@@ -192,11 +187,15 @@ public class Disconnect implements java.io.Serializable {
     } //-- void marshal(java.io.Writer) 
 
     /**
-     * Method marshal
-     * 
      * 
      * 
      * @param handler
+     * @throws java.io.IOException if an IOException occurs during
+     * marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
      */
     public void marshal(org.xml.sax.ContentHandler handler)
         throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
@@ -206,12 +205,10 @@ public class Disconnect implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Method removeAllPeer
-     * 
      */
     public void removeAllPeer()
     {
-        _peerList.removeAllElements();
+        this._peerList.clear();
     } //-- void removeAllPeer() 
 
     /**
@@ -219,15 +216,28 @@ public class Disconnect implements java.io.Serializable {
      * 
      * 
      * 
-     * @param index
-     * @return String
+     * @param vPeer
+     * @return true if the object was removed from the collection.
      */
-    public java.lang.String removePeer(int index)
+    public boolean removePeer(java.lang.String vPeer)
     {
-        java.lang.Object obj = _peerList.elementAt(index);
-        _peerList.removeElementAt(index);
+        boolean removed = _peerList.remove(vPeer);
+        return removed;
+    } //-- boolean removePeer(java.lang.String) 
+
+    /**
+     * Method removePeerAt
+     * 
+     * 
+     * 
+     * @param index
+     * @return the element removed from the collection
+     */
+    public java.lang.String removePeerAt(int index)
+    {
+        Object obj = this._peerList.remove(index);
         return (String)obj;
-    } //-- java.lang.String removePeer(int) 
+    } //-- java.lang.String removePeerAt(int) 
 
     /**
      * Sets the value of field 'name'.
@@ -240,36 +250,36 @@ public class Disconnect implements java.io.Serializable {
     } //-- void setName(java.lang.String) 
 
     /**
-     * Method setPeer
-     * 
      * 
      * 
      * @param index
      * @param vPeer
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
      */
     public void setPeer(int index, java.lang.String vPeer)
         throws java.lang.IndexOutOfBoundsException
     {
-        //-- check bounds for index
-        if ((index < 0) || (index >= _peerList.size())) {
-            throw new IndexOutOfBoundsException("setPeer: Index value '"+index+"' not in range [0.." + (_peerList.size() - 1) + "]");
+        // check bounds for index
+        if (index < 0 || index >= this._peerList.size()) {
+            throw new IndexOutOfBoundsException("setPeer: Index value '" + index + "' not in range [0.." + (this._peerList.size() - 1) + "]");
         }
-        _peerList.setElementAt(vPeer, index);
+        
+        this._peerList.set(index, vPeer);
     } //-- void setPeer(int, java.lang.String) 
 
     /**
-     * Method setPeer
      * 
      * 
-     * 
-     * @param peerArray
+     * @param vPeerArray
      */
-    public void setPeer(java.lang.String[] peerArray)
+    public void setPeer(java.lang.String[] vPeerArray)
     {
         //-- copy array
-        _peerList.removeAllElements();
-        for (int i = 0; i < peerArray.length; i++) {
-            _peerList.addElement(peerArray[i]);
+        _peerList.clear();
+        
+        for (int i = 0; i < vPeerArray.length; i++) {
+                this._peerList.add(vPeerArray[i]);
         }
     } //-- void setPeer(java.lang.String) 
 
@@ -279,7 +289,12 @@ public class Disconnect implements java.io.Serializable {
      * 
      * 
      * @param reader
-     * @return Disconnect
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
+     * @return the unmarshaled
+     * fr.prima.omiscid.control.message.query.Disconnect
      */
     public static fr.prima.omiscid.control.message.query.Disconnect unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
@@ -288,8 +303,10 @@ public class Disconnect implements java.io.Serializable {
     } //-- fr.prima.omiscid.control.message.query.Disconnect unmarshal(java.io.Reader) 
 
     /**
-     * Method validate
      * 
+     * 
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
      */
     public void validate()
         throws org.exolab.castor.xml.ValidationException

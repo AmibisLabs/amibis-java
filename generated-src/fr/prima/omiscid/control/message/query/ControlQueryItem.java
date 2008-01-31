@@ -1,19 +1,11 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.0.5</a>, using an XML
  * Schema.
  * $Id$
  */
 
 package fr.prima.omiscid.control.message.query;
-
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
-
-import java.io.Serializable;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 
 /**
  * Class ControlQueryItem.
@@ -107,8 +99,7 @@ public class ControlQueryItem implements java.io.Serializable {
      * 'choiceValue' has the following description: Internal choice
      * value storage
      * 
-     * @return Object
-     * @return the value of field 'choiceValue'.
+     * @return the value of field 'ChoiceValue'.
      */
     public java.lang.Object getChoiceValue()
     {
@@ -118,8 +109,7 @@ public class ControlQueryItem implements java.io.Serializable {
     /**
      * Returns the value of field 'connect'.
      * 
-     * @return Connect
-     * @return the value of field 'connect'.
+     * @return the value of field 'Connect'.
      */
     public fr.prima.omiscid.control.message.query.Connect getConnect()
     {
@@ -129,8 +119,7 @@ public class ControlQueryItem implements java.io.Serializable {
     /**
      * Returns the value of field 'disconnect'.
      * 
-     * @return Disconnect
-     * @return the value of field 'disconnect'.
+     * @return the value of field 'Disconnect'.
      */
     public fr.prima.omiscid.control.message.query.Disconnect getDisconnect()
     {
@@ -140,8 +129,7 @@ public class ControlQueryItem implements java.io.Serializable {
     /**
      * Returns the value of field 'fullDescription'.
      * 
-     * @return FullDescription
-     * @return the value of field 'fullDescription'.
+     * @return the value of field 'FullDescription'.
      */
     public fr.prima.omiscid.control.message.query.FullDescription getFullDescription()
     {
@@ -151,8 +139,7 @@ public class ControlQueryItem implements java.io.Serializable {
     /**
      * Returns the value of field 'inoutput'.
      * 
-     * @return Inoutput
-     * @return the value of field 'inoutput'.
+     * @return the value of field 'Inoutput'.
      */
     public fr.prima.omiscid.control.message.query.Inoutput getInoutput()
     {
@@ -162,8 +149,7 @@ public class ControlQueryItem implements java.io.Serializable {
     /**
      * Returns the value of field 'input'.
      * 
-     * @return Input
-     * @return the value of field 'input'.
+     * @return the value of field 'Input'.
      */
     public fr.prima.omiscid.control.message.query.Input getInput()
     {
@@ -173,8 +159,7 @@ public class ControlQueryItem implements java.io.Serializable {
     /**
      * Returns the value of field 'lock'.
      * 
-     * @return Lock
-     * @return the value of field 'lock'.
+     * @return the value of field 'Lock'.
      */
     public fr.prima.omiscid.control.message.query.Lock getLock()
     {
@@ -184,8 +169,7 @@ public class ControlQueryItem implements java.io.Serializable {
     /**
      * Returns the value of field 'output'.
      * 
-     * @return Output
-     * @return the value of field 'output'.
+     * @return the value of field 'Output'.
      */
     public fr.prima.omiscid.control.message.query.Output getOutput()
     {
@@ -195,8 +179,7 @@ public class ControlQueryItem implements java.io.Serializable {
     /**
      * Returns the value of field 'subscribe'.
      * 
-     * @return Subscribe
-     * @return the value of field 'subscribe'.
+     * @return the value of field 'Subscribe'.
      */
     public fr.prima.omiscid.control.message.query.Subscribe getSubscribe()
     {
@@ -206,8 +189,7 @@ public class ControlQueryItem implements java.io.Serializable {
     /**
      * Returns the value of field 'unlock'.
      * 
-     * @return Unlock
-     * @return the value of field 'unlock'.
+     * @return the value of field 'Unlock'.
      */
     public fr.prima.omiscid.control.message.query.Unlock getUnlock()
     {
@@ -217,8 +199,7 @@ public class ControlQueryItem implements java.io.Serializable {
     /**
      * Returns the value of field 'unsubscribe'.
      * 
-     * @return Unsubscribe
-     * @return the value of field 'unsubscribe'.
+     * @return the value of field 'Unsubscribe'.
      */
     public fr.prima.omiscid.control.message.query.Unsubscribe getUnsubscribe()
     {
@@ -228,8 +209,7 @@ public class ControlQueryItem implements java.io.Serializable {
     /**
      * Returns the value of field 'variable'.
      * 
-     * @return Variable
-     * @return the value of field 'variable'.
+     * @return the value of field 'Variable'.
      */
     public fr.prima.omiscid.control.message.query.Variable getVariable()
     {
