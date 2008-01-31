@@ -198,7 +198,7 @@ public class InOutputAttribute extends Attribute {
     /**
      * Sets the kind of in/output.
      *
-     * @param aKind
+     * @param connectorType
      *            kind of in/output
      */
     public void setConnectorType(ConnectorType connectorType) {

@@ -155,9 +155,9 @@ public interface ServiceProxy {
     /**
      * Extract the connector name of a remote service from its peerId. This peerId can be obtained from a message
      * sent by the remote service.
-     * @param peerId the remote connector perrId
+     * @param peerId the remote connector peerId
      * @return the remote connector name
-     * @see ConnectorListener#messageReceived(Service, String, fr.prima.omiscid.user.connector.Message)
+     * @see fr.prima.omiscid.user.connector.ConnectorListener#messageReceived(Service, String, fr.prima.omiscid.user.connector.Message)
      */
     public String findConnector(int peerId)
     throws UnknownConnector;

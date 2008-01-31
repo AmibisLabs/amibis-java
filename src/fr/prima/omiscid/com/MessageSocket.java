@@ -515,7 +515,7 @@ public abstract class MessageSocket {
      * Sends a String message with a BIP header. The string is
      * encoded using the BIP encoding. To check that the encoding process went
      * right, you must do it yourself using
-     * {@link BipUtils#stringToByteArray(String)}.
+     * {@link fr.prima.omiscid.user.util.Utility#stringToByteArray(String)}.
      *
      * @param messageBody the message to send in a BIP message
      */

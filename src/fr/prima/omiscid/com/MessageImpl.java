@@ -63,7 +63,7 @@ public class MessageImpl implements Message {
      *            number of byte to copy from source
      * @param messageId
      *            the message id
-     * @param pId
+     * @param peerId
      *            the BIP peer id of the source peer: source of the message
      */
     public MessageImpl(byte[] source, int offset, int length, int messageId, int peerId) {

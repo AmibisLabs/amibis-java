@@ -27,7 +27,6 @@
 package fr.prima.omiscid.user.connector;
 
 import fr.prima.omiscid.user.service.Service;
-import fr.prima.omiscid.user.service.ServiceProxy;
 
 /**
  * @author Patrick Reignier (UJF/Gravir)
@@ -62,7 +61,7 @@ public interface ConnectorListener {
      * @param service the service receiving the message
      * @param localConnectorName the name of the connector handling the broken link
      * @param peerId the peerId (a unique Id corresponding to a connector and a remote service)
-     * @see ServiceProxy#findConnector(int)
+     * @see fr.prima.omiscid.user.service.ServiceProxy#findConnector(int)
      */
     public void connected(Service service, String localConnectorName, int peerId);
     

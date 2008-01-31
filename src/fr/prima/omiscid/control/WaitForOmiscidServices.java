@@ -65,8 +65,6 @@ public class WaitForOmiscidServices {
     /**
      * Adds a new service to the required services.
      *
-     * @param name
-     *            the name of the wanted service
      * @param filter
      *            an {@link OmiscidServiceFilter} representing the acceptance
      *            test for the service
@@ -128,7 +126,7 @@ public class WaitForOmiscidServices {
      *
      * @param index
      *            the index associated to the needed service (returned for
-     *            example by {@link #needService(String, OmiscidServiceFilter)})
+     *            example by {@link #needService(OmiscidServiceFilter)})
      * @return whether the awaited service has been found
      */
     public synchronized boolean isResolved(int index) {
@@ -141,7 +139,7 @@ public class WaitForOmiscidServices {
      * @param index
      *            the index associated to the required service
      * @return the required service or null if not found yet
-     * @see WaitForOmiscidServices#needService(String)
+     * @see WaitForOmiscidServices#needService(OmiscidServiceFilter)
      * @see WaitForOmiscidServices#isResolved(int)
      */
     public synchronized OmiscidService getService(int index) {

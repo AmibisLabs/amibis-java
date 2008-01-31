@@ -42,7 +42,7 @@ public interface ControlEventListener extends EventListener {
     /**
      * Processes the given control event message.
      * 
-     * @param xmlMessage
+     * @param message
      *            an BIP message converted in an XML tree containing the control
      *            event
      */

@@ -36,7 +36,6 @@ public interface DNSSDServiceRegistrationFactory {
      *      using {@link ServiceRegistration}
      * @param serviceName
      * @param registrationType
-     * @return
      */
     ServiceRegistration createServiceRegistration(String serviceName, String registrationType);
 }

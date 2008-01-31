@@ -31,7 +31,7 @@ import java.util.Random;
 
 /**
  * Utility class containing BIP related constants and some Com Layer tools.
- * See also {@link Utility} for more user oriented and xml tools.
+ * See also {@link fr.prima.omiscid.user.util.Utility} for more user oriented and xml tools.
  */
 public final class BipUtils {
 

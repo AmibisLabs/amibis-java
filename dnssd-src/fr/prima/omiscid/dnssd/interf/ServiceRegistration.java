@@ -73,7 +73,6 @@ public interface ServiceRegistration {
      * Gets the desired base name for the service. After registration, the
      * registered name is accessible through {@link #getRegisteredName()}.
      *
-     * @return
      */
     String getName();
 
@@ -120,7 +119,6 @@ public interface ServiceRegistration {
      * Gets the name which the service is registered under dnssd with. The
      * service must have been successfully registered beforehand.
      *
-     * @return
      */
     String getRegisteredName();
 }

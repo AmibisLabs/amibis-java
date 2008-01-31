@@ -192,7 +192,6 @@ public final class OmiscidServiceFilters {
      * removed).
      *
      * @param nameRegexp
-     * @return
      */
     public static OmiscidServiceFilter nameIs(String nameRegexp) {
         return new Name(baseNameRegexp(nameRegexp)); // @@@( \(\d+\))?@@@

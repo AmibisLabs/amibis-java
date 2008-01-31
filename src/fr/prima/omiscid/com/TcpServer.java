@@ -219,7 +219,7 @@ public class TcpServer implements CommunicationServer {
      * Sends a String message to all still connected clients. The string is
      * encoded using the BIP encoding. To check that the encoding process went
      * right, you must do it yourself using
-     * {@link BipUtils#stringToByteArray(String)}.
+     * {@link fr.prima.omiscid.user.util.Utility#stringToByteArray(String)}.
      *
      * @param message
      *            the message to send
@@ -255,7 +255,7 @@ public class TcpServer implements CommunicationServer {
      *
      * @param message
      *            the XML message to send
-     * @param peerid
+     * @param peerId
      *            identify the client to contact
      * @return whether the client to contact has been found and the message was
      *         delivered to it
@@ -269,7 +269,7 @@ public class TcpServer implements CommunicationServer {
      *
      * @param message
      *            the XML message to send
-     * @param peerid
+     * @param peerId
      *            identify the client to contact
      * @return whether the client to contact has been found and the message was
      *         delivered to it
@@ -281,11 +281,11 @@ public class TcpServer implements CommunicationServer {
     /**
      * Sends a String message to a given client. The string is encoded using the
      * BIP encoding. To check that the encoding process went right, you must do
-     * it yourself using {@link BipUtils#stringToByteArray(String)}.
+     * it yourself using {@link fr.prima.omiscid.user.util.Utility#stringToByteArray(String)}.
      *
-     * @param buffer
+     * @param message
      *            the message to send
-     * @param peerid
+     * @param peerId
      *            identify the client to contact
      */
     public void sendToOneClientUnchecked(String message, int peerId) {

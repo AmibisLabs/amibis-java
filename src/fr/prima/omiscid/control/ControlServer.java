@@ -89,7 +89,7 @@ import fr.prima.omiscid.user.variable.VariableAccessType;
  * </ul>
  * Two methods needs to be reimplemented to manage correctly some queries. These
  * methods are {@link #connectionQuery(String, int, boolean, InOutputAttribute)}
- * and {@link #variableModificationQuery(byte[], int, VariableAttribute)}. The
+ * and {@link #variableModificationQuery(String, VariableAttribute)}. The
  * first is called when an in/output is asked to connect a particular port, the
  * second is called when there is a query for the modification of a variable.
  * Example use:
@@ -536,8 +536,8 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      *
      * @param name
      *            name of the input / output
-     * @param communicationServer
-     *            the {@link CommunicationServer} instance associated to the
+     * @param tcpClientServer
+     *            the {@link TcpClientServer} instance associated to the
      *            input/output
      * @param ioKind
      *            kind of input/output: input, output, in/output
@@ -603,10 +603,8 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      * Processes a variable modification query received through the control
      * channnel.
      *
-     * @param buffer
+     * @param newValue
      *            the new value for the variable
-     * @param status
-     *            the current service status
      * @param va
      *            the VaraibleAttribute object associated to the variable to
      *            modify

@@ -339,11 +339,11 @@ public class VariableAttribute extends Attribute {
      * Removes all specified ids of a peer no more interested in variable
      * modification.
      *
-     * @param p
+     * @param peers
      *            contains the ids of the peers to remove
      */
-    public boolean removeAllPeers(Collection<Integer> c) {
-        return peerInterestedIn.removeAll(c);
+    public boolean removeAllPeers(Collection<Integer> peers) {
+        return peerInterestedIn.removeAll(peers);
     }
 
     /**
@@ -374,11 +374,11 @@ public class VariableAttribute extends Attribute {
     }
 
     /**
-     * Returns the name of the variable. To get a more complete description to
-     * display, {@link VariableAttribute#generateLongDescription()} can be used.
+     * Returns the name of the variable.
      *
      * @return the name of the variable
      */
+    @Override
     public String toString() {
         return getName();
     }

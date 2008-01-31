@@ -137,7 +137,7 @@ public class OmiscidService {
     /**
      * Creates an instance of OmiscidService with the given service information.
      * No local peer id is specified (unlike in
-     * {@link #OmiscidService(int, ServiceInformation)), and it must be
+     * {@link #OmiscidService(int, ServiceInformation)}, and it must be
      * specified with {@link #setServiceId(int)} if the OmiscidService is
      * intended to be used to make connections to the remote peer (explicitly or
      * implicitly).
@@ -510,10 +510,7 @@ public class OmiscidService {
     }
     
     /**
-     * Queries a complete description of the remote service. Warning:
-     * {@link #queryGlobalDescription()} must have been called before calling
-     * this method. This description contains the names and descriptions of all
-     * variables and attributes.
+     * Queries a complete description of the remote service.
      * @return a boolean telling whether an answer has been received
      */
     public boolean queryCompleteDescription() {
@@ -705,8 +702,7 @@ public class OmiscidService {
      * Subscribes to the modifications of a particular variable. The
      * modification notifications will be received in ControlEvent. Warning:
      * before calling this method, a complete description must have been queried
-     * via {@link #queryCompleteDescription()} itself requiring a call to
-     * {@link #queryGlobalDescription()}.
+     * via {@link #queryCompleteDescription()}.
      *
      * @param varName
      *            the name of the variable
