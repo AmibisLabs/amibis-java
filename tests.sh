@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export LD_LIBRARY_PATH=/usr/lib:./lib/
+#export LD_LIBRARY_PATH=/usr/lib:./lib/
 cp=$(echo "$1" | sed 's@ @:@g')
 
 failures=""
@@ -10,16 +10,20 @@ tests=""
 function runTest() {
     echo "Running test $i"
     testClass=$(echo "$1" | sed 's@/@.@g' | sed 's@.java$@@g')
-    out=$(java -cp "$cp":dist/jOMiSCID.jar "${testClass}" 2>&1)
+    echo java -cp "$cp":dist/jOMiSCID.jar "${testClass}"
+    rm ,,output-"${testClass}"
+    out=$(java -cp "$cp":dist/jOMiSCID.jar "${testClass}" 2>&1 | tee ,,output-"${testClass}")
     echo "$out" | grep 'Test Failed' > /dev/null
     if test $? -eq 0
         then
         failures=$(echo "${failures}" ; echo "$1")
+        echo "FAILED"
     fi
     echo "$out" | grep 'Test Passed' > /dev/null
     if test $? -eq 0
         then
         passed=$(echo "${passed}" ; echo "$1")
+        echo "Passed"
     fi
     tests=$(echo "${tests}" ; echo "$1")
 }

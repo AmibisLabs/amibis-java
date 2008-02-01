@@ -75,48 +75,60 @@ public class I0011_StressTestManyBigMessages {
         final Vector<Object> ended = new Vector<Object>();
         final Vector<Object> started = new Vector<Object>();
         for (int i = 0; i < clientsToStart; i++) {
-            Service client = factory.create("I0011Client");
-            client.addConnector("c", "big messages", ConnectorType.INOUTPUT);
-            client.addConnectorListener("c", new ConnectorListener() {
-                int count = 0;
-            
-                public void messageReceived(final Service service, String localConnectorName, Message message) {
-                    System.out.println("client received, count is "+count);
-                    service.sendToAllClients("c", new byte[smallSize]);
-                    System.out.println("client sent");
-                    count++;
-                    if (count >= messagesToSend) {
-                        service.stop();
-                        ended.add(service);
+            new Thread(new Runnable() {
+
+                public void run() {
+                    Service client = factory.create("I0011Client");
+                    try {
+                        client.addConnector("c", "big messages", ConnectorType.INOUTPUT);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        FactoryFactory.failed("Exception in addConnector");
+                        System.exit(1);
                     }
+                    client.addConnectorListener("c", new ConnectorListener() {
+
+                        int count = 0;
+
+                        public void messageReceived(final Service service, String localConnectorName, Message message) {
+                            System.out.println("client received, count is " + count);
+                            service.sendToAllClients("c", new byte[smallSize]);
+                            System.out.println("client sent");
+                            count++;
+                            if (count >= messagesToSend) {
+                                service.stop();
+                                ended.add(service);
+                            }
+                        }
+
+                        public void disconnected(Service service, String localConnectorName, int peerId) {
+                        // TODO Auto-generated method stub
+
+                        }
+
+                        public void connected(Service service, String localConnectorName, int peerId) {
+                        // TODO Auto-generated method stub
+
+                        }
+                    });
+                    client.start();
+                    final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0011Server"));
+                    client.connectTo("c", proxy, "c");
+                    client.sendToAllClients("c", new byte[smallSize]);
+                    started.add(client);
                 }
-            
-                public void disconnected(Service service, String localConnectorName, int peerId) {
-                    // TODO Auto-generated method stub
-            
-                }
-            
-                public void connected(Service service, String localConnectorName, int peerId) {
-                    // TODO Auto-generated method stub
-            
-                }
-            
-            });
-            client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0011Server"));
-            client.connectTo("c", proxy, "c");
-            client.sendToAllClients("c", new byte[smallSize]);
-            started.add(client);
+            }).start();
             Thread.sleep(1000);
         }
         Thread.sleep(timeToWait);
         int endedSize = ended.size();
         if (endedSize == started.size()) {
             FactoryFactory.passed("all "+started.size()+" ok");
+            System.exit(0);
         } else {
             FactoryFactory.failed("started is "+started.size()+" and only "+endedSize+" ended");
+            System.exit(1);
         }
-        System.exit(0);
     }
 
 }
