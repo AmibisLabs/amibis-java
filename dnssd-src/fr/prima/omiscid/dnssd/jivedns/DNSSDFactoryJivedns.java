@@ -41,6 +41,11 @@ public class DNSSDFactoryJivedns implements DNSSDFactory {
     public DNSSDFactoryJivedns() {
         try {
             this.jiveDns = new JiveDNS(InetAddress.getLocalHost());
+            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+                public void run() {
+                    jiveDns.close();
+                }
+            }));
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
