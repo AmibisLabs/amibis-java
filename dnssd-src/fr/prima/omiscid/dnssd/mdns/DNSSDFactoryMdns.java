@@ -28,6 +28,9 @@ package fr.prima.omiscid.dnssd.mdns;
 
 import com.apple.dnssd.DNSSD;
 
+import com.apple.dnssd.DNSSDRegistration;
+import com.apple.dnssd.DNSSDService;
+import com.apple.dnssd.RegisterListener;
 import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.dnssd.interf.ServiceBrowser;
 import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
@@ -44,11 +47,26 @@ public class DNSSDFactoryMdns implements DNSSDFactory {
     static {
         // There is no static code that can quickly test for the present of a mdns daemon.
         // So we suppose the presence of mdns java wrapper is a desire to use mdns.
-        
+        //final long time = System.currentTimeMillis();
         try {
             // We just ensure the DNSSD class is loaded and found.
             DNSSD.getNameForIfIndex(0);
+            // Testing for real daemon availability is too time consuming in case of absence (it is timeout based)
+            /*
+            System.err.println("start");
+            DNSSDRegistration reg = DNSSD.register(DNSSD.NO_AUTO_RENAME, -1, "___TEST___", "_dummy._tcp", null, null, 0, null, new RegisterListener() {
+                public void serviceRegistered(DNSSDRegistration arg0, int arg1, String arg2, String arg3, String arg4) {
+                    System.err.println("reg " + (System.currentTimeMillis() - time));
+                }
+                public void operationFailed(DNSSDService arg0, int arg1) {
+                    System.err.println("failed " + (System.currentTimeMillis() - time));
+                }
+            });
+            reg.stop();
+            System.err.println("ok "+(System.currentTimeMillis()-time));
+             */
         } catch (Exception e) {
+            //System.err.println("ex "+(System.currentTimeMillis()-time));
             throw new RuntimeException(e);
         }
     }
