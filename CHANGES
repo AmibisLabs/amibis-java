@@ -21,8 +21,9 @@ r
         fix:  problem with connector and variable names containing non letter characters
         fix:  it is now impossible to add variables and connectors having problematic names (duplicate names, reserved ones, ...)
         impr: now using JiveDNS in place of JmDNS (JiveDNS is a fork of JmDNS incorporating submitted patches and bug fixes)
-        fix:  (jmdns) application refusing to shut down (was caused by jmdns)
+        fix:  (jmdns) application refusing to shut down (was caused by jmdns) but still happens in certain cases (bug submitted to jivedns)
         fix:  (jmdns) some services were not unregistered when quitting applications with System.exit
+        impr: named threads to ease debugging
         impr: (API) can now specify a service filter when adding a listener to a service repository
         impr: (API) can now specify preferred service connector port and ask for connection to a remote host+port pair
 
