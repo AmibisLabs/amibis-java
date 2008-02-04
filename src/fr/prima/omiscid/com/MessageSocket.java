@@ -480,7 +480,7 @@ public abstract class MessageSocket {
                 public void run() {
                     MessageSocket.this.run();
                 }
-            });
+            }, "Omiscid Server Thread");
             listeningThread.start();
         } else {
             System.err.println("Warning: MessageSocket start() called more than once");

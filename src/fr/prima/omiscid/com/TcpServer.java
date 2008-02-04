@@ -465,6 +465,7 @@ public class TcpServer implements CommunicationServer {
             tcpClient.connectTo("localhost", port);
 
             Thread t = new Thread() {
+                @Override
                 public void run() {
                     int nb = -1;
                     String str = "toto12345678901234567890";
@@ -513,7 +514,7 @@ public class TcpServer implements CommunicationServer {
                 public void run() {
                     TcpServer.this.run();
                 }
-            });
+            }, "Omiscid Connection Listener Thread");
             listeningThread.start();
         } else {
             System.err.println("Warning: TcpServer start() method called more than once");

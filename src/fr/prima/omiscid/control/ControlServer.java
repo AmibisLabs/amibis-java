@@ -462,7 +462,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     public boolean startProcessMessagesThread() {
         processMessagesThreadRunning = true;
         if (threadProcessMessages == null || !threadProcessMessages.isAlive()) {
-            threadProcessMessages = new Thread() {
+            threadProcessMessages = new Thread("Omiscid Control Server Thread") {
                 @Override
                 public void run() {
                     while (ControlServer.this.processMessagesThreadRunning) {
