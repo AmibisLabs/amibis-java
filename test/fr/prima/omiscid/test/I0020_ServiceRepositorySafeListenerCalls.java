@@ -58,6 +58,7 @@ public class I0020_ServiceRepositorySafeListenerCalls {
             public void serviceRemoved(ServiceProxy serviceProxy) {
                 if (serviceProxy.getName().equals("I0020Service")) {
                     count --;
+                    System.err.println("removed: "+count);
                     if (count == 1998) {
                         FactoryFactory.passed("Two additions and removal received by the clean listener");
                         System.exit(0);
@@ -79,7 +80,7 @@ public class I0020_ServiceRepositorySafeListenerCalls {
         service2.stop();
         service1.stop();
         Thread.sleep(5000);
-        FactoryFactory.failed("Timeout logically due to unhandled exception");
+        FactoryFactory.failed("Timeout logically due to unhandled exception or application is unclosable (or to an already present I0020Service)");
         System.exit(1);
     }
 
