@@ -87,6 +87,8 @@ headers:
 	find user-level-src -name \*.java -exec ./set-header.sh {} \;
 	find test -name \*.java -exec ./set-header.sh {} \;
 
+from=1
+
 tests:
 	ant -Dfile.encoding=utf-8 jar
-	@./tests.sh "$(patsubst %,lib/%,$(release-jars))"
+	@./tests.sh "$(patsubst %,lib/%,$(release-jars))" ${from}

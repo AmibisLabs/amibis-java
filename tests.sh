@@ -1,7 +1,8 @@
 #!/bin/sh
 
-#export LD_LIBRARY_PATH=/usr/lib:./lib/
+export LD_LIBRARY_PATH=/usr/lib:./lib/
 cp=$(echo "$1" | sed 's@ @:@g')
+from="$2"
 
 failures=""
 passed=""
@@ -28,7 +29,7 @@ function runTest() {
     tests=$(echo "${tests}" ; echo "$1")
 }
 
-for i in $(find test -name \*.java | sed 's@^test/@@g' | sort)
+for i in $(find test -name \*.java | sed 's@^test/@@g' | sort | sed -n ${from},'$'p)
   do
   (grep '/\*- IGNORE -\*/' "test/$i" >/dev/null && echo "Skipping $i") || runTest "$i"
 done
