@@ -26,6 +26,7 @@
 
 package fr.prima.omiscid.user.service;
 
+import fr.prima.omiscid.user.exception.ServiceRepositoryListenerAlreadyPresent;
 import java.util.List;
 
 /**
@@ -45,8 +46,9 @@ public interface ServiceRepository {
      * Behaves like calling {@link #addListener(ServiceRepositoryListener, boolean)} with false.
      * 
      * @param listener the listener that will be notified of service events
+     * @throws fr.prima.omiscid.user.exception.ServiceRepositoryListenerAlreadyPresent if this listener is already registered to this ServiceRepository
      */
-    public void addListener(ServiceRepositoryListener listener);
+    public void addListener(ServiceRepositoryListener listener) throws ServiceRepositoryListenerAlreadyPresent;
     
     /**
      * Adds a listener to be notified of service apparitions and disapparitions.
@@ -56,8 +58,9 @@ public interface ServiceRepository {
      * 
      * @param listener the listener that will be notified of service events
      * @param notifyOnlyNewEvents a boolean used to ignore services running at the time of listener addition. Setting it to false will cause the listener to be immediately notified of services already present in the repository
+     * @throws fr.prima.omiscid.user.exception.ServiceRepositoryListenerAlreadyPresent if this listener is already registered to this ServiceRepository
      */
-    public void addListener(ServiceRepositoryListener listener, boolean notifyOnlyNewEvents);
+    public void addListener(ServiceRepositoryListener listener, boolean notifyOnlyNewEvents) throws ServiceRepositoryListenerAlreadyPresent;
     
     /**
      * Adds a listener to be notified of service apparitions and disapparitions.
@@ -67,10 +70,11 @@ public interface ServiceRepository {
      * This listener will be notified of currently running services (see {@link #addListener(ServiceFilter, ServiceRepositoryListener, boolean)} for details).
      * Behaves like calling {@link #addListener(ServiceFilter, ServiceRepositoryListener, boolean)} with false.
      * 
-     * @param filter the filter to apply to service apparition
      * @param listener the listener that will be notified of service events
+     * @param filter the filter to apply to service apparition
+     * @throws fr.prima.omiscid.user.exception.ServiceRepositoryListenerAlreadyPresent if this listener is already registered to this ServiceRepository
      */
-    public void addListener(ServiceFilter filter, ServiceRepositoryListener listener);
+    public void addListener(ServiceRepositoryListener listener, ServiceFilter filter) throws ServiceRepositoryListenerAlreadyPresent;
 
     /**
      * Adds a listener to be notified of service apparitions and disapparitions.
@@ -81,11 +85,12 @@ public interface ServiceRepository {
      * When a listener is added to the repository, this latter can already contain some services.
      * The boolean parameter tells whether the listener should be notified of these services as if they were appearing.
      * 
-     * @param filter the filter to apply to service apparition
      * @param listener the listener that will be notified of service events
+     * @param filter the filter to apply to service apparition
      * @param notifyOnlyNewEvents a boolean used to ignore services running at the time of listener addition. Setting it to false will cause the listener to be immediately notified of services already present in the repository
+     * @throws fr.prima.omiscid.user.exception.ServiceRepositoryListenerAlreadyPresent if this listener is already registered to this ServiceRepository
      */
-    public void addListener(ServiceFilter filter, ServiceRepositoryListener listener, boolean notifyOnlyNewEvents);
+    public void addListener(ServiceRepositoryListener listener, ServiceFilter filter, boolean notifyOnlyNewEvents) throws ServiceRepositoryListenerAlreadyPresent;
     
     /**
      * Removes a previously added listener.

@@ -36,14 +36,20 @@ import fr.prima.omiscid.control.OmiscidService;
 import fr.prima.omiscid.dnssd.interf.ServiceBrowser;
 import fr.prima.omiscid.dnssd.interf.ServiceEvent;
 import fr.prima.omiscid.dnssd.interf.ServiceEventListener;
+import fr.prima.omiscid.user.exception.ServiceRepositoryListenerAlreadyPresent;
 import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.service.ServiceRepository;
 import fr.prima.omiscid.user.service.ServiceRepositoryListener;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
 public class ServiceRepositoryImpl implements ServiceRepository {
     
     private final Set<ServiceProxy> services = new HashSet<ServiceProxy>();
-    private final Vector<ServiceRepositoryListener> serviceRepositoryListeners = new Vector<ServiceRepositoryListener>();
+    private final Map<ServiceRepositoryListener, ServiceFilter> serviceRepositoryListeners = new HashMap<ServiceRepositoryListener, ServiceFilter>();
+    private final Map<ServiceRepositoryListener, List<Integer>> serviceRepositoryAddedServices = new Hashtable<ServiceRepositoryListener, List<Integer>>();
     private ServiceImpl service;
     private ServiceBrowser serviceBrowser;
     private boolean stopped = false;
@@ -65,6 +71,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
         }
         serviceBrowser.stop();
         serviceRepositoryListeners.clear();
+        serviceRepositoryAddedServices.clear();
         services.clear();
         stopped = true;
     }
@@ -83,7 +90,13 @@ public class ServiceRepositoryImpl implements ServiceRepository {
 
     private void added(ServiceRepositoryListener listener, ServiceProxy serviceProxy) {
         try {
-            listener.serviceAdded(serviceProxy);
+            ServiceFilter filter = serviceRepositoryListeners.get(listener);
+            if (filter == null) {
+                listener.serviceAdded(serviceProxy);
+            } else if (filter.acceptService(serviceProxy)) {
+                serviceRepositoryAddedServices.get(listener).add(serviceProxy.getPeerId());
+                listener.serviceAdded(serviceProxy);
+            }
         } catch (Exception e) {
             System.err.println("Omiscid caught an exception thrown by a listener on addition in a service repository, it is shown here:");
             e.printStackTrace();
@@ -91,7 +104,10 @@ public class ServiceRepositoryImpl implements ServiceRepository {
     }
     private void removed(ServiceRepositoryListener listener, ServiceProxy serviceProxy) {
         try {
-            listener.serviceRemoved(serviceProxy);
+            List<Integer> addedServices = serviceRepositoryAddedServices.get(listener);
+            if (addedServices == null || addedServices.contains(serviceProxy.getPeerId())) {
+                listener.serviceRemoved(serviceProxy);
+            }
         } catch (Exception e) {
             System.err.println("Omiscid caught an exception thrown by a listener on removal from a service repository, it is shown here:");
             e.printStackTrace();
@@ -105,7 +121,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
         ServiceProxy serviceProxy = ServiceProxyImpl.forService(service, new OmiscidService(((ServiceImpl)service).getPeerId(), e.getServiceInformation()));
         if (serviceProxy != null) {
             services.add(serviceProxy);
-            for (ServiceRepositoryListener listener : serviceRepositoryListeners) {
+            for (ServiceRepositoryListener listener : serviceRepositoryListeners.keySet()) {
                 added(listener, serviceProxy);
             }
         }
@@ -123,7 +139,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
         }
         if (matching != null) {
             services.remove(matching);
-            for (ServiceRepositoryListener listener : serviceRepositoryListeners) {
+            for (ServiceRepositoryListener listener : serviceRepositoryListeners.keySet()) {
                 removed(listener, matching);
             }
         } else {
@@ -139,21 +155,27 @@ public class ServiceRepositoryImpl implements ServiceRepository {
     }
 
     public synchronized void addListener(ServiceRepositoryListener listener, boolean notifyOnlyNewEvents) {
+        addListener(listener, null, notifyOnlyNewEvents);
+    }
+
+    public synchronized void addListener(ServiceRepositoryListener listener, ServiceFilter filter) {
+        addListener(listener, filter, false);
+    }
+
+    public synchronized void addListener(ServiceRepositoryListener listener, ServiceFilter filter, boolean notifyOnlyNewEvents) {
         checkRunning();
+        if (serviceRepositoryListeners.containsKey(listener)) {
+            throw new ServiceRepositoryListenerAlreadyPresent("Listener already added to this repository");
+        }
+        if (filter != null) {
+            serviceRepositoryAddedServices.put(listener, new ArrayList<Integer>());
+        }
+        serviceRepositoryListeners.put(listener, filter);
         if (!notifyOnlyNewEvents) {
             for (ServiceProxy proxy : services) {
                 added(listener, proxy);
             }
         }
-        serviceRepositoryListeners.add(listener);
-    }
-
-    public void addListener(ServiceFilter filter, ServiceRepositoryListener listener) {
-        addListener(filter, listener, false);
-    }
-
-    public void addListener(ServiceFilter filter, ServiceRepositoryListener listener, boolean notifyOnlyNewEvents) {
-        addListener(new FilteredServiceRepositoryListener(filter, listener), notifyOnlyNewEvents);
     }
 
 
@@ -163,12 +185,14 @@ public class ServiceRepositoryImpl implements ServiceRepository {
 
     public synchronized void removeListener(ServiceRepositoryListener listener, boolean notifyAsIfExistingServicesDisappear) {
         checkRunning();
-        boolean present = serviceRepositoryListeners.remove(listener);
+        boolean present = serviceRepositoryListeners.containsKey(listener);
         if (present && notifyAsIfExistingServicesDisappear) {
             for (ServiceProxy proxy : services) {
                 removed(listener, proxy);
             }
         }
+        serviceRepositoryListeners.remove(listener);
+        serviceRepositoryAddedServices.remove(listener);
     }
 
 }

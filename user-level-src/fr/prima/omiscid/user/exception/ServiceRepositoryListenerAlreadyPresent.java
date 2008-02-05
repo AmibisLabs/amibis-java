@@ -24,36 +24,18 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package fr.prima.omiscid.user.service.impl;
+package fr.prima.omiscid.user.exception;
 
-import fr.prima.omiscid.user.service.ServiceFilter;
-import fr.prima.omiscid.user.service.ServiceProxy;
-import fr.prima.omiscid.user.service.ServiceRepositoryListener;
-import java.util.HashSet;
-import java.util.Set;
+/**
+ *
+ * @author emonet
+ */
+public class ServiceRepositoryListenerAlreadyPresent extends RuntimeException {
 
-public class FilteredServiceRepositoryListener implements ServiceRepositoryListener {
-
-    private Set<Integer> addedServices = new HashSet<Integer>();
-    private ServiceFilter serviceFilter;
-    private ServiceRepositoryListener delegate;
-
-    public FilteredServiceRepositoryListener(ServiceFilter serviceFilter, ServiceRepositoryListener delegate) {
-        this.serviceFilter = serviceFilter;
-        this.delegate = delegate;
-    }
-    
-    public void serviceAdded(ServiceProxy serviceProxy) {
-        if (serviceFilter.acceptService(serviceProxy)) {
-            addedServices.add(serviceProxy.getPeerId());
-            delegate.serviceAdded(serviceProxy);
-        }
+    public ServiceRepositoryListenerAlreadyPresent(String message) {
+        super(message);
     }
 
-    public void serviceRemoved(ServiceProxy serviceProxy) {
-        if (addedServices.remove(serviceProxy.getPeerId())) {
-            delegate.serviceRemoved(serviceProxy);
-        }
+    public ServiceRepositoryListenerAlreadyPresent() {
     }
-
 }
