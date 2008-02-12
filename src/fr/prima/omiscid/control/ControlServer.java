@@ -200,6 +200,9 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     private void initDefaultVar() {
         VariableAttribute lockVar = addVariable(GlobalConstants.variableNameForLock);
         lockIntegerVar = new IntVariableAttribute(lockVar, 0);
+        // override what is defined in IntVariableAttribute
+        lockVar.setDescription(GlobalConstants.variableDescriptionForLock);
+        lockVar.setType(GlobalConstants.variableTypeForLock);
 
         // Generate a (at worse) temporary peer id hoping it will be unique
         // At the time of registration #start, it will be tried first and finally will be changed
@@ -211,14 +214,20 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 //        peerIdVariable.setAccessType(VariableAccessType.CONSTANT);
 
         VariableAttribute ownerVariable = addVariable(GlobalConstants.constantNameForOwner);
+        ownerVariable.setDescription(GlobalConstants.constantDescriptionForOwner);
+        ownerVariable.setType(GlobalConstants.constantTypeForOwner);
         ownerVariable.setValueStr(System.getProperty("user.name"));
         ownerVariable.setAccessType(VariableAccessType.CONSTANT);
 
         VariableAttribute classVariable = addVariable(GlobalConstants.constantNameForClass);
+        classVariable.setDescription(GlobalConstants.constantDescriptionForClass);
+        classVariable.setType(GlobalConstants.constantTypeForClass);
         classVariable.setValueStr(GlobalConstants.defaultServiceClassValue);
         classVariable.setAccessType(VariableAccessType.CONSTANT);
 
         nameVariable = addVariable(GlobalConstants.constantNameForName);
+        nameVariable.setDescription(GlobalConstants.constantDescriptionForName);
+        nameVariable.setType(GlobalConstants.constantTypeForName);
         nameVariable.setValueStr("***Unnamed***");
         nameVariable.setAccessType(VariableAccessType.CONSTANT);
     }
@@ -397,6 +406,8 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         if (registrationDone) {
             this.peerId = Utility.hexStringToInt(serviceRegistration.getRegisteredName());
             VariableAttribute peerIdVariable = addVariable(GlobalConstants.constantNameForPeerId);
+            peerIdVariable.setDescription(GlobalConstants.constantDescriptionForPeerId);
+            peerIdVariable.setType(GlobalConstants.constantTypeForPeerId);
             peerIdVariable.setValueStr(Utility.intTo8HexString(peerId).toLowerCase());
             peerIdVariable.setAccessType(VariableAccessType.CONSTANT);
         }

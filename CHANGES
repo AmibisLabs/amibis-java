@@ -4,26 +4,20 @@
 
 In this files, you will find changes between java OMiSCID versions.
 
-*must: solve the castor proliferation problem
-*must: find and kill all "< (that is manually generated xml)
-*Q: should a txt record be "part" when a big constant is present? I don't think so.
-*Q: how is reflected in the dnssd txt record the fact that a connector has an udp port? I think that we always use tcp to init connections so this is not a real question
-*should: make configurable (through Java and C++) the timeout for control queries
-*could: dnssd client auto connect/reconnect
-*could: dnssd client has a list of expected servers
-
-1.3.
-r
+1.4.0
+r3672
         fix:  a connector listener can now properly remove itself (stop listening) without throwing a concurrent modification exception
         fix:  problem in some cases when using removeAllConnectorListeners, some listeners might keep listening
         fix:  (API) createServiceRepository was improperly spelled (createServiceRepositoy) in ServiceFactory
         fix:  problem with netbeans when release contains castor generated .java files (these .java are not included any more)
         fix:  problem with connector and variable names containing non letter characters
         fix:  it is now impossible to add variables and connectors having problematic names (duplicate names, reserved ones, ...)
+        impr: services default variables (owner, peerId, ...) now have same descriptions as in C++ implementation
         impr: now using JiveDNS in place of JmDNS (JiveDNS is a fork of JmDNS incorporating submitted patches and bug fixes)
         fix:  (jmdns) application refusing to shut down (was caused by jmdns) but still happens in certain cases (bug submitted to jivedns)
         fix:  (jmdns) some services were not unregistered when quitting applications with System.exit
         impr: named threads to ease debugging
+        impr: (API) added access to variable description and type, and connector description throught ServiceProxy interface
         impr: (API) can now specify a service filter when adding a listener to a service repository
         impr: (API) can now specify preferred service connector port and ask for connection to a remote host+port pair
 

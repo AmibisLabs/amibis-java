@@ -49,7 +49,7 @@ public class I0013_SendReplyToMessage {
             server.addConnectorListener("c", new ConnectorListener() {
                 int count = 0;
             
-                public void messageReceived(final Service service, final String localConnectorName, final Message message) {
+                public synchronized void messageReceived(final Service service, final String localConnectorName, final Message message) {
                     switch (count%4) {
                         case 0:
                             service.sendReplyToMessage(localConnectorName, new byte[1], message, false);

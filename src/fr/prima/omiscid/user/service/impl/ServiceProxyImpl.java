@@ -185,7 +185,15 @@ public class ServiceProxyImpl implements ServiceProxy {
         //    return getVariable(varName).getValueStr();
         return omiscidService.getVariableValue(getVariable(varName).getName());
     }
-    
+
+    public String getVariableType(String varName) throws UnknownVariable {
+        return getVariable(varName).getFormatDescription();
+    }
+
+    public String getVariableDescription(String varName) throws UnknownVariable {
+        return getVariable(varName).getDescription();
+    }
+
     /* (non-Javadoc)
      * @see fr.prima.omiscid.service.ServiceProxy#getVariableValue(java.lang.String)
      */
@@ -250,6 +258,14 @@ public class ServiceProxyImpl implements ServiceProxy {
         return getConnector(peerId).getName();
     }
     
+    public String getConnectorDescription(String connectorName) throws UnknownConnector {
+        InOutputAttribute connector = omiscidService.findConnector(connectorName);
+        if (connector == null) {
+            throw new UnknownConnector("Unknown connector '"+connectorName+"'");
+        }
+        return connector.getDescription();
+    }
+    
     public int getConnectorPeerId(String connectorName) {
         InOutputAttribute connector = omiscidService.findConnector(connectorName);
         if (connector == null) {
@@ -281,4 +297,5 @@ public class ServiceProxyImpl implements ServiceProxy {
         Vector<Integer> peers = new Vector<Integer>(connector.getPeerVector());
         return peers;
     }
+
 }

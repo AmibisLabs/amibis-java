@@ -76,6 +76,14 @@ public interface ServiceProxy {
     public Set<String> getInputOutputConnectors();
     
     /**
+     * Gets the description of a connector.
+     * @param connectorName
+     * @return the description string
+     */
+    public String getConnectorDescription(String connectorName)
+    throws UnknownConnector;
+    
+    /**
      * Updates the local view of a remote bip service :
      * <ul>
      * <li> the list of variables</li>
@@ -105,7 +113,8 @@ public interface ServiceProxy {
     public String getPeerIdAsString();
 
     /**
-     * Sets the new value of a remote variable
+     * Sets the new value of a remote variable.
+     * Remote service may accept this modification or not.
      * @param varName the name of the remote variable
      * @throws fr.prima.omiscid.user.exception.UnknownVariable 
      * @param value the value (String format)
@@ -114,11 +123,27 @@ public interface ServiceProxy {
     throws UnknownVariable;
     
     /**
-     * Gets the value of a remote variable
+     * Gets the value of a remote variable.
      * @param varName
      * @return the value
      */
     public String getVariableValue(String varName)
+    throws UnknownVariable;
+    
+    /**
+     * Gets the type of a remote variable.
+     * @param varName
+     * @return the type string
+     */
+    public String getVariableType(String varName)
+    throws UnknownVariable;
+    
+    /**
+     * Gets the description of a remote variable.
+     * @param varName
+     * @return the description string
+     */
+    public String getVariableDescription(String varName)
     throws UnknownVariable;
     
     /**

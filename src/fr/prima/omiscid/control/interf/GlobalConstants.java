@@ -35,11 +35,26 @@ public final class GlobalConstants {
     public static final String dnssdWorkingDomainEnvironmentVariableName = "OMISCID_WORKING_DOMAIN";
 
     public static final String constantNameForPeerId = "peerId";
+    public static final String constantTypeForPeerId = "hexadecimal";
+    public static final String constantDescriptionForPeerId = "PeerId of this service";
+    
     public static final String constantNameForName = "name";
+    public static final String constantTypeForName = "string";
+    public static final String constantDescriptionForName = "Registered name of this service";
+        
     public static final String constantNameForOwner = "owner";
+    public static final String constantTypeForOwner = "string";
+    public static final String constantDescriptionForOwner = "Login which launches this service";
+    
     public static final String constantNameForClass = "class";
-    public static final String variableNameForLock = "lock";
+    public static final String constantTypeForClass = "class";
+    public static final String constantDescriptionForClass = "Class of this service";
     public static final String defaultServiceClassValue = "Service";
+    
+    public static final String variableNameForLock = "lock";
+    public static final String variableTypeForLock = "integer";
+    public static final String variableDescriptionForLock = "Use for locking access";
+
     public static final String keyForFullTextRecord = "desc";
     public static final String keyForFullTextRecordFull = "full";
     public static final String keyForFullTextRecordNonFull = "part";

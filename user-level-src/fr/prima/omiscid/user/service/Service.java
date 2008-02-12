@@ -54,7 +54,7 @@ public interface Service {
      * Adds a new connector to the service.
      * @param connectorName the name of the connector
      * @param connectorDescription the description of the connector
-     * @param connectorKind connector type. This can be input, output or input-output
+     * @param connectorType connector type. This can be input, output or input-output
      * @throws ConnectorAlreadyExisting thrown if we try to recreate an already existing connector
      * @throws VariableAlreadyExisting thrown if there is already a variable with this name
      * @throws IOException thrown if there is an error in the tcp socket creation
@@ -63,13 +63,13 @@ public interface Service {
      */
     public void addConnector(String connectorName,
             String connectorDescription,
-            ConnectorType connectorKind) throws ConnectorAlreadyExisting, VariableAlreadyExisting, IOException, ServiceRunning, ConnectorLimitReached;
+            ConnectorType connectorType) throws ConnectorAlreadyExisting, VariableAlreadyExisting, IOException, ServiceRunning, ConnectorLimitReached;
     
     /**
      * Adds a new connector to the service specifying a preferred tcp port for it.
      * @param connectorName the name of the connector
      * @param connectorDescription the description of the connector
-     * @param connectorKind connector type. This can be input, output or input-output
+     * @param connectorType connector type. This can be input, output or input-output
      * @param port the preferred port number
      * @throws ConnectorAlreadyExisting thrown if we try to recreate an already existing connector
      * @throws VariableAlreadyExisting thrown if there is already a variable with this name
@@ -79,7 +79,7 @@ public interface Service {
      */
     public void addConnector(String connectorName,
             String connectorDescription,
-            ConnectorType connectorKind, int port) throws ConnectorAlreadyExisting, VariableAlreadyExisting, IOException, ServiceRunning, ConnectorLimitReached;
+            ConnectorType connectorType, int port) throws ConnectorAlreadyExisting, VariableAlreadyExisting, IOException, ServiceRunning, ConnectorLimitReached;
     
     /**
      * Add a message listener to a connector

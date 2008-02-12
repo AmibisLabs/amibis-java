@@ -240,6 +240,7 @@ public class VariableAttribute extends Attribute {
      */
     public void setType(String type) {
         this.type = type;
+        this.setFormatDescription(type); // there should not be these two fields I think (test I0051)
     }
 
     /**
