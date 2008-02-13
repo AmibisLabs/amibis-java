@@ -34,9 +34,9 @@ import java.util.logging.Logger;
 /*- IGNORE -*/
 public class AudioServer {
 
-    private final static String serviceName = "AudioRouter";
-    private final static String audioOutputName = "AudioForMovies";
-    private final static String titleVariableName = "Titre chanson";
+    private final static String serviceName = "AudioServer";
+    private final static String audioOutputName = "audioStream";
+    private final static String titleVariableName = "songTitle";
 
     private Service service;
 

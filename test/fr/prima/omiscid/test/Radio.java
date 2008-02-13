@@ -41,8 +41,10 @@ import java.util.logging.Logger;
 /*- IGNORE -*/
 public class Radio {
     private final static String serviceName = "Radio";
-    private final static String audioOutputName = "AudioForMovies";
-    private final static String titleVariableName = "Titre chanson";
+    private final static String audioOutputName = "audioStream";
+    private final static String titleVariableName = "songTitle";
+    private final static String channelsVariable = "Channels";
+    private final static String sampleRateVariable = "SampleRate";
     private int sampleRate = 44100;
     private int channels = 2;
 
@@ -64,11 +66,11 @@ public class Radio {
         args.addAll(Arrays.asList(userArgs));
         try {
             Service service = FactoryFactory.factory().create(serviceName);
-            service.addVariable("SampleRate", "integer", "sample rate", fr.prima.omiscid.user.variable.VariableAccessType.CONSTANT);
-            service.setVariableValue("SampleRate", java.lang.Integer.toString(sampleRate));
-            service.addVariable("Channels", "integer", "sample rate", fr.prima.omiscid.user.variable.VariableAccessType.CONSTANT);
-            service.setVariableValue("Channels", java.lang.Integer.toString(channels));
-            service.addVariable(titleVariableName, "integer", "Titre de la Chanson", fr.prima.omiscid.user.variable.VariableAccessType.READ);
+            service.addVariable(sampleRateVariable,"integer", "sample rate", fr.prima.omiscid.user.variable.VariableAccessType.CONSTANT);
+            service.setVariableValue(sampleRateVariable, java.lang.Integer.toString(sampleRate));
+            service.addVariable(channelsVariable, "integer", "channels count", fr.prima.omiscid.user.variable.VariableAccessType.CONSTANT);
+            service.setVariableValue(channelsVariable, java.lang.Integer.toString(channels));
+            service.addVariable(titleVariableName, "integer", "song title", fr.prima.omiscid.user.variable.VariableAccessType.READ);
             service.setVariableValue(titleVariableName, userArgs[0]);
             service.addConnector(audioOutputName, "output for sound", fr.prima.omiscid.user.connector.ConnectorType.OUTPUT);
             service.start();
