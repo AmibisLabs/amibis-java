@@ -236,28 +236,42 @@ public interface Service {
     public void sendReplyToMessage(byte[] msg, Message message);
 
     /**
-     * Sets the value of a service variable
-     * @param varName the variable name
-     * @param varValue the variable value
+     * Sets the value of a service variable.
+     * Defaults to setVariableValue with validation phase not skipped.
+     * @param variableName the variable name
+     * @param variableValue the variable value
      * @throws UnknownVariable thrown if the variable has not been created
      * @see Service#addVariable
      */
-    public void setVariableValue(String varName, String varValue)
+    public void setVariableValue(String variableName, String variableValue)
     throws UnknownVariable, WrongVariableAccessType;
     
     /**
+     * Sets the value of a service variable.
+     * @param variableName the variable name
+     * @param variableName the variable value
+     * @param skipValidationPhase whether to prevent LocalVariableListener#isValid to be called
+     * @throws UnknownVariable thrown if the variable has not been created
+     * @see Service#addVariable
+     */
+    public void setVariableValue(String variableName, String variableValue, boolean skipValidationPhase)
+    throws UnknownVariable, WrongVariableAccessType;
+    
+    
+    
+    /**
      * Returns the variable value
-     * @param varName the variable name
+     * @param variableName the variable name
      * @return the variable value
      * @throws UnknownVariable thrown if the variable has not been created
      * @see Service#addVariable
      */
-    public String getVariableValue(String varName)
+    public String getVariableValue(String variableName)
     throws UnknownVariable;
     
     /**
      * Creates a new variable for this service.
-     * @param varName the variable name
+     * @param variableName the variable name
      * @param type the variable type (or null if no type is associated)
      * @param description the variable description
      * @param accessType the access type of the variable
@@ -265,46 +279,46 @@ public interface Service {
      * @throws ServiceRunning It is not possible to add a new connector if the service is already running. You have to stop it before.
      *
      */
-    public void addVariable(String varName, String type, String description, VariableAccessType accessType)
+    public void addVariable(String variableName, String type, String description, VariableAccessType accessType)
     throws ConnectorAlreadyExisting, VariableAlreadyExisting, ServiceRunning;
     
     /**
      * Associate a description to an existing variable
-     * @param varName the var name
-     * @param varDescription the description
+     * @param variableName the var name
+     * @param variableDescription the description
      * @throws UnknownVariable thrown if the variable has not been created
      */
-    public void setVariableDescription(String varName, String varDescription)
+    public void setVariableDescription(String variableName, String variableDescription)
     throws UnknownVariable;
     
     /**
      * Returns the description associated to a variable
-     * @param varName the variable name
+     * @param variableName the variable name
      * @return the description
      * @throws UnknownVariable thrown if the variable has not been created
      * @see Service#addVariable(String, String, String, VariableAccessType)
      */
-    public String getVariableDescription(String varName)
+    public String getVariableDescription(String variableName)
     throws UnknownVariable;
     
     /**
      * Returns the variable access type
-     * @param varName the variable name
+     * @param variableName the variable name
      * @return the access type (String version)
      * @throws UnknownVariable thrown if the variable has not been decladed
      * @see Service#addVariable(String, String, String, VariableAccessType)
      */
-    public String getVariableAccessType(String varName)
+    public String getVariableAccessType(String variableName)
     throws UnknownVariable;
     
     /**
      * Returns the string version of the variable type
-     * @param varName the variable name
+     * @param variableName the variable name
      * @return the variable type
      * @throws UnknownVariable thrown if the variable has not been declared
      * @see Service#addVariable(String, String, String, VariableAccessType)
      */
-    public String getVariableType(String varName)
+    public String getVariableType(String variableName)
     throws UnknownVariable;
     
     /**
@@ -312,22 +326,22 @@ public interface Service {
      * first check the new variable value
      *  (see  {@link LocalVariableListener#isValid(Service, String, String)})
      *  It will then be notified when the value has changed (see {@link LocalVariableListener#variableChanged(Service,String,String)})
-     * @param varName the varName
+     * @param variableName the variableName
      * @param listener the listener
      * @throws UnknownVariable thrown if the variable has not been declared
      * @see Service#addVariable(String, String, String, VariableAccessType)
      */
-    public void addLocalVariableListener(String varName, final LocalVariableListener listener)
+    public void addLocalVariableListener(String variableName, final LocalVariableListener listener)
     throws UnknownVariable;
     
     /**
      * Removes a listener on a variable change
-     * @param varName the varName
+     * @param variableName the variable name
      * @param listener the listener
      * @throws UnknownVariable thrown if the variable has not been declared
      * @see Service#addVariable(String, String, String, VariableAccessType)
      */
-    public void removeLocalVariableListener(String varName, LocalVariableListener listener)
+    public void removeLocalVariableListener(String variableName, LocalVariableListener listener)
     throws UnknownVariable;
     
     /**

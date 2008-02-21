@@ -43,6 +43,7 @@ public class I0004_SafeVariableListenerCalls {
         {
             final Service server = factory.create("I0004Server");
             server.addVariable("bug", "Bug", "plop", VariableAccessType.READ_WRITE);
+            server.addVariable("bug2", "Bug", "plop", VariableAccessType.READ_WRITE);
             server.setVariableValue("bug", "12");
             server.addLocalVariableListener("bug", new LocalVariableListener() {
                 public boolean isValid(Service service, String variableName, String newValue) {
@@ -71,6 +72,10 @@ public class I0004_SafeVariableListenerCalls {
             server.addLocalVariableListener("bug", new LocalVariableListener() {
                 boolean passedOnce = false;
                 public boolean isValid(Service service, String variableName, String newValue) {
+                    if (!variableName.equals("bug")) {
+                        FactoryFactory.failed("Wrong variable name received (2): "+variableName);
+                        System.exit(1);
+                    }
                     return true;
                 }
                 public void variableChanged(Service service, String name, String value) {
@@ -88,6 +93,7 @@ public class I0004_SafeVariableListenerCalls {
             client.start();
             final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0004Server"));
             proxy.setVariableValue("bug", "gaga");
+            proxy.setVariableValue("bug2", "gogo");
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {}

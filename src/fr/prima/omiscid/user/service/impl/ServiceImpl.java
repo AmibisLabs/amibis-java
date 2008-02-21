@@ -297,7 +297,7 @@ public class ServiceImpl implements Service {
         for (String varName : variableListeners.keySet()) {
             HashMap<LocalVariableListener, VariableListenerBridge> listeners = new HashMap<LocalVariableListener, VariableListenerBridge>();
             listeners.putAll(variableListeners.get(varName));
-//			HashMap<LocalVariableListener, VariableListenerBridge> listeners =	             (HashMap<LocalVariableListener, VariableListenerBridge>) variableListeners.get(varName).clone();
+//			HashMap<LocalVariableListener, VariableListenerBridge> listeners =	             (HashMap<LocalVariableListener, VariableListenerBridge>) variableListeners.get(variableName).clone();
             for (LocalVariableListener listener : listeners.keySet()) {
                 try {
                     removeLocalVariableListener(varName, listener);
@@ -402,7 +402,6 @@ public class ServiceImpl implements Service {
          * @see fr.prima.omiscid.service.Service#addVariable(java.lang.String,java.lang.String, java.lang.String)
          */
     synchronized  public void addVariable(String varName, String type, String description, VariableAccessType accessType) throws ConnectorAlreadyExisting, VariableAlreadyExisting, ServiceRunning {
-        
         checkAvailableConnectorOrVariable(varName);
         ctrlServer.addVariable(varName) ;
         VariableAttribute var = ctrlServer.findVariable(varName) ;
@@ -439,6 +438,11 @@ public class ServiceImpl implements Service {
          * @see fr.prima.omiscid.service.Service#setVariableValue(java.lang.String, java.lang.String)
          */
     synchronized  public void setVariableValue(String varName, String varValue) throws UnknownVariable, WrongVariableAccessType {
+        setVariableValue(varName, varValue, false);
+    }
+    
+    
+    synchronized public void setVariableValue(String varName, String varValue, boolean skipValidationPhase) throws UnknownVariable, WrongVariableAccessType {
         VariableAttribute var = getVariableAttribut(varName) ;
         if (var.getAccess() == VariableAccessType.CONSTANT && this.started) {
             throw new WrongVariableAccessType("Variable ("+varName+") is constant and cannot be modified when service is started");
@@ -465,7 +469,7 @@ public class ServiceImpl implements Service {
     
     /**
      * Search for a variable
-     * @param varName the variable name
+     * @param variableName the variable name
      * @return the variable attribute
      * @throws UnknownVariable thrown if the variable is undeclared
      */
@@ -480,17 +484,17 @@ public class ServiceImpl implements Service {
         /* (non-Javadoc)
          * @see fr.prima.omiscid.service.Service#addLocalVariableListener(java.lang.String, fr.prima.omiscid.variable.LocalVariableListener)
          */
-    synchronized  public void addLocalVariableListener(String varName, final LocalVariableListener listener) throws UnknownVariable {
+    synchronized  public void addLocalVariableListener(final String variableName, final LocalVariableListener listener) throws UnknownVariable {
         
         synchronized (lock) {
-            VariableAttribute var = getVariableAttribut(varName) ;
+            VariableAttribute var = getVariableAttribut(variableName) ;
             
-            HashMap<LocalVariableListener, VariableListenerBridge> listeners = variableListeners.get(varName) ;
+            HashMap<LocalVariableListener, VariableListenerBridge> listeners = variableListeners.get(variableName) ;
             if (listeners == null)
                 // no listeners yet for this variable : we have to create the vector
             {
                 listeners = new HashMap<LocalVariableListener, VariableListenerBridge>() ;
-                variableListeners.put(varName, listeners);
+                variableListeners.put(variableName, listeners);
             }
             
             // bridge between VariableListener et VariableChangeListener
@@ -503,7 +507,11 @@ public class ServiceImpl implements Service {
             // bridge between VariableListener et VariableChangeQueryListener
             VariableChangeQueryListener queryListener = new VariableChangeQueryListener() {
                 public boolean isAccepted(VariableAttribute currentVariable, String newValue) {
-                    return listener.isValid(ServiceImpl.this, currentVariable.getName(), newValue) ;
+                    if (variableName.equals(currentVariable)) {
+                        return listener.isValid(ServiceImpl.this, currentVariable.getName(), newValue);
+                    } else {
+                        return true;
+                    }
                 }
             };
             

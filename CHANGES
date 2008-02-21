@@ -21,6 +21,7 @@ r
 r3672
         fix:  a connector listener can now properly remove itself (stop listening) without throwing a concurrent modification exception
         fix:  problem in some cases when using removeAllConnectorListeners, some listeners might keep listening
+        fix:  LocalVariableListener received isValid calls for variables they were registered to
         fix:  (API) createServiceRepository was improperly spelled (createServiceRepositoy) in ServiceFactory
         fix:  problem with netbeans when release contains castor generated .java files (these .java are not included any more)
         fix:  problem with connector and variable names containing non letter characters
@@ -33,7 +34,7 @@ r3672
         impr: (API) added access to variable description and type, and connector description throught ServiceProxy interface
         impr: (API) can now specify a service filter when adding a listener to a service repository
         impr: (API) can now specify preferred service connector port and ask for connection to a remote host+port pair
-        impr: (API) addes Service#getConnectorClientCount that can be used to avoid heavy processing when no clients are connected
+        impr: (API) added Service#getConnectorClientCount that can be used to avoid heavy processing when no clients are connected
 
 1.3.1
 r3063
