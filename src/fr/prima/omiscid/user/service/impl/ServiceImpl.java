@@ -235,6 +235,11 @@ public class ServiceImpl implements Service {
     }
     
     
+    synchronized public int getConnectorClientCount(String localConnectorName) throws UnknownConnector {
+        TcpClientServer tcpClientServer = getTcpClientServer(localConnectorName);
+        return tcpClientServer.getNbConnections();
+    }
+    
         /* (non-Javadoc)
          * @see fr.prima.omiscid.service.Service#start()
          */
@@ -771,4 +776,5 @@ public class ServiceImpl implements Service {
             removeAllConnectorListeners(connectorName);
         }
     }
+
 }

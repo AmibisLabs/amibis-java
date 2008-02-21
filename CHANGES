@@ -33,6 +33,7 @@ r3672
         impr: (API) added access to variable description and type, and connector description throught ServiceProxy interface
         impr: (API) can now specify a service filter when adding a listener to a service repository
         impr: (API) can now specify preferred service connector port and ask for connection to a remote host+port pair
+        impr: (API) addes Service#getConnectorClientCount that can be used to avoid heavy processing when no clients are connected
 
 1.3.1
 r3063

@@ -82,13 +82,23 @@ public interface Service {
             ConnectorType connectorType, int port) throws ConnectorAlreadyExisting, VariableAlreadyExisting, IOException, ServiceRunning, ConnectorLimitReached;
     
     /**
-     * Add a message listener to a connector
+     * Adds a message listener to a connector
      * @param connectorName the name of the connector
      * @param msgListener the object that will handle messages sent to this connector
      * @throws UnknownConnector thrown if the service has not declared this connector
      */
     public void addConnectorListener(final String connectorName,
             ConnectorListener msgListener) throws UnknownConnector;
+    
+    /**
+     * Gets the number of clients currently connected to the given connector.
+     * This number is indicative has there can be connections and disconnections at any time.
+     * 
+     * @param localConnectorName the name of the local connector
+     * @return
+     * @throws fr.prima.omiscid.user.exception.UnknownConnector  if the service has not declared this connector
+     */
+    public int getConnectorClientCount(String localConnectorName) throws UnknownConnector;
     
     /**
      * Registers the service in  DNS-SD. The service is now running and exposed to the other services.
