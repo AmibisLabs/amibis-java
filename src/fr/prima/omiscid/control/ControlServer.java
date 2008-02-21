@@ -620,8 +620,14 @@ public class ControlServer extends MessageManager implements VariableChangeListe
      *            the VaraibleAttribute object associated to the variable to
      *            modify
      */
-    protected void variableModificationQuery(String newValue, VariableAttribute va) {
-        boolean doModification = va.canBeModified() && (newValue == null || !newValue.equals(va.getValueStr()));
+    private void variableModificationQuery(String newValue, VariableAttribute va) {
+        if (va.canBeModified()) {
+            setVariableValueWithValidation(newValue, va);
+        }
+    }
+    
+    public void setVariableValueWithValidation(String newValue, VariableAttribute va) {
+        boolean doModification = newValue == null || !newValue.equals(va.getValueStr());
         if (doModification) {
             for (VariableChangeQueryListener listener : variableChangeQueryListeners) {
                 try {

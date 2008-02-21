@@ -442,12 +442,16 @@ public class ServiceImpl implements Service {
     }
     
     
-    synchronized public void setVariableValue(String varName, String varValue, boolean skipValidationPhase) throws UnknownVariable, WrongVariableAccessType {
-        VariableAttribute var = getVariableAttribut(varName) ;
+    synchronized public void setVariableValue(String variableName, String variableValue, boolean skipValidationPhase) throws UnknownVariable, WrongVariableAccessType {
+        VariableAttribute var = getVariableAttribut(variableName);
         if (var.getAccess() == VariableAccessType.CONSTANT && this.started) {
-            throw new WrongVariableAccessType("Variable ("+varName+") is constant and cannot be modified when service is started");
+            throw new WrongVariableAccessType("Variable ("+variableName+") is constant and cannot be modified when service is started");
         } else {
-            var.setValueStr(varValue) ;
+            if (skipValidationPhase) {
+                var.setValueStr(variableValue);
+            } else {
+                ctrlServer.setVariableValueWithValidation(variableValue, var);
+            }
         }
     }
     
@@ -507,7 +511,7 @@ public class ServiceImpl implements Service {
             // bridge between VariableListener et VariableChangeQueryListener
             VariableChangeQueryListener queryListener = new VariableChangeQueryListener() {
                 public boolean isAccepted(VariableAttribute currentVariable, String newValue) {
-                    if (variableName.equals(currentVariable)) {
+                    if (variableName.equals(currentVariable.getName())) {
                         return listener.isValid(ServiceImpl.this, currentVariable.getName(), newValue);
                     } else {
                         return true;
