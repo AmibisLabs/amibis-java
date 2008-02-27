@@ -37,12 +37,12 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.variable.RemoteVariableChangeListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
-public class I0016_TestMultipleRemoteVariableChangeSubscription {
+public class I0017_MultipleListenersOnOneRemoteVariable_Test {
     
     public static void main(String[] args) {
         ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("I0016Server");
+            final Service server = factory.create("I0017Server");
             server.addVariable("bug1", "", "an allway moving variable", VariableAccessType.READ);
             server.addVariable("bug2", "", "an allway moving variable", VariableAccessType.READ);
             server.start();
@@ -65,28 +65,28 @@ public class I0016_TestMultipleRemoteVariableChangeSubscription {
         }
         final Vector<String> passed = new Vector<String>();
         {
-            Service client = factory.create("I0016Client");
+            Service client = factory.create("I0017Client");
             client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0016Server"));
-            proxy.addRemoteVariableChangeListener("bug1",new RemoteVariableChangeListener() {
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0017Server"));
+            proxy.addRemoteVariableChangeListener("bug2",new RemoteVariableChangeListener() {
                 private Vector<String> values = new Vector<String>();
                 public void variableChanged(ServiceProxy serviceProxy, String variableName, String value) {
                     if (values.contains(value)) {
-                        FactoryFactory.failed("duplicate value received for bug1: "+value+" isIn "+Arrays.toString(values.toArray()));
+                        FactoryFactory.failed("duplicate value received for first bug2: "+value+" isIn "+Arrays.toString(values.toArray()));
                         System.exit(1);
                     }
                     values.add(value);
-                    if (!variableName.equals("bug1")) {
-                        FactoryFactory.failed("modification of a non-bug1 variable received by first listener: "+variableName);
+                    if (!variableName.equals("bug2")) {
+                        FactoryFactory.failed("modification of a non-bug2 variable received by first listener: "+variableName);
                         System.exit(1);
                     }
                     int v = Integer.valueOf(value);
-                    if (v > 1000000) {
-                        FactoryFactory.failed("modification of bug2 received by bug1 listener: "+v);
+                    if (v < 1000000) {
+                        FactoryFactory.failed("modification of bug1 received by first listener: "+v);
                         System.exit(1);
                     }
                     if (values.size() == 100) {
-                        passed.add("bug1");
+                        passed.add("first");
                     }
                 }
             });
@@ -94,7 +94,7 @@ public class I0016_TestMultipleRemoteVariableChangeSubscription {
                 private Vector<String> values = new Vector<String>();
                 public void variableChanged(ServiceProxy serviceProxy, String variableName, String value) {
                     if (values.contains(value)) {
-                        FactoryFactory.failed("duplicate value received for bug2: "+value+" isIn "+Arrays.toString(values.toArray()));
+                        FactoryFactory.failed("duplicate value received for second bug2: "+value+" isIn "+Arrays.toString(values.toArray()));
                         System.exit(1);
                     }
                     values.add(value);
@@ -104,27 +104,27 @@ public class I0016_TestMultipleRemoteVariableChangeSubscription {
                     }
                     int v = Integer.valueOf(value);
                     if (v < 1000000) {
-                        FactoryFactory.failed("modification of bug1 received by bug2 listener: "+v);
+                        FactoryFactory.failed("modification of bug1 received by second bug2 listener: "+v);
                         System.exit(1);
                     }
                     if (values.size() == 100) {
-                        passed.add("bug2");
+                        passed.add("second");
                     }
                 }
-            });
+            });//*/
         }
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             if (passed.size() == 2) {
-                FactoryFactory.passed(Arrays.toString(passed.toArray()));
+                FactoryFactory.passed("All properly received notifications: "+Arrays.toString(passed.toArray()));
                 System.exit(0);
             }
         }
-        FactoryFactory.failed("Timed out while waiting for change notifications");
+        FactoryFactory.failed("Timed out while waiting for change notifications: "+Arrays.toString(passed.toArray()));
         System.exit(1);
     }
 

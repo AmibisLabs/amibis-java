@@ -36,7 +36,7 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.variable.LocalVariableListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
-public class I0004_SafeVariableListenerCalls {
+public class I0004_SafeVariableListenerCalls_Test {
     
     public static void main(String[] args) throws IOException {
         ServiceFactory factory = FactoryFactory.factory();

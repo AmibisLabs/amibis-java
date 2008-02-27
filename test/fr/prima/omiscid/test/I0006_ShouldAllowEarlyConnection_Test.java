@@ -38,7 +38,7 @@ import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.util.Utility;
 
-public class I0006_ShouldAllowEarlyConnection {
+public class I0006_ShouldAllowEarlyConnection_Test {
     public static void main(String[] args) throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {

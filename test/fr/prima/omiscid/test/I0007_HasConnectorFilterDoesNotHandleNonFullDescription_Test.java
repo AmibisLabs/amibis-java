@@ -34,7 +34,7 @@ import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
-public class I0007_HasConnectorFilterDoesNotHandleNonFullDescription {
+public class I0007_HasConnectorFilterDoesNotHandleNonFullDescription_Test {
     // This is not a bug in fact it already works (at the time of writing)
     public static void main(String[] args) throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();

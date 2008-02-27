@@ -37,7 +37,7 @@ import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 
-public class I0013_SendReplyToMessage {
+public class I0013_SendReplyToMessage_Test {
     
     private static final int messagesToSend = 100;
     

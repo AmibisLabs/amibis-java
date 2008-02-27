@@ -34,14 +34,15 @@ import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
+import fr.prima.omiscid.user.variable.RemoteVariableChangeListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
-public class I0001_CheckRemoteVariableRefresh {
+public class I0015_RemoteVariableChangeSubscription_Test {
     
     public static void main(String[] args) {
         ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("I0001Server");
+            final Service server = factory.create("I0015Server");
             server.addVariable("bug", "", "an allway moving variable", VariableAccessType.READ);
             server.start();
             new Thread() {
@@ -61,35 +62,27 @@ public class I0001_CheckRemoteVariableRefresh {
             }.start();
         }
         {
-            Service client = factory.create("I0001Client");
+            Service client = factory.create("I0015Client");
             client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0001Server"));
-            new Thread() {
-                @Override
-                public void run() {
-                    String val = proxy.getVariableValue("bug");
-                    Vector<String> res = new Vector<String>();
-                    while (res.size() < 5) {
-                        try {
-                            Thread.sleep(200);
-                            String newVal = proxy.getVariableValue("bug");
-                            if (newVal.equals(val)) {
-                                FactoryFactory.failed("value constant at "+val);
-                                System.exit(1);
-                            }
-                            res.add(val);
-                            val = newVal;
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0015Server"));
+            proxy.addRemoteVariableChangeListener("bug",new RemoteVariableChangeListener() {
+                private Vector<String> values = new Vector<String>();
+                public void variableChanged(ServiceProxy serviceProxy, String variableName, String value) {
+                    values.add(value);
+                    if (values.size() > 10) {
+                        FactoryFactory.passed(Arrays.toString(values.toArray()));
+                        System.exit(0);
                     }
-                    
-                    FactoryFactory.passed(Arrays.toString(res.toArray()));
-                    System.exit(0);
                 }
-            }.start();
+            });
         }
-
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        FactoryFactory.failed("Timed out while waiting for change notifications");
+        System.exit(1);
     }
 
 }

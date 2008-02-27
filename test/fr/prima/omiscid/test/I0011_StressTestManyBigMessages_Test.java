@@ -37,7 +37,7 @@ import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 
-public class I0011_StressTestManyBigMessages {
+public class I0011_StressTestManyBigMessages_Test {
     
     private static final int smallSize = 1;
     private static final int bigSize = 1024*1024;

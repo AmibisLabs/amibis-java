@@ -33,7 +33,7 @@ import java.io.InputStream;
 import fr.prima.omiscid.user.exception.InvalidDescriptionException;
 import fr.prima.omiscid.user.service.Service;
 
-public class I0012_TestSimpleServiceXMLDescription {
+public class I0012_SimpleServiceXMLDescription_Test {
     
     public static void main(String[] args) throws InvalidDescriptionException, IOException {
         String serviceDotXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 

@@ -27,7 +27,6 @@
 package fr.prima.omiscid.test;
 
 import java.io.IOException;
-import java.util.Vector;
 
 import fr.prima.omiscid.user.connector.ConnectorListener;
 import fr.prima.omiscid.user.connector.ConnectorType;
@@ -36,74 +35,64 @@ import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
+import fr.prima.omiscid.user.util.Utility;
 
-public class I0003_ListenersNotPropagatedOnConnectTo {
+/**
+ * This is in fact a non-bug.
+ * The real problem comes from assertions that do not throw normal exceptions.
+ * If an assert fails in a listener, it is not caught upwards and the associated connection is dead. 
+ *
+ */
+public class I0005_ExceptionInAListenerKillsTheConnection_Test {
     
-    private static final int messagesToSend = 100;
-    
-    public static void main(String[] args) throws IOException, InterruptedException {
-        final ServiceFactory factory = FactoryFactory.factory();
+    public static void main(String[] args) throws IOException {
+        ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("I0003Server");
-            server.addConnector("c", "messages", ConnectorType.INOUTPUT);
-            server.addConnectorListener("c", new ConnectorListener() {
-            
-                public void messageReceived(final Service service, final String localConnectorName, final Message message) {
-                    service.sendToOneClient(localConnectorName, new byte[1], message.getPeerId());
+            final Service server = factory.create("I0005Server");
+            server.addConnector("bug", "", ConnectorType.INPUT);
+            server.addConnectorListener("bug", new ConnectorListener() {
+                int count = 0;
+                public synchronized void messageReceived(Service service, String localConnectorName, Message message) {
+                    if (count == 0) {
+                        count++;
+                        throw new UnsupportedOperationException();
+                    }
+                    count++;
+                    service.sendToOneClient(localConnectorName, Utility.stringToByteArray("plop"), message.getPeerId());
                 }
-            
                 public void disconnected(Service service, String localConnectorName, int peerId) {
-                    // TODO Auto-generated method stub
-            
                 }
-            
                 public void connected(Service service, String localConnectorName, int peerId) {
-                    // TODO Auto-generated method stub
-            
                 }
-            
             });
             server.start();
         }
-        final Vector<Object> received = new Vector<Object>();
         {
-            Service client = factory.create("I0003Client");
-            client.addConnector("c", "this is c", ConnectorType.INOUTPUT);
-            client.addConnectorListener("c", new ConnectorListener() {
-                int count = 0;
-            
-                public void messageReceived(final Service service, String localConnectorName, Message message) {
-                    service.sendToAllClients("c", new byte[1]);
-                    count++;
-                    received.add(count);
-                    if (count >= messagesToSend) {
-                        service.stop();
-                    }
+            Service client = factory.create("I0005Client");
+            client.addConnector("bug", "", ConnectorType.OUTPUT);
+            client.addConnectorListener("bug", new ConnectorListener() {
+                public void messageReceived(Service service, String localConnectorName, Message message) {
+                    FactoryFactory.passed("Second message received an answer as expected");
+                    System.exit(0);
                 }
-            
                 public void disconnected(Service service, String localConnectorName, int peerId) {
-                    // TODO Auto-generated method stub
-            
                 }
-            
                 public void connected(Service service, String localConnectorName, int peerId) {
-                    // TODO Auto-generated method stub
-            
                 }
-            
             });
             client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0003Server"));
-            client.connectTo("c", proxy, "c");
-            client.sendToAllClients("c", new byte[1]);
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0005Server"));
+            client.connectTo("bug", proxy, "bug");
+            client.sendToAllClients("bug", Utility.stringToByteArray("hiiiii"));
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {}
+            client.sendToAllClients("bug", Utility.stringToByteArray("hellllowwwwww"));
         }
-        Thread.sleep(2000);
-        if (received.size() == messagesToSend) {
-            FactoryFactory.passed(received.size()+" received ok");
-        } else {
-            FactoryFactory.failed(received.size()+" ended, "+messagesToSend+" expected");
-        }
-        System.exit(0);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {}
+        FactoryFactory.failed("Timeout logically due to unhandled exception");
+        System.exit(1);
     }
-
 }

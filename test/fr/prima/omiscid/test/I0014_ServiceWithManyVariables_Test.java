@@ -62,7 +62,7 @@ import fr.prima.omiscid.user.variable.VariableAccessType;
  *  -- now works correctly with full service description until 119 variables (was 160)
  *  -- with partial service description after (was crashing)
  */
-public class I0014_ServiceWithManyVariables {
+public class I0014_ServiceWithManyVariables_Test {
     
     private static int customVariableCount = 1000;
     private static String[] chars = new String[]{"V","v","a","b","c","d","e","f","g","h"}; // ten digits (at ten-thousands level)

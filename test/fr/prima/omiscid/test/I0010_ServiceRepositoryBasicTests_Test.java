@@ -36,7 +36,7 @@ import fr.prima.omiscid.user.service.ServiceRepositoryListener;
 import fr.prima.omiscid.user.util.Utility;
 
 /*- IGNORE -*/
-public class I0010_ServiceRepositoryBasicTests {
+public class I0010_ServiceRepositoryBasicTests_Test {
     
     public static void main(String[] args) throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
