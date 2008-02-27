@@ -39,6 +39,10 @@ import fr.prima.omiscid.user.util.Utility;
 import java.util.Arrays;
 import java.util.Vector;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0031_MultipleDisconnectNotifications_Test {
     
     /*
@@ -46,7 +50,8 @@ public class I0031_MultipleDisconnectNotifications_Test {
      * It tests disconnection notification
      * for repeated in-connect remotely-closed locally-initiated connections.
      */
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void doIt() throws IOException {
         final Vector<String> events = new Vector<String>();
         ServiceFactory factory = FactoryFactory.factory();
         {
@@ -93,7 +98,6 @@ public class I0031_MultipleDisconnectNotifications_Test {
                     if (tries >= 5) {
                         System.out.println(Arrays.toString(events.toArray()));
                         FactoryFactory.passed("Limit number of tries reached, "+Arrays.toString(events.toArray()));
-                        System.exit(0);
                     }
                     client.connectTo("bug", proxy, "bug");
                 }
@@ -112,7 +116,6 @@ public class I0031_MultipleDisconnectNotifications_Test {
         }
         System.out.println(Arrays.toString(events.toArray()));
         FactoryFactory.failed("Timeout logically due to a problem in connection/disconnection handling: ");
-        System.exit(1);
     }
 
 }

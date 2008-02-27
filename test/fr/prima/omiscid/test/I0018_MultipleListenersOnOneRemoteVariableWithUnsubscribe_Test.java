@@ -37,9 +37,14 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.variable.RemoteVariableChangeListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0018_MultipleListenersOnOneRemoteVariableWithUnsubscribe_Test {
     
-    public static void main(String[] args) {
+    @Test
+    public void doIt() {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0018Server");
@@ -73,17 +78,14 @@ public class I0018_MultipleListenersOnOneRemoteVariableWithUnsubscribe_Test {
                 public void variableChanged(ServiceProxy serviceProxy, String variableName, String value) {
                     if (values.contains(value)) {
                         FactoryFactory.failed("duplicate value received for first bug2: "+value+" isIn "+Arrays.toString(values.toArray()));
-                        System.exit(1);
                     }
                     values.add(value);
                     int v = Integer.valueOf(value);
                     if (v < 1000000) {
                         FactoryFactory.failed("modification of bug1 received by first listener: "+v);
-                        System.exit(1);
                     }
                     if (values.size() > 100) {
                         FactoryFactory.failed("modification of bug2 received by first listener after unsubscription");
-                        System.exit(1);
                     }
                     if (values.size() == 100) {
                         serviceProxy.removeRemoteVariableChangeListener("bug2", this);
@@ -96,17 +98,14 @@ public class I0018_MultipleListenersOnOneRemoteVariableWithUnsubscribe_Test {
                 public void variableChanged(ServiceProxy serviceProxy, String variableName, String value) {
                     if (values.contains(value)) {
                         FactoryFactory.failed("duplicate value received for second bug2: "+value+" isIn "+Arrays.toString(values.toArray()));
-                        System.exit(1);
                     }
                     values.add(value);
                     int v = Integer.valueOf(value);
                     if (v < 1000000) {
                         FactoryFactory.failed("modification of bug1 received by second bug2 listener: "+v);
-                        System.exit(1);
                     }
                     if (values.size() > 100) {
                         FactoryFactory.failed("modification of bug2 received by second listener after unsubscription");
-                        System.exit(1);
                     }
                     if (values.size() == 100) {
                         serviceProxy.removeRemoteVariableChangeListener("bug2", this);
@@ -123,11 +122,9 @@ public class I0018_MultipleListenersOnOneRemoteVariableWithUnsubscribe_Test {
             }
             if (passed.size() == 2) {
                 FactoryFactory.passed("All properly received notifications: "+Arrays.toString(passed.toArray()));
-                System.exit(0);
             }
         }
         FactoryFactory.failed("Timed out while waiting for change notifications: "+Arrays.toString(passed.toArray()));
-        System.exit(1);
     }
 
 }

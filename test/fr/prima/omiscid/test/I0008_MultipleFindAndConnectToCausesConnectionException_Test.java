@@ -39,6 +39,10 @@ import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0008_MultipleFindAndConnectToCausesConnectionException_Test {
     
     // This tries to replicate a problem seen with Marina's osgi code.
@@ -49,7 +53,8 @@ public class I0008_MultipleFindAndConnectToCausesConnectionException_Test {
     // This works (at the time of writing)
     // This once failed while running non regression (but only once) and was not reproducible afterwards
     // This instantiate many services so underlying dnssd might have failed
-    public static void main(String[] args) throws IOException, InterruptedException {
+    @Test
+    public void doIt() throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         final Vector<String> startedServices = new Vector<String>();
         for (int i = 0; i<30; i++) {
@@ -115,14 +120,12 @@ public class I0008_MultipleFindAndConnectToCausesConnectionException_Test {
                         System.out.println(done.size());
                         if (done.size() == startedServices.size()) {
                             FactoryFactory.passed("Search done properly. All "+done.size()+" ok.");
-                            System.exit(0);
                         }
                     }
                 }, "Finder-"+name).start();
             }
             Thread.sleep(8000);
             FactoryFactory.failed("Some undesired exceptions have probably occured. Only "+done.size()+"/"+startedServices.size()+" ended as expected.");
-            System.exit(1);
         }
     }
 

@@ -34,9 +34,14 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.service.ServiceRepository;
 import fr.prima.omiscid.user.service.ServiceRepositoryListener;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0020_ServiceRepositorySafeListenerCalls_Test {
     
-    public static void main(String[] args) throws IOException, InterruptedException {
+    @Test
+    public void doIt() throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         final Service service = factory.create("I0020Repository");
         final ServiceRepository repository = factory.createServiceRepository(service);
@@ -61,7 +66,6 @@ public class I0020_ServiceRepositorySafeListenerCalls_Test {
                     System.err.println("removed: "+count);
                     if (count == 1998) {
                         FactoryFactory.passed("Two additions and removal received by the clean listener");
-                        System.exit(0);
                     }
                 }
             }
@@ -81,7 +85,6 @@ public class I0020_ServiceRepositorySafeListenerCalls_Test {
         service1.stop();
         Thread.sleep(5000);
         FactoryFactory.failed("Timeout logically due to unhandled exception or application is unclosable (or to an already present I0020Service)");
-        System.exit(1);
     }
 
 }

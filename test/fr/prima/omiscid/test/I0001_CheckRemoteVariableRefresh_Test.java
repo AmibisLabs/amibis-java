@@ -36,9 +36,14 @@ import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0001_CheckRemoteVariableRefresh_Test {
     
-    public static void main(String[] args) {
+    @Test
+    public void doIt() {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0001Server");
@@ -75,7 +80,6 @@ public class I0001_CheckRemoteVariableRefresh_Test {
                             String newVal = proxy.getVariableValue("bug");
                             if (newVal.equals(val)) {
                                 FactoryFactory.failed("value constant at "+val);
-                                System.exit(1);
                             }
                             res.add(val);
                             val = newVal;
@@ -85,7 +89,6 @@ public class I0001_CheckRemoteVariableRefresh_Test {
                     }
                     
                     FactoryFactory.passed(Arrays.toString(res.toArray()));
-                    System.exit(0);
                 }
             }.start();
         }

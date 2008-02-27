@@ -38,6 +38,10 @@ import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.util.Utility;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0025_SimpleXMLMessage_Test {
     
     /*
@@ -46,7 +50,8 @@ public class I0025_SimpleXMLMessage_Test {
      * This seems to work well.
      * The problem seems to have occured under new omiscidgui.
      */
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void doIt() throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0025Server");
@@ -58,7 +63,6 @@ public class I0025_SimpleXMLMessage_Test {
                     try {
                         FactoryFactory.passed("XML message properly interpreted: "+message.getBufferAsXML().getTagName());
                         FactoryFactory.passed("XML message properly interpreted: "+message.getBufferAsXMLUnchecked().getTagName());
-                        System.exit(0);
                     } catch (MessageInterpretationException e) {
                         throw new RuntimeException(e);
                     }
@@ -86,7 +90,6 @@ public class I0025_SimpleXMLMessage_Test {
             Thread.sleep(1500);
         } catch (InterruptedException e) {}
         FactoryFactory.failed("Timeout logically due to a problem in XML message interpretation");
-        System.exit(1);
     }
 
 }

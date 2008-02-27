@@ -39,6 +39,10 @@ import fr.prima.omiscid.user.util.Utility;
 import java.util.Arrays;
 import java.util.Vector;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0028_SingleDisconnectKeepListeners_Test {
     
     /*
@@ -46,7 +50,8 @@ public class I0028_SingleDisconnectKeepListeners_Test {
      * It tests remote-reconnection (remote listener receive (connection) notifications after reconnection)
      * for a single remotely-closed locally-initiated connections.
      */
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void doIt() throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         final Vector<String> events = new Vector<String>();
         {
@@ -61,7 +66,6 @@ public class I0028_SingleDisconnectKeepListeners_Test {
                     if (passed) {
                         System.out.println(Arrays.toString(events.toArray()));
                         FactoryFactory.failed("Second message received while connection should have been closed");
-                        System.exit(1);
                     }
                     passed = true;
                     service.closeConnection(localConnectorName, message.getPeerId());
@@ -76,7 +80,6 @@ public class I0028_SingleDisconnectKeepListeners_Test {
                     if (passed) {
                         System.out.println(Arrays.toString(events.toArray()));
                         FactoryFactory.passed("Second connection occured");
-                        System.exit(0);
                     }
                 }
             });
@@ -101,7 +104,6 @@ public class I0028_SingleDisconnectKeepListeners_Test {
             } catch (InterruptedException e) {}
             System.out.println(Arrays.toString(events.toArray()));
             FactoryFactory.failed("Timeout logically due to problematic reconnection");
-            System.exit(1);
         }
     }
 

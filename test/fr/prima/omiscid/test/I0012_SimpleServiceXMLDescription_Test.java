@@ -33,9 +33,14 @@ import java.io.InputStream;
 import fr.prima.omiscid.user.exception.InvalidDescriptionException;
 import fr.prima.omiscid.user.service.Service;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0012_SimpleServiceXMLDescription_Test {
     
-    public static void main(String[] args) throws InvalidDescriptionException, IOException {
+    @Test
+    public void doIt() throws InvalidDescriptionException, IOException {
         String serviceDotXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
                 "<service name=\"I0012Service\" xmlns=\"http://www-prima.inrialpes.fr/schemas/bip/service.xsd\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www-prima.inrialpes.fr/schemas/bip/service.xsd service.xsd \">\n" + 
                 "   <output name=\"sinus\">\n" + 
@@ -59,7 +64,6 @@ public class I0012_SimpleServiceXMLDescription_Test {
         service.stop();
         FactoryFactory.passed("no exceptions occured");
         in.close();
-        System.exit(0);
     }
 
 }

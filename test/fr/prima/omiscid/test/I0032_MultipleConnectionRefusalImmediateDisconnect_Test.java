@@ -40,6 +40,10 @@ import fr.prima.omiscid.user.util.Utility;
 import java.util.Arrays;
 import java.util.Vector;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0032_MultipleConnectionRefusalImmediateDisconnect_Test {
     
     /*
@@ -49,7 +53,8 @@ public class I0032_MultipleConnectionRefusalImmediateDisconnect_Test {
      * The Exception that happened on fast disconnections has been removed
      * so this only test a simple disconnection feature.
      */
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void doIt() throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0032Server");
@@ -113,7 +118,6 @@ public class I0032_MultipleConnectionRefusalImmediateDisconnect_Test {
         }
         System.out.println(Arrays.toString(events.toArray()));
         FactoryFactory.failed("Timeout logically due to a problem in connection/disconnection handling: ");
-        System.exit(1);
     }
     
     static int tries = 0;
@@ -123,7 +127,6 @@ public class I0032_MultipleConnectionRefusalImmediateDisconnect_Test {
         if (tries >= 10) {
             System.out.println(Arrays.toString(events.toArray()));
             FactoryFactory.passed("Limit number of tries reached, "+Arrays.toString(events.toArray()));
-            System.exit(0);
         }
         try {
             client.connectTo(string, proxy, string0);

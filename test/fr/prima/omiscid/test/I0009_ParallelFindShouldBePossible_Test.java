@@ -35,6 +35,10 @@ import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0009_ParallelFindShouldBePossible_Test {
     
     // This is not a bug at the time of writing.
@@ -45,7 +49,8 @@ public class I0009_ParallelFindShouldBePossible_Test {
     static long eachTaskTimeOut = 100;
     static long overallTimeOut = 500;
     
-    public static void main(String[] args) throws IOException, InterruptedException {
+    @Test
+    public void doIt() throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         {
             final Service client = factory.create("I0009Client");
@@ -74,7 +79,6 @@ public class I0009_ParallelFindShouldBePossible_Test {
             } else {
                 FactoryFactory.failed("Some undesired exceptions have probably occured. Only "+done.size()+"/"+started.size()+" ended as expected.");
             }
-            System.exit(0);
         }
     }
 

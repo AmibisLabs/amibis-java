@@ -39,6 +39,10 @@ import fr.prima.omiscid.user.util.Utility;
 import java.util.Arrays;
 import java.util.Vector;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0027_SingleDisconnectLocal_Test {
     
     /*
@@ -46,7 +50,8 @@ public class I0027_SingleDisconnectLocal_Test {
      * It tests remote-disconnection (remote listener does not receive messages)
      * for a single locally-closed locally-initiated connections.
      */
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void doIt() throws IOException {
         final Vector<String> events = new Vector<String>();
         ServiceFactory factory = FactoryFactory.factory();
         {
@@ -58,7 +63,6 @@ public class I0027_SingleDisconnectLocal_Test {
                     events.add("SV REC "+passed);
                     if (passed) {
                         FactoryFactory.failed("Second message received while connection should have been closed");
-                        System.exit(1);
                     }
                     passed = true;
                     service.sendReplyToMessage(Utility.stringToByteArray("<plop/>"), message);
@@ -84,7 +88,6 @@ public class I0027_SingleDisconnectLocal_Test {
                     events.add("CL REC "+passed);
                     if (passed) {
                         FactoryFactory.failed("Second message received while connection should have been closed");
-                        System.exit(1);
                     }
                     passed = true;
                     service.closeConnection(localConnectorName, message.getPeerId());
@@ -116,7 +119,6 @@ public class I0027_SingleDisconnectLocal_Test {
                 Thread.sleep(300);
             } catch (InterruptedException e) {}
             FactoryFactory.passed("All messages sent: "+msg);
-            System.exit(0);
         }
     }
 

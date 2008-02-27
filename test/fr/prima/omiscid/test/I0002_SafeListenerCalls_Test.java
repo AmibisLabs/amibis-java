@@ -37,9 +37,14 @@ import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.util.Utility;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0002_SafeListenerCalls_Test {
     
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void doIt() throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0002Server");
@@ -69,7 +74,6 @@ public class I0002_SafeListenerCalls_Test {
                 public void disconnected(Service service, String localConnectorName, int peerId) {
                     if (state == 1002) {
                         FactoryFactory.passed("Two messages received by the clean listener");
-                        System.exit(0);
                     }
                 }
                 public void messageReceived(Service service, String localConnectorName, Message message) {
@@ -97,7 +101,6 @@ public class I0002_SafeListenerCalls_Test {
             Thread.sleep(1500);
         } catch (InterruptedException e) {}
         FactoryFactory.failed("Timeout logically due to unhandled exception");
-        System.exit(1);
     }
 
 }

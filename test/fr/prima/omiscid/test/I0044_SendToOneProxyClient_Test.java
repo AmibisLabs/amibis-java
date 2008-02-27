@@ -36,9 +36,14 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.util.Utility;
 import java.io.IOException;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0044_SendToOneProxyClient_Test {
 
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void doIt() throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0044Server");
@@ -48,7 +53,6 @@ public class I0044_SendToOneProxyClient_Test {
                                             String localConnectorName,
                                             Message message) {
                         FactoryFactory.passed("Message properly received");
-                        System.exit(0);
                 }
 
                 public void disconnected(Service service,
@@ -72,6 +76,5 @@ public class I0044_SendToOneProxyClient_Test {
             Thread.sleep(1500);
         } catch (InterruptedException e) {}
         FactoryFactory.failed("Timeout logically due to problem in sendToOneClient(..., proxy)");
-        System.exit(1);
 }
 }

@@ -37,6 +37,10 @@ import java.io.IOException;
 
 
 /*- IGNORE -*/
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0043_SADSendMessageInConnectedListenerWithReal_Test {
 
     /**
@@ -45,7 +49,8 @@ public class I0043_SADSendMessageInConnectedListenerWithReal_Test {
      * state. This message is not received by java gui.
      * This example mimic this behavior in pure java.
      */
-    public static void main(String[] args) throws InterruptedException, IOException {
+    @Test
+    public void doIt() throws InterruptedException, IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             Service client = factory.create("I0043Client");
@@ -55,19 +60,15 @@ public class I0043_SADSendMessageInConnectedListenerWithReal_Test {
                     System.out.println("\"\"\""+message.getBufferAsStringUnchecked()+"\"\"\"");
                     if (!"bip...".equals(message.getBufferAsStringUnchecked().replaceAll("[\\r\\n]", ""))) {
                         FactoryFactory.passed("First message received as expected");
-                        System.exit(0);
                     } else {
                         FactoryFactory.failed("Second message received but not first");
-                        System.exit(1);
                     }
                 }
                 public void disconnected(Service service, String localConnectorName, int peerId) {
                     FactoryFactory.failed("Received a Disconnected notification");
-                    System.exit(1);
                 }
                 public void connected(Service service, String localConnectorName, int peerId) {
                     FactoryFactory.failed("Received a Connected notification");
-                    System.exit(1);
                 }
             });
             client.start();
@@ -76,7 +77,6 @@ public class I0043_SADSendMessageInConnectedListenerWithReal_Test {
         }
         Thread.sleep(2000);
         FactoryFactory.failed("Timed out");
-        System.exit(1);
     }
 
 }

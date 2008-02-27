@@ -49,9 +49,14 @@ import fr.prima.omiscid.user.variable.VariableAccessType;
  * Before the fix, this test passes some times but less than 2 times over 3.
  * 
  */
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0019_GetRemoteVariableValueAndSubscribe_Test {
     
-    public static void main(String[] args) {
+    @Test
+    public void doIt() {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0019Server");
@@ -83,12 +88,10 @@ public class I0019_GetRemoteVariableValueAndSubscribe_Test {
                 public void variableChanged(ServiceProxy serviceProxy, String variableName, String value) {
                     if (values.contains(value)) {
                         FactoryFactory.failed("Duplicate notification received: "+value+" is already in "+Arrays.toString(values.toArray()));
-                        System.exit(1);
                     }
                     values.add(value);
                     if (values.size() > 100) {
                         FactoryFactory.passed(Arrays.toString(values.toArray()));
-                        System.exit(0);
                     }
                 }
             });
@@ -102,7 +105,6 @@ public class I0019_GetRemoteVariableValueAndSubscribe_Test {
             }
         }
         FactoryFactory.failed("Timed out while waiting for change notifications");
-        System.exit(1);
     }
 
 }

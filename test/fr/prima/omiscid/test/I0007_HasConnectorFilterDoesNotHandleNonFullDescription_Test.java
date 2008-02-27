@@ -34,9 +34,14 @@ import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0007_HasConnectorFilterDoesNotHandleNonFullDescription_Test {
     // This is not a bug in fact it already works (at the time of writing)
-    public static void main(String[] args) throws IOException, InterruptedException {
+    @Test
+    public void doIt() throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0007Server");
@@ -52,7 +57,6 @@ public class I0007_HasConnectorFilterDoesNotHandleNonFullDescription_Test {
                 public void run() {
                     client.findService(ServiceFilters.hasConnector("bug", ConnectorType.INOUTPUT));
                     FactoryFactory.failed("server was wrongly found");
-                    System.exit(1);
                 }
             }).start();
             Thread.sleep(250);
@@ -61,12 +65,10 @@ public class I0007_HasConnectorFilterDoesNotHandleNonFullDescription_Test {
                     client.findService(ServiceFilters.hasConnector("bug"));
                     client.findService(ServiceFilters.hasConnector("bug", ConnectorType.INPUT));
                     FactoryFactory.passed("server was properly found each time");
-                    System.exit(0);
                 }
             }).start();
             Thread.sleep(3000);
             FactoryFactory.failed("Timeout logically due to wrong handling of incomplete dnssd description");
-            System.exit(1);
         }
     }
 

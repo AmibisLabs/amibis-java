@@ -34,9 +34,14 @@ import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0021_VariableListContainsPeerId_Test {
     
-    public static void main(String[] args) throws InvalidDescriptionException, IOException {
+    @Test
+    public void doIt() throws InvalidDescriptionException, IOException {
         ServiceFactory factory = FactoryFactory.factory();
         final Service server = factory.create("I0021Server");
         server.start();
@@ -46,14 +51,11 @@ public class I0021_VariableListContainsPeerId_Test {
             if (proxy.getVariables().contains("peerId")) {
                 if (proxy.getVariableValue("peerId").equals(server.getPeerIdAsString())) {
                     FactoryFactory.passed("Service variables does have a peerId value with the right value");
-                    System.exit(0);
                 } else {
                     FactoryFactory.failed("Service variables does have a peerId value but its value is wrong ("+proxy.getVariableValue("peerId")+")");
-                    System.exit(1);
                 }
             } else {
                 FactoryFactory.failed("Service variables doesn't have a peerId value");
-                System.exit(1);
             }
 
         }

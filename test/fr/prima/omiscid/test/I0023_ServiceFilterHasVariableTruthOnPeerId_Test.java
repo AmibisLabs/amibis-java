@@ -34,9 +34,14 @@ import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0023_ServiceFilterHasVariableTruthOnPeerId_Test {
     
-    public static void main(String[] args) throws InvalidDescriptionException, IOException {
+    @Test
+    public void doIt() throws InvalidDescriptionException, IOException {
         ServiceFactory factory = FactoryFactory.factory();
         final Service server = factory.create("I0023Server");
         server.start();
@@ -46,7 +51,6 @@ public class I0023_ServiceFilterHasVariableTruthOnPeerId_Test {
                     Thread.sleep(5000);
                 } catch (InterruptedException ex) {
                     FactoryFactory.failed("Timeout probably due to peerId variable not being seen by hasVariable service filter");
-                    System.exit(1);
                 }
                 
             }
@@ -56,7 +60,6 @@ public class I0023_ServiceFilterHasVariableTruthOnPeerId_Test {
             final ServiceProxy proxy = client.findService(ServiceFilters.and(ServiceFilters.hasVariable("peerId"), ServiceFilters.nameIs("I0023Server")));
             if (proxy != null) {
                 FactoryFactory.passed("Service hasVariable filter properly found the peerId");
-                System.exit(0);
             }
         }
     }

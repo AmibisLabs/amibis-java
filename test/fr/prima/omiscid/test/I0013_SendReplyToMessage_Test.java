@@ -37,11 +37,16 @@ import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0013_SendReplyToMessage_Test {
     
     private static final int messagesToSend = 100;
     
-    public static void main(String[] args) throws IOException, InterruptedException {
+    @Test
+    public void doIt() throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0013Server");
@@ -114,7 +119,6 @@ public class I0013_SendReplyToMessage_Test {
                 clientQuiet.addConnectorListener("c", new ConnectorListener() {
                     public void messageReceived(final Service service, String localConnectorName, Message message) {
                         FactoryFactory.failed("Quiet client received something");
-                        System.exit(1);
                     }
                     public void disconnected(Service service, String localConnectorName, int peerId) {
                     }
@@ -135,7 +139,6 @@ public class I0013_SendReplyToMessage_Test {
         } else {
             FactoryFactory.failed(received.size()+" ended, "+messagesToSend+" expected");
         }
-        System.exit(0);
     }
 
 }

@@ -38,8 +38,13 @@ import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.util.Utility;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0006_ShouldAllowEarlyConnection_Test {
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void doIt() throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0006Server");
@@ -105,9 +110,7 @@ public class I0006_ShouldAllowEarlyConnection_Test {
             } else {
                 FactoryFactory.failed("started is "+started.size()+" and only "+endedSize+" ended");
             }
-            System.exit(0);
             FactoryFactory.failed("Timeout logically due to wrong handling of pre-start peerId");
-            System.exit(1);
         }
     }
 

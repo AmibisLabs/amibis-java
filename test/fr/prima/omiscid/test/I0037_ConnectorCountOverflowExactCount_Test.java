@@ -33,9 +33,14 @@ import java.io.IOException;
 import fr.prima.omiscid.user.exception.InvalidDescriptionException;
 import fr.prima.omiscid.user.service.Service;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0037_ConnectorCountOverflowExactCount_Test {
     
-    public static void main(String[] args) throws InvalidDescriptionException, IOException {
+    @Test
+    public void doIt() throws InvalidDescriptionException, IOException {
         Service service = FactoryFactory.factory().create("I0037Server");
         int i = 1;
         try {
@@ -46,17 +51,13 @@ public class I0037_ConnectorCountOverflowExactCount_Test {
         } catch (ConnectorLimitReached e) {
             if (i == 256) {
                 FactoryFactory.passed("ConnectorLimitReached properly occured at the good time");
-                System.exit(0);
             } else {
                 FactoryFactory.failed("ConnectorLimitReached occured but for "+i+"th connector instead of 256th");
-                System.exit(1);
             }
         } catch (Exception e) {
             FactoryFactory.failed("Unspecified exception occured "+e.getClass().getCanonicalName());
-            System.exit(1);
         }
         FactoryFactory.failed("No exceptions occured");
-        System.exit(1);
     }
 
 }

@@ -36,9 +36,14 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.variable.LocalVariableListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0004_SafeVariableListenerCalls_Test {
     
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void doIt() throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0004Server");
@@ -49,22 +54,18 @@ public class I0004_SafeVariableListenerCalls_Test {
                 public boolean isValid(Service service, String variableName, String newValue) {
                     if (!variableName.equals("bug")) {
                         FactoryFactory.failed("Wrong variable name received: "+variableName);
-                        System.exit(1);
                     }
                     if (newValue.length() != 4) {
                         FactoryFactory.failed("Wrong variable new value received: "+newValue);
-                        System.exit(1);
                     }
                     throw new UnsupportedOperationException("Not supported yet: isValid");
                 }
                 public void variableChanged(Service service, String variableName, String value) {
                     if (!variableName.equals("bug")) {
                         FactoryFactory.failed("Wrong variable name received, in changed: "+variableName);
-                        System.exit(1);
                     }
                     if (value.length() != 4) {
                         FactoryFactory.failed("Wrong variable set value received, in changed: "+value);
-                        System.exit(1);
                     }
                     throw new UnsupportedOperationException("Not supported yet: changed");
                 }
@@ -74,14 +75,12 @@ public class I0004_SafeVariableListenerCalls_Test {
                 public boolean isValid(Service service, String variableName, String newValue) {
                     if (!variableName.equals("bug")) {
                         FactoryFactory.failed("Wrong variable name received (2): "+variableName);
-                        System.exit(1);
                     }
                     return true;
                 }
                 public void variableChanged(Service service, String name, String value) {
                     if (passedOnce) {
                         FactoryFactory.passed("Two notifications received by the clean listener");
-                        System.exit(0);
                     } else {
                         passedOnce = true;
                     }
@@ -103,7 +102,6 @@ public class I0004_SafeVariableListenerCalls_Test {
             Thread.sleep(1500);
         } catch (InterruptedException e) {}
         FactoryFactory.failed("Timeout logically due to unhandled exception");
-        System.exit(1);
     }
 
 }

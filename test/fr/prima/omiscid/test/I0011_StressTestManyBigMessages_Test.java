@@ -37,6 +37,10 @@ import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0011_StressTestManyBigMessages_Test {
     
     private static final int smallSize = 1;
@@ -46,7 +50,8 @@ public class I0011_StressTestManyBigMessages_Test {
     private static final int messagesToSend = 100;
     private static final int timeToWait = 5000;
     
-    public static void main(String[] args) throws IOException, InterruptedException {
+    @Test
+    public void doIt() throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0011Server");
@@ -84,7 +89,6 @@ public class I0011_StressTestManyBigMessages_Test {
                     } catch (IOException e) {
                         e.printStackTrace();
                         FactoryFactory.failed("Exception in addConnector");
-                        System.exit(1);
                     }
                     client.addConnectorListener("c", new ConnectorListener() {
 
@@ -124,10 +128,8 @@ public class I0011_StressTestManyBigMessages_Test {
         int endedSize = ended.size();
         if (endedSize == started.size()) {
             FactoryFactory.passed("all "+started.size()+" ok");
-            System.exit(0);
         } else {
             FactoryFactory.failed("started is "+started.size()+" and only "+endedSize+" ended");
-            System.exit(1);
         }
     }
 

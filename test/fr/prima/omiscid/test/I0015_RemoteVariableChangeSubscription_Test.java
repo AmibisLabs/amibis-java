@@ -37,9 +37,14 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.variable.RemoteVariableChangeListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0015_RemoteVariableChangeSubscription_Test {
     
-    public static void main(String[] args) {
+    @Test
+    public void doIt() {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0015Server");
@@ -71,7 +76,6 @@ public class I0015_RemoteVariableChangeSubscription_Test {
                     values.add(value);
                     if (values.size() > 10) {
                         FactoryFactory.passed(Arrays.toString(values.toArray()));
-                        System.exit(0);
                     }
                 }
             });
@@ -82,7 +86,6 @@ public class I0015_RemoteVariableChangeSubscription_Test {
             e.printStackTrace();
         }
         FactoryFactory.failed("Timed out while waiting for change notifications");
-        System.exit(1);
     }
 
 }

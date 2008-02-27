@@ -43,9 +43,14 @@ import fr.prima.omiscid.user.util.Utility;
  * If an assert fails in a listener, it is not caught upwards and the associated connection is dead. 
  *
  */
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0005_ExceptionInAListenerKillsTheConnection_Test {
     
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void doIt() throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0005Server");
@@ -73,7 +78,6 @@ public class I0005_ExceptionInAListenerKillsTheConnection_Test {
             client.addConnectorListener("bug", new ConnectorListener() {
                 public void messageReceived(Service service, String localConnectorName, Message message) {
                     FactoryFactory.passed("Second message received an answer as expected");
-                    System.exit(0);
                 }
                 public void disconnected(Service service, String localConnectorName, int peerId) {
                 }
@@ -93,6 +97,5 @@ public class I0005_ExceptionInAListenerKillsTheConnection_Test {
             Thread.sleep(500);
         } catch (InterruptedException e) {}
         FactoryFactory.failed("Timeout logically due to unhandled exception");
-        System.exit(1);
     }
 }

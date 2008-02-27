@@ -38,13 +38,18 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import java.util.Arrays;
 import java.util.Vector;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0030_NonStartedServiceConnectorPeerId_Test {
     
     /*
      * This tests unstarted services clients.
      * PeerId where wrongly affected to connectors.
      */
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void doIt() throws IOException {
         final Vector<Integer> connections = new Vector<Integer>();
         ServiceFactory factory = FactoryFactory.factory();
         final int numberOfConnectors = 10;
@@ -65,12 +70,10 @@ public class I0030_NonStartedServiceConnectorPeerId_Test {
                     if (!connections.isEmpty() && peerId != 1+connections.lastElement()) {
                         connections.add(peerId);
                         FactoryFactory.failed("Not a regular sequence of peerIds found, "+Arrays.toString(connections.toArray()));
-                        System.exit(1);
                     }
                     connections.add(peerId);
                     if (connections.size() >= numberOfConnectors) {
                         FactoryFactory.passed("All connections received, "+Arrays.toString(connections.toArray()));
-                        System.exit(0);
                     }
                 }
             });
@@ -101,6 +104,5 @@ public class I0030_NonStartedServiceConnectorPeerId_Test {
             Thread.sleep(4000);
         } catch (InterruptedException e) {}
         FactoryFactory.failed("Timeout logically due to a problem in connection/disconnections");
-        System.exit(1);
     }
 }

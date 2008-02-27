@@ -38,6 +38,10 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import java.util.Arrays;
 import java.util.Vector;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0035_CloseAllConnectionsLocal_Test {
     
     /*
@@ -45,7 +49,8 @@ public class I0035_CloseAllConnectionsLocal_Test {
      * It tests effective-disconnection (remote listener does not receive messages)
      * for a all locally-closed locally-initiated connections.
      */
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void doIt() throws IOException {
         final Vector<String> events = new Vector<String>();
         ServiceFactory factory = FactoryFactory.factory();
         Vector<Service> servers = new Vector<Service>();
@@ -61,7 +66,6 @@ public class I0035_CloseAllConnectionsLocal_Test {
                     events.add("SV REC "+passed);
                     System.out.println(Arrays.toString(events.toArray()));
                     FactoryFactory.failed("Second message received while connection should have been closed");
-                    System.exit(1);
                 }
 
                 public void disconnected(Service service, String localConnectorName, int peerId) {
@@ -93,7 +97,6 @@ public class I0035_CloseAllConnectionsLocal_Test {
         } catch (InterruptedException e) {}
         System.out.println(Arrays.toString(events.toArray()));
         FactoryFactory.passed("All messages sent, none received");
-        System.exit(0);
     }
 
 }

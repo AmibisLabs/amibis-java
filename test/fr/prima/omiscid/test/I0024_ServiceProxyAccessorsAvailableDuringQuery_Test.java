@@ -40,9 +40,14 @@ import fr.prima.omiscid.user.variable.VariableAccessType;
  * are non-blocking when a control query is in progress.
  * This basically control that not too much synchronization is put on service proxy.
  */
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0024_ServiceProxyAccessorsAvailableDuringQuery_Test {
     
-    public static void main(String[] args) throws InvalidDescriptionException, IOException, InterruptedException {
+    @Test
+    public void doIt() throws InvalidDescriptionException, IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         final Service server = factory.create("I0024Server");
         {
@@ -58,7 +63,6 @@ public class I0024_ServiceProxyAccessorsAvailableDuringQuery_Test {
             public void run() {
                 proxy.getVariables();
                 FactoryFactory.failed("ServiceProxy#getVariables ended before getPeerId did");
-                System.exit(1);
             }
         }).start();
         Thread.sleep(200);
@@ -74,7 +78,6 @@ public class I0024_ServiceProxyAccessorsAvailableDuringQuery_Test {
         System.out.println(proxy.getVariableValue("owner"));
         Thread.sleep(200);
         FactoryFactory.passed("ServiceProxy accessors have not been blocked by ServiceProxy#getVariables");
-        System.exit(0);
     }
 
 }

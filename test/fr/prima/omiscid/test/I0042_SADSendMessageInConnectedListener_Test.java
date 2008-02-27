@@ -37,6 +37,10 @@ import fr.prima.omiscid.user.util.Utility;
 import java.io.IOException;
 
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0042_SADSendMessageInConnectedListener_Test {
 
     /**
@@ -46,7 +50,8 @@ public class I0042_SADSendMessageInConnectedListener_Test {
      * This example mimic this behavior in pure java.
      * First runs seemed to work but it is not true anymore.
      */
-    public static void main(String[] args) throws InterruptedException, IOException {
+    @Test
+    public void doIt() throws InterruptedException, IOException {
         ServiceFactory factory = FactoryFactory.factory();
         final Service server = factory.create("I0042Server");
         {
@@ -78,10 +83,8 @@ public class I0042_SADSendMessageInConnectedListener_Test {
                 public void messageReceived(Service service, String localConnectorName, Message message) {
                     if (message.getBuffer().length != 0) {
                         FactoryFactory.passed("First message received as expected");
-                        System.exit(0);
                     } else {
                         FactoryFactory.failed("Second message received but not first");
-                        System.exit(1);
                     }
                 }
                 public void disconnected(Service service, String localConnectorName, int peerId) {

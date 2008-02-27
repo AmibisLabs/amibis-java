@@ -62,12 +62,17 @@ import fr.prima.omiscid.user.variable.VariableAccessType;
  *  -- now works correctly with full service description until 119 variables (was 160)
  *  -- with partial service description after (was crashing)
  */
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
 public class I0014_ServiceWithManyVariables_Test {
     
     private static int customVariableCount = 1000;
     private static String[] chars = new String[]{"V","v","a","b","c","d","e","f","g","h"}; // ten digits (at ten-thousands level)
     
-    public static void main(String[] args) throws IOException, InterruptedException {
+    @Test
+    public void doIt() throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0014Server");
@@ -81,7 +86,6 @@ public class I0014_ServiceWithManyVariables_Test {
                 public void serviceAdded(ServiceProxy serviceProxy) {
                     if (serviceProxy.getName().equals("I0014Server") && serviceProxy.getVariables().size() > customVariableCount) {
                         FactoryFactory.passed("service with many variables ("+serviceProxy.getVariables().size()+" is more than "+customVariableCount+") was found");
-                        System.exit(0);
                     }
                 }
                 public void serviceRemoved(ServiceProxy serviceProxy) {
@@ -90,7 +94,6 @@ public class I0014_ServiceWithManyVariables_Test {
         }
         Thread.sleep(10000);
         FactoryFactory.failed("service with many variables was not found by service repository");
-        System.exit(0);
     }
 
 }
