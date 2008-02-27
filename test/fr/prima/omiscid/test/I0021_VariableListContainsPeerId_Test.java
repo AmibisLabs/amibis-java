@@ -33,23 +33,16 @@ import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
-import fr.prima.omiscid.user.variable.VariableAccessType;
 
-public class I0022_VariableListContainsPeerIdWhenNonFull {
+public class I0021_VariableListContainsPeerId_Test {
     
     public static void main(String[] args) throws InvalidDescriptionException, IOException {
         ServiceFactory factory = FactoryFactory.factory();
-        final Service server = factory.create("I0022Server");
+        final Service server = factory.create("I0021Server");
+        server.start();
         {
-            for (int i = 0; i < 3000; i++) {
-                server.addVariable("V"+i, "Plop", "Plip", VariableAccessType.CONSTANT);
-                server.setVariableValue("V"+i, ""+i);
-            }
-            server.start();
-        }
-        {
-            Service client = factory.create("I0022Client");
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0022Server"));
+            Service client = factory.create("I0021Client");
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0021Server"));
             if (proxy.getVariables().contains("peerId")) {
                 if (proxy.getVariableValue("peerId").equals(server.getPeerIdAsString())) {
                     FactoryFactory.passed("Service variables does have a peerId value with the right value");
@@ -62,6 +55,7 @@ public class I0022_VariableListContainsPeerIdWhenNonFull {
                 FactoryFactory.failed("Service variables doesn't have a peerId value");
                 System.exit(1);
             }
+
         }
     }
 

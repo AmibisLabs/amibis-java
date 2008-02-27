@@ -40,7 +40,7 @@ import fr.prima.omiscid.user.util.Utility;
 import java.util.Arrays;
 import java.util.Vector;
 
-public class I0032_TestMultipleConnectionRefusalImmediateDisconnect {
+public class I0032_MultipleConnectionRefusalImmediateDisconnect_Test {
     
     /*
      * This tests the new disconnection feature.

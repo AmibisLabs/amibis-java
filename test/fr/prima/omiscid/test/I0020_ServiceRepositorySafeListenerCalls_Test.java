@@ -34,7 +34,7 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.service.ServiceRepository;
 import fr.prima.omiscid.user.service.ServiceRepositoryListener;
 
-public class I0020_ServiceRepositorySafeListenerCalls {
+public class I0020_ServiceRepositorySafeListenerCalls_Test {
     
     public static void main(String[] args) throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();

@@ -35,33 +35,35 @@ import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
-import fr.prima.omiscid.user.util.Utility;
 import java.util.Arrays;
 import java.util.Vector;
 
-public class I0027_TestSingleDisconnectLocal {
+public class I0034_CloseAllConnections_Test {
     
     /*
      * This tests the new disconnection feature.
-     * It tests remote-disconnection (remote listener does not receive messages)
-     * for a single locally-closed locally-initiated connections.
+     * It tests effective-disconnection (remote listener does not receive messages)
+     * for a all remotely-closed locally-initiated connections.
      */
     public static void main(String[] args) throws IOException {
         final Vector<String> events = new Vector<String>();
         ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("I0027Server");
+            final Service server = factory.create("I0034Server");
             server.addConnector("bug", "", ConnectorType.INPUT);
             server.addConnectorListener("bug", new ConnectorListener() {
                 boolean passed = false;
-                public void messageReceived(Service service, String localConnectorName, Message message) {
+                public void messageReceived(Service service,
+                                            String localConnectorName,
+                                            Message message) {
                     events.add("SV REC "+passed);
                     if (passed) {
+                        System.out.println(Arrays.toString(events.toArray()));
                         FactoryFactory.failed("Second message received while connection should have been closed");
                         System.exit(1);
                     }
                     passed = true;
-                    service.sendReplyToMessage(Utility.stringToByteArray("<plop/>"), message);
+                    service.closeAllConnections(localConnectorName);
                 }
 
                 public void disconnected(Service service, String localConnectorName, int peerId) {
@@ -74,50 +76,28 @@ public class I0027_TestSingleDisconnectLocal {
             });
             server.start();
         }
-        {
-            final Service client = factory.create("I0027Client");
+        Vector<Service> clients = new Vector<Service>();
+        for (int i = 0; i < 4; i++) {
+            final Service client = factory.create("I0034Client");
+            clients.add(client);
             client.addConnector("bug", "", ConnectorType.OUTPUT);
-            client.addConnectorListener("bug", new ConnectorListener(){
-
-                boolean passed = false;
-                public void messageReceived(Service service, String localConnectorName, Message message) {
-                    events.add("CL REC "+passed);
-                    if (passed) {
-                        FactoryFactory.failed("Second message received while connection should have been closed");
-                        System.exit(1);
-                    }
-                    passed = true;
-                    service.closeConnection(localConnectorName, message.getPeerId());
-                }
-
-                public void connected(Service service, String localConnectorName, int peerId) {
-                    events.add("CL CON "+passed);
-                }
-
-                public void disconnected(Service service, String localConnectorName, int peerId) {
-                    events.add("CL DIS "+passed);
-                }
-                
-            });
             //client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0027Server"));
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0034Server"));
             client.connectTo("bug", proxy, "bug");
-            long time = System.currentTimeMillis();
-            int msg = 0;
-            while (System.currentTimeMillis() - time < 700) {
-                System.out.println(Arrays.toString(events.toArray()));
-                client.sendToAllClients("bug", Utility.stringToByteArray("<plop/>"));
-                msg++;
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {}
-            }
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {}
-            FactoryFactory.passed("All messages sent: "+msg);
-            System.exit(0);
         }
+        clients.firstElement().sendToAllClients("bug", new byte[0]);
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {}
+        for (Service client : clients) {
+            client.sendToAllClients("bug", new byte[0]);
+        }
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {}
+        System.out.println(Arrays.toString(events.toArray()));
+        FactoryFactory.passed("All messages sent, none received");
+        System.exit(0);
     }
 
 }

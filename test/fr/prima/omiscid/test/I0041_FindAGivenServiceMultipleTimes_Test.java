@@ -35,7 +35,7 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class I0041_FindAGivenServiceMultipleTimes {
+public class I0041_FindAGivenServiceMultipleTimes_Test {
 
     /**
      * This test is here because it seems that, when using jmdns, the 
@@ -61,7 +61,7 @@ public class I0041_FindAGivenServiceMultipleTimes {
                     try {
                         Thread.sleep(10 * 300 + 1000);
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(I0041_FindAGivenServiceMultipleTimes.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(I0041_FindAGivenServiceMultipleTimes_Test.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     FactoryFactory.failed("Timeout!!!");
                     System.exit(1);

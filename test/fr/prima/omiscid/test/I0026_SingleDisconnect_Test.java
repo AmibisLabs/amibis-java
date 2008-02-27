@@ -30,63 +30,75 @@ package fr.prima.omiscid.test;
 import fr.prima.omiscid.user.connector.ConnectorListener;
 import fr.prima.omiscid.user.connector.ConnectorType;
 import fr.prima.omiscid.user.connector.Message;
-import fr.prima.omiscid.user.exception.MessageInterpretationException;
 import java.io.IOException;
 import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.util.Utility;
+import java.util.Arrays;
+import java.util.Vector;
 
-public class I0025_SimpleXMLMessage {
+public class I0026_SingleDisconnect_Test {
     
     /*
-     * This test tries to interprete a message as an xml one.
-     * This has been added because Remi B. is having problems with xml message receptions.
-     * This seems to work well.
-     * The problem seems to have occured under new omiscidgui.
+     * This tests the new disconnection feature.
+     * It tests remote-disconnection (remote listener does not receive messages)
+     * for a single remotely-closed locally-initiated connections.
      */
     public static void main(String[] args) throws IOException {
+        final Vector<String> events = new Vector<String>();
         ServiceFactory factory = FactoryFactory.factory();
         {
-            final Service server = factory.create("I0025Server");
+            final Service server = factory.create("I0026Server");
             server.addConnector("bug", "", ConnectorType.INPUT);
             server.addConnectorListener("bug", new ConnectorListener() {
+                boolean passed = false;
                 public void messageReceived(Service service,
                                             String localConnectorName,
                                             Message message) {
-                    try {
-                        FactoryFactory.passed("XML message properly interpreted: "+message.getBufferAsXML().getTagName());
-                        FactoryFactory.passed("XML message properly interpreted: "+message.getBufferAsXMLUnchecked().getTagName());
-                        System.exit(0);
-                    } catch (MessageInterpretationException e) {
-                        throw new RuntimeException(e);
+                    events.add("SV REC "+passed);
+                    if (passed) {
+                        System.out.println(Arrays.toString(events.toArray()));
+                        FactoryFactory.failed("Second message received while connection should have been closed");
+                        System.exit(1);
                     }
+                    passed = true;
+                    service.closeConnection(localConnectorName, message.getPeerId());
                 }
 
-                public void disconnected(Service service,
-                                         String localConnectorName, int peerId) {
+                public void disconnected(Service service, String localConnectorName, int peerId) {
+                    events.add("SV DIS "+passed);
                 }
 
-                public void connected(Service service, String localConnectorName, int peerId) {
+                public void connected(final Service service, final String localConnectorName, final int peerId) {
+                    events.add("SV CON "+passed);
                 }
             });
             server.start();
         }
         {
-            Service client = factory.create("I0025Client");
+            final Service client = factory.create("I0026Client");
             client.addConnector("bug", "", ConnectorType.OUTPUT);
-            client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0025Server"));
+            //client.start();
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0026Server"));
             client.connectTo("bug", proxy, "bug");
-            client.sendToAllClients("bug", Utility.stringToByteArray("<plop/>"));
-            client.stop();
+            long time = System.currentTimeMillis();
+            int msg = 0;
+            while (System.currentTimeMillis() - time < 700) {
+                client.sendToAllClients("bug", Utility.stringToByteArray("<plop/>"));
+                msg++;
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {}
+            }
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {}
+            System.out.println(Arrays.toString(events.toArray()));
+            FactoryFactory.passed("All messages sent: "+msg);
+            System.exit(0);
         }
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {}
-        FactoryFactory.failed("Timeout logically due to a problem in XML message interpretation");
-        System.exit(1);
     }
 
 }

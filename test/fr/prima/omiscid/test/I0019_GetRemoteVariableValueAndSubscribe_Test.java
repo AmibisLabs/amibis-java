@@ -49,7 +49,7 @@ import fr.prima.omiscid.user.variable.VariableAccessType;
  * Before the fix, this test passes some times but less than 2 times over 3.
  * 
  */
-public class I0019_TestGetRemoteVariableValueAndSubscribe {
+public class I0019_GetRemoteVariableValueAndSubscribe_Test {
     
     public static void main(String[] args) {
         ServiceFactory factory = FactoryFactory.factory();

@@ -26,37 +26,37 @@
 
 package fr.prima.omiscid.test;
 
+import fr.prima.omiscid.user.connector.ConnectorType;
+import fr.prima.omiscid.user.exception.ConnectorLimitReached;
 import java.io.IOException;
 
 import fr.prima.omiscid.user.exception.InvalidDescriptionException;
 import fr.prima.omiscid.user.service.Service;
-import fr.prima.omiscid.user.service.ServiceFactory;
-import fr.prima.omiscid.user.service.ServiceFilters;
-import fr.prima.omiscid.user.service.ServiceProxy;
 
-public class I0021_VariableListContainsPeerId {
+public class I0037_ConnectorCountOverflowExactCount_Test {
     
     public static void main(String[] args) throws InvalidDescriptionException, IOException {
-        ServiceFactory factory = FactoryFactory.factory();
-        final Service server = factory.create("I0021Server");
-        server.start();
-        {
-            Service client = factory.create("I0021Client");
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0021Server"));
-            if (proxy.getVariables().contains("peerId")) {
-                if (proxy.getVariableValue("peerId").equals(server.getPeerIdAsString())) {
-                    FactoryFactory.passed("Service variables does have a peerId value with the right value");
-                    System.exit(0);
-                } else {
-                    FactoryFactory.failed("Service variables does have a peerId value but its value is wrong ("+proxy.getVariableValue("peerId")+")");
-                    System.exit(1);
-                }
+        Service service = FactoryFactory.factory().create("I0037Server");
+        int i = 1;
+        try {
+            for (; i < 300; i++) {
+                service.addConnector("c"+i, "...", ConnectorType.INOUTPUT);
+                service.sendToAllClients("c"+i, new byte[0]);
+            }
+        } catch (ConnectorLimitReached e) {
+            if (i == 256) {
+                FactoryFactory.passed("ConnectorLimitReached properly occured at the good time");
+                System.exit(0);
             } else {
-                FactoryFactory.failed("Service variables doesn't have a peerId value");
+                FactoryFactory.failed("ConnectorLimitReached occured but for "+i+"th connector instead of 256th");
                 System.exit(1);
             }
-
+        } catch (Exception e) {
+            FactoryFactory.failed("Unspecified exception occured "+e.getClass().getCanonicalName());
+            System.exit(1);
         }
+        FactoryFactory.failed("No exceptions occured");
+        System.exit(1);
     }
 
 }

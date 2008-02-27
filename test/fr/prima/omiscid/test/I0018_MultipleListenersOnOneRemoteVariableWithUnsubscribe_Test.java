@@ -37,7 +37,7 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.variable.RemoteVariableChangeListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
-public class I0018_TestMultipleListenersOnOneRemoteVariableWithUnsubscribe {
+public class I0018_MultipleListenersOnOneRemoteVariableWithUnsubscribe_Test {
     
     public static void main(String[] args) {
         ServiceFactory factory = FactoryFactory.factory();

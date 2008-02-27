@@ -35,16 +35,11 @@ import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
-/*
- * This test tries to ensure that basic accessors (such as getPeerId, getName, ...)
- * are non-blocking when a control query is in progress.
- * This basically control that not too much synchronization is put on service proxy.
- */
-public class I0024_ServiceProxyAccessorsAvailableDuringQuery {
+public class I0022_VariableListContainsPeerIdWhenNonFull_Test {
     
-    public static void main(String[] args) throws InvalidDescriptionException, IOException, InterruptedException {
+    public static void main(String[] args) throws InvalidDescriptionException, IOException {
         ServiceFactory factory = FactoryFactory.factory();
-        final Service server = factory.create("I0024Server");
+        final Service server = factory.create("I0022Server");
         {
             for (int i = 0; i < 3000; i++) {
                 server.addVariable("V"+i, "Plop", "Plip", VariableAccessType.CONSTANT);
@@ -52,29 +47,22 @@ public class I0024_ServiceProxyAccessorsAvailableDuringQuery {
             }
             server.start();
         }
-        Service client = factory.create("I0024Client");
-        final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0024Server"));
-        new Thread(new Runnable() {
-            public void run() {
-                proxy.getVariables();
-                FactoryFactory.failed("ServiceProxy#getVariables ended before getPeerId did");
+        {
+            Service client = factory.create("I0022Client");
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0022Server"));
+            if (proxy.getVariables().contains("peerId")) {
+                if (proxy.getVariableValue("peerId").equals(server.getPeerIdAsString())) {
+                    FactoryFactory.passed("Service variables does have a peerId value with the right value");
+                    System.exit(0);
+                } else {
+                    FactoryFactory.failed("Service variables does have a peerId value but its value is wrong ("+proxy.getVariableValue("peerId")+")");
+                    System.exit(1);
+                }
+            } else {
+                FactoryFactory.failed("Service variables doesn't have a peerId value");
                 System.exit(1);
             }
-        }).start();
-        Thread.sleep(200);
-        System.out.println("getHostName");
-        System.out.println(proxy.getHostName());
-        System.out.println("getName");
-        System.out.println(proxy.getName());
-        System.out.println("getPeerId");
-        System.out.println(proxy.getPeerId());
-        System.out.println("getPeerIdAsString");
-        System.out.println(proxy.getPeerIdAsString());
-        System.out.println("getVariableValue(owner)");
-        System.out.println(proxy.getVariableValue("owner"));
-        Thread.sleep(200);
-        FactoryFactory.passed("ServiceProxy accessors have not been blocked by ServiceProxy#getVariables");
-        System.exit(0);
+        }
     }
 
 }

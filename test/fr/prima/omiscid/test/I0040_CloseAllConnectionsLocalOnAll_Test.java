@@ -26,45 +26,41 @@
 
 package fr.prima.omiscid.test;
 
-
 import fr.prima.omiscid.user.connector.ConnectorListener;
 import fr.prima.omiscid.user.connector.ConnectorType;
 import fr.prima.omiscid.user.connector.Message;
-import java.io.IOException;
 import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
-import fr.prima.omiscid.user.util.Utility;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Vector;
 
-public class I0028_TestSingleDisconnectKeepListeners {
-    
+public class I0040_CloseAllConnectionsLocalOnAll_Test {
     /*
-     * This tests the new disconnection feature.
-     * It tests remote-reconnection (remote listener receive (connection) notifications after reconnection)
-     * for a single remotely-closed locally-initiated connections.
+     * This tests the new disconnection feature on all connectors.
+     * It tests effective-disconnection (remote listener does not receive messages)
+     * for a all locally-closed locally-initiated connections.
      */
     public static void main(String[] args) throws IOException {
-        ServiceFactory factory = FactoryFactory.factory();
         final Vector<String> events = new Vector<String>();
-        {
-            final Service server = factory.create("I0028Server");
-            server.addConnector("bug", "", ConnectorType.INPUT);
-            server.addConnectorListener("bug", new ConnectorListener() {
+        ServiceFactory factory = FactoryFactory.factory();
+        Vector<Service> servers = new Vector<Service>();
+        for (int i = 0; i < 4; i++) {
+            final Service server = factory.create("I0040Server-"+i);
+            servers.add(server);
+            server.addConnector("bug1", "", ConnectorType.INPUT);
+            server.addConnector("bug2", "", ConnectorType.INOUTPUT);
+            ConnectorListener l = new ConnectorListener() {
                 boolean passed = false;
                 public void messageReceived(Service service,
                                             String localConnectorName,
                                             Message message) {
                     events.add("SV REC "+passed);
-                    if (passed) {
-                        System.out.println(Arrays.toString(events.toArray()));
-                        FactoryFactory.failed("Second message received while connection should have been closed");
-                        System.exit(1);
-                    }
-                    passed = true;
-                    service.closeConnection(localConnectorName, message.getPeerId());
+                    System.out.println(Arrays.toString(events.toArray()));
+                    FactoryFactory.failed("Second message received while connection should have been closed");
+                    System.exit(1);
                 }
 
                 public void disconnected(Service service, String localConnectorName, int peerId) {
@@ -73,36 +69,35 @@ public class I0028_TestSingleDisconnectKeepListeners {
 
                 public void connected(final Service service, final String localConnectorName, final int peerId) {
                     events.add("SV CON "+passed);
-                    if (passed) {
-                        System.out.println(Arrays.toString(events.toArray()));
-                        FactoryFactory.passed("Second connection occured");
-                        System.exit(0);
-                    }
                 }
-            });
+            };
+            server.addConnectorListener("bug1", l);
+            server.addConnectorListener("bug2", l);
             server.start();
         }
         {
-            final Service client = factory.create("I0028Client");
-            client.addConnector("bug", "", ConnectorType.OUTPUT);
+            final Service client = factory.create("I0040Client");
+            client.addConnector("ug1", "", ConnectorType.OUTPUT);
+            client.addConnector("ug2", "", ConnectorType.INOUTPUT);
             //client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0028Server"));
-            client.connectTo("bug", proxy, "bug");
+            for (int i = 0; i < 4; i++) {
+                final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0040Server-"+i));
+                client.connectTo("ug1", proxy, "bug1");
+                client.connectTo("ug2", proxy, "bug2");
+            }
             try {
-                Thread.sleep(200);
+                Thread.sleep(100);
             } catch (InterruptedException e) {}
-            client.sendToAllClients("bug", Utility.stringToByteArray("<plop/>"));
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {}
-            client.connectTo("bug", proxy, "bug");
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {}
-            System.out.println(Arrays.toString(events.toArray()));
-            FactoryFactory.failed("Timeout logically due to problematic reconnection");
-            System.exit(1);
+            client.closeAllConnections();
+            client.sendToAllClients("ug1", new byte[0]);
+            client.sendToAllClients("ug2", new byte[0]);
         }
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {}
+        System.out.println(Arrays.toString(events.toArray()));
+        FactoryFactory.passed("All messages sent, none received");
+        System.exit(0);
     }
 
 }

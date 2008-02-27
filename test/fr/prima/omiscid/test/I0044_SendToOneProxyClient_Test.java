@@ -36,7 +36,7 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.util.Utility;
 import java.io.IOException;
 
-public class I0044_SendToOneProxyClient {
+public class I0044_SendToOneProxyClient_Test {
 
     public static void main(String[] args) throws IOException {
         ServiceFactory factory = FactoryFactory.factory();

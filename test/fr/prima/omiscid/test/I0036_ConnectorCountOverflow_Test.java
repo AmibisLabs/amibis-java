@@ -33,7 +33,7 @@ import java.io.IOException;
 import fr.prima.omiscid.user.exception.InvalidDescriptionException;
 import fr.prima.omiscid.user.service.Service;
 
-public class I0036_TestConnectorCountOverflow {
+public class I0036_ConnectorCountOverflow_Test {
     
     public static void main(String[] args) throws InvalidDescriptionException, IOException {
         Service service = FactoryFactory.factory().create("I0036Server");

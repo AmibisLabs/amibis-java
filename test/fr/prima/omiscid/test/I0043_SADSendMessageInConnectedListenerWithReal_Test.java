@@ -33,50 +33,27 @@ import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
-import fr.prima.omiscid.user.util.Utility;
 import java.io.IOException;
 
 
-public class I0042_TestSADSendMessageInConnectedListener {
+/*- IGNORE -*/
+public class I0043_SADSendMessageInConnectedListenerWithReal_Test {
 
     /**
      * C++ Microphone does speech detection on SAD connector.
      * When someone connects to it, it sends a message indicating the current
      * state. This message is not received by java gui.
      * This example mimic this behavior in pure java.
-     * First runs seemed to work but it is not true anymore.
      */
     public static void main(String[] args) throws InterruptedException, IOException {
         ServiceFactory factory = FactoryFactory.factory();
-        final Service server = factory.create("I0042Server");
         {
-            server.addConnector("SAD", "plop", ConnectorType.OUTPUT);
-            server.addConnectorListener("SAD", new ConnectorListener() {
-                public void messageReceived(Service service, String localConnectorName, Message message) {
-                    System.out.println("Server: received");
-                }
-                public void disconnected(Service service, String localConnectorName, int peerId) {
-                    System.out.println("Server: disconnected");
-                }
-                public void connected(Service service, String localConnectorName, int peerId) {
-                    System.out.println("Server: connected");
-                    /* This makes it work but should not be necessary
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(I0042_TestSADSendMessageInConnectedListener.class.getName()).log(Level.SEVERE, null, ex);
-                    }*/
-                    service.sendToOneClient(localConnectorName, Utility.message("Hiiiiiii"), peerId);
-                }
-            });
-            server.start();
-        }
-        {
-            Service client = factory.create("I0042Client");
+            Service client = factory.create("I0043Client");
             client.addConnector("bug", "da", ConnectorType.INPUT);
             client.addConnectorListener("bug", new ConnectorListener() {
                 public void messageReceived(Service service, String localConnectorName, Message message) {
-                    if (message.getBuffer().length != 0) {
+                    System.out.println("\"\"\""+message.getBufferAsStringUnchecked()+"\"\"\"");
+                    if (!"bip...".equals(message.getBufferAsStringUnchecked().replaceAll("[\\r\\n]", ""))) {
                         FactoryFactory.passed("First message received as expected");
                         System.exit(0);
                     } else {
@@ -85,17 +62,21 @@ public class I0042_TestSADSendMessageInConnectedListener {
                     }
                 }
                 public void disconnected(Service service, String localConnectorName, int peerId) {
-                    System.out.println("Client: disconnected");
+                    FactoryFactory.failed("Received a Disconnected notification");
+                    System.exit(1);
                 }
                 public void connected(Service service, String localConnectorName, int peerId) {
-                    System.out.println("Client: connected");
+                    FactoryFactory.failed("Received a Connected notification");
+                    System.exit(1);
                 }
             });
-            //client.start();
-            ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0042Server"), 5000);
+            client.start();
+            ServiceProxy proxy = client.findService(ServiceFilters.nameIs("Microphone"), 5000);
             client.connectTo("bug", proxy, "SAD");
         }
-        Thread.sleep(1000);
-        server.sendToAllClients("SAD", new byte[0]);
+        Thread.sleep(2000);
+        FactoryFactory.failed("Timed out");
+        System.exit(1);
     }
+
 }

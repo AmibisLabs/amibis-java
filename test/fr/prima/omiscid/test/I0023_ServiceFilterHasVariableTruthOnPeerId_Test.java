@@ -26,37 +26,39 @@
 
 package fr.prima.omiscid.test;
 
-import fr.prima.omiscid.user.connector.ConnectorType;
-import fr.prima.omiscid.user.exception.ConnectorLimitReached;
 import java.io.IOException;
 
 import fr.prima.omiscid.user.exception.InvalidDescriptionException;
 import fr.prima.omiscid.user.service.Service;
+import fr.prima.omiscid.user.service.ServiceFactory;
+import fr.prima.omiscid.user.service.ServiceFilters;
+import fr.prima.omiscid.user.service.ServiceProxy;
 
-public class I0037_TestConnectorCountOverflowExactCount {
+public class I0023_ServiceFilterHasVariableTruthOnPeerId_Test {
     
     public static void main(String[] args) throws InvalidDescriptionException, IOException {
-        Service service = FactoryFactory.factory().create("I0037Server");
-        int i = 1;
-        try {
-            for (; i < 300; i++) {
-                service.addConnector("c"+i, "...", ConnectorType.INOUTPUT);
-                service.sendToAllClients("c"+i, new byte[0]);
+        ServiceFactory factory = FactoryFactory.factory();
+        final Service server = factory.create("I0023Server");
+        server.start();
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException ex) {
+                    FactoryFactory.failed("Timeout probably due to peerId variable not being seen by hasVariable service filter");
+                    System.exit(1);
+                }
+                
             }
-        } catch (ConnectorLimitReached e) {
-            if (i == 256) {
-                FactoryFactory.passed("ConnectorLimitReached properly occured at the good time");
+        }).start();
+        {
+            Service client = factory.create("I0023Client");
+            final ServiceProxy proxy = client.findService(ServiceFilters.and(ServiceFilters.hasVariable("peerId"), ServiceFilters.nameIs("I0023Server")));
+            if (proxy != null) {
+                FactoryFactory.passed("Service hasVariable filter properly found the peerId");
                 System.exit(0);
-            } else {
-                FactoryFactory.failed("ConnectorLimitReached occured but for "+i+"th connector instead of 256th");
-                System.exit(1);
             }
-        } catch (Exception e) {
-            FactoryFactory.failed("Unspecified exception occured "+e.getClass().getCanonicalName());
-            System.exit(1);
         }
-        FactoryFactory.failed("No exceptions occured");
-        System.exit(1);
     }
 
 }

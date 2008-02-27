@@ -39,18 +39,18 @@ import fr.prima.omiscid.user.util.Utility;
 import java.util.Arrays;
 import java.util.Vector;
 
-public class I0029_TestSingleDisconnectKeepListenersLocal {
+public class I0028_SingleDisconnectKeepListeners_Test {
     
     /*
      * This tests the new disconnection feature.
      * It tests remote-reconnection (remote listener receive (connection) notifications after reconnection)
-     * for a single locally-closed locally-initiated connections.
+     * for a single remotely-closed locally-initiated connections.
      */
     public static void main(String[] args) throws IOException {
-        final Vector<String> events = new Vector<String>();
         ServiceFactory factory = FactoryFactory.factory();
+        final Vector<String> events = new Vector<String>();
         {
-            final Service server = factory.create("I0029Server");
+            final Service server = factory.create("I0028Server");
             server.addConnector("bug", "", ConnectorType.INPUT);
             server.addConnectorListener("bug", new ConnectorListener() {
                 boolean passed = false;
@@ -83,10 +83,10 @@ public class I0029_TestSingleDisconnectKeepListenersLocal {
             server.start();
         }
         {
-            final Service client = factory.create("I0029Client");
+            final Service client = factory.create("I0028Client");
             client.addConnector("bug", "", ConnectorType.OUTPUT);
             //client.start();
-            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0029Server"));
+            final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0028Server"));
             client.connectTo("bug", proxy, "bug");
             try {
                 Thread.sleep(200);
