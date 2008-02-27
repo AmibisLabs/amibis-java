@@ -33,16 +33,18 @@ import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
-import fr.prima.omiscid.user.util.Utility;
 import java.util.HashMap;
 import java.util.Map;
 import static fr.prima.omiscid.user.service.ServiceFilters.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class I0052_TestGetConnectorClientCount {
+public class I0052_GetConnectorClientCount_Test {
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    @Test
+    public void doIt() throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         final Service server = factory.create("I0052Server");
         final String descriptionPrefix = "description tralala ";
@@ -84,7 +86,7 @@ public class I0052_TestGetConnectorClientCount {
                         client.closeAllConnections();
                         //System.err.println("... -c1 -c2 -c3");
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(I0052_TestGetConnectorClientCount.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(I0052_GetConnectorClientCount_Test.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             }).start();
@@ -143,17 +145,13 @@ public class I0052_TestGetConnectorClientCount {
         } catch (Exception e) {
             e.printStackTrace();
             FactoryFactory.failed("Assertion failed: "+e.getMessage());
-            System.exit(1);
         }
 
         FactoryFactory.passed("All is ok");
-        System.exit(0);
     }
 
     private static void equals(Object expected, Object value) {
-        if (!expected.equals(value)) {
-            throw new RuntimeException("expected '"+expected+"', got '"+value+"'");
-        }
+        assertEquals(expected, value);
     }
 
     private static class At {
@@ -174,7 +172,7 @@ public class I0052_TestGetConnectorClientCount {
                 try {
                     Thread.sleep(next - time);
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(I0052_TestGetConnectorClientCount.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(I0052_GetConnectorClientCount_Test.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -183,7 +181,7 @@ public class I0052_TestGetConnectorClientCount {
         try {
             Thread.sleep(t);
         } catch (InterruptedException ex) {
-            Logger.getLogger(I0052_TestGetConnectorClientCount.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(I0052_GetConnectorClientCount_Test.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

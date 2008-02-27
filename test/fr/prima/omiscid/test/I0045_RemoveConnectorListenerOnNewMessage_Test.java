@@ -36,12 +36,14 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.util.Utility;
 import java.io.IOException;
 import java.util.Vector;
+import org.junit.Test;
 
-public class I0045_RemoveConnectorListenerOnNewMessage {
+public class I0045_RemoveConnectorListenerOnNewMessage_Test {
     
     // At the time of writting (1.3.1), removing a listener from a messageReceived call
     // causes a concurrent modification (when there is more than one listener)
-    public static void main(String[] args) throws IOException, InterruptedException {
+    @Test
+    public void doIt() throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0045Server");
@@ -100,10 +102,8 @@ public class I0045_RemoveConnectorListenerOnNewMessage {
             Thread.sleep(1000);
             if (received.size() != 2) {
                 FactoryFactory.failed("Wrong received count: "+received.size());
-                System.exit(1);
             } else {
                 FactoryFactory.passed("Properly received answers, count is: "+received.size());
-                System.exit(0);
             }
         }
     }

@@ -27,21 +27,24 @@
 package fr.prima.omiscid.test;
 
 
+import fr.prima.omiscid.test.*;
 import fr.prima.omiscid.user.connector.ConnectorType;
 import java.io.IOException;
 import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 import java.util.Vector;
+import org.junit.Test;
 
-public class I0049_TestCheckConnectorAndVariableNames {
+public class I0049_CheckConnectorAndVariableNames_Test {
     
     /*
      * Following a problem encountered by Jean Pascal where
      * only adding a sync-in connector to a service makes its
      * imageStream connector not connectable by gui.
      */
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void doIt() throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         final Service server = factory.create("I0049Server");
         server.addVariable("bugvar", "", "", VariableAccessType.CONSTANT);
@@ -83,10 +86,8 @@ public class I0049_TestCheckConnectorAndVariableNames {
                 problemString += "\"" + pb + "\" ; ";
             }
             FactoryFactory.failed("Some wrong names where wrongly accepted: "+problemString.substring(0, problemString.length()-3));
-            System.exit(1);
         } else {
             FactoryFactory.passed("All wrong names have been properly refused");
-            System.exit(0);
         }
     }
 

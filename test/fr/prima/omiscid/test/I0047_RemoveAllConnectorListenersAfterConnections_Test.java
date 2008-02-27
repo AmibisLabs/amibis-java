@@ -37,8 +37,9 @@ import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 import java.util.Arrays;
 import java.util.Vector;
+import org.junit.Test;
 
-public class I0047_TestRemoveAllConnectorListenersAfterConnections {
+public class I0047_RemoveAllConnectorListenersAfterConnections_Test {
     
     /*
      * This tests the new removeAllConnectorListeners feature.
@@ -47,7 +48,8 @@ public class I0047_TestRemoveAllConnectorListenersAfterConnections {
      * remove all listeners.
      * At the time of writting (1.3.1) this was a bug.
      */
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void doIt() throws IOException {
         final Vector<String> events = new Vector<String>();
         ServiceFactory factory = FactoryFactory.factory();
         final Service server = factory.create("I0033Server");
@@ -61,14 +63,12 @@ public class I0047_TestRemoveAllConnectorListenersAfterConnections {
                     events.add("SV REC");
                     System.out.println(Arrays.toString(events.toArray()));
                     FactoryFactory.failed("Listener called");
-                    System.exit(1);
                 }
 
                 public void disconnected(Service service, String localConnectorName, int peerId) {
                     events.add("SV DIS");
                     System.out.println(Arrays.toString(events.toArray()));
                     FactoryFactory.failed("Listener called");
-                    System.exit(1);
                 }
 
                 public void connected(final Service service, final String localConnectorName, final int peerId) {
@@ -92,7 +92,6 @@ public class I0047_TestRemoveAllConnectorListenersAfterConnections {
         } catch (InterruptedException e) {}
         System.out.println(Arrays.toString(events.toArray()));
         FactoryFactory.passed("All messages sent, none received");
-        System.exit(0);
     }
 
 }

@@ -38,8 +38,9 @@ import fr.prima.omiscid.user.variable.LocalVariableListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 import java.io.IOException;
 import java.util.Vector;
+import org.junit.Test;
 
-public class I0046_RemoveConnectorListenerOnDisconnect {
+public class I0046_RemoveConnectorListenerOnDisconnect_Test {
     
     // At the time of writting (1.3.1), removing a listener from a disconnected call
     // causes a concurrent modification (when there is more than one listener).
@@ -49,7 +50,8 @@ public class I0046_RemoveConnectorListenerOnDisconnect {
     //  Local connect  + remote disconnect -> ok
     //  Remote connect + local disconnect -> ok
     //  Remote connect + remote disconnect -> ok
-    public static void main(String[] args) throws IOException, InterruptedException {
+    @Test
+    public void doIt() throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0046Server");
@@ -121,7 +123,6 @@ public class I0046_RemoveConnectorListenerOnDisconnect {
             Thread.sleep(1000);
             if (received.size() != 2) {
                 FactoryFactory.failed("Wrong received count (local/remote): "+received.size());
-                System.exit(1);
             }
             client.removeAllConnectorListeners();
             received.clear();
@@ -134,7 +135,6 @@ public class I0046_RemoveConnectorListenerOnDisconnect {
             Thread.sleep(1000);
             if (received.size() != 2) {
                 FactoryFactory.failed("Wrong received count (remote/local): "+received.size());
-                System.exit(1);
             }
             client.removeAllConnectorListeners();
             received.clear();
@@ -147,14 +147,12 @@ public class I0046_RemoveConnectorListenerOnDisconnect {
             Thread.sleep(1000);
             if (received.size() != 2) {
                 FactoryFactory.failed("Wrong received count (remote/remote): "+received.size());
-                System.exit(1);
             }
             client.removeAllConnectorListeners();
             received.clear();
 
             {
                 FactoryFactory.passed("Properly passed all test cases");
-                System.exit(0);
             }
         }
     }

@@ -10,9 +10,10 @@
                 <root id="src.dir" name="user-level-src"/>
                 <root id="dnssd-src.dir"/>
                 <root id="generated-src.dir"/>
-                <root id="src.test.dir"/>
             </source-roots>
-            <test-roots/>
+            <test-roots>
+                <root id="test.test.dir"/>
+            </test-roots>
         </data>
     </configuration>
 </project>

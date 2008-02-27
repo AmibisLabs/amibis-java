@@ -34,10 +34,13 @@ import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.variable.LocalVariableListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 import java.util.Vector;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class I0053_TestLocalVariableValidationOnLocalModification {
+public class I0053_LocalVariableValidationOnLocalModification_Test {
     
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void doIt() throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         final Vector<String> events = new Vector<String>();
         {
@@ -49,7 +52,6 @@ public class I0053_TestLocalVariableValidationOnLocalModification {
                 public boolean isValid(Service service, String variableName, String newValue) {
                     if (!variableName.equals("bug")) {
                         FactoryFactory.failed("Wrong variable name received: "+variableName);
-                        System.exit(1);
                     }
                     events.add("Valid:"+newValue);
                     return true;
@@ -57,7 +59,6 @@ public class I0053_TestLocalVariableValidationOnLocalModification {
                 public void variableChanged(Service service, String variableName, String value) {
                     if (!variableName.equals("bug")) {
                         FactoryFactory.failed("Wrong variable name received, in changed: "+variableName);
-                        System.exit(1);
                     }
                     events.add("Changed:"+value);
                 }
@@ -69,31 +70,20 @@ public class I0053_TestLocalVariableValidationOnLocalModification {
             server.setVariableValue("bug", "4");
         }
         
-        
-        try {
-            Thread.sleep(500);
-            equals("Valid:1", events.remove(0));
-            equals("Changed:1", events.remove(0));
-            equals("Valid:2", events.remove(0));
-            equals("Changed:2", events.remove(0));
-            equals("Changed:3", events.remove(0));
-            equals("Valid:4", events.remove(0));
-            equals("Changed:4", events.remove(0));
-            equals(0, events.size());
-        } catch (Exception e) {
-            e.printStackTrace();
-            FactoryFactory.failed("Assertion failed: "+e.getMessage());
-            System.exit(1);
-        }
-
+        Thread.sleep(500);
+        equals("Valid:1", events.remove(0));
+        equals("Changed:1", events.remove(0));
+        equals("Valid:2", events.remove(0));
+        equals("Changed:2", events.remove(0));
+        equals("Changed:3", events.remove(0));
+        equals("Valid:4", events.remove(0));
+        equals("Changed:4", events.remove(0));
+        equals(0, events.size());
         FactoryFactory.passed("All is ok");
-        System.exit(0);
     }
 
     private static void equals(Object expected, Object value) {
-        if (!expected.equals(value)) {
-            throw new RuntimeException("expected '"+expected+"', got '"+value+"'");
-        }
+        assertEquals(expected, value);
     }
 
 }

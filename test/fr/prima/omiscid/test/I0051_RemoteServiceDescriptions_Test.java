@@ -35,10 +35,12 @@ import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 import static fr.prima.omiscid.user.service.ServiceFilters.*;
+import org.junit.Test;
 
-public class I0051_TestRemoteServiceDescriptions {
+public class I0051_RemoteServiceDescriptions_Test {
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    @Test
+    public void doIt() throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         final Service server = factory.create("I0051Server");
         final String descriptionPrefix = "description tralala ";
@@ -55,17 +57,14 @@ public class I0051_TestRemoteServiceDescriptions {
             for (String c : new String[]{"c1","c2","c3"}) {
                 if (!(descriptionPrefix + c).equals(proxy.getConnectorDescription(c))) {
                     FactoryFactory.failed("Wrong description for connector '"+c+"': "+proxy.getConnectorDescription(c));
-                    System.exit(1);
                 }
             }
             for (String v : new String[]{"v1","v2","v3"}) {
                 if (!(descriptionPrefix + v).equals(proxy.getVariableDescription(v))) {
                     FactoryFactory.failed("Wrong description for variable '"+v+"': "+proxy.getVariableDescription(v));
-                    System.exit(1);
                 }
                 if (!(descriptionPrefix + v + "Type").equals(proxy.getVariableType(v))) {
                     FactoryFactory.failed("Wrong type for variable '"+v+"': "+proxy.getVariableType(v));
-                    System.exit(1);
                 }
             }
             /*
@@ -76,7 +75,6 @@ public class I0051_TestRemoteServiceDescriptions {
             }
              */
             FactoryFactory.passed("All remote descriptions are ok");
-            System.exit(0);
         }
     }
 }

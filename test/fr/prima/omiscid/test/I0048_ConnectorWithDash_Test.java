@@ -38,15 +38,17 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.util.Utility;
 import java.util.Timer;
 import java.util.TimerTask;
+import org.junit.Test;
 
-public class I0048_TestConnectorWithDash {
+public class I0048_ConnectorWithDash_Test {
     
     /*
      * Following a problem encountered by Jean Pascal where
      * only adding a sync-in connector to a service makes its
      * imageStream connector not connectable by gui.
      */
-    public static void main(String[] args) throws IOException {
+    @Test
+    public void doIt() throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0048Server");
@@ -70,13 +72,11 @@ public class I0048_TestConnectorWithDash {
                 client.connectTo("bug", proxy, "bug");
             } catch (Exception e) {
                 FactoryFactory.failed("Exception in connectTo probably due to dash-bug connector");
-                System.exit(1);
             }
             client.addConnectorListener("bug", new ConnectorListener() {
 
                 public void messageReceived(Service service, String localConnectorName, Message message) {
                     FactoryFactory.passed("Message received");
-                    System.exit(0);
                 }
 
                 public void disconnected(Service service, String localConnectorName, int peerId) {
@@ -91,7 +91,6 @@ public class I0048_TestConnectorWithDash {
         } catch (InterruptedException e) {
         }
         FactoryFactory.failed("Timeout logically due to problem with dash-bug connector");
-        System.exit(1);
     }
 
 }

@@ -38,11 +38,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import org.junit.Test;
 import static fr.prima.omiscid.user.service.ServiceFilters.*;
 
-public class I0050_ServiceRepositoryWithFilter {
+public class I0050_ServiceRepositoryWithFilter_Test {
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    @Test
+    public void doIt() throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         final ServiceRepository repository = factory.createServiceRepository();
         
@@ -137,11 +139,9 @@ public class I0050_ServiceRepositoryWithFilter {
             equals(s2, events.poll());
             equals("0", events.size()+"");
             FactoryFactory.passed("All events checked with success");
-            System.exit(0);
         } catch (Exception e) {
             e.printStackTrace();
             FactoryFactory.failed("Wrong events received: "+e.getMessage());
-            System.exit(1);
         }
     }
 
