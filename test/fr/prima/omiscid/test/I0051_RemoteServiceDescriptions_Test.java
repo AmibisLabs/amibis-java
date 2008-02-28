@@ -39,7 +39,7 @@ import org.junit.Test;
 
 public class I0051_RemoteServiceDescriptions_Test {
 
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         final Service server = factory.create("I0051Server");

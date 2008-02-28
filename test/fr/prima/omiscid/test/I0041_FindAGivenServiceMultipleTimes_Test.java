@@ -46,7 +46,7 @@ public class I0041_FindAGivenServiceMultipleTimes_Test {
      * second (or third) findService (by peerId) fails.
      * However it seems to be ok, even with jmdns in this case ...
      */
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         int peerId;

@@ -53,7 +53,7 @@ public class I0032_MultipleConnectionRefusalImmediateDisconnect_Test {
      * The Exception that happened on fast disconnections has been removed
      * so this only test a simple disconnection feature.
      */
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {

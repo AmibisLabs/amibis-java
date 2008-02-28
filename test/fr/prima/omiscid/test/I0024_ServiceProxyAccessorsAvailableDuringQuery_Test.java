@@ -46,7 +46,7 @@ import static org.junit.Assert.*;
 
 public class I0024_ServiceProxyAccessorsAvailableDuringQuery_Test {
     
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws InvalidDescriptionException, IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         final Service server = factory.create("I0024Server");

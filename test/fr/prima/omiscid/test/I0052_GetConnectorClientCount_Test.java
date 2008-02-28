@@ -43,7 +43,7 @@ import static org.junit.Assert.*;
 
 public class I0052_GetConnectorClientCount_Test {
 
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         final Service server = factory.create("I0052Server");

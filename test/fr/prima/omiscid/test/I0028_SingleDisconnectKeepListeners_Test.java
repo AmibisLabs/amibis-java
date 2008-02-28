@@ -50,7 +50,7 @@ public class I0028_SingleDisconnectKeepListeners_Test {
      * It tests remote-reconnection (remote listener receive (connection) notifications after reconnection)
      * for a single remotely-closed locally-initiated connections.
      */
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         final Vector<String> events = new Vector<String>();

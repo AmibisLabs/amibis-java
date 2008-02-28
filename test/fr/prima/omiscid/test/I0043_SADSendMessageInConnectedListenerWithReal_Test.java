@@ -37,10 +37,6 @@ import java.io.IOException;
 
 
 /*- IGNORE -*/
-
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 public class I0043_SADSendMessageInConnectedListenerWithReal_Test {
 
     /**
@@ -49,8 +45,7 @@ public class I0043_SADSendMessageInConnectedListenerWithReal_Test {
      * state. This message is not received by java gui.
      * This example mimic this behavior in pure java.
      */
-    @Test
-    public void doIt() throws InterruptedException, IOException {
+    public static void main(String[] args) throws InterruptedException, IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             Service client = factory.create("I0043Client");

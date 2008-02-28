@@ -42,7 +42,7 @@ import static org.junit.Assert.*;
 
 public class I0044_SendToOneProxyClient_Test {
 
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {

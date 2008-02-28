@@ -36,14 +36,9 @@ import fr.prima.omiscid.user.service.ServiceRepositoryListener;
 import fr.prima.omiscid.user.util.Utility;
 
 /*- IGNORE -*/
-
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 public class I0010_ServiceRepositoryBasicTests_Test {
     
-    @Test
-    public void doIt() throws IOException, InterruptedException {
+    public static void main(String []args) throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         final Service service = factory.create("I0010Repository");
         final ServiceRepository repository = factory.createServiceRepository(service);

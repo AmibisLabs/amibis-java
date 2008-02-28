@@ -47,7 +47,7 @@ public class I0048_ConnectorWithDash_Test {
      * only adding a sync-in connector to a service makes its
      * imageStream connector not connectable by gui.
      */
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {

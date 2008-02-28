@@ -50,7 +50,7 @@ public class I0042_SADSendMessageInConnectedListener_Test {
      * This example mimic this behavior in pure java.
      * First runs seemed to work but it is not true anymore.
      */
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws InterruptedException, IOException {
         ServiceFactory factory = FactoryFactory.factory();
         final Service server = factory.create("I0042Server");

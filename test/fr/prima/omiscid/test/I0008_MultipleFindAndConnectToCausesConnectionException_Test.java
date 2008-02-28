@@ -53,7 +53,7 @@ public class I0008_MultipleFindAndConnectToCausesConnectionException_Test {
     // This works (at the time of writing)
     // This once failed while running non regression (but only once) and was not reproducible afterwards
     // This instantiate many services so underlying dnssd might have failed
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         final Vector<String> startedServices = new Vector<String>();
@@ -124,8 +124,9 @@ public class I0008_MultipleFindAndConnectToCausesConnectionException_Test {
                     }
                 }, "Finder-"+name).start();
             }
-            Thread.sleep(8000);
-            FactoryFactory.failed("Some undesired exceptions have probably occured. Only "+done.size()+"/"+startedServices.size()+" ended as expected.");
+            FactoryFactory.waitResult(8000);
+            //Thread.sleep(8000);
+            //FactoryFactory.failed("Some undesired exceptions have probably occured. Only "+done.size()+"/"+startedServices.size()+" ended as expected.");
         }
     }
 

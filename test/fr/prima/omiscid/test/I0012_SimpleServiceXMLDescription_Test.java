@@ -39,7 +39,7 @@ import static org.junit.Assert.*;
 
 public class I0012_SimpleServiceXMLDescription_Test {
     
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws InvalidDescriptionException, IOException {
         String serviceDotXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
                 "<service name=\"I0012Service\" xmlns=\"http://www-prima.inrialpes.fr/schemas/bip/service.xsd\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www-prima.inrialpes.fr/schemas/bip/service.xsd service.xsd \">\n" + 

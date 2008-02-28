@@ -41,7 +41,7 @@ import static org.junit.Assert.*;
 
 public class I0022_VariableListContainsPeerIdWhenNonFull_Test {
     
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws InvalidDescriptionException, IOException {
         ServiceFactory factory = FactoryFactory.factory();
         final Service server = factory.create("I0022Server");

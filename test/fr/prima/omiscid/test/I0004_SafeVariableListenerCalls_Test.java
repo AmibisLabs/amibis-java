@@ -42,8 +42,8 @@ import static org.junit.Assert.*;
 
 public class I0004_SafeVariableListenerCalls_Test {
     
-    @Test
-    public void doIt() throws IOException {
+    @Test(expected=TestPassedPseudoException.class)
+    public void doIt() throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0004Server");
@@ -98,10 +98,7 @@ public class I0004_SafeVariableListenerCalls_Test {
             } catch (InterruptedException e) {}
             proxy.setVariableValue("bug", "bubu");
         }
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {}
-        FactoryFactory.failed("Timeout logically due to unhandled exception");
+        FactoryFactory.waitResult(1500);
     }
 
 }

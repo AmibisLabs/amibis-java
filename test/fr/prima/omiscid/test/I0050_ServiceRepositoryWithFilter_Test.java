@@ -43,7 +43,7 @@ import static fr.prima.omiscid.user.service.ServiceFilters.*;
 
 public class I0050_ServiceRepositoryWithFilter_Test {
 
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         final ServiceRepository repository = factory.createServiceRepository();

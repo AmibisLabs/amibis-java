@@ -42,8 +42,8 @@ import static org.junit.Assert.*;
 
 public class I0001_CheckRemoteVariableRefresh_Test {
     
-    @Test
-    public void doIt() {
+    @Test(expected=TestPassedPseudoException.class)
+    public void doIt() throws InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0001Server");
@@ -87,12 +87,11 @@ public class I0001_CheckRemoteVariableRefresh_Test {
                             e.printStackTrace();
                         }
                     }
-                    
                     FactoryFactory.passed(Arrays.toString(res.toArray()));
                 }
             }.start();
         }
-
+        FactoryFactory.waitResult(10000);
     }
 
 }

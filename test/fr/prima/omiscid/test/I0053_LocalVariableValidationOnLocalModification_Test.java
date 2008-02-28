@@ -39,7 +39,7 @@ import static org.junit.Assert.*;
 
 public class I0053_LocalVariableValidationOnLocalModification_Test {
     
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         final Vector<String> events = new Vector<String>();

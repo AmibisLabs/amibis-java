@@ -43,8 +43,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class I0006_ShouldAllowEarlyConnection_Test {
-    @Test
-    public void doIt() throws IOException {
+    @Test(expected=TestPassedPseudoException.class)
+    public void doIt() throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0006Server");
@@ -110,7 +110,7 @@ public class I0006_ShouldAllowEarlyConnection_Test {
             } else {
                 FactoryFactory.failed("started is "+started.size()+" and only "+endedSize+" ended");
             }
-            FactoryFactory.failed("Timeout logically due to wrong handling of pre-start peerId");
+            FactoryFactory.waitResult(0);
         }
     }
 

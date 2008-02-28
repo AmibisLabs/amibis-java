@@ -49,7 +49,7 @@ public class I0035_CloseAllConnectionsLocal_Test {
      * It tests effective-disconnection (remote listener does not receive messages)
      * for a all locally-closed locally-initiated connections.
      */
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException {
         final Vector<String> events = new Vector<String>();
         ServiceFactory factory = FactoryFactory.factory();

@@ -49,8 +49,8 @@ import static org.junit.Assert.*;
 
 public class I0005_ExceptionInAListenerKillsTheConnection_Test {
     
-    @Test
-    public void doIt() throws IOException {
+    @Test(expected=TestPassedPseudoException.class)
+    public void doIt() throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0005Server");
@@ -93,9 +93,6 @@ public class I0005_ExceptionInAListenerKillsTheConnection_Test {
             } catch (InterruptedException e) {}
             client.sendToAllClients("bug", Utility.stringToByteArray("hellllowwwwww"));
         }
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {}
-        FactoryFactory.failed("Timeout logically due to unhandled exception");
+        FactoryFactory.waitResult(500);
     }
 }

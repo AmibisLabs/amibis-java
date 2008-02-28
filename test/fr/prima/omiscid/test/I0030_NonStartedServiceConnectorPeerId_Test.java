@@ -48,7 +48,7 @@ public class I0030_NonStartedServiceConnectorPeerId_Test {
      * This tests unstarted services clients.
      * PeerId where wrongly affected to connectors.
      */
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException {
         final Vector<Integer> connections = new Vector<Integer>();
         ServiceFactory factory = FactoryFactory.factory();

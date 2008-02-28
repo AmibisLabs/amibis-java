@@ -45,7 +45,7 @@ public class I0003_ListenersNotPropagatedOnConnectTo_Test {
     
     private static final int messagesToSend = 100;
     
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         {
@@ -108,6 +108,7 @@ public class I0003_ListenersNotPropagatedOnConnectTo_Test {
         } else {
             FactoryFactory.failed(received.size()+" ended, "+messagesToSend+" expected");
         }
+        FactoryFactory.waitResult(0);
     }
 
 }

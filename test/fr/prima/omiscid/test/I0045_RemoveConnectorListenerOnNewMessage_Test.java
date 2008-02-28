@@ -42,7 +42,7 @@ public class I0045_RemoveConnectorListenerOnNewMessage_Test {
     
     // At the time of writting (1.3.1), removing a listener from a messageReceived call
     // causes a concurrent modification (when there is more than one listener)
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         {

@@ -71,7 +71,7 @@ public class I0014_ServiceWithManyVariables_Test {
     private static int customVariableCount = 1000;
     private static String[] chars = new String[]{"V","v","a","b","c","d","e","f","g","h"}; // ten digits (at ten-thousands level)
     
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         {

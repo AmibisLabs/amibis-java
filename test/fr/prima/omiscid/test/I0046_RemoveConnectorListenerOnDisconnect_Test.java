@@ -50,7 +50,7 @@ public class I0046_RemoveConnectorListenerOnDisconnect_Test {
     //  Local connect  + remote disconnect -> ok
     //  Remote connect + local disconnect -> ok
     //  Remote connect + remote disconnect -> ok
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         {

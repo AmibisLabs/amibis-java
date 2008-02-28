@@ -48,7 +48,7 @@ public class I0047_RemoveAllConnectorListenersAfterConnections_Test {
      * remove all listeners.
      * At the time of writting (1.3.1) this was a bug.
      */
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException {
         final Vector<String> events = new Vector<String>();
         ServiceFactory factory = FactoryFactory.factory();

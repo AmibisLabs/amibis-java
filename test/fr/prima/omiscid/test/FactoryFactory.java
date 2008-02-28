@@ -30,20 +30,64 @@ import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.impl.ServiceFactoryImpl;
 
 /*- IGNORE -*/
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.Assert;
 public class FactoryFactory {
 
+    static Map<String, Object> result = new HashMap<String, Object>();
+    static final Object PASSED = new Object();
+    
     /*package*/ static ServiceFactory factory() {
         return new ServiceFactoryImpl();
     }
     
-    /*package*/ static void passed(String msg) {
-        System.err.println("Test Passed: "+msg);
+    /*package*/ static synchronized void passed(String msg) {
+        String testName = findTestClass();
+        if (result.containsKey(testName)) return;
+        System.err.println("Test "+testName+" Passed: "+msg);
+        result.put(testName, PASSED);
     }
 
-    /*package*/ static void failed(String msg) {
-        System.err.println("Test Failed: "+msg);
+    /*package*/ static synchronized void failed(String msg) {
+        String testName = findTestClass();
+        if (result.containsKey(testName)) return;
+        System.err.println("Test "+testName+" Failed: "+msg);
+        result.put(testName, "Test " + testName + " Failed: " + msg);
     }
-    
+
+    static synchronized void waitResult(long delay) throws InterruptedException {
+        String testName = findTestClass();
+        long timeout = System.currentTimeMillis()+delay;
+        while (timeout - System.currentTimeMillis() > 0 && !result.containsKey(testName)) {
+            FactoryFactory.class.wait(10);
+        }
+        Object o = result.get(testName);
+        System.err.println(o);
+        if (o == null) return;
+        if (o == PASSED) throw new TestPassedPseudoException();
+        Assert.assertTrue(o.toString(), false);
+        return;
+    }
+
+    private static String findTestClass() {
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        Class<?> that = FactoryFactory.class;
+        for (StackTraceElement e : stack) {
+            String name = e.getClassName();
+            if (
+                    !name.equals(that.getCanonicalName()) &&
+                    name.startsWith(that.getPackage().getName())
+                ) {
+                return name.substring(that.getPackage().getName().length()+1).replaceFirst("\\$.*$", "");
+            }
+        }
+        Assert.assertTrue("Failed to find test name in stack: " +Arrays.toString(Thread.currentThread().getStackTrace()), false);
+        return null;
+    }
+
+
 //    public static void main(String[] args) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 //        Class[] tests = new Class[] {
 //            CheckRemoteVariableRefresh_BugI0001.class,

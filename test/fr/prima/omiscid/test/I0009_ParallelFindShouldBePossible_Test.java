@@ -49,7 +49,7 @@ public class I0009_ParallelFindShouldBePossible_Test {
     static long eachTaskTimeOut = 100;
     static long overallTimeOut = 500;
     
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         {
@@ -79,6 +79,7 @@ public class I0009_ParallelFindShouldBePossible_Test {
             } else {
                 FactoryFactory.failed("Some undesired exceptions have probably occured. Only "+done.size()+"/"+started.size()+" ended as expected.");
             }
+            FactoryFactory.waitResult(0);
         }
     }
 

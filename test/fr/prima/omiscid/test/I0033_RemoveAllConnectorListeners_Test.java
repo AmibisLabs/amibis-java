@@ -48,7 +48,7 @@ public class I0033_RemoveAllConnectorListeners_Test {
      * This tests the new removeAllConnectorListeners feature.
      * It tests addition and removal of connector listeners.
      */
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException {
         final Vector<String> events = new Vector<String>();
         ServiceFactory factory = FactoryFactory.factory();

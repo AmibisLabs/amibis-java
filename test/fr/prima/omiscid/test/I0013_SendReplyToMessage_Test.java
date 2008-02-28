@@ -45,7 +45,7 @@ public class I0013_SendReplyToMessage_Test {
     
     private static final int messagesToSend = 100;
     
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         {

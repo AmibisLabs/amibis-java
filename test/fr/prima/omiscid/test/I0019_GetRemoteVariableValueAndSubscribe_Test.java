@@ -55,7 +55,7 @@ import static org.junit.Assert.*;
 
 public class I0019_GetRemoteVariableValueAndSubscribe_Test {
     
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() {
         ServiceFactory factory = FactoryFactory.factory();
         {

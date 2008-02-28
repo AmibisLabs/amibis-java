@@ -50,7 +50,7 @@ public class I0025_SimpleXMLMessage_Test {
      * This seems to work well.
      * The problem seems to have occured under new omiscidgui.
      */
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException {
         ServiceFactory factory = FactoryFactory.factory();
         {

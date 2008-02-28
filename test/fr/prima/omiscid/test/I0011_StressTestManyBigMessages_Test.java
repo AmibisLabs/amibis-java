@@ -50,7 +50,7 @@ public class I0011_StressTestManyBigMessages_Test {
     private static final int messagesToSend = 100;
     private static final int timeToWait = 5000;
     
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         {

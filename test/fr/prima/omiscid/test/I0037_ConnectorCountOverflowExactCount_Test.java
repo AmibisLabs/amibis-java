@@ -39,7 +39,7 @@ import static org.junit.Assert.*;
 
 public class I0037_ConnectorCountOverflowExactCount_Test {
     
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws InvalidDescriptionException, IOException {
         Service service = FactoryFactory.factory().create("I0037Server");
         int i = 1;

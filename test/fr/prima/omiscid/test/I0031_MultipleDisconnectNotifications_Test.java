@@ -50,7 +50,7 @@ public class I0031_MultipleDisconnectNotifications_Test {
      * It tests disconnection notification
      * for repeated in-connect remotely-closed locally-initiated connections.
      */
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException {
         final Vector<String> events = new Vector<String>();
         ServiceFactory factory = FactoryFactory.factory();

@@ -40,7 +40,7 @@ import static org.junit.Assert.*;
 
 public class I0007_HasConnectorFilterDoesNotHandleNonFullDescription_Test {
     // This is not a bug in fact it already works (at the time of writing)
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         {
@@ -67,8 +67,7 @@ public class I0007_HasConnectorFilterDoesNotHandleNonFullDescription_Test {
                     FactoryFactory.passed("server was properly found each time");
                 }
             }).start();
-            Thread.sleep(3000);
-            FactoryFactory.failed("Timeout logically due to wrong handling of incomplete dnssd description");
+            FactoryFactory.waitResult(3000);
         }
     }
 

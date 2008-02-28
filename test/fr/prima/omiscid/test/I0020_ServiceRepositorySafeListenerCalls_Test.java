@@ -40,7 +40,7 @@ import static org.junit.Assert.*;
 
 public class I0020_ServiceRepositorySafeListenerCalls_Test {
     
-    @Test
+    @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
         final Service service = factory.create("I0020Repository");
