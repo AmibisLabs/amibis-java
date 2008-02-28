@@ -59,9 +59,7 @@ public class I0011_StressTestManyBigMessages_Test {
             server.addConnectorListener("c", new ConnectorListener() {
             
                 public void messageReceived(final Service service, final String localConnectorName, final Message message) {
-                    System.out.println("server received");
                     service.sendToAllClients(localConnectorName, new byte[bigSize]/*, message.getPeerId()*/);
-                    System.out.println("server sent");
                 }
             
                 public void disconnected(Service service, String localConnectorName, int peerId) {
@@ -95,9 +93,7 @@ public class I0011_StressTestManyBigMessages_Test {
                         int count = 0;
 
                         public void messageReceived(final Service service, String localConnectorName, Message message) {
-                            System.out.println("client received, count is " + count);
                             service.sendToAllClients("c", new byte[smallSize]);
-                            System.out.println("client sent");
                             count++;
                             if (count >= messagesToSend) {
                                 service.stop();
