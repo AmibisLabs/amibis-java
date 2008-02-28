@@ -87,6 +87,14 @@ headers:
 	find user-level-src -name \*.java -exec ./set-header.sh {} \;
 	find test -name \*.java -exec ./set-header.sh {} \;
 
+#just a bunch of commands used for tests refactoring (conversion to junit)
+# do-replacement 's@public class I0@\nimport org.junit.Test;\nimport static org.junit.Assert.*;\n\npublic class I0@g' I00{0,1,2,3,4}*java
+# do-replacement 's/( *)public static void main\([^)]*\)/$1\@Test\n$1public void doIt()/g' I00{0,1,2,3,4}*java
+# do-replacement 's/ *System.exit\([^;]*;[\n]//gm' I00{0,1,2,3,4}*java
+# do-replacement 's/\@Test()/\@Test(expected=TestPassedPseudoException.class)/g' *.java
+
+
+
 from=1
 
 tests:
