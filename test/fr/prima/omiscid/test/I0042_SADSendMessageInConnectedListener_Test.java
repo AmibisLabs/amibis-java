@@ -100,5 +100,6 @@ public class I0042_SADSendMessageInConnectedListener_Test {
         }
         Thread.sleep(1000);
         server.sendToAllClients("SAD", new byte[0]);
+        FactoryFactory.waitResult(1000);
     }
 }

@@ -51,7 +51,7 @@ public class I0031_MultipleDisconnectNotifications_Test {
      * for repeated in-connect remotely-closed locally-initiated connections.
      */
     @Test(expected=TestPassedPseudoException.class)
-    public void doIt() throws IOException {
+    public void doIt() throws IOException, InterruptedException {
         final Vector<String> events = new Vector<String>();
         ServiceFactory factory = FactoryFactory.factory();
         {
@@ -109,9 +109,7 @@ public class I0031_MultipleDisconnectNotifications_Test {
             long time = System.currentTimeMillis();
             while (System.currentTimeMillis() - time < 3000) {
                 client.sendToAllClients("bug", Utility.stringToByteArray("<plop/>"));
-                try {
-                    Thread.sleep(30);
-                } catch (InterruptedException e) {}
+                FactoryFactory.waitResult(30);
             }
         }
         System.out.println(Arrays.toString(events.toArray()));

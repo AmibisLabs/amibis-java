@@ -56,7 +56,7 @@ import static org.junit.Assert.*;
 public class I0019_GetRemoteVariableValueAndSubscribe_Test {
     
     @Test(expected=TestPassedPseudoException.class)
-    public void doIt() {
+    public void doIt() throws InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0019Server");
@@ -97,11 +97,7 @@ public class I0019_GetRemoteVariableValueAndSubscribe_Test {
             });
             for (int i = 0; i < 10; i++) {
                 proxy.getVariableValue("bug");
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                FactoryFactory.waitResult(1000);
             }
         }
         FactoryFactory.failed("Timed out while waiting for change notifications");

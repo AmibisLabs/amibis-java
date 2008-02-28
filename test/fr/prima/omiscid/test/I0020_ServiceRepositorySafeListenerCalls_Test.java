@@ -83,7 +83,7 @@ public class I0020_ServiceRepositorySafeListenerCalls_Test {
 
         service2.stop();
         service1.stop();
-        Thread.sleep(5000);
+        FactoryFactory.waitResult(5000);
         FactoryFactory.failed("Timeout logically due to unhandled exception or application is unclosable (or to an already present I0020Service)");
     }
 

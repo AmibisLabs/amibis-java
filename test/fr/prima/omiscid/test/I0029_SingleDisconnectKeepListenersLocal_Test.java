@@ -51,7 +51,7 @@ public class I0029_SingleDisconnectKeepListenersLocal_Test {
      * for a single locally-closed locally-initiated connections.
      */
     @Test(expected=TestPassedPseudoException.class)
-    public void doIt() throws IOException {
+    public void doIt() throws IOException, InterruptedException {
         final Vector<String> events = new Vector<String>();
         ServiceFactory factory = FactoryFactory.factory();
         {
@@ -91,17 +91,11 @@ public class I0029_SingleDisconnectKeepListenersLocal_Test {
             //client.start();
             final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0029Server"));
             client.connectTo("bug", proxy, "bug");
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {}
+            FactoryFactory.waitResult(200);
             client.sendToAllClients("bug", Utility.stringToByteArray("<plop/>"));
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {}
+            FactoryFactory.waitResult(200);
             client.connectTo("bug", proxy, "bug");
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {}
+            FactoryFactory.waitResult(200);
             System.out.println(Arrays.toString(events.toArray()));
             FactoryFactory.failed("Timeout logically due to problematic reconnection");
         }

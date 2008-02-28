@@ -108,7 +108,6 @@ public class I0003_ListenersNotPropagatedOnConnectTo_Test {
         } else {
             FactoryFactory.failed(received.size()+" ended, "+messagesToSend+" expected");
         }
-        FactoryFactory.waitResult(0);
     }
 
 }

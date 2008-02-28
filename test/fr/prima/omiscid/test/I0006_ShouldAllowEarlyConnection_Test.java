@@ -110,7 +110,6 @@ public class I0006_ShouldAllowEarlyConnection_Test {
             } else {
                 FactoryFactory.failed("started is "+started.size()+" and only "+endedSize+" ended");
             }
-            FactoryFactory.waitResult(0);
         }
     }
 

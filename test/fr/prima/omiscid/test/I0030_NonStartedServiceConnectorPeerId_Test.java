@@ -49,7 +49,7 @@ public class I0030_NonStartedServiceConnectorPeerId_Test {
      * PeerId where wrongly affected to connectors.
      */
     @Test(expected=TestPassedPseudoException.class)
-    public void doIt() throws IOException {
+    public void doIt() throws IOException, InterruptedException {
         final Vector<Integer> connections = new Vector<Integer>();
         ServiceFactory factory = FactoryFactory.factory();
         final int numberOfConnectors = 10;
@@ -100,9 +100,7 @@ public class I0030_NonStartedServiceConnectorPeerId_Test {
                 } catch (InterruptedException e) {}
             }
         }
-        try {
-            Thread.sleep(4000);
-        } catch (InterruptedException e) {}
+        FactoryFactory.waitResult(4000);
         FactoryFactory.failed("Timeout logically due to a problem in connection/disconnections");
     }
 }

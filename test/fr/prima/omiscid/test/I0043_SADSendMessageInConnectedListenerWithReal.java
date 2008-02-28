@@ -37,7 +37,7 @@ import java.io.IOException;
 
 
 /*- IGNORE -*/
-public class I0043_SADSendMessageInConnectedListenerWithReal_Test {
+public class I0043_SADSendMessageInConnectedListenerWithReal {
 
     /**
      * C++ Microphone does speech detection on SAD connector.

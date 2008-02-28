@@ -48,7 +48,7 @@ public class I0048_ConnectorWithDash_Test {
      * imageStream connector not connectable by gui.
      */
     @Test(expected=TestPassedPseudoException.class)
-    public void doIt() throws IOException {
+    public void doIt() throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0048Server");
@@ -86,10 +86,7 @@ public class I0048_ConnectorWithDash_Test {
                 }
             });
         }
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-        }
+        FactoryFactory.waitResult(1500);
         FactoryFactory.failed("Timeout logically due to problem with dash-bug connector");
     }
 

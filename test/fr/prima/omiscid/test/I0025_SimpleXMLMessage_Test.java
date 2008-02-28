@@ -51,7 +51,7 @@ public class I0025_SimpleXMLMessage_Test {
      * The problem seems to have occured under new omiscidgui.
      */
     @Test(expected=TestPassedPseudoException.class)
-    public void doIt() throws IOException {
+    public void doIt() throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0025Server");
@@ -86,9 +86,7 @@ public class I0025_SimpleXMLMessage_Test {
             client.sendToAllClients("bug", Utility.stringToByteArray("<plop/>"));
             client.stop();
         }
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {}
+        FactoryFactory.waitResult(1500);
         FactoryFactory.failed("Timeout logically due to a problem in XML message interpretation");
     }
 

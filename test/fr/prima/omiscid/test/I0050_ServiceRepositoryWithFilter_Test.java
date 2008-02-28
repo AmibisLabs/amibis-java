@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import org.junit.Assert;
 import org.junit.Test;
 import static fr.prima.omiscid.user.service.ServiceFilters.*;
 
@@ -104,8 +105,7 @@ public class I0050_ServiceRepositoryWithFilter_Test {
         Thread.sleep(1000);
         service2.stop();
         Thread.sleep(1000);
-        
-        try {
+        {
             System.err.println(events);
             String tmpSource1;
             String tmpSource2;
@@ -139,22 +139,15 @@ public class I0050_ServiceRepositoryWithFilter_Test {
             equals(s2, events.poll());
             equals("0", events.size()+"");
             FactoryFactory.passed("All events checked with success");
-        } catch (Exception e) {
-            e.printStackTrace();
-            FactoryFactory.failed("Wrong events received: "+e.getMessage());
         }
     }
 
     private static void equals(String expected, String value) {
-        if (! expected.equals(value)) {
-            throw new RuntimeException("expected '"+expected+"', got '"+value+"'");
-        }
+        Assert.assertEquals(expected, value);
     }
 
     private static String notNull(String value, String message) {
-        if (value == null) {
-            throw new RuntimeException("non null expected: "+message);
-        }
+        Assert.assertNotNull("non null expected: "+message, value);
         return value;
     }
 

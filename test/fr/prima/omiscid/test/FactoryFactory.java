@@ -48,6 +48,7 @@ public class FactoryFactory {
         if (result.containsKey(testName)) return;
         System.err.println("Test "+testName+" Passed: "+msg);
         result.put(testName, PASSED);
+        if (isInJUnitThread()) consumeResult();
     }
 
     /*package*/ static synchronized void failed(String msg) {
@@ -55,6 +56,7 @@ public class FactoryFactory {
         if (result.containsKey(testName)) return;
         System.err.println("Test "+testName+" Failed: "+msg);
         result.put(testName, "Test " + testName + " Failed: " + msg);
+        if (isInJUnitThread()) consumeResult();
     }
 
     static synchronized void waitResult(long delay) throws InterruptedException {
@@ -63,12 +65,17 @@ public class FactoryFactory {
         while (timeout - System.currentTimeMillis() > 0 && !result.containsKey(testName)) {
             FactoryFactory.class.wait(10);
         }
+        consumeResult();
+        return;
+    }
+
+    private static void consumeResult() {
+        String testName = findTestClass();
         Object o = result.get(testName);
         System.err.println(o);
         if (o == null) return;
         if (o == PASSED) throw new TestPassedPseudoException();
         Assert.assertTrue(o.toString(), false);
-        return;
     }
 
     private static String findTestClass() {
@@ -86,7 +93,17 @@ public class FactoryFactory {
         Assert.assertTrue("Failed to find test name in stack: " +Arrays.toString(Thread.currentThread().getStackTrace()), false);
         return null;
     }
-
+    
+    private static boolean isInJUnitThread() {
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        for (StackTraceElement e : stack) {
+            String name = e.getClassName();
+            if (name.equals("org.junit.internal.runners.TestClassRunner")) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 //    public static void main(String[] args) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 //        Class[] tests = new Class[] {

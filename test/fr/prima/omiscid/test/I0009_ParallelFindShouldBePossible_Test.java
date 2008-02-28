@@ -79,7 +79,6 @@ public class I0009_ParallelFindShouldBePossible_Test {
             } else {
                 FactoryFactory.failed("Some undesired exceptions have probably occured. Only "+done.size()+"/"+started.size()+" ended as expected.");
             }
-            FactoryFactory.waitResult(0);
         }
     }
 

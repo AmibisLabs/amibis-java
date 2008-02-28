@@ -43,7 +43,7 @@ import static org.junit.Assert.*;
 public class I0044_SendToOneProxyClient_Test {
 
     @Test(expected=TestPassedPseudoException.class)
-    public void doIt() throws IOException {
+    public void doIt() throws IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0044Server");
@@ -72,9 +72,7 @@ public class I0044_SendToOneProxyClient_Test {
             client.connectTo("bug", proxy, "rec");
             client.sendToOneClient("bug", Utility.stringToByteArray("hiiiii"), proxy);
         }
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {}
+        FactoryFactory.waitResult(1500);
         FactoryFactory.failed("Timeout logically due to problem in sendToOneClient(..., proxy)");
 }
 }

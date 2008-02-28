@@ -92,7 +92,7 @@ public class I0014_ServiceWithManyVariables_Test {
                 }
             });
         }
-        Thread.sleep(10000);
+        FactoryFactory.waitResult(10000);
         FactoryFactory.failed("service with many variables was not found by service repository");
     }
 
