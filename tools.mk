@@ -98,5 +98,7 @@ headers:
 from=1
 
 tests:
-	ant -Dfile.encoding=utf-8 jar
-	@./tests.sh "$(patsubst %,lib/%,$(release-jars))" ${from}
+	ant test| sed 's/Tests run: 1\, Failures: 0\, Errors: 0,/================================= OK with: /g' | egrep -e '(\[junit\] Testsuite: )|(Failures: )|(==== OK)'
+#	ant test | egrep -e '(\[junit\] Testsuite: )|(Failures: )' | sed 's/Tests run: 1\, Failures: 0\, Errors: 0,/================================= OK with: /g'
+#	ant -Dfile.encoding=utf-8 jar
+#	@./tests.sh "$(patsubst %,lib/%,$(release-jars))" ${from}

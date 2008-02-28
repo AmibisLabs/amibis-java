@@ -63,7 +63,7 @@ public class FactoryFactory {
         String testName = findTestClass();
         long timeout = System.currentTimeMillis()+delay;
         while (timeout - System.currentTimeMillis() > 0 && !result.containsKey(testName)) {
-            FactoryFactory.class.wait(10);
+            FactoryFactory.class.wait(1);
         }
         consumeResult();
         return;
@@ -72,7 +72,6 @@ public class FactoryFactory {
     private static void consumeResult() {
         String testName = findTestClass();
         Object o = result.get(testName);
-        System.err.println(o);
         if (o == null) return;
         if (o == PASSED) throw new TestPassedPseudoException();
         Assert.assertTrue(o.toString(), false);

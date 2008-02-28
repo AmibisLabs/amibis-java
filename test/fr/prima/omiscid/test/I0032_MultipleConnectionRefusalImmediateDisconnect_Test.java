@@ -112,7 +112,7 @@ public class I0032_MultipleConnectionRefusalImmediateDisconnect_Test {
             while (System.currentTimeMillis() - time < 3000) {
                 client.sendToAllClients("bug", Utility.stringToByteArray("<plop/>"));
                 try {
-                    Thread.sleep(30);
+                    FactoryFactory.waitResult(30);
                 } catch (InterruptedException e) {}
             }
         }
@@ -125,7 +125,7 @@ public class I0032_MultipleConnectionRefusalImmediateDisconnect_Test {
     private static void connectTo(Service client, String string, ServiceProxy proxy, String string0) {
         tries ++;
         if (tries >= 10) {
-            System.out.println(Arrays.toString(events.toArray()));
+            //System.out.println(Arrays.toString(events.toArray()));
             FactoryFactory.passed("Limit number of tries reached, "+Arrays.toString(events.toArray()));
         }
         try {
