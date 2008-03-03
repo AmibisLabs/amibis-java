@@ -39,6 +39,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /*- IGNORE -*/
+import org.junit.Test;
+
 public class Radio {
     private final static String serviceName = "Radio";
     private final static String audioOutputName = "audioStream";
@@ -47,7 +49,14 @@ public class Radio {
     private final static String sampleRateVariable = "SampleRate";
     private int sampleRate = 44100;
     private int channels = 2;
-
+    
+   @Test
+    public void callMain() {
+        main(new String[0]);
+    }
+    public Radio() {
+        
+    }
     public Radio(String[] userArgs) {
         File pipeFile = null;
         String pipe = "/tmp/radio";

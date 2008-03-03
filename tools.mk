@@ -67,16 +67,12 @@ prepare:
 	cd dnssd-src      && find . -name \*.java -exec cp {} ../,,build/{} \;
 #cd generated-src  && find . -name \*.java -exec cp {} ../,,build/{} \;
 	cd user-level-src && find . -name \*.java -exec cp {} ../,,build/{} \;
-	cd ,,build && ( \
-		rm -r fr/prima/omiscid/test ;\
-		)
 	cd ,,build && jar cvf ../$(BASEJAR) .
 	cd ,,build && ( \
 		rm -r fr/prima/omiscid/com ;\
 		rm -r fr/prima/omiscid/control ;\
 		rm -r fr/prima/omiscid/dnssd ;\
 		rm -r fr/prima/omiscid/user/*/impl ;\
-		rm -r fr/prima/omiscid/test ;\
 		rm -r org/ ;\
 		)
 	cd ,,build && jar cvf ../$(INTERFACEJAR) .
