@@ -195,7 +195,7 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        if (registeredName == null) {
+        if (registeredName == null && entryGroup != null) {
             entryGroup.Free();
             entryGroup = null;
         }
