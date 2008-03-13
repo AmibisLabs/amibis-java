@@ -39,7 +39,6 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class I0011_StressTestManyBigMessages_Test {
     
@@ -48,8 +47,8 @@ public class I0011_StressTestManyBigMessages_Test {
 
     private static final int clientsToStart = 3;
     private static final int messagesToSend = 100;
-    private static final int timeToWait = 5000;
-    
+    private static final int timeToWait = 15000;
+
     @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
@@ -75,9 +74,11 @@ public class I0011_StressTestManyBigMessages_Test {
             });
             server.start();
         }
-        final Vector<Object> ended = new Vector<Object>();
         final Vector<Object> started = new Vector<Object>();
+        final Vector<Object> endQueries = new Vector<Object>();
+        final Vector<Object> ended = new Vector<Object>();
         for (int i = 0; i < clientsToStart; i++) {
+            final int fi = i;
             new Thread(new Runnable() {
 
                 public void run() {
@@ -95,9 +96,16 @@ public class I0011_StressTestManyBigMessages_Test {
                         public void messageReceived(final Service service, String localConnectorName, Message message) {
                             service.sendToAllClients("c", new byte[smallSize]);
                             count++;
+                            System.out.println(fi+": "+count);
                             if (count >= messagesToSend) {
+                                System.out.println("stopping "+fi);
+                                endQueries.add(service);
                                 service.stop();
+                                System.out.println(fi + " stopped !!!!!!!!!!!!!!");
                                 ended.add(service);
+                                if (ended.size() == clientsToStart) {
+                                    FactoryFactory.passed("All "+clientsToStart+" started service properly sent messages and stop");
+                                }
                             }
                         }
 
@@ -120,13 +128,8 @@ public class I0011_StressTestManyBigMessages_Test {
             }).start();
             Thread.sleep(1000);
         }
-        Thread.sleep(timeToWait);
-        int endedSize = ended.size();
-        if (endedSize == started.size()) {
-            FactoryFactory.passed("all "+started.size()+" ok");
-        } else {
-            FactoryFactory.failed("started is "+started.size()+" and only "+endedSize+" ended");
-        }
+        FactoryFactory.waitResult(timeToWait);
+        FactoryFactory.failed("started is " + started.size() + " stop queries is " + endQueries.size() + " and only " + ended.size() + " ended");
     }
 
 }
