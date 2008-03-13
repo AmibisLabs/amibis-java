@@ -68,7 +68,8 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
         private static final String sharedDefaultValue = sharedTrueValue;
         private static final PatchedIdentity<String> factoryRewriter = new PatchedIdentity<String>();
 
-        private static boolean verboseMode = false;
+        public static boolean verboseMode = false;
+        public static String factoryToTryFirst = null;
         
         static {
             factoryRewriter.put("jmdns",  "fr.prima.omiscid.dnssd.jivedns.DNSSDFactoryJivedns");
@@ -109,7 +110,9 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
             } catch (SecurityException e) {
                 // Access to environment variable is forbidden
             }
-            
+            if (factoryToTryFirst != null) {
+                factories.push(factoryRewriter.get(factoryToTryFirst));
+            }
             Class factoryClass = null;
             String className;
             while (!factories.isEmpty() && null != (className = factories.pop())) {
