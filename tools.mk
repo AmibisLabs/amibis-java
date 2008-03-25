@@ -23,15 +23,15 @@ dist: prepare
 	scp $(BASEJAR) $(release-diston)/$(release-version)/$(release-omiscid-jar)
 	scp licences $(patsubst %,lib/%,$(release-jars)) $(patsubst %,lib/%,$(release-libs)) ,,rel/
 	scp licences $(patsubst %,lib/%,$(release-jars)) $(patsubst %,lib/%,$(release-libs)) $(release-diston)/$(release-version)/
-# builds the tgz version and replicates it remotely
-	mv ,,rel/ omiscid && tar cvfz $(release-all-tgz) omiscid/ && mv omiscid/ ,,rel
-#	cd ,,rel/ && tar cvfz ../$(release-all-tgz) *
-	scp $(release-all-tgz) $(release-diston)/
+# builds the zip version and replicates it remotely
+	mv ,,rel/ omiscid && zip -r $(release-all-zip) omiscid/ && mv omiscid/ ,,rel
+#	cd ,,rel/ && tar cvfz ../$(release-all-zip) *
+	scp $(release-all-zip) $(release-diston)/
 
-# builds the bundle tgz
+# builds the bundle zip
 	make -f tools.mk bundle
-	cd ,,rel-bundle && tar cvfz ../$(release-bundle-tgz) *
-	scp $(release-bundle-tgz) $(release-diston)/
+	cd ,,rel-bundle && zip -r ../$(release-bundle-zip) *
+	scp $(release-bundle-zip) $(release-diston)/
 # copy the interface jar
 	scp $(INTERFACEJAR) $(release-diston)/
 
