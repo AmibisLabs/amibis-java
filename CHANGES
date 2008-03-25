@@ -3,6 +3,17 @@
                         CHANGES
 
 In this files, you will find changes between java OMiSCID versions.
+*must: solve the castor proliferation problem
+*must: find and kill all "< (that is manually generated xml)
+*Q: should a txt record be "part" when a big constant is present? I don't think so.
+*Q: how is reflected in the dnssd txt record the fact that a connector has an udp port? I think that we always use tcp to init connections so this is not a real question
+*should: make configurable (through Java and C++) the timeout for control queries
+*could: dnssd client auto connect/reconnect
+*could: dnssd client has a list of expected servers
+*could: Service isa ServiceProxy!
+
+1.
+r
 
 1.4.0
 r4210
