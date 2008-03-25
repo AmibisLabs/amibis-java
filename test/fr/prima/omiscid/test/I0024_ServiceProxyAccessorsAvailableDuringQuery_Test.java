@@ -41,11 +41,12 @@ import fr.prima.omiscid.user.variable.VariableAccessType;
  * This basically control that not too much synchronization is put on service proxy.
  */
 
+import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class I0024_ServiceProxyAccessorsAvailableDuringQuery_Test {
     
+    @Ignore
     @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws InvalidDescriptionException, IOException, InterruptedException {
         ServiceFactory factory = FactoryFactory.factory();

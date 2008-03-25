@@ -26,6 +26,7 @@
 
 package fr.prima.omiscid.test;
 
+import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.user.connector.ConnectorListener;
 import fr.prima.omiscid.user.connector.ConnectorType;
 import fr.prima.omiscid.user.connector.Message;
@@ -41,7 +42,7 @@ import java.util.Vector;
 import org.junit.Test;
 
 public class I0046_RemoveConnectorListenerOnDisconnect_Test {
-    
+
     // At the time of writting (1.3.1), removing a listener from a disconnected call
     // causes a concurrent modification (when there is more than one listener).
     // There are 2 cases: TCPClient cases (initiated locally) and TCPServer ones.
@@ -59,13 +60,19 @@ public class I0046_RemoveConnectorListenerOnDisconnect_Test {
             server.addConnector("rec", "", ConnectorType.INOUTPUT);
             server.addLocalVariableListener("target", new LocalVariableListener() {
 
-                public void variableChanged(Service service, String variableName, String value) {
+                public void variableChanged(final Service service, String variableName, String value) {
                 }
 
-                public boolean isValid(Service service, String variableName, String newValue) {
-                    final ServiceProxy proxy = service.findService(ServiceFilters.nameIs("I0046Client"));
-                    service.connectTo("rec", proxy, "bug");
-                    System.out.println("Server received connection order");
+                public boolean isValid(final Service service, String variableName, String newValue) {
+                    // Should not do long processing here (so we do it in a separate thread)
+                    // jivedns even fails to answer in time to pass the test if we do search here
+                    new Thread(new Runnable(){
+                        public void run() {
+                            final ServiceProxy proxy = service.findService(ServiceFilters.nameIs("I0046Client"));
+                            service.connectTo("rec", proxy, "bug");
+                            System.out.println("Server received connection order");
+                        }
+                    }).start();
                     return false;
                 }
             });
@@ -83,6 +90,13 @@ public class I0046_RemoveConnectorListenerOnDisconnect_Test {
                 }
             });
             server.start();
+            System.err.println(server.getPeerIdAsString());
+            new Thread(new Runnable() { // pre-fetch client informations
+                public void run() {
+                    final ServiceProxy proxy = server.findService(ServiceFilters.nameIs("I0046Client"));
+                    System.err.println("Client "+proxy.getPeerIdAsString()+" prefetched");
+                }
+            }).start();
         }
         {
             final Vector<String> received = new Vector<String>();
@@ -101,10 +115,11 @@ public class I0046_RemoveConnectorListenerOnDisconnect_Test {
             Service client = factory.create("I0046Client");
             client.addConnector("bug", "", ConnectorType.INOUTPUT);
             client.start();
+            System.err.println(client.getPeerIdAsString());
             final ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0046Server"));
             // Local connect + local disconnect -> ok
-            client.connectTo("bug", proxy, "rec");
             client.addConnectorListener("bug", new RemoveListenerOnDisconnect());
+            client.connectTo("bug", proxy, "rec");
             client.addConnectorListener("bug", new RemoveListenerOnDisconnect());
             client.closeAllConnections();
             Thread.sleep(1000);
@@ -116,8 +131,8 @@ public class I0046_RemoveConnectorListenerOnDisconnect_Test {
             received.clear();
             
             // Local connect + remote disconnect -> ok
-            client.connectTo("bug", proxy, "rec");
             client.addConnectorListener("bug", new RemoveListenerOnDisconnect());
+            client.connectTo("bug", proxy, "rec");
             client.addConnectorListener("bug", new RemoveListenerOnDisconnect());
             client.sendToAllClients("bug", Utility.message("disco"));
             Thread.sleep(1000);
@@ -128,11 +143,12 @@ public class I0046_RemoveConnectorListenerOnDisconnect_Test {
             received.clear();
             
             // Remote connect + local disconnect -> ok
+            client.addConnectorListener("bug", new RemoveListenerOnDisconnect());
             proxy.setVariableValue("target", "connect");
             client.addConnectorListener("bug", new RemoveListenerOnDisconnect());
-            client.addConnectorListener("bug", new RemoveListenerOnDisconnect());
+            Thread.sleep(10000);
             client.closeAllConnections();
-            Thread.sleep(1000);
+            Thread.sleep(10000);
             if (received.size() != 2) {
                 FactoryFactory.failed("Wrong received count (remote/local): "+received.size());
             }
@@ -140,9 +156,10 @@ public class I0046_RemoveConnectorListenerOnDisconnect_Test {
             received.clear();
 
             // Remote connect + remote disconnect -> ok
+            client.addConnectorListener("bug", new RemoveListenerOnDisconnect());
             proxy.setVariableValue("target", "connect");
             client.addConnectorListener("bug", new RemoveListenerOnDisconnect());
-            client.addConnectorListener("bug", new RemoveListenerOnDisconnect());
+            Thread.sleep(1000);
             client.sendToAllClients("bug", Utility.message("disco"));
             Thread.sleep(1000);
             if (received.size() != 2) {

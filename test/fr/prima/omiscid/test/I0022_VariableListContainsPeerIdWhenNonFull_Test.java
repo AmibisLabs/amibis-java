@@ -36,11 +36,12 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 
 
+import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class I0022_VariableListContainsPeerIdWhenNonFull_Test {
     
+    @Ignore
     @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws InvalidDescriptionException, IOException {
         ServiceFactory factory = FactoryFactory.factory();

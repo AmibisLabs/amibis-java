@@ -52,7 +52,7 @@ public class Radio {
     
    @Test
     public void callMain() {
-        main(new String[0]);
+        //main(new String[0]);
     }
     public Radio() {
         

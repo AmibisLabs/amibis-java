@@ -40,7 +40,6 @@ import fr.prima.omiscid.user.util.Utility;
 
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class I0025_SimpleXMLMessage_Test {
     

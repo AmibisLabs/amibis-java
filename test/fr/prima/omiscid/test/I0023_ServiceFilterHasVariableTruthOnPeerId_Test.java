@@ -36,7 +36,6 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class I0023_ServiceFilterHasVariableTruthOnPeerId_Test {
     

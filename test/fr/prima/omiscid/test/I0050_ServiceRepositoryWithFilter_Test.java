@@ -43,7 +43,7 @@ import org.junit.Test;
 import static fr.prima.omiscid.user.service.ServiceFilters.*;
 
 public class I0050_ServiceRepositoryWithFilter_Test {
-
+    
     @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
@@ -104,7 +104,7 @@ public class I0050_ServiceRepositoryWithFilter_Test {
         repository.removeListener(listener3, true);
         Thread.sleep(1000);
         service2.stop();
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         {
             System.err.println(events);
             String tmpSource1;
