@@ -67,8 +67,8 @@ public interface ServiceRepository {
      * Apparition notifications will only happen for services matching given filter.
      * Disapparition notifications will only happen for services that have been notified of apparition.
      * 
-     * This listener will be notified of currently running services (see {@link #addListener(ServiceFilter, ServiceRepositoryListener, boolean)} for details).
-     * Behaves like calling {@link #addListener(ServiceFilter, ServiceRepositoryListener, boolean)} with false.
+     * This listener will be notified of currently running services (see {@link #addListener(ServiceRepositoryListener, ServiceFilter, boolean)} for details).
+     * Behaves like calling {@link #addListener(ServiceRepositoryListener, ServiceFilter, boolean)} with false.
      * 
      * @param listener the listener that will be notified of service events
      * @param filter the filter to apply to service apparition

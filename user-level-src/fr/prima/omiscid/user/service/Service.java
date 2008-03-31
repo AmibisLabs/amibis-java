@@ -95,7 +95,7 @@ public interface Service {
      * This number is indicative has there can be connections and disconnections at any time.
      * 
      * @param localConnectorName the name of the local connector
-     * @return
+     * @return the number of client connected to this connector
      * @throws fr.prima.omiscid.user.exception.UnknownConnector  if the service has not declared this connector
      */
     public int getConnectorClientCount(String localConnectorName) throws UnknownConnector;
@@ -249,7 +249,7 @@ public interface Service {
     /**
      * Sets the value of a service variable.
      * @param variableName the variable name
-     * @param variableName the variable value
+     * @param variableValue the variable value
      * @param skipValidationPhase whether to prevent LocalVariableListener#isValid to be called
      * @throws UnknownVariable thrown if the variable has not been created
      * @see Service#addVariable
