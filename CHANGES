@@ -14,7 +14,9 @@ In this files, you will find changes between java OMiSCID versions.
 
 1.
 r
-
+jaxb?
+customizability for dnssd
+fix 54 55
 
 1.4.0
 r4215
