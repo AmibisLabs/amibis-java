@@ -42,7 +42,7 @@ public class I0012_SimpleServiceXMLDescription_Test {
     @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws InvalidDescriptionException, IOException {
         String serviceDotXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-                "<service name=\"I0012Service\" xmlns=\"http://www-prima.inrialpes.fr/schemas/bip/service.xsd\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www-prima.inrialpes.fr/schemas/bip/service.xsd service.xsd \">\n" + 
+                "<service name=\"I0012Service\" xmlns=\"http://www-prima.inrialpes.fr/schemas/omiscid/service.xsd\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www-prima.inrialpes.fr/schemas/bip/service.xsd service.xsd \">\n" + 
                 "   <output name=\"sinus\">\n" + 
                 "       <description>Stream of points (sinus fonction)</description>\n" + 
                 "   </output>\n" + 
@@ -50,6 +50,12 @@ public class I0012_SimpleServiceXMLDescription_Test {
                 "   <input name=\"fin\"></input>\n" + 
                 "   <variable name=\"w\">\n" + 
                 "       <access>readWrite</access>\n" + 
+                "   </variable>\n" + 
+                "   <variable name=\"c\">\n" + 
+                "       <access>constant</access>\n" + 
+                "   </variable>\n" + 
+                "   <variable name=\"r\">\n" + 
+                "       <access>read</access>\n" + 
                 "   </variable>\n" + 
                 "</service>";
         InputStream in = new ByteArrayInputStream(serviceDotXml.getBytes("utf-8"));
@@ -62,6 +68,7 @@ public class I0012_SimpleServiceXMLDescription_Test {
             e.printStackTrace();
         }
         service.stop();
+        FactoryFactory.failed("should add a more complex test searching for this service and checking its attributes");
         FactoryFactory.passed("no exceptions occured");
         in.close();
     }
