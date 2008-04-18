@@ -37,18 +37,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.w3c.dom.Element;
 
 import fr.prima.omiscid.com.TcpClient;
 import fr.prima.omiscid.com.XmlMessage;
 import fr.prima.omiscid.com.interf.BipMessageListener;
 import fr.prima.omiscid.control.interf.GlobalConstants;
-import fr.prima.omiscid.control.message.answer.ControlAnswer;
-import fr.prima.omiscid.control.message.query.ControlQuery;
+import fr.prima.omiscid.generated.controlanswer.ControlAnswer;
+import fr.prima.omiscid.generated.controlquery.ControlQuery;
 import fr.prima.omiscid.user.connector.Message;
 import fr.prima.omiscid.user.util.Utility;
+import javax.xml.bind.JAXB;
 
 /**
  * Handles the communication with the control server of a OMiSCID service.
@@ -224,15 +223,9 @@ public class ControlClient implements BipMessageListener {
             Element root = xmlMessage.getRootElement();
             if (root.getNodeName().equals(GlobalConstants.controlAnswerXMLTag)) {
                 try {
-                    ControlAnswer answer = ControlAnswer.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())));
+                    ControlAnswer answer = JAXB.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())), ControlAnswer.class);
                     monitor.pushMessageAnswer(answer);
                     return;
-                } catch (MarshalException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (ValidationException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -327,7 +320,7 @@ public class ControlClient implements BipMessageListener {
 //  }
 //  }
 
-    public ControlAnswer queryToServer(ControlQuery controlQuery, boolean waitAnswer) throws MarshalException, ValidationException {
+    public ControlAnswer queryToServer(ControlQuery controlQuery, boolean waitAnswer) {
         if (isConnected()) {
             int theMsgId;
             synchronized (this) {
@@ -336,7 +329,7 @@ public class ControlClient implements BipMessageListener {
             String strMessageId = Utility.intTo8HexString(theMsgId).toLowerCase();
             controlQuery.setId(strMessageId);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            controlQuery.marshal(new OutputStreamWriter(byteArrayOutputStream));
+            JAXB.marshal(controlQuery, new OutputStreamWriter(byteArrayOutputStream));
             try {
                 monitor.willSend();
                 tcpClient.send(byteArrayOutputStream.toByteArray());

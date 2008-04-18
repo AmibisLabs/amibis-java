@@ -32,9 +32,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import fr.prima.omiscid.control.interf.VariableChangeListener;
-import fr.prima.omiscid.control.message.answer.ControlAnswerItem;
-import fr.prima.omiscid.control.message.answer.Variable;
-import fr.prima.omiscid.control.message.answer.types.AccessType;
+import fr.prima.omiscid.generated.controlanswer.AccessType;
+import fr.prima.omiscid.generated.controlanswer.Variable;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 import java.util.Vector;
 
@@ -106,10 +105,10 @@ public class VariableAttribute extends Attribute {
 
     public synchronized void init(Variable variable) {
         this.setName(variable.getName());
-        switch (variable.getAccess().getType()) {
-        case AccessType.CONSTANT_TYPE: this.setAccessType(VariableAccessType.CONSTANT); break;
-        case AccessType.READ_TYPE: this.setAccessType(VariableAccessType.READ); break;
-        case AccessType.READWRITE_TYPE: this.setAccessType(VariableAccessType.READ_WRITE); break;
+        switch (variable.getAccess()) {
+        case CONSTANT: this.setAccessType(VariableAccessType.CONSTANT); break;
+        case READ: this.setAccessType(VariableAccessType.READ); break;
+        case READ_WRITE: this.setAccessType(VariableAccessType.READ_WRITE); break;
         default: System.err.println("unhandled variable type in VariableAttribute.init "+variable.getAccess());
         }
         this.setValueStr(variable.getValue());
@@ -119,13 +118,12 @@ public class VariableAttribute extends Attribute {
         this.setFormatDescription(variable.getFormatDescription());
     }
 
-    public synchronized ControlAnswerItem generateControlAnswer() {
-        ControlAnswerItem controlAnswerItem = new ControlAnswerItem();
+    public synchronized Variable generateControlAnswer() {
         Variable variable = new Variable();
         switch (getAccess()) {
         case CONSTANT: variable.setAccess(AccessType.CONSTANT); break;
         case READ: variable.setAccess(AccessType.READ); break;
-        case READ_WRITE: variable.setAccess(AccessType.READWRITE); break;
+        case READ_WRITE: variable.setAccess(AccessType.READ_WRITE); break;
         default: System.err.println("unhandled access type in VariableAttribute.generateControlAnswer "+getAccess());
         }
         variable.setDefault(getDefaultValue());
@@ -134,16 +132,15 @@ public class VariableAttribute extends Attribute {
         variable.setName(getName());
         variable.setType(getType());
         variable.setValue(getValueStr());
-        controlAnswerItem.setVariable(variable);
-        return controlAnswerItem;
+        return variable;
     }
 
-    public synchronized void init(fr.prima.omiscid.control.message.servicexml.Variable variable) {
+    public synchronized void init(fr.prima.omiscid.generated.servicexml.Variable variable) {
         this.setName(variable.getName());
-        switch (variable.getAccess().getType()) {
-        case fr.prima.omiscid.control.message.servicexml.types.AccessType.CONSTANT_TYPE: this.setAccessType(VariableAccessType.CONSTANT); break;
-        case fr.prima.omiscid.control.message.servicexml.types.AccessType.READ_TYPE: this.setAccessType(VariableAccessType.READ); break;
-        case fr.prima.omiscid.control.message.servicexml.types.AccessType.READWRITE_TYPE: this.setAccessType(VariableAccessType.READ_WRITE); break;
+        switch (variable.getAccess()) {
+        case CONSTANT: this.setAccessType(VariableAccessType.CONSTANT); break;
+        case READ: this.setAccessType(VariableAccessType.READ); break;
+        case READ_WRITE: this.setAccessType(VariableAccessType.READ_WRITE); break;
         default: System.err.println("unhandled variable type in VariableAttribute.init "+variable.getAccess());
         }
         this.setDefaultValue(variable.getDefault());
@@ -154,12 +151,10 @@ public class VariableAttribute extends Attribute {
     }
 
 
-    public synchronized ControlAnswerItem generateShortControlAnswer() {
-        ControlAnswerItem controlAnswerItem = new ControlAnswerItem();
+    public synchronized Variable generateShortControlAnswer() {
         Variable variable = new Variable();
         variable.setName(getName());
-        controlAnswerItem.setVariable(variable);
-        return controlAnswerItem;
+        return variable;
     }
 
     /**
