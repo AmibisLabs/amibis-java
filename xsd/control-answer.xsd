@@ -9,13 +9,13 @@
 
   <xs:simpleType name="NameType">
     <xs:restriction base="xs:string">
-      <xs:pattern value="[ -&lt;>-~]+" />
+      <xs:pattern value="[\x20-\x3C\x3E-\x7E]+" />
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="VariableNameType">
     <xs:restriction base="xs:string">
-      <xs:pattern value="[ -&lt;>-~]+" />
+      <xs:pattern value="[\x20-\x3C\x3E-\x7E]+" />
     </xs:restriction>
   </xs:simpleType>
 
@@ -28,44 +28,26 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:complexType name="Peers">
+  <xs:complexType name="PeersType">
     <xs:sequence>
       <xs:element name="peer" type="IDType" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="IOType">
+  <xs:complexType name="CA_InOutputType">
     <xs:all>
       <xs:element name="tcp" type="xs:nonNegativeInteger" minOccurs="0" />
       <xs:element name="udp" type="xs:nonNegativeInteger" minOccurs="0" />
       <xs:element name="description" type="xs:string" minOccurs="0" />
       <xs:element name="formatDescription" type="xs:string" minOccurs="0" />
-      <xs:element name="peers" type="Peers" minOccurs="0" />
+      <xs:element name="peers" type="PeersType" minOccurs="0" />
       <xs:element name="peerId" type="IDType" minOccurs="0" />
       <xs:element name="require" type="xs:positiveInteger" minOccurs="0" />
     </xs:all>
     <xs:attribute name="name" type="NameType" use="required" />
   </xs:complexType>
 
-  <xs:complexType name="Input">
-    <xs:complexContent>
-      <xs:extension base="IOType"/>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType name="Output">
-    <xs:complexContent>
-      <xs:extension base="IOType"/>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType name="InOutput">
-    <xs:complexContent>
-      <xs:extension base="IOType"/>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType name="Variable">
+  <xs:complexType name="CA_VariableType">
     <xs:all>
       <xs:element name="access" type="AccessType" minOccurs="0" />
       <xs:element name="value" type="xs:string" minOccurs="0" />
@@ -77,27 +59,27 @@
     <xs:attribute name="name" type="VariableNameType" use="required" />
   </xs:complexType>
 
-  <xs:simpleType name="LockResult">
+  <xs:simpleType name="CA_LockResultType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="ok" />
       <xs:enumeration value="failed" />
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:complexType name="Lock">
-    <xs:attribute name="result" type="LockResult"  use="required"/>
+  <xs:complexType name="CA_LockType">
+    <xs:attribute name="result" type="CA_LockResultType"  use="required"/>
     <xs:attribute name="peer" type="IDType"  use="required"/>
   </xs:complexType>
 
   <xs:element name="controlAnswer">
     <xs:complexType>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="input" type="Input" />
-        <xs:element name="output" type="Output" />
-        <xs:element name="inoutput" type="InOutput" />
-        <xs:element name="variable" type="Variable" />
-        <xs:element name="lock" type="Lock" />
-        <xs:element name="unlock" type="Lock" />
+        <xs:element name="input" type="CA_InOutputType" />
+        <xs:element name="output" type="CA_InOutputType" />
+        <xs:element name="inoutput" type="CA_InOutputType" />
+        <xs:element name="variable" type="CA_VariableType" />
+        <xs:element name="lock" type="CA_LockType" />
+        <xs:element name="unlock" type="CA_LockType" />
       </xs:choice>
       <xs:attribute name="id" type="IDType" use="required" />
     </xs:complexType>
@@ -106,7 +88,7 @@
   <xs:element name="controlEvent">
     <xs:complexType>
       <xs:all>
-        <xs:element name="variable" type="Variable" minOccurs="0"/>
+        <xs:element name="variable" type="CA_VariableType" minOccurs="0"/>
       </xs:all>
     </xs:complexType>
   </xs:element>

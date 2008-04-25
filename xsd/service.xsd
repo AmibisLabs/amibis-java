@@ -23,13 +23,10 @@
 				<element name="value" type="string" minOccurs="0" />
 				<element name="default" type="string" minOccurs="0" />
 				<element name="type" type="string" minOccurs="0" />
-				<element ref="omiscid:access" minOccurs="1" maxOccurs="1"/>
+				<element name="access" type="omiscid:accessType" minOccurs="1" maxOccurs="1"/>
 			</all>
 			<attribute name="name" type="string" use="required"></attribute>
 		</complexType>
-	</element>
-
-	<element name="access" type="omiscid:accessType"> <!-- fix? for jaxb (I0012) -->
 	</element>
 
 	<simpleType name="accessType">
@@ -50,23 +47,11 @@
 		<attribute name="name" type="string" use="required"></attribute>
 	</complexType>
 
-        <complexType name="inputConnector">
-                <complexContent><extension base="omiscid:connectorType"/></complexContent>
-        </complexType>
+	<element name="input" type="omiscid:connectorType"></element>
 
-        <complexType name="outputConnector">
-                <complexContent><extension base="omiscid:connectorType"/></complexContent>
-        </complexType>
+	<element name="output" type="omiscid:connectorType"></element>
 
-        <complexType name="inoutputConnector">
-                <complexContent><extension base="omiscid:connectorType"/></complexContent>
-        </complexType>
-
-	<element name="input" type="omiscid:inputConnector"></element>
-
-	<element name="output" type="omiscid:outputConnector"></element>
-
-	<element name="inoutput" type="omiscid:inoutputConnector"></element>
+	<element name="inoutput" type="omiscid:connectorType"></element>
 
 
 

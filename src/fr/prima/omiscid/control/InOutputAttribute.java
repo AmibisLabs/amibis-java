@@ -33,14 +33,14 @@ import java.util.Vector;
 
 import fr.prima.omiscid.com.CommunicationServer;
 import fr.prima.omiscid.com.TcpServer;
-import fr.prima.omiscid.generated.controlanswer.IOType;
-import fr.prima.omiscid.generated.controlanswer.InOutput;
-import fr.prima.omiscid.generated.controlanswer.Input;
-import fr.prima.omiscid.generated.controlanswer.Output;
-import fr.prima.omiscid.generated.controlanswer.Peers;
+import fr.prima.omiscid.control.message.answer.CA_InOutputType;
+import fr.prima.omiscid.control.message.answer.ControlAnswerItem;
+import fr.prima.omiscid.control.message.answer.Inoutput;
+import fr.prima.omiscid.control.message.answer.Input;
+import fr.prima.omiscid.control.message.answer.Output;
+import fr.prima.omiscid.control.message.answer.Peers;
 import fr.prima.omiscid.user.connector.ConnectorType;
 import fr.prima.omiscid.user.util.Utility;
-import java.math.BigInteger;
 
 /**
  * Stores an in/output description. The in/output description is composed of a
@@ -108,70 +108,90 @@ public class InOutputAttribute extends Attribute {
         this.peerId = connectorPeerId;
     }
 
-    public InOutputAttribute(IOType item) {
+    public InOutputAttribute(ControlAnswerItem item) {
         super("");
         init(item);
     }
 
-    public void init(fr.prima.omiscid.generated.servicexml.ConnectorType connectorType) {
-        // nothing to do in addition to creation
-    }
-    
-    public void init(IOType inoutput) {
-        if (inoutput instanceof Input) {
+
+    public void init(ControlAnswerItem item) {
+        CA_InOutputType inoutput = null;
+        if (item.getChoiceValue() instanceof Input) {
             this.connectorType = ConnectorType.INPUT;
-        } else if (inoutput instanceof Output) {
+            inoutput = item.getInput();
+        } else if (item.getChoiceValue() instanceof Output) {
             connectorType = ConnectorType.OUTPUT;
-        } else if (inoutput instanceof InOutput) {
+            inoutput = item.getOutput();
+        } else if (item.getChoiceValue() instanceof Inoutput) {
             connectorType = ConnectorType.INOUTPUT;
+            inoutput = item.getInoutput();
         } else {
-            System.err.println("unhandled ControlAnswerItem type in InOutputAttribute "+inoutput);
+            System.err.println("unhandled ControlAnswerItem type in InOutputAttribute "+item.getChoiceValue());
         }
         if (inoutput.getName() != null) this.setName(inoutput.getName());
         if (inoutput.getDescription() != null) this.setDescription(inoutput.getDescription());
         if (inoutput.getFormatDescription() != null) this.setFormatDescription(inoutput.getFormatDescription());
         if (inoutput.getPeerId() != null) this.setPeerId(Utility.hexStringToInt(inoutput.getPeerId()));
-        this.setTcpPort(inoutput.getTcp().intValue());
-        this.setUdpPort(inoutput.getUdp().intValue());
+        this.setTcpPort(inoutput.getTcp());
+        this.setUdpPort(inoutput.getUdp());
         this.peerVector.clear();
         for (String peer : inoutput.getPeers().getPeer()) {
             addPeer(Utility.hexStringToInt(peer));
         }
     }
 
-    public IOType generateControlAnswer() {
-        IOType inoutput = null;
+    public void init(fr.prima.omiscid.control.message.servicexml.ConnectorType inoutput) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public ControlAnswerItem generateControlAnswer() {
+        CA_InOutputType inoutput = null;
         switch (getConnectorType()) {
         case INPUT: inoutput = new Input(); break;
         case OUTPUT: inoutput = new Output(); break;
-        case INOUTPUT: inoutput = new InOutput(); break;
+        case INOUTPUT: inoutput = new Inoutput(); break;
         default: System.err.println("unhandled connector type in InOutputAttribute generateControlAnswer");
         }
         inoutput.setDescription(getDescription());
         inoutput.setFormatDescription(getFormatDescription());
         inoutput.setName(getName());
         inoutput.setPeerId(Utility.intTo8HexString(getPeerId()).toLowerCase());
-        inoutput.setTcp(BigInteger.valueOf(getTcpPort()));
-        //??? if (getUdpPort() != 0) inoutput.setTcp(getTcpPort());
-        inoutput.setUdp(BigInteger.valueOf(getUdpPort()));
+        inoutput.setTcp(getTcpPort());
+        if (getUdpPort() != 0) inoutput.setTcp(getTcpPort());
+        inoutput.setUdp(getUdpPort());
         Peers peers = new Peers();
         for (int peerId : getPeerVector()) {
-            peers.getPeer().add(Utility.intTo8HexString(peerId).toLowerCase());
+            peers.addPeer(Utility.intTo8HexString(peerId).toLowerCase());
         }
         inoutput.setPeers(peers);
-        return inoutput;
+        ControlAnswerItem controlAnswerItem = new ControlAnswerItem();
+        switch (getConnectorType()) {
+        case INPUT: controlAnswerItem.setInput((Input) inoutput); break;
+        case OUTPUT: controlAnswerItem.setOutput((Output) inoutput); break;
+        case INOUTPUT: controlAnswerItem.setInoutput((Inoutput) inoutput); break;
+        default: System.err.println("unhandled connector type in InOutputAttribute generateControlAnswer");
+        }
+        return controlAnswerItem;
     }
 
-    public IOType generateShortControlAnswer() {
-        IOType inoutput = null;
+    public ControlAnswerItem generateShortControlAnswer() {
+        CA_InOutputType inoutput = null;
         switch (getConnectorType()) {
         case INPUT: inoutput = new Input(); break;
         case OUTPUT: inoutput = new Output(); break;
-        case INOUTPUT: inoutput = new InOutput(); break;
+        case INOUTPUT: inoutput = new Inoutput(); break;
         default: System.err.println("unhandled connector type in InOutputAttribute generateShortControlAnswer");
         }
         inoutput.setName(getName());
-        return inoutput;
+        ControlAnswerItem controlAnswerItem = new ControlAnswerItem();
+        switch (getConnectorType()) {
+        case INPUT: controlAnswerItem.setInput((Input) inoutput); break;
+        case OUTPUT: controlAnswerItem.setOutput((Output) inoutput); break;
+        case INOUTPUT: controlAnswerItem.setInoutput((Inoutput) inoutput); break;
+        default: System.err.println("unhandled connector type in InOutputAttribute generateShortControlAnswer");
+        }
+        return controlAnswerItem;
     }
 
 

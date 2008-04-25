@@ -31,17 +31,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 
 import fr.prima.omiscid.com.TcpClientServer;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.control.interf.VariableChangeQueryListener;
-import fr.prima.omiscid.generated.servicexml.InoutputConnector;
-import fr.prima.omiscid.generated.servicexml.InputConnector;
-import fr.prima.omiscid.generated.servicexml.OutputConnector;
-import fr.prima.omiscid.generated.servicexml.Service;
-import fr.prima.omiscid.generated.servicexml.Variable;
+import fr.prima.omiscid.control.message.servicexml.Inoutput;
+import fr.prima.omiscid.control.message.servicexml.Input;
+import fr.prima.omiscid.control.message.servicexml.Output;
+import fr.prima.omiscid.control.message.servicexml.Service;
+import fr.prima.omiscid.control.message.servicexml.ServiceItem;
+import fr.prima.omiscid.control.message.servicexml.Variable;
 import fr.prima.omiscid.user.connector.ConnectorType;
-import javax.xml.bind.JAXB;
 
 public class ServiceFromXml extends ControlServer {
 
@@ -55,18 +57,18 @@ public class ServiceFromXml extends ControlServer {
      * XmlToService.initServiceFromXml(this, doc.getDocumentElement()); }
      */
 
-    public ServiceFromXml(String fileName) throws IOException {
+    public ServiceFromXml(String fileName) throws MarshalException, ValidationException, IOException {
         super();
-        init(JAXB.unmarshal(new FileReader(fileName), Service.class));
+        init(Service.unmarshal(new FileReader(fileName)));
 
 //        Document doc = XmlUtils.parseXMLFile(fileName);
 //        setServiceName(XmlToService.getServiceName(doc.getDocumentElement()));
 //        XmlToService.initServiceFromXml(this, doc.getDocumentElement());
     }
 
-    public ServiceFromXml(InputStream inputStream) throws IOException {
+    public ServiceFromXml(InputStream inputStream) throws MarshalException, ValidationException, IOException {
         super();
-        init(JAXB.unmarshal(new InputStreamReader(inputStream), Service.class));
+        init(Service.unmarshal(new InputStreamReader(inputStream)));
 //        Document doc = XmlUtils.parseXMLStream(stream);
 //        setServiceName(XmlToService.getServiceName(doc.getDocumentElement()));
 //        XmlToService.initServiceFromXml(this, doc.getDocumentElement());
@@ -76,26 +78,26 @@ public class ServiceFromXml extends ControlServer {
         this.setServiceName(service.getName());
 //        service.getClazz();
 //        service.getDocURL();
-//???        service.getServiceItem();
-        for (Object item : service.getVariableOrInputOrOutput()) {
-            if (item instanceof Variable) {
-                VariableAttribute variableAttribute = findVariable(((Variable) item).getName());
+        service.getServiceItem();
+        for (ServiceItem item : service.getServiceItem()) {
+            if (item.getChoiceValue() instanceof Variable) {
+                VariableAttribute variableAttribute = findVariable(item.getVariable().getName());
                 if (variableAttribute == null) {
-                    variableAttribute = this.addVariable(((Variable) item).getName());
+                    variableAttribute = this.addVariable(item.getVariable().getName());
                 }
-                variableAttribute.init((Variable) item);
-            } else if (item instanceof InputConnector) {
-                InputConnector inoutput = (InputConnector) item;
+                variableAttribute.init(item.getVariable());
+            } else if (item.getChoiceValue() instanceof Input) {
+                Input inoutput = item.getInput();
                 TcpClientServer tcpClientServer = new TcpClientServer(this.getPeerId());
                 this.addInOutput(inoutput.getName(), tcpClientServer, ConnectorType.INPUT).init(inoutput);
                 tcpClientServer.start();
-            } else if (item instanceof OutputConnector) {
-                OutputConnector inoutput = (OutputConnector) item;
+            } else if (item.getChoiceValue() instanceof Output) {
+                Output inoutput = item.getOutput();
                 TcpClientServer tcpClientServer = new TcpClientServer(this.getPeerId());
                 this.addInOutput(inoutput.getName(), tcpClientServer, ConnectorType.OUTPUT).init(inoutput);
                 tcpClientServer.start();
-            } else if (item instanceof InoutputConnector) {
-                InoutputConnector inoutput = (InoutputConnector) item;
+            } else if (item.getChoiceValue() instanceof Inoutput) {
+                Inoutput inoutput = item.getInoutput();
                 TcpClientServer tcpClientServer = new TcpClientServer(this.getPeerId());
                 this.addInOutput(inoutput.getName(), tcpClientServer, ConnectorType.INOUTPUT).init(inoutput);
                 tcpClientServer.start();
@@ -110,7 +112,7 @@ public class ServiceFromXml extends ControlServer {
 //        XmlToService.initServiceFromXml(this, doc.getDocumentElement());
 //    }
 
-    public static void main(String arg[]) throws IOException {
+    public static void main(String arg[]) throws MarshalException, ValidationException, IOException {
         String path = "src/OmiscidSearch/xml/";
         String fileName = path + "generatedfile.xml";
         fileName = "service.xml";

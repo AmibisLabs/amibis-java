@@ -37,6 +37,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+
 import fr.prima.omiscid.com.BipUtils;
 import fr.prima.omiscid.com.MessageManager;
 import fr.prima.omiscid.com.TcpClientServer;
@@ -44,25 +47,29 @@ import fr.prima.omiscid.com.TcpServer;
 import fr.prima.omiscid.control.interf.GlobalConstants;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.control.interf.VariableChangeQueryListener;
+import fr.prima.omiscid.control.message.answer.ControlAnswer;
+import fr.prima.omiscid.control.message.answer.ControlAnswerItem;
+import fr.prima.omiscid.control.message.answer.ControlEvent;
+import fr.prima.omiscid.control.message.answer.types.CA_LockResultType;
+import fr.prima.omiscid.control.message.query.Connect;
+import fr.prima.omiscid.control.message.query.ControlQuery;
+import fr.prima.omiscid.control.message.query.ControlQueryItem;
+import fr.prima.omiscid.control.message.query.FullDescription;
+import fr.prima.omiscid.control.message.query.Inoutput;
+import fr.prima.omiscid.control.message.query.Input;
+import fr.prima.omiscid.control.message.query.Lock;
+import fr.prima.omiscid.control.message.query.Output;
+import fr.prima.omiscid.control.message.query.Subscribe;
+import fr.prima.omiscid.control.message.query.Unlock;
+import fr.prima.omiscid.control.message.query.Unsubscribe;
+import fr.prima.omiscid.control.message.query.Variable;
 import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
-import fr.prima.omiscid.generated.controlanswer.ControlAnswer;
-import fr.prima.omiscid.generated.controlanswer.ControlEvent;
-import fr.prima.omiscid.generated.controlanswer.IOType;
-import fr.prima.omiscid.generated.controlanswer.InOutput;
-import fr.prima.omiscid.generated.controlanswer.Input;
-import fr.prima.omiscid.generated.controlanswer.Lock;
-import fr.prima.omiscid.generated.controlanswer.LockResult;
-import fr.prima.omiscid.generated.controlanswer.ObjectFactory;
-import fr.prima.omiscid.generated.controlanswer.Output;
-import fr.prima.omiscid.generated.controlanswer.Variable;
-import fr.prima.omiscid.generated.controlquery.ControlQuery;
 import fr.prima.omiscid.user.connector.ConnectorType;
 import fr.prima.omiscid.user.connector.Message;
 import fr.prima.omiscid.user.util.impl.Constants;
 import fr.prima.omiscid.user.util.Utility;
 import fr.prima.omiscid.user.variable.VariableAccessType;
-import javax.xml.bind.JAXB;
 
 /**
  * Represents a "local" OmiscidService. To access remote service, use the
@@ -419,14 +426,14 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             Set<Integer> unreachablePeers = new java.util.HashSet<Integer>();
             ControlEvent controlEvent = new ControlEvent();
 //        controlEvent.setId(BipUtils.intTo8HexString(getPeerId()));
-            Variable variable = new Variable();
+            fr.prima.omiscid.control.message.answer.Variable variable = new fr.prima.omiscid.control.message.answer.Variable();
             variable.setValue(variableAttribute.getValueStr());
             variable.setName(variableAttribute.getName());
             controlEvent.setVariable(variable);
             
             try {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                JAXB.marshal(controlEvent, new OutputStreamWriter(byteArrayOutputStream));
+                controlEvent.marshal(new OutputStreamWriter(byteArrayOutputStream));
                 byte[] message = byteArrayOutputStream.toByteArray();
                 byteArrayOutputStream.close();
                 
@@ -436,6 +443,12 @@ public class ControlServer extends MessageManager implements VariableChangeListe
                     }
                 }
                 variableAttribute.removeAllPeers(unreachablePeers);
+            } catch (MarshalException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (ValidationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -644,132 +657,112 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     protected void processMessage(Message message) {
         try {
-            ControlQuery controlQuery = JAXB.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())), ControlQuery.class);
+            ControlQuery controlQuery = ControlQuery.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())));
             int remoteId = message.getPeerId();
             ControlAnswer controlAnswer = new ControlAnswer();
             controlAnswer.setId(controlQuery.getId());
-            if (controlQuery.getFullDescriptionOrInputOrOutput().size() == 0) {
+            if (controlQuery.getControlQueryItemCount() == 0) {
                 generateShortGlobalDescription(controlAnswer);
             } else {
-                for (Object item : controlQuery.getFullDescriptionOrInputOrOutput()) {
-                    if (item instanceof ControlQuery.Input) {
-                        IOType answerItem = generateInoutputAnswer(((ControlQuery.Input)item).getName(), ConnectorType.INPUT);
+                for (ControlQueryItem item : controlQuery.getControlQueryItem()) {
+                    if (item.getChoiceValue() instanceof Input) {
+                        ControlAnswerItem answerItem = generateInoutputAnswer(item.getInput().getName(), ConnectorType.INPUT);
                         if (answerItem != null) {
-                            addInputAnswer(controlAnswer, (Input) answerItem);
+                            controlAnswer.addControlAnswerItem(answerItem);
                         }
-                    } else if (item instanceof ControlQuery.Output) {
-                        IOType answerItem = generateInoutputAnswer(((ControlQuery.Output)item).getName(), ConnectorType.OUTPUT);
+                    } else if (item.getChoiceValue() instanceof Output) {
+                        ControlAnswerItem answerItem = generateInoutputAnswer(item.getOutput().getName(), ConnectorType.OUTPUT);
                         if (answerItem != null) {
-                            addOutputAnswer(controlAnswer, (Output) answerItem);
+                            controlAnswer.addControlAnswerItem(answerItem);
                         }
-                    } else if (item instanceof ControlQuery.Inoutput) {
-                        IOType answerItem = generateInoutputAnswer(((ControlQuery.Inoutput)item).getName(), ConnectorType.INOUTPUT);
+                    } else if (item.getChoiceValue() instanceof Inoutput) {
+                        ControlAnswerItem answerItem = generateInoutputAnswer(item.getInoutput().getName(), ConnectorType.INOUTPUT);
                         if (answerItem != null) {
-                            addInOutputAnswer(controlAnswer, (InOutput) answerItem);
+                            controlAnswer.addControlAnswerItem(answerItem);
                         }
-                    } else if (item instanceof ControlQuery.Variable) {
-                        Variable answerItem = generateVariableAnswerChoice(((ControlQuery.Variable)item), remoteId);
+                    } else if (item.getChoiceValue() instanceof Variable) {
+                        ControlAnswerItem answerItem = generateVariableAnswerChoice(item.getVariable(), remoteId);
                         if (answerItem != null) {
-                            addVariableAnswer(controlAnswer, answerItem);
+                            controlAnswer.addControlAnswerItem(answerItem);
                         }
-                    } else if (item instanceof ControlQuery.Connect) {
-                        IOType answerItem = generateConnectAnswer(((ControlQuery.Connect)item));
+                    } else if (item.getChoiceValue() instanceof Connect) {
+                        ControlAnswerItem answerItem = generateConnectAnswer(item.getConnect());
                         if (answerItem != null) {
-                            addIOTypeAnswer(controlAnswer, answerItem);
+                            controlAnswer.addControlAnswerItem(answerItem);
                         }
-                    } else if (item instanceof ControlQuery.Subscribe) {
-                        Variable answerItem = generateSubscribeAnswer(((ControlQuery.Subscribe)item).getName(), remoteId, true);
+                    } else if (item.getChoiceValue() instanceof Subscribe) {
+                        ControlAnswerItem answerItem = generateSubscribeAnswer(item.getSubscribe().getName(), remoteId, true);
                         if (answerItem != null) {
-                            addVariableAnswer(controlAnswer, answerItem);
+                            controlAnswer.addControlAnswerItem(answerItem);
                         }
-                    } else if (item instanceof ControlQuery.Unsubscribe) {
-                        Variable answerItem = generateSubscribeAnswer(((ControlQuery.Unsubscribe)item).getName(), remoteId, false);
+                    } else if (item.getChoiceValue() instanceof Unsubscribe) {
+                        ControlAnswerItem answerItem = generateSubscribeAnswer(item.getUnsubscribe().getName(), remoteId, false);
                         if (answerItem != null) {
-                            addVariableAnswer(controlAnswer, answerItem);
+                            controlAnswer.addControlAnswerItem(answerItem);
                         }
-                    } else if (item instanceof ControlQuery.Lock) {
-                        Lock answerItem = generateLockAnswer( remoteId);
+                    } else if (item.getChoiceValue() instanceof Lock) {
+                        ControlAnswerItem answerItem = generateLockAnswer( remoteId);
                         if (answerItem != null) {
-                            controlAnswer.getInputOrOutputOrInoutput().add(new ObjectFactory().createControlAnswerLock(answerItem));
+                            controlAnswer.addControlAnswerItem(answerItem);
                         }
-                    } else if (item instanceof ControlQuery.Unlock) {
-                        Lock answerItem = generateUnlockAnswer( remoteId);
+                    } else if (item.getChoiceValue() instanceof Unlock) {
+                        ControlAnswerItem answerItem = generateUnlockAnswer( remoteId);
                         if (answerItem != null) {
-                            controlAnswer.getInputOrOutputOrInoutput().add(new ObjectFactory().createControlAnswerUnlock(answerItem));
+                            controlAnswer.addControlAnswerItem(answerItem);
                         }
-                    } else if (item instanceof ControlQuery.FullDescription) {
+                    } else if (item.getChoiceValue() instanceof FullDescription) {
                         generateFullGlobalDescription(controlAnswer);
                     }
                 }
             }
-            if (controlAnswer.getInputOrOutputOrInoutput().size() != 0) {
+            if (controlAnswer.getControlAnswerItemCount() != 0) {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                JAXB.marshal(controlAnswer, new OutputStreamWriter(byteArrayOutputStream));
+                controlAnswer.marshal(new OutputStreamWriter(byteArrayOutputStream));
                 if (!tcpServer.sendToOneClient(byteArrayOutputStream.toByteArray(), message.getPeerId())) {
                     System.err.println("Warning: ControlServer: Send failed: peer not found : " + Utility.intTo8HexString(message.getPeerId()));
                 }
                 byteArrayOutputStream.close();
             }
+        } catch (MarshalException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ValidationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 
-    private void addIOTypeAnswer(ControlAnswer controlAnswer, IOType answerItem) {
-        if (answerItem instanceof Input) {
-            addInputAnswer(controlAnswer, (Input)answerItem);
-        } else if (answerItem instanceof Output) {
-            addOutputAnswer(controlAnswer, (Output)answerItem);
-        } else if (answerItem instanceof InOutput) {            
-            addInOutputAnswer(controlAnswer, (InOutput)answerItem);
-        }
-    }
-
-    private void addInputAnswer(ControlAnswer controlAnswer, Input item) {
-        controlAnswer.getInputOrOutputOrInoutput().add(new ObjectFactory().createControlAnswerInput(item));
-    }
-
-    private void addOutputAnswer(ControlAnswer controlAnswer, Output item) {
-        controlAnswer.getInputOrOutputOrInoutput().add(new ObjectFactory().createControlAnswerOutput(item));
-    }
-
-    private void addInOutputAnswer(ControlAnswer controlAnswer, InOutput item) {
-        controlAnswer.getInputOrOutputOrInoutput().add(new ObjectFactory().createControlAnswerInoutput(item));
-    }
-
-    private void addVariableAnswer(ControlAnswer controlAnswer, Variable variable) {
-        controlAnswer.getInputOrOutputOrInoutput().add(new ObjectFactory().createControlAnswerVariable(variable));
-    }
-
     private void generateFullGlobalDescription(ControlAnswer controlAnswer) {
         for (VariableAttribute variable : variablesSet) {
-            addVariableAnswer(controlAnswer, variable.generateControlAnswer());
+            controlAnswer.addControlAnswerItem(variable.generateControlAnswer());
         }
         for (InOutputAttribute inoutput : inoutputsSet) {
             String name = inoutput.getName();
             ConnectorType connectorType = inoutput.getConnectorType();
-            addIOTypeAnswer(controlAnswer, generateInoutputAnswer(name, connectorType));
+            controlAnswer.addControlAnswerItem(generateInoutputAnswer(name, connectorType));
         }
     }
 
     private void generateShortGlobalDescription(ControlAnswer controlAnswer) {
         for (VariableAttribute variable : variablesSet) {
-            addVariableAnswer(controlAnswer, variable.generateShortControlAnswer());
+            controlAnswer.addControlAnswerItem(variable.generateShortControlAnswer());
         }
         for (InOutputAttribute inoutput : inoutputsSet) {
-            addIOTypeAnswer(controlAnswer, inoutput.generateShortControlAnswer());
+            controlAnswer.addControlAnswerItem(inoutput.generateShortControlAnswer());
         }
     }
 
-    private IOType generateInoutputAnswer(String name, ConnectorType connectorType) {
+    private ControlAnswerItem generateInoutputAnswer(String name, ConnectorType connectorType) {
         InOutputAttribute ioa = findInOutput(name, connectorType);
         if (ioa != null) {
             return ioa.generateControlAnswer();
         }
         return null;
     }
-    private Variable generateVariableAnswerChoice(ControlQuery.Variable variable, int peerId) {
+    private ControlAnswerItem generateVariableAnswerChoice(Variable variable, int peerId) {
         VariableAttribute va = findVariable(variable.getName());
         if (va != null) {
             if (variable.getValue() == null) {
@@ -785,11 +778,11 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         return null;
     }
 
-    private IOType generateConnectAnswer(ControlQuery.Connect connect) {
+    private ControlAnswerItem generateConnectAnswer(Connect connect) {
         InOutputAttribute ioa = findInOutput(connect.getName(), null);
         if (ioa != null) {
-            if (connect.getTcp() != null) {
-                connectionQuery(connect.getHost(), connect.getTcp().intValue(), true, ioa);
+            if (connect.getConnectChoice().hasTcp()) {
+                connectionQuery(connect.getHost(), connect.getConnectChoice().getTcp(), true, ioa);
                 return ioa.generateControlAnswer();
             } else {
                 System.err.println("unhandled connection query using udp");
@@ -799,7 +792,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         return null;
     }
 
-    private Variable generateSubscribeAnswer(String name, int peerId, boolean subscribe) {
+    private ControlAnswerItem generateSubscribeAnswer(String name, int peerId, boolean subscribe) {
         VariableAttribute va = findVariable(name);
         if (va != null) {
             if (subscribe) {
@@ -812,28 +805,32 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         return null;
     }
 
-    private Lock generateLockAnswer(int peerId) {
-        Lock lock = new Lock();
+    private ControlAnswerItem generateLockAnswer(int peerId) {
+        ControlAnswerItem controlAnswerItem = new ControlAnswerItem();
+        fr.prima.omiscid.control.message.answer.Lock lock = new fr.prima.omiscid.control.message.answer.Lock();
         if (lockOk(peerId)) {
             lockIntegerVar.setIntValue(peerId);
-            lock.setResult(LockResult.OK);
+            lock.setResult(CA_LockResultType.OK);
         } else {
-            lock.setResult(LockResult.FAILED);
+            lock.setResult(CA_LockResultType.FAILED);
         }
         lock.setPeer(Utility.intTo8HexString(lockIntegerVar.getIntValue()).toLowerCase());
-        return lock;
+        controlAnswerItem.setLock(lock);
+        return controlAnswerItem;
     }
 
-    private Lock generateUnlockAnswer(int peerId) {
-        Lock unlock = new Lock();
+    private ControlAnswerItem generateUnlockAnswer(int peerId) {
+        ControlAnswerItem controlAnswerItem = new ControlAnswerItem();
+        fr.prima.omiscid.control.message.answer.Unlock unlock = new fr.prima.omiscid.control.message.answer.Unlock();
         if (lockOk(peerId)) {
             lockIntegerVar.setIntValue(0);
-            unlock.setResult(LockResult.OK);
+            unlock.setResult(CA_LockResultType.OK);
         } else {
-            unlock.setResult(LockResult.FAILED);
+            unlock.setResult(CA_LockResultType.FAILED);
         }
         unlock.setPeer(Utility.intTo8HexString(lockIntegerVar.getIntValue()).toLowerCase());
-        return unlock;
+        controlAnswerItem.setUnlock(unlock);
+        return controlAnswerItem;
     }
 
 
