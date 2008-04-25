@@ -35,9 +35,9 @@ import fr.prima.omiscid.dnssd.interf.ServiceRegistration;
 
 public class DNSSDFactoryOmiscid implements DNSSDFactory {
 
-    private static int port = 12053;
+    public static int port = 12053;
 
-    private static String host = "localhost";
+    public static String host = "localhost";
     static {
         try {
             if (System.getenv("OMISCID_DNSSD_SERVER_HOSTNAME") != null) {
