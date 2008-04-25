@@ -14,6 +14,7 @@ In this files, you will find changes between java OMiSCID versions.
 
 1.
 r
+        fix:  service disapparitions were properly notified but browsing with a new service repository caused disappeared services to be reported as present
 jaxb?
 customizability for dnssd
 fix 54 55

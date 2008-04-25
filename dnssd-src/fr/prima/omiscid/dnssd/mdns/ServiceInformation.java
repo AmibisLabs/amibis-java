@@ -55,8 +55,8 @@ public class ServiceInformation implements fr.prima.omiscid.dnssd.interf.Service
     public String domain = null;
 
     /* package */ServiceInformation(String registrationType, String serviceName) {
-        this.fullName = serviceName;
         this.registrationType = registrationType;
+        this.fullName = serviceName+"."+registrationType;
     }
 
     /* package */ServiceInformation(String registrationType, String fullName, String hostName, int port, TXTRecord txtRecord) {
