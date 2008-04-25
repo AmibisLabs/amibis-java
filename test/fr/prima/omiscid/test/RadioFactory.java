@@ -33,8 +33,17 @@ import fr.prima.omiscid.user.service.Service;
 
 /*- IGNORE -*/
 import java.io.IOException;
+import java.util.List;
+import java.util.Vector;
+import org.junit.Test;
 public class RadioFactory {
 
+    /*@Test
+    public void doit() throws Exception {
+        main(new String[]{});
+        Thread.sleep(30*60*1000);
+    }*/
+    
     public static void main(String[] args) throws IOException {
         Service service = FactoryFactory.factory().create("RadioFactory");
         service.addVariable("knowledge", "UFL-1.0", "knowledge", fr.prima.omiscid.user.variable.VariableAccessType.CONSTANT);
@@ -42,13 +51,29 @@ public class RadioFactory {
                 "namespace is http://emonet@prima/\n" +
                 " composing grounding \"C(create)\" format \"{?url}\"\n" +
                 " gives a Radio with url = ?url");
-        service.addConnector("create", "instantiation connector", fr.prima.omiscid.user.connector.ConnectorType.INPUT);
+        service.addConnector("create", "instantiation connector @Allow(http://streaming.radio.rtl2.fr:80/rtl2-1-44-96|mms://vipnrj.yacast.net/cheriefm_webradio06|Stop All)", fr.prima.omiscid.user.connector.ConnectorType.INPUT);
         service.addConnectorListener("create", new ConnectorListener() {
+            private List<Radio> radios = new Vector<Radio>();
+            synchronized void add(Radio radio) {
+                radios.add(radio);
+            }
+            synchronized void stopAll() {
+                for (Radio radio : radios) {
+                    radio.stop();
+                }
+                radios.clear();
+            }
             public void messageReceived(Service service, String localConnectorName, final Message message) {
                 new Thread(new Runnable() {
                     public void run() {
                         try {
-                            new Radio(new String[]{message.getBufferAsString()});
+                            if ("Stop All".equals(message.getBufferAsString())) {
+                                stopAll();
+                            } else {
+                                Radio radio = new Radio();
+                                add(radio);
+                                radio.start(new String[]{message.getBufferAsString()});
+                            }
                         } catch (MessageInterpretationException ex) {
                             System.err.println("Wrong message received");
                         }

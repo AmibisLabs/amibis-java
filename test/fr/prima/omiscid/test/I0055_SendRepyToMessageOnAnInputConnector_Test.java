@@ -49,7 +49,7 @@ public class I0055_SendRepyToMessageOnAnInputConnector_Test {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0055Server");
-            server.addConnector("bug", "", ConnectorType.OUTPUT);
+            server.addConnector("bug", "", ConnectorType.INPUT);
             server.addConnectorListener("bug", new ConnectorListener() {
 
                 public void messageReceived(Service service, String localConnectorName, Message message) {
@@ -69,7 +69,7 @@ public class I0055_SendRepyToMessageOnAnInputConnector_Test {
             server.start();
         }{
             Service client = factory.create("I0055lient");
-            client.addConnector("bug", "", ConnectorType.INPUT);
+            client.addConnector("bug", "", ConnectorType.OUTPUT);
             client.start();
             client.addConnectorListener("bug", new ConnectorListener() {
                 public void messageReceived(Service service, String localConnectorName, Message message) {

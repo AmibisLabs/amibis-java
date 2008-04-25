@@ -70,6 +70,11 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
 
         public static boolean verboseMode = false;
         public static String factoryToTryFirst = null;
+        /**
+         * This can be used (set to true) when the jvm does not support full introspection.
+         * This only disables a additional check on the provided class name.
+         */
+        public static boolean skipIntrospectionBasedVerification = false;
         
         static {
             factoryRewriter.put("jmdns",  "fr.prima.omiscid.dnssd.jivedns.DNSSDFactoryJivedns");
@@ -126,6 +131,7 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
                     continue;
                 }
                 if (factoryClass != null
+                        && !skipIntrospectionBasedVerification
                         && !Arrays.asList(factoryClass.getInterfaces()).contains(DNSSDFactory.class)) {
                     System.err.println("Specified class \"" + className + "\" is not a DNSSDFactory ... ignoring");
                     factoryClass = null;
