@@ -55,7 +55,6 @@ public class I0057_ProxyShouldNotFindRemovedServices_Test {
         new Thread( new Runnable() {
             public void run() {
                 while (client.findService(ServiceFilters.nameIs("I0057Server"), 100) != null) {
-                    System.err.println("plop");
                 }
                 if (first.getAllServices().size() == factory.createServiceRepository().getAllServices().size()) {
                     FactoryFactory.passed("New factory count is ok");

@@ -312,23 +312,23 @@ public class ServiceImpl implements Service {
         /* (non-Javadoc)
          * @see fr.prima.omiscid.service.Service#sendToAllClients(java.lang.String, byte[], boolean)
          */
-    public void sendToAllClients(String connectorName, byte[] msg, boolean unreliableButFastSend) throws UnknownConnector {
-        TcpClientServer tcpClientServer = getTcpClientServer(connectorName) ;
+    public void sendToAllClients(String connectorName, byte[] msg, boolean unreliableButFastSend) throws UnknownConnector, IncorrectConnectorType {
+        TcpClientServer tcpClientServer = getTcpClientServerForSendingConnector(connectorName) ;
         if (tcpClientServer == null)
             throw new UnknownConnector("Unknown bip connector : " + connectorName) ;
         
         tcpClientServer.sendToAllClients(msg) ;
     }
     
-    public void sendToAllClients(String connectorName, byte[] msg) throws UnknownConnector {
+    public void sendToAllClients(String connectorName, byte[] msg) throws UnknownConnector, IncorrectConnectorType {
         sendToAllClients(connectorName, msg, false);
     }
     
         /* (non-Javadoc)
          * @see fr.prima.omiscid.service.Service#sendToOneClient(java.lang.String, byte[], int, boolean)
          */
-    public void sendToOneClient(String connectorName, byte[] msg, int pid, boolean unreliableButFastSend) throws UnknownConnector {
-        TcpClientServer tcpClientServer = getTcpClientServer(connectorName) ;
+    public void sendToOneClient(String connectorName, byte[] msg, int pid, boolean unreliableButFastSend) throws UnknownConnector, IncorrectConnectorType {
+        TcpClientServer tcpClientServer = getTcpClientServerForSendingConnector(connectorName) ;
         
         if (tcpClientServer == null)
             throw new UnknownConnector("Unknown bip connector : " + connectorName) ;
@@ -336,32 +336,51 @@ public class ServiceImpl implements Service {
         tcpClientServer.sendToOneClient(msg, pid) ;
     }
     
-    public void sendToOneClient(String connectorName, byte[] msg, int pid) throws UnknownConnector {
+    public void sendToOneClient(String connectorName, byte[] msg, int pid) throws UnknownConnector, IncorrectConnectorType {
         sendToOneClient(connectorName, msg, pid, false);
     }
     
-    public void sendReplyToMessage(String connectorName, byte[] msg, Message message, boolean unreliableButFastSend) throws UnknownConnector {
+    public void sendReplyToMessage(String connectorName, byte[] msg, Message message, boolean unreliableButFastSend) throws UnknownConnector, IncorrectConnectorType {
         sendToOneClient(connectorName, msg, message.getPeerId(), unreliableButFastSend);
     }
 
-    public void sendReplyToMessage(String connectorName, byte[] msg, Message message) throws UnknownConnector {
+    public void sendReplyToMessage(String connectorName, byte[] msg, Message message) throws UnknownConnector, IncorrectConnectorType {
         sendToOneClient(connectorName, msg, message.getPeerId());
     }
 
-    public void sendReplyToMessage(byte[] msg, Message message, boolean unreliableButFastSend) {
+    public void sendReplyToMessage(byte[] msg, Message message, boolean unreliableButFastSend) throws IncorrectConnectorType {
         String connectorName = connector(message);
         sendReplyToMessage(connectorName, msg, message, unreliableButFastSend);
     }
 
-    public void sendReplyToMessage(byte[] msg, Message message) {
+    public void sendReplyToMessage(byte[] msg, Message message) throws IncorrectConnectorType {
         String connectorName = connector(message);
         sendReplyToMessage(connectorName, msg, message);
     }
 
     /**
+     * Finds a tcpServer from the service reference and the connector name.
+     * Checks it is of a type that allows sending messages.
+     * 
+     * @param connectorName the connector name
+     * @return the tcp client server
+     * @throws UnknownConnector invalid connector name
+     * @throws IncorrectConnectorType if the connector is an input
+     */
+    private TcpClientServer getTcpClientServerForSendingConnector(String connectorName) throws UnknownConnector, IncorrectConnectorType {
+        TcpClientServer res = getTcpClientServer(connectorName);
+        if (res != null) {
+            InOutputAttribute localAttr = ctrlServer.findInOutput(connectorName, ConnectorType.INPUT);
+            if (localAttr != null) {
+                throw new IncorrectConnectorType("Cannot send message on input connector : " + connectorName);
+            }
+        }
+        return res;
+    }
+    
+    /**
      * Finds a tcpServer from the service reference and the connector name
      * @param connectorName the connector name
-     * @param kind the inpout-output kind of the connector
      * @return the tcp client server
      * @throws UnknownConnector invalid connector name
      */

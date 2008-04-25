@@ -123,10 +123,11 @@ public interface Service {
      * @param pid peer id : the identification of the client that must receive the message
      * @param unreliableButFastSend not implemented yet
      * @throws UnknownConnector thrown if the service has not declared this connector
+     * @throws IncorrectConnectorType thrown if the connector is an output
      * @see Service#sendToOneClient(String, byte[], ServiceProxy)
      */
     public void sendToOneClient(String connectorName, byte[] msg, int pid, boolean unreliableButFastSend)
-    throws UnknownConnector;
+    throws UnknownConnector, IncorrectConnectorType;
     
     /**
      * Sends a message to a particular client. This client is identified by its Peer id (pid).
@@ -138,10 +139,11 @@ public interface Service {
      * @param msg the message to send
      * @param pid peer id : the identification of the client that must receive the message
      * @throws UnknownConnector thrown if the service has not declared this connector
+     * @throws IncorrectConnectorType thrown if the connector is an output
      * @see Service#sendToOneClient(String, byte[], ServiceProxy)
      */
     public void sendToOneClient(String connectorName, byte[] msg, int pid)
-    throws UnknownConnector;
+    throws UnknownConnector, IncorrectConnectorType;
     
     /**
      * Sends a message to a particular client. This client is identified by ServiceProxy because
@@ -151,10 +153,11 @@ public interface Service {
      * @param serviceProxy : the proxy of the remote service
      * @param unreliableButFastSend not implemented yet
      * @throws UnknownConnector thrown if the service has not declared this connector
+     * @throws IncorrectConnectorType thrown if the connector is an output
      * @see Service#sendToOneClient(String, byte[], int)
      */
     public void sendToOneClient(String connectorName, byte[] msg, ServiceProxy serviceProxy, boolean unreliableButFastSend)
-    throws UnknownConnector;
+    throws UnknownConnector, IncorrectConnectorType;
     
     /**
      * Sends a message to a particular client. This client is identified by ServiceProxy because
@@ -164,10 +167,11 @@ public interface Service {
      * @param msg the message to send
      * @param serviceProxy : the proxy of the remote service
      * @throws UnknownConnector thrown if the service has not declared this connector
+     * @throws IncorrectConnectorType thrown if the connector is an output
      * @see Service#sendToOneClient(String, byte[], int)
      */
     public void sendToOneClient(String connectorName, byte[] msg, ServiceProxy serviceProxy)
-    throws UnknownConnector;
+    throws UnknownConnector, IncorrectConnectorType;
     
     /**
      * Sends a message to all the clients connected to the service.
@@ -175,9 +179,10 @@ public interface Service {
      * @param msg the message to send
      * @param unreliableButFastSend not implemented yet
      * @throws UnknownConnector thrown if the service has not declared this connector
+     * @throws IncorrectConnectorType thrown if the connector is an output
      */
     public void sendToAllClients(String connectorName, byte[] msg, boolean unreliableButFastSend)
-    throws UnknownConnector;
+    throws UnknownConnector, IncorrectConnectorType;
     
     /**
      * Sends a message to all the clients connected to the service.
@@ -185,9 +190,10 @@ public interface Service {
      * @param connectorName the name of the connector sending the message
      * @param msg the message to send
      * @throws UnknownConnector thrown if the service has not declared this connector
+     * @throws IncorrectConnectorType thrown if the connector is an output
      */
     public void sendToAllClients(String connectorName, byte[] msg)
-    throws UnknownConnector;
+    throws UnknownConnector, IncorrectConnectorType;
 
     /**
      * 
@@ -197,9 +203,10 @@ public interface Service {
      * @param message the message to reply to
      * @param unreliableButFastSend not implemented yet
      * @throws UnknownConnector thrown if the service has not declared this connector
+     * @throws IncorrectConnectorType thrown if the connector is an output
      */
     public void sendReplyToMessage(String connectorName, byte[] msg, Message message, boolean unreliableButFastSend)
-    throws UnknownConnector;
+    throws UnknownConnector, IncorrectConnectorType;
     
     /**
      * Sends a message back to the sender of a message just received.
@@ -209,9 +216,10 @@ public interface Service {
      * @param msg the message to send
      * @param message the message to reply to
      * @throws UnknownConnector thrown if the service has not declared this connector
+     * @throws IncorrectConnectorType thrown if the connector is an output
      */
     public void sendReplyToMessage(String connectorName, byte[] msg, Message message)
-    throws UnknownConnector;
+    throws UnknownConnector, IncorrectConnectorType;
 
     /**
      * Sends a message back to the sender of a message just received.
@@ -221,8 +229,10 @@ public interface Service {
      * @param message the message to reply to
      * @param unreliableButFastSend not implemented yet
      * @throws UnknownConnector thrown if the service has not declared this connector
+     * @throws IncorrectConnectorType thrown if the connector is an output
      */
-    public void sendReplyToMessage(byte[] msg, Message message, boolean unreliableButFastSend);
+    public void sendReplyToMessage(byte[] msg, Message message, boolean unreliableButFastSend)
+    throws IncorrectConnectorType;
     
     /**
      * Sends a message back to the sender of a message just received.
@@ -233,7 +243,8 @@ public interface Service {
      * @param message the message to reply to
      * @throws UnknownConnector thrown if the service has not declared this connector
      */
-    public void sendReplyToMessage(byte[] msg, Message message);
+    public void sendReplyToMessage(byte[] msg, Message message)
+    throws IncorrectConnectorType;
 
     /**
      * Sets the value of a service variable.
@@ -358,7 +369,7 @@ public interface Service {
      * @param proxy the proxy of the remote service
      * @param remoteConnector the name of the remote connector on the remote service
      * @throws UnknownConnector thrown if one of the connector does not exist
-     * @throws IncorrectConnectorType thrown if the coonnectors cannot connect:
+     * @throws IncorrectConnectorType thrown if the connectors cannot connect:
      * for instance : trying to connect an input connector on another input connector.
      * @throws ConnectionRefused when connection is refused by remote host. This
      * can because of network problem.
