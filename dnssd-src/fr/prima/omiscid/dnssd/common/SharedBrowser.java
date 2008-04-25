@@ -38,6 +38,7 @@ import fr.prima.omiscid.dnssd.interf.ServiceBrowser;
 import fr.prima.omiscid.dnssd.interf.ServiceEvent;
 import fr.prima.omiscid.dnssd.interf.ServiceEventListener;
 import fr.prima.omiscid.dnssd.interf.ServiceInformation;
+import java.util.Iterator;
 
 public class SharedBrowser implements ServiceEventListener {
 
@@ -93,7 +94,19 @@ public class SharedBrowser implements ServiceEventListener {
         if (e.isFound()) {
             services.add(e.getServiceInformation());
         } else {
-            services.remove(e.getServiceInformation());
+            boolean removed = false;
+            for (Iterator<ServiceInformation> it = services.iterator(); it.hasNext();) {
+                ServiceInformation serviceInformation = it.next();
+                if (serviceInformation.getFullName().equals(e.getServiceInformation().getFullName())) {
+                    it.remove();
+                    removed = true;
+                    break;
+                }
+            }
+            if (!removed) {
+                return;
+            }
+            //services.remove(e.getServiceInformation());
         }
         List<ProxyServiceBrowser> allClients = new Vector<ProxyServiceBrowser>();
         allClients.addAll(clients);
@@ -102,7 +115,7 @@ public class SharedBrowser implements ServiceEventListener {
         }
     }
 
-    private class ProxyServiceBrowser implements ServiceBrowser {
+    protected class ProxyServiceBrowser implements ServiceBrowser {
         public void stop() {
             SharedBrowser.this.stop(this);
         }
