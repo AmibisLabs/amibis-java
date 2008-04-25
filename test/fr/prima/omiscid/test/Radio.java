@@ -49,6 +49,9 @@ public class Radio {
     private final static String sampleRateVariable = "SampleRate";
     private int sampleRate = 44100;
     private int channels = 2;
+    private Service service;
+    private Process mplayer;
+    private File pipeFile;
     
    @Test
     public void callMain() {
@@ -57,13 +60,13 @@ public class Radio {
     public Radio() {
         
     }
-    public Radio(String[] userArgs) {
-        File pipeFile = null;
+    public void start(String[] userArgs) {
+        File localPipeFinding = null;
         String pipe = "/tmp/radio";
         try {
-            pipeFile = File.createTempFile("radio", null);
-            pipeFile.delete();
-            pipe = pipeFile.getAbsolutePath();
+            localPipeFinding = File.createTempFile("radio", null);
+            localPipeFinding.delete();
+            pipe = localPipeFinding.getAbsolutePath();
         } catch (IOException ex) {
         }
         Vector<String> args = new Vector<String>();
@@ -74,7 +77,7 @@ public class Radio {
         }));
         args.addAll(Arrays.asList(userArgs));
         try {
-            Service service = FactoryFactory.factory().create(serviceName);
+            service = FactoryFactory.factory().create(serviceName);
             service.addVariable(sampleRateVariable,"integer", "sample rate", fr.prima.omiscid.user.variable.VariableAccessType.CONSTANT);
             service.setVariableValue(sampleRateVariable, java.lang.Integer.toString(sampleRate));
             service.addVariable(channelsVariable, "integer", "channels count", fr.prima.omiscid.user.variable.VariableAccessType.CONSTANT);
@@ -83,8 +86,12 @@ public class Radio {
             service.setVariableValue(titleVariableName, userArgs[0]);
             service.addConnector(audioOutputName, "output for sound", fr.prima.omiscid.user.connector.ConnectorType.OUTPUT);
             service.start();
-            while (true) {
+            while (service != null) {
                 startPlayerAndStream(service, args, pipe);
+            }
+            if (mplayer != null) {
+                mplayer.destroy();
+                mplayer = null;
             }
         } catch (Exception ex) {
             Logger.getLogger(Radio.class.getName()).log(Level.SEVERE, null, ex);
@@ -95,7 +102,14 @@ public class Radio {
         if (args.length == 0) {
             args = new String[]{"http://streaming.radio.rtl2.fr:80/rtl2-1-44-96"};
         }
-        new Radio(args);
+        new Radio().start(args);
+    }
+
+    synchronized void stop() {
+        if (service != null) {
+            service.stop();
+            service = null;
+        }
     }
 
     private void consume(final InputStream in) {
@@ -114,8 +128,9 @@ public class Radio {
     private void startPlayerAndStream(Service service, Vector<String> args, String pipe) throws InterruptedException, IOException, FileNotFoundException {
         System.err.println("START");
         Runtime.getRuntime().exec(new String[]{"mkfifo", pipe}).waitFor();
-        new File(pipe).deleteOnExit();
-        Process mplayer = Runtime.getRuntime().exec(args.toArray(new String[0]));
+        pipeFile = new File(pipe);
+        pipeFile.deleteOnExit();
+        mplayer = Runtime.getRuntime().exec(args.toArray(new String[0]));
         consume(mplayer.getInputStream());
         consume(mplayer.getErrorStream());
         InputStream input = new FileInputStream(pipe);
