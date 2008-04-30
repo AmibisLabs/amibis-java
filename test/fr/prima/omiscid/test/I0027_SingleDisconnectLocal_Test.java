@@ -56,7 +56,7 @@ public class I0027_SingleDisconnectLocal_Test {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0027Server");
-            server.addConnector("bug", "", ConnectorType.INPUT);
+            server.addConnector("bug", "", ConnectorType.INOUTPUT);
             server.addConnectorListener("bug", new ConnectorListener() {
                 boolean passed = false;
                 public void messageReceived(Service service, String localConnectorName, Message message) {
@@ -80,7 +80,7 @@ public class I0027_SingleDisconnectLocal_Test {
         }
         {
             final Service client = factory.create("I0027Client");
-            client.addConnector("bug", "", ConnectorType.OUTPUT);
+            client.addConnector("bug", "", ConnectorType.INOUTPUT);
             client.addConnectorListener("bug", new ConnectorListener(){
 
                 boolean passed = false;

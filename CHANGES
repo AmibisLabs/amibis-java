@@ -16,9 +16,9 @@ In this files, you will find changes between java OMiSCID versions.
 r
         fix:  trying to send message (or reply message) through a input connector now properly throws an exception
         fix:  service disapparitions were properly notified but browsing with a new service repository caused disappeared services to be reported as present
+        impr: convert to JAXB. Omiscid was using castor-xml for its xml communication but it now uses jaxb which is included in Java 6.0 and only requires 2 jars (900k) with java 5.0. JAXB is also faster than castor-xml when used within omiscid.
 
 
-jaxb?
 code-based customizability for dnssd
 
 1.4.0

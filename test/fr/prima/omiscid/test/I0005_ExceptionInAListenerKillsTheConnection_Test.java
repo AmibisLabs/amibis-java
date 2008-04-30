@@ -26,6 +26,7 @@
 
 package fr.prima.omiscid.test;
 
+import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import java.io.IOException;
 
 import fr.prima.omiscid.user.connector.ConnectorListener;
@@ -54,7 +55,7 @@ public class I0005_ExceptionInAListenerKillsTheConnection_Test {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0005Server");
-            server.addConnector("bug", "", ConnectorType.INPUT);
+            server.addConnector("bug", "", ConnectorType.INOUTPUT);
             server.addConnectorListener("bug", new ConnectorListener() {
                 int count = 0;
                 public synchronized void messageReceived(Service service, String localConnectorName, Message message) {
@@ -74,7 +75,7 @@ public class I0005_ExceptionInAListenerKillsTheConnection_Test {
         }
         {
             Service client = factory.create("I0005Client");
-            client.addConnector("bug", "", ConnectorType.OUTPUT);
+            client.addConnector("bug", "", ConnectorType.INOUTPUT);
             client.addConnectorListener("bug", new ConnectorListener() {
                 public void messageReceived(Service service, String localConnectorName, Message message) {
                     FactoryFactory.passed("Second message received an answer as expected");

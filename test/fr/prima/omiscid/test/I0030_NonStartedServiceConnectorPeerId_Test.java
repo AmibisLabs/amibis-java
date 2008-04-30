@@ -67,6 +67,7 @@ public class I0030_NonStartedServiceConnectorPeerId_Test {
                 }
 
                 public void connected(Service service, String localConnectorName, int peerId) {
+                    System.err.println(peerId);
                     if (!connections.isEmpty() && peerId != 1+connections.lastElement()) {
                         connections.add(peerId);
                         FactoryFactory.failed("Not a regular sequence of peerIds found, "+Arrays.toString(connections.toArray()));

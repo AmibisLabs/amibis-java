@@ -48,7 +48,7 @@ public class I0006_ShouldAllowEarlyConnection_Test {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0006Server");
-            server.addConnector("bug", "", ConnectorType.INPUT);
+            server.addConnector("bug", "", ConnectorType.INOUTPUT);
             server.addConnectorListener("bug", new ConnectorListener() {
                 
                 public void messageReceived(final Service service, final String localConnectorName, final Message message) {
@@ -74,7 +74,7 @@ public class I0006_ShouldAllowEarlyConnection_Test {
             final Vector<Object> started = new Vector<Object>();
             for (int i = 0; i < 3; i++) {
                 Service client = factory.create("I0006Client");
-                client.addConnector("bug", "", ConnectorType.OUTPUT);
+                client.addConnector("bug", "", ConnectorType.INOUTPUT);
                 client.addConnectorListener("bug", new ConnectorListener() {
                     int count = 0;
 
