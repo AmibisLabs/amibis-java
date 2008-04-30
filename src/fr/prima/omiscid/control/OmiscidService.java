@@ -36,18 +36,15 @@ import fr.prima.omiscid.com.TcpClient;
 import fr.prima.omiscid.com.interf.BipMessageListener;
 import fr.prima.omiscid.control.interf.GlobalConstants;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
-import fr.prima.omiscid.control.message.answer.ControlAnswer;
-import fr.prima.omiscid.control.message.answer.ControlAnswerItem;
-import fr.prima.omiscid.control.message.answer.ControlEvent;
-import fr.prima.omiscid.control.message.answer.Variable;
-import fr.prima.omiscid.control.message.answer.types.CA_LockResultType;
-import fr.prima.omiscid.control.message.query.ControlQuery;
-import fr.prima.omiscid.control.message.query.ControlQueryItem;
-import fr.prima.omiscid.control.message.query.FullDescription;
-import fr.prima.omiscid.control.message.query.Subscribe;
-import fr.prima.omiscid.control.message.query.Unsubscribe;
 import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.dnssd.interf.ServiceInformation;
+import fr.prima.omiscid.generated.controlanswer.ControlAnswer;
+import fr.prima.omiscid.generated.controlanswer.ControlEvent;
+import fr.prima.omiscid.generated.controlanswer.IOType;
+import fr.prima.omiscid.generated.controlanswer.Lock;
+import fr.prima.omiscid.generated.controlanswer.LockResult;
+import fr.prima.omiscid.generated.controlanswer.Variable;
+import fr.prima.omiscid.generated.controlquery.ControlQuery;
 import fr.prima.omiscid.user.connector.ConnectorType;
 import fr.prima.omiscid.user.connector.Message;
 import fr.prima.omiscid.user.util.Utility;
@@ -59,8 +56,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Vector;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
+import javax.xml.bind.JAXBElement;
 
 /**
  * Encapsulates the data about a <b>remote</b> service. Service instantiation is done by
@@ -240,20 +236,12 @@ public class OmiscidService {
                 ctrlClient = new ControlClient(peerId);
                 ctrlClient.addControlEventListener(new ControlEventListener() {
                     public void receivedControlEvent(Message message) {
-                        try {
-                            ControlEvent controlEvent = ControlEvent.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())));
-                            if (controlEvent.getVariable() != null) {
-                                VariableAttribute variableAttribute = findVariable(controlEvent.getVariable().getName());
-                                if (variableAttribute != null) {
-                                    variableAttribute.setValueStr(controlEvent.getVariable().getValue());
-                                }
+                        ControlEvent controlEvent = JAXBTools.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())), ControlEvent.class);
+                        if (controlEvent.getVariable() != null) {
+                            VariableAttribute variableAttribute = findVariable(controlEvent.getVariable().getName());
+                            if (variableAttribute != null) {
+                                variableAttribute.setValueStr(controlEvent.getVariable().getValue());
                             }
-                        } catch (MarshalException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        } catch (ValidationException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
                         }
                     }
                 });
@@ -498,8 +486,7 @@ public class OmiscidService {
     
 
     
-    private ControlAnswer queryToServer(ControlQuery controlQuery, boolean expectAnswer)
-    throws MarshalException, ValidationException {
+    private ControlAnswer queryToServer(ControlQuery controlQuery, boolean expectAnswer) {
         initControlClient();
         if (ctrlClient != null) {
             ControlAnswer res = ctrlClient.queryToServer(controlQuery, expectAnswer);
@@ -519,32 +506,21 @@ public class OmiscidService {
                 return true;
             } else {
                 ControlQuery controlQuery = new ControlQuery();
-                FullDescription fullDescription = new FullDescription();
-                ControlQueryItem controlQueryItem = new ControlQueryItem();
-                controlQueryItem.setFullDescription(fullDescription);
-                controlQuery.addControlQueryItem(controlQueryItem);
+                ControlQuery.FullDescription fullDescription = new ControlQuery.FullDescription();
+                controlQuery.getFullDescriptionOrInputOrOutput().add(fullDescription);
                 
-                try {
-                    queryState = QueryState.QUERIED;
-                    ControlAnswer controlAnswer = queryToServer(controlQuery, true);
-                    if (controlAnswer != null) {
-                        for (ControlAnswerItem item : controlAnswer.getControlAnswerItem()) {
-                            processControlAnswerItem(item);
-                        }
-                        queryState = QueryState.RECEIVED;
-                        return true;
-                    } else {
-                        queryState = QueryState.FAILED;
-                        return false;
+                queryState = QueryState.QUERIED;
+                ControlAnswer controlAnswer = queryToServer(controlQuery, true);
+                if (controlAnswer != null) {
+                    for (JAXBElement<?> item : controlAnswer.getInputOrOutputOrInoutput()) {
+                        processControlAnswerItem(item.getValue());
                     }
-                } catch (MarshalException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (ValidationException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    queryState = QueryState.RECEIVED;
+                    return true;
+                } else {
+                    queryState = QueryState.FAILED;
+                    return false;
                 }
-                return false;
             }
         }
     }
@@ -561,18 +537,13 @@ public class OmiscidService {
             queryCompleteDescription();
         }
     }
-    private void processControlAnswerItem(ControlAnswerItem item) {
-        Object choice = item.getChoiceValue();
-        if (choice instanceof fr.prima.omiscid.control.message.answer.Variable) {
-            processVariableDescription(item.getVariable());
-        } else if (choice instanceof fr.prima.omiscid.control.message.answer.Inoutput) {
-            processInOutputDescription(item, item.getInoutput().getName());
-        } else if (choice instanceof fr.prima.omiscid.control.message.answer.Output) {
-            processInOutputDescription(item, item.getOutput().getName());
-        } else if (choice instanceof fr.prima.omiscid.control.message.answer.Input) {
-            processInOutputDescription(item, item.getInput().getName());
+    private void processControlAnswerItem(Object item) {
+        if (item instanceof Variable) {
+            processVariableDescription((Variable)item);
+        } else if (item instanceof IOType) {
+            processInOutputDescription((IOType)item, ((IOType)item).getName());
         } else {
-            System.err.println("unhandled answer element "+choice);
+            System.err.println("unhandled answer element "+item);
         }
     }
     
@@ -586,24 +557,14 @@ public class OmiscidService {
      */
     public VariableAttribute queryVariableDescription(String name) {
         ControlQuery controlQuery = new ControlQuery();
-        fr.prima.omiscid.control.message.query.Variable variable = new fr.prima.omiscid.control.message.query.Variable();
+        ControlQuery.Variable variable = new ControlQuery.Variable();
         variable.setName(name);
-        ControlQueryItem controlQueryItem = new ControlQueryItem();
-        controlQueryItem.setVariable(variable);
-        controlQuery.addControlQueryItem(controlQueryItem);
+        controlQuery.getFullDescriptionOrInputOrOutput().add(variable);
         
-        try {
-            ControlAnswer controlAnswer = queryToServer(controlQuery, true);
-            if (oneVariableAnswer(controlAnswer)) {
-                processVariableDescription(controlAnswer.getControlAnswerItem(0).getVariable());
-                return variables.get(name);
-            }
-        } catch (MarshalException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ValidationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        ControlAnswer controlAnswer = queryToServer(controlQuery, true);
+        if (oneVariableAnswer(controlAnswer)) {
+            processVariableDescription((Variable) controlAnswer.getInputOrOutputOrInoutput().get(0).getValue());
+            return variables.get(name);
         }
         return null;
     }
@@ -620,30 +581,20 @@ public class OmiscidService {
      */
     public boolean queryVariableModification(String name, String value) {
         ControlQuery controlQuery = new ControlQuery();
-        fr.prima.omiscid.control.message.query.Variable variable = new fr.prima.omiscid.control.message.query.Variable();
+        ControlQuery.Variable variable = new ControlQuery.Variable();
         variable.setName(name);
         variable.setValue(value);
-        ControlQueryItem controlQueryItem = new ControlQueryItem();
-        controlQueryItem.setVariable(variable);
-        controlQuery.addControlQueryItem(controlQueryItem);
-        try {
-            ControlAnswer controlAnswer = queryToServer(controlQuery, true);
-            if (oneVariableAnswer(controlAnswer)) {
-                processVariableDescription(controlAnswer.getControlAnswerItem(0).getVariable());
-                return true;
-            }
-        } catch (MarshalException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ValidationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        controlQuery.getFullDescriptionOrInputOrOutput().add(variable);
+        ControlAnswer controlAnswer = queryToServer(controlQuery, true);
+        if (oneVariableAnswer(controlAnswer)) {
+            processVariableDescription((Variable) controlAnswer.getInputOrOutputOrInoutput().get(0).getValue());
+            return true;
         }
         return false;
     }
     
     private static boolean oneVariableAnswer(ControlAnswer controlAnswer) {
-        return controlAnswer != null && controlAnswer.getControlAnswerItemCount() == 1 && controlAnswer.getControlAnswerItem(0).getChoiceValue() instanceof Variable;
+        return controlAnswer != null && controlAnswer.getInputOrOutputOrInoutput().size() == 1 && controlAnswer.getInputOrOutputOrInoutput().get(0).getValue() instanceof Variable;
     }
 
     public boolean subscribe(String varName, VariableChangeListener variableChangeListener) {
@@ -712,25 +663,13 @@ public class OmiscidService {
         VariableAttribute va = findVariable(varName);
         if (va != null) {
             ControlQuery controlQuery = new ControlQuery();
-            ControlQueryItem controlQueryItem = new ControlQueryItem();
-            Subscribe subscribe = new Subscribe();
+            ControlQuery.Subscribe subscribe = new ControlQuery.Subscribe();
             subscribe.setName(varName);
-            controlQueryItem.setSubscribe(subscribe);
-            controlQuery.addControlQueryItem(controlQueryItem);
-            //          String request = "<subscribe name=\"" + va.getName() + "\"/>";
-            //          queryToServer(request, false);
-            try {
-                ControlAnswer controlAnswer = queryToServer(controlQuery, true);
-                if (oneVariableAnswer(controlAnswer)) {
-                    processVariableDescription(controlAnswer.getControlAnswerItem(0).getVariable());
-                    return true;
-                }
-            } catch (MarshalException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (ValidationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            controlQuery.getFullDescriptionOrInputOrOutput().add(subscribe);
+            ControlAnswer controlAnswer = queryToServer(controlQuery, true);
+            if (oneVariableAnswer(controlAnswer)) {
+                processVariableDescription((Variable) controlAnswer.getInputOrOutputOrInoutput().get(0).getValue());
+                return true;
             }
             return false;
         } else {
@@ -751,22 +690,10 @@ public class OmiscidService {
         VariableAttribute va = findVariable(varName);
         if (va != null) {
             ControlQuery controlQuery = new ControlQuery();
-            ControlQueryItem controlQueryItem = new ControlQueryItem();
-            Unsubscribe unsubscribe = new Unsubscribe();
+            ControlQuery.Unsubscribe unsubscribe = new ControlQuery.Unsubscribe();
             unsubscribe.setName(varName);
-            controlQueryItem.setUnsubscribe(unsubscribe);
-            controlQuery.addControlQueryItem(controlQueryItem);
-            //          String request = "<unsubscribe name=\"" + va.getName() + "\"/>";
-            //          queryToServer(request, false);
-            try {
-                queryToServer(controlQuery, false);
-            } catch (MarshalException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (ValidationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            controlQuery.getFullDescriptionOrInputOrOutput().add(unsubscribe);
+            queryToServer(controlQuery, false);
             return true;
         } else {
             System.err.println("variable unknown by client\n");
@@ -781,31 +708,21 @@ public class OmiscidService {
      */
     public boolean lock() {
         ControlQuery controlQuery = new ControlQuery();
-        ControlQueryItem controlQueryItem = new ControlQueryItem();
-        controlQueryItem.setLock(new fr.prima.omiscid.control.message.query.Lock());
-        controlQuery.addControlQueryItem(controlQueryItem);
-        try {
-            ControlAnswer controlAnswer = queryToServer(controlQuery, true);
-            if (controlAnswer != null) {
-                int peer = Utility.hexStringToInt(controlAnswer.getControlAnswerItem(0).getLock().getPeer());
-                VariableAttribute vattr = findVariable("lock");
-                if (vattr != null) {
-                    vattr.setValueStr(Integer.toString(peer));
-                }
-                if (controlAnswer.getControlAnswerItem(0).getLock().getResult().getType() == CA_LockResultType.OK_TYPE) {
-                    if (peer != peerId) {
-                        System.err.println("Lock ok, but id different : " + peer + " != " + peerId);
-                        return false;
-                    }
-                    return true;
-                }
+        controlQuery.getFullDescriptionOrInputOrOutput().add(new ControlQuery.Lock());
+        ControlAnswer controlAnswer = queryToServer(controlQuery, true);
+        if (controlAnswer != null) {
+            int peer = Utility.hexStringToInt(((Lock) controlAnswer.getInputOrOutputOrInoutput().get(0).getValue()).getPeer());
+            VariableAttribute vattr = findVariable("lock");
+            if (vattr != null) {
+                vattr.setValueStr(Integer.toString(peer));
             }
-        } catch (MarshalException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ValidationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            if (((Lock) controlAnswer.getInputOrOutputOrInoutput().get(0).getValue()).getResult() == LockResult.OK) {
+                if (peer != peerId) {
+                    System.err.println("Lock ok, but id different : " + peer + " != " + peerId);
+                    return false;
+                }
+                return true;
+            }
         }
         return false;
     }
@@ -817,36 +734,26 @@ public class OmiscidService {
      */
     public boolean unlock() {
         ControlQuery controlQuery = new ControlQuery();
-        ControlQueryItem controlQueryItem = new ControlQueryItem();
-        controlQueryItem.setUnlock(new fr.prima.omiscid.control.message.query.Unlock());
-        controlQuery.addControlQueryItem(controlQueryItem);
-        try {
-            ControlAnswer controlAnswer = queryToServer(controlQuery, true);
-            if (controlAnswer != null) {
-                int peer = Utility.hexStringToInt(controlAnswer.getControlAnswerItem(0).getUnlock().getPeer());
-                
-                VariableAttribute vattr = findVariable("lock");
-                if (vattr != null) {
-                    vattr.setValueStr(Integer.toString(peer));
-                }
-                if (controlAnswer.getControlAnswerItem(0).getUnlock().getResult().getType() == CA_LockResultType.OK_TYPE) {
-                    if (peer != 0) {
-                        System.err.println("unlock ok, but id no null : " + peer);
-                    }
-                    return true;
-                }
+        controlQuery.getFullDescriptionOrInputOrOutput().add(new ControlQuery.Unlock());
+        ControlAnswer controlAnswer = queryToServer(controlQuery, true);
+        if (controlAnswer != null) {
+                int peer = Utility.hexStringToInt(((Lock)controlAnswer.getInputOrOutputOrInoutput().get(0).getValue()).getPeer());
+
+            VariableAttribute vattr = findVariable("lock");
+            if (vattr != null) {
+                vattr.setValueStr(Integer.toString(peer));
             }
-        } catch (MarshalException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ValidationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            if (((Lock)controlAnswer.getInputOrOutputOrInoutput().get(0).getValue()).getResult() == LockResult.OK) {
+                if (peer != 0) {
+                    System.err.println("unlock ok, but id not null: " + peer);
+                }
+                return true;
+            }
         }
         return false;
     }
     
-    private void processVariableDescription(fr.prima.omiscid.control.message.answer.Variable variable) {
+    private void processVariableDescription(Variable variable) {
         VariableAttribute variableAttribute = variables.get(variable.getName());
         if (variableAttribute == null) {
             variables.put(variable.getName(), new VariableAttribute(variable));
@@ -854,7 +761,7 @@ public class OmiscidService {
             variableAttribute.init(variable);
         }
     }
-    private void processInOutputDescription(ControlAnswerItem item, String itemName) {
+    private void processInOutputDescription(IOType item, String itemName) {
         InOutputAttribute attribute = connectors.get(itemName);
         if (attribute == null) {
             connectors.put(itemName, new InOutputAttribute(item));

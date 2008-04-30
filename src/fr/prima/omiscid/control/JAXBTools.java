@@ -24,17 +24,47 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package fr.prima.omiscid.test;
+package fr.prima.omiscid.control;
+
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 
 /**
  *
  * @author emonet
  */
-public class TestPassedPseudoException extends RuntimeException {
-
-    public TestPassedPseudoException() {
-        super("Test passed, this is an execption to be expected by junit");
+class JAXBTools {
+    private static Map<Class, JAXBContext> context = new HashMap();
+    
+    static void marshal(Object o, OutputStreamWriter out) {
+        try {
+            JAXBContext c = context.get(o.getClass());
+            if (c == null) {
+                context.put(o.getClass(), c = JAXBContext.newInstance(o.getClass()));
+            }
+            c.createMarshaller().marshal(o, out);
+        } catch (JAXBException ex) {
+            Logger.getLogger(JAXBTools.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    
+    static <T> T unmarshal(InputStreamReader in, Class<T> aClass) {
+        try {
+            JAXBContext c = context.get(aClass);
+            if (c == null) {
+                context.put(aClass, c = JAXBContext.newInstance(aClass));
+            }
+            return (T) c.createUnmarshaller().unmarshal(in);
+        } catch (JAXBException ex) {
+            Logger.getLogger(JAXBTools.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
 }

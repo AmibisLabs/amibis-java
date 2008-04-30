@@ -82,6 +82,7 @@ headers:
 	find dnssd-src -name \*.java -exec ./set-header.sh {} \;
 	find user-level-src -name \*.java -exec ./set-header.sh {} \;
 	find test -name \*.java -exec ./set-header.sh {} \;
+	find other-test -name \*.java -exec ./set-header.sh {} \;
 
 #just a bunch of commands used for tests refactoring (conversion to junit)
 # do-replacement 's@public class I0@\nimport org.junit.Test;\nimport static org.junit.Assert.*;\n\npublic class I0@g' I00{0,1,2,3,4}*java

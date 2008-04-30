@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="file:/home/twilight/projects/jOMiSCID/xsd/service.xsd" uri="xml-resources/jaxb/ServiceXml/service.xsd"/>
+    <system systemId="file:/home/twilight/projects/jOMiSCID/xsd/control-query.xsd" uri="xml-resources/jaxb/ControlQuery/control-query.xsd"/>
+    <system systemId="file:/home/twilight/projects/jOMiSCID/xsd/control-answer.xsd" uri="xml-resources/jaxb/ControlAnswer/control-answer.xsd"/>
+</catalog>
