@@ -56,7 +56,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Vector;
-import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBElement;
 
 /**
@@ -237,7 +236,7 @@ public class OmiscidService {
                 ctrlClient = new ControlClient(peerId);
                 ctrlClient.addControlEventListener(new ControlEventListener() {
                     public void receivedControlEvent(Message message) {
-                        ControlEvent controlEvent = JAXB.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())), ControlEvent.class);
+                        ControlEvent controlEvent = JAXBTools.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())), ControlEvent.class);
                         if (controlEvent.getVariable() != null) {
                             VariableAttribute variableAttribute = findVariable(controlEvent.getVariable().getName());
                             if (variableAttribute != null) {

@@ -15,6 +15,7 @@
                 <root id="src.dir" name="user-level-src"/>
                 <root id="dnssd-src.dir"/>
                 <root id="generated-src.dir"/>
+                <root id="src.other-test.dir"/>
             </source-roots>
             <test-roots>
                 <root id="test.test.dir"/>

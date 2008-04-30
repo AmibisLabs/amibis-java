@@ -37,6 +37,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.bind.JAXBException;
 import org.w3c.dom.Element;
 
 import fr.prima.omiscid.com.TcpClient;
@@ -47,7 +50,7 @@ import fr.prima.omiscid.generated.controlanswer.ControlAnswer;
 import fr.prima.omiscid.generated.controlquery.ControlQuery;
 import fr.prima.omiscid.user.connector.Message;
 import fr.prima.omiscid.user.util.Utility;
-import javax.xml.bind.JAXB;
+import javax.xml.bind.JAXBContext;
 
 /**
  * Handles the communication with the control server of a OMiSCID service.
@@ -223,7 +226,7 @@ public class ControlClient implements BipMessageListener {
             Element root = xmlMessage.getRootElement();
             if (root.getNodeName().equals(GlobalConstants.controlAnswerXMLTag)) {
                 try {
-                    ControlAnswer answer = JAXB.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())), ControlAnswer.class);
+                    ControlAnswer answer = JAXBTools.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())), ControlAnswer.class);
                     monitor.pushMessageAnswer(answer);
                     return;
                 } catch (InterruptedException e) {
@@ -329,7 +332,7 @@ public class ControlClient implements BipMessageListener {
             String strMessageId = Utility.intTo8HexString(theMsgId).toLowerCase();
             controlQuery.setId(strMessageId);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            JAXB.marshal(controlQuery, new OutputStreamWriter(byteArrayOutputStream));
+            JAXBTools.marshal(controlQuery, new OutputStreamWriter(byteArrayOutputStream));
             try {
                 monitor.willSend();
                 tcpClient.send(byteArrayOutputStream.toByteArray());

@@ -62,7 +62,6 @@ import fr.prima.omiscid.user.connector.Message;
 import fr.prima.omiscid.user.util.impl.Constants;
 import fr.prima.omiscid.user.util.Utility;
 import fr.prima.omiscid.user.variable.VariableAccessType;
-import javax.xml.bind.JAXB;
 
 /**
  * Represents a "local" OmiscidService. To access remote service, use the
@@ -426,7 +425,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             
             try {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                JAXB.marshal(controlEvent, new OutputStreamWriter(byteArrayOutputStream));
+                JAXBTools.marshal(controlEvent, new OutputStreamWriter(byteArrayOutputStream));
                 byte[] message = byteArrayOutputStream.toByteArray();
                 byteArrayOutputStream.close();
                 
@@ -644,7 +643,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
 
     protected void processMessage(Message message) {
         try {
-            ControlQuery controlQuery = JAXB.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())), ControlQuery.class);
+            ControlQuery controlQuery = JAXBTools.unmarshal(new InputStreamReader(new ByteArrayInputStream(message.getBuffer())), ControlQuery.class);
             int remoteId = message.getPeerId();
             ControlAnswer controlAnswer = new ControlAnswer();
             controlAnswer.setId(controlQuery.getId());
@@ -704,7 +703,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             }
             if (controlAnswer.getInputOrOutputOrInoutput().size() != 0) {
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                JAXB.marshal(controlAnswer, new OutputStreamWriter(byteArrayOutputStream));
+                JAXBTools.marshal(controlAnswer, new OutputStreamWriter(byteArrayOutputStream));
                 if (!tcpServer.sendToOneClient(byteArrayOutputStream.toByteArray(), message.getPeerId())) {
                     System.err.println("Warning: ControlServer: Send failed: peer not found : " + Utility.intTo8HexString(message.getPeerId()));
                 }

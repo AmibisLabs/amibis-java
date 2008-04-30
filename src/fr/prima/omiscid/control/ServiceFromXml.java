@@ -41,7 +41,6 @@ import fr.prima.omiscid.generated.servicexml.OutputConnector;
 import fr.prima.omiscid.generated.servicexml.Service;
 import fr.prima.omiscid.generated.servicexml.Variable;
 import fr.prima.omiscid.user.connector.ConnectorType;
-import javax.xml.bind.JAXB;
 
 public class ServiceFromXml extends ControlServer {
 
@@ -57,7 +56,7 @@ public class ServiceFromXml extends ControlServer {
 
     public ServiceFromXml(String fileName) throws IOException {
         super();
-        init(JAXB.unmarshal(new FileReader(fileName), Service.class));
+        init(JAXBTools.unmarshal(new FileReader(fileName), Service.class));
 
 //        Document doc = XmlUtils.parseXMLFile(fileName);
 //        setServiceName(XmlToService.getServiceName(doc.getDocumentElement()));
@@ -66,7 +65,7 @@ public class ServiceFromXml extends ControlServer {
 
     public ServiceFromXml(InputStream inputStream) throws IOException {
         super();
-        init(JAXB.unmarshal(new InputStreamReader(inputStream), Service.class));
+        init(JAXBTools.unmarshal(new InputStreamReader(inputStream), Service.class));
 //        Document doc = XmlUtils.parseXMLStream(stream);
 //        setServiceName(XmlToService.getServiceName(doc.getDocumentElement()));
 //        XmlToService.initServiceFromXml(this, doc.getDocumentElement());
