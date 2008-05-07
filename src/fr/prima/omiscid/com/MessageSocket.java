@@ -142,7 +142,6 @@ final class ReceiveBuffer {
 
                         if (!messageSocket.isInitMessageReceived()) {
                             messageSocket.initMessageReceived(pid);
-                            messageSocket.initializeConnection();
                         } else {
                             messageSocket.newMessageReceived(new MessageImpl(buffer, position, length, mid, pid));
                         }
@@ -311,27 +310,10 @@ public abstract class MessageSocket {
     synchronized void initMessageReceived(int peerId) {
         initMessageReceived = true;
         remotePeerId = peerId;
-        if (notifyListenersOnConnection) {
-            synchronized (listenersSet) {
-                for (BipMessageListener listener : listenersSet) {
-                    try {
-                        listener.connected(remotePeerId);
-                    } catch (Exception e) {
-                        System.err.println("Omiscid caught an exception thrown by a listener on connection, it is shown here:");
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
+        initializeConnection();
+        possiblyNotifyListenersOfConnection();
     }
 
-    synchronized boolean isInitMessageSent() {
-        return initMessageSent;
-    }
-
-    synchronized void setInitMessageSent() {
-        this.initMessageSent = true;
-    }
 
     /**
      * the object who manage the byte reception and the OMiSCID detection
@@ -418,6 +400,24 @@ public abstract class MessageSocket {
         }
     }
 
+    private synchronized void possiblyNotifyListenersOfConnection() {
+        if (notifyListenersOnConnection && initMessageReceived && initMessageSent) {
+            notifyListenersOnConnection = false;
+            ArrayList<BipMessageListener> listeners;
+            synchronized (listenersSet) {
+                listeners = new ArrayList<BipMessageListener>(listenersSet);
+            }
+            for (BipMessageListener listener : listeners) {
+                try {
+                    listener.connected(remotePeerId);
+                } catch (Exception e) {
+                    System.err.println("Omiscid caught an exception thrown by a listener on connection, it is shown here:");
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     private void run() {
         while (connected) {
             receive();
@@ -474,7 +474,8 @@ public abstract class MessageSocket {
      * socket. The started thread is automatically stopped on
      * {@link #closeConnection()} call.
      */
-    public void start() {
+    public void start(boolean shouldNotifyListenersOnConnection) {
+        notifyListenersOnConnection = shouldNotifyListenersOnConnection;
         if (listeningThread == null) {
             listeningThread = new Thread(new Runnable() {
                 public void run() {
@@ -490,11 +491,11 @@ public abstract class MessageSocket {
     /**
      * Initializes the connection (protocol initialisation).
      */
-    public synchronized void initializeConnection(boolean shouldNotifyListenersOnConnection) {
+    public synchronized void initializeConnection() {
         if (!initMessageSent) {
             send((byte[]) null);
             initMessageSent = true;
-            notifyListenersOnConnection = shouldNotifyListenersOnConnection;
+            possiblyNotifyListenersOfConnection();
         } else {
             //System.err.println("Warning: in MessageSocket, multiple calls to initializeConnection");
             
@@ -502,13 +503,6 @@ public abstract class MessageSocket {
             // This can be because both connections ends are sending an init message
             // and the MessageSocket retries to send it when it receives one.
         }
-    }
-
-    /**
-     * Initializes the connection (protocol initialisation).
-     */
-    public synchronized void initializeConnection() {
-        initializeConnection(false);
     }
 
     /**

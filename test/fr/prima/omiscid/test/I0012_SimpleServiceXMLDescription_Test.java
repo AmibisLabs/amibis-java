@@ -34,15 +34,17 @@ import fr.prima.omiscid.user.exception.InvalidDescriptionException;
 import fr.prima.omiscid.user.service.Service;
 
 
+import fr.prima.omiscid.user.service.ServiceFilters;
+import fr.prima.omiscid.user.service.ServiceProxy;
+import fr.prima.omiscid.user.variable.VariableAccessType;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class I0012_SimpleServiceXMLDescription_Test {
     
     @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws InvalidDescriptionException, IOException {
         String serviceDotXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-                "<service name=\"I0012Service\" xmlns=\"http://www-prima.inrialpes.fr/schemas/omiscid/service.xsd\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www-prima.inrialpes.fr/schemas/bip/service.xsd service.xsd \">\n" + 
+                "<service name=\"I0012Server\" xmlns=\"http://www-prima.inrialpes.fr/schemas/omiscid/service.xsd\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www-prima.inrialpes.fr/schemas/bip/service.xsd service.xsd \">\n" + 
                 "   <output name=\"sinus\">\n" + 
                 "       <description>Stream of points (sinus fonction)</description>\n" + 
                 "   </output>\n" + 
@@ -59,16 +61,22 @@ public class I0012_SimpleServiceXMLDescription_Test {
                 "   </variable>\n" + 
                 "</service>";
         InputStream in = new ByteArrayInputStream(serviceDotXml.getBytes("utf-8"));
-        Service service = FactoryFactory.factory().createFromXML(in);
-        service.start();
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        service.stop();
-        FactoryFactory.failed("should add a more complex test searching for this service and checking its attributes");
+        Service server = FactoryFactory.factory().createFromXML(in);
+        server.start();
+        Service client = FactoryFactory.factory().create("I0012Client");
+        ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0012Server"), 5000);
+        FactoryFactory.assertTrue("sinus", proxy.getOutputConnectors().contains("sinus"));
+        FactoryFactory.assertTrue("f", proxy.getInputOutputConnectors().contains("f"));
+        FactoryFactory.assertTrue("fin", proxy.getInputConnectors().contains("fin"));
+        FactoryFactory.assertFalse("fin not an i/o", proxy.getInputOutputConnectors().contains("fin"));
+        FactoryFactory.assertFalse("cosinus not present", proxy.getOutputConnectors().contains("cosinus"));
+        FactoryFactory.assertTrue("w", proxy.getVariables().contains("w"));
+        FactoryFactory.assertTrue("w is readwrite", proxy.getVariableAccessType("w") == VariableAccessType.READ_WRITE);
+        FactoryFactory.assertTrue("c", proxy.getVariables().contains("c"));
+        FactoryFactory.assertTrue("c is constant", proxy.getVariableAccessType("c") == VariableAccessType.CONSTANT);
+        FactoryFactory.assertTrue("r", proxy.getVariables().contains("r"));
+        FactoryFactory.assertTrue("r is read", proxy.getVariableAccessType("r") == VariableAccessType.READ);
+        FactoryFactory.assertTrue("peerId", proxy.getVariables().contains("peerId"));
         FactoryFactory.passed("no exceptions occured");
         in.close();
     }

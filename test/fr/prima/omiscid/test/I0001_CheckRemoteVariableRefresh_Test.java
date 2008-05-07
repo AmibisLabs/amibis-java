@@ -38,7 +38,6 @@ import fr.prima.omiscid.user.variable.VariableAccessType;
 
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class I0001_CheckRemoteVariableRefresh_Test {
     

@@ -63,7 +63,12 @@ public class I0042_SADSendMessageInConnectedListener_Test {
                 public void disconnected(Service service, String localConnectorName, int peerId) {
                     System.out.println("Server: disconnected");
                 }
+                boolean connected = false;
                 public void connected(Service service, String localConnectorName, int peerId) {
+                    if (connected) {
+                        FactoryFactory.failed("Should not be already connected");
+                    }
+                    connected = true;
                     System.out.println("Server: connected");
                     /* This makes it work but should not be necessary
                     try {
@@ -71,7 +76,7 @@ public class I0042_SADSendMessageInConnectedListener_Test {
                     } catch (InterruptedException ex) {
                         Logger.getLogger(I0042_SADSendMessageInConnectedListener_Test.class.getName()).log(Level.SEVERE, null, ex);
                     }*/
-                    service.sendToOneClient(localConnectorName, Utility.message("Hiiiiiii"), peerId);
+                    service.sendToOneClient(localConnectorName, Utility.message("Hi"), peerId);
                 }
             });
             server.start();
@@ -81,10 +86,14 @@ public class I0042_SADSendMessageInConnectedListener_Test {
             client.addConnector("bug", "da", ConnectorType.INPUT);
             client.addConnectorListener("bug", new ConnectorListener() {
                 public void messageReceived(Service service, String localConnectorName, Message message) {
-                    if (message.getBuffer().length != 0) {
+                    if (message.getBuffer().length == 2) {
                         FactoryFactory.passed("First message received as expected");
                     } else {
-                        FactoryFactory.failed("Second message received but not first");
+                        if (message.getBuffer().length == 3) {
+                            FactoryFactory.failed("Second message received but not first");
+                        } else {
+                            FactoryFactory.failed("Strange message received: '"+message.getBufferAsStringUnchecked()+"'");
+                        }
                     }
                 }
                 public void disconnected(Service service, String localConnectorName, int peerId) {
@@ -98,8 +107,8 @@ public class I0042_SADSendMessageInConnectedListener_Test {
             ServiceProxy proxy = client.findService(ServiceFilters.nameIs("I0042Server"), 5000);
             client.connectTo("bug", proxy, "SAD");
         }
-        Thread.sleep(1000);
-        server.sendToAllClients("SAD", new byte[0]);
+        FactoryFactory.waitResult(1000);
+        server.sendToAllClients("SAD", Utility.message("Bye"));
         FactoryFactory.waitResult(1000);
     }
 }

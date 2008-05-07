@@ -63,7 +63,7 @@ public class I0032_MultipleConnectionRefusalImmediateDisconnect_Test {
                 public void messageReceived(Service service,
                                             String localConnectorName,
                                             Message message) {
-                    events.add("SV REC"+Utility.intTo8HexString(message.getPeerId()));
+                    events.add("SV REC "+Utility.intTo8HexString(message.getPeerId()));
                 }
 
                 public void disconnected(Service service,

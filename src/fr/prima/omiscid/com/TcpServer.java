@@ -155,11 +155,11 @@ public class TcpServer implements CommunicationServer {
                         messageSocket.addBipMessageListener(listener);
                     }
                 }
-                messageSocket.start();
-                messageSocket.initializeConnection(true);
                 synchronized (connectionsSet) {
                     connectionsSet.add(messageSocket);
                 }
+                messageSocket.start(true);
+                messageSocket.initializeConnection();
             } catch (IOException e) {
                 /** Connection closed by {@link #close()} */
             }

@@ -43,6 +43,18 @@ public class FactoryFactory {
         return new ServiceFactoryImpl();
     }
     
+    /*package*/ static synchronized void assertTrue(String msg, boolean cond) {
+        if (!cond) {
+            failed(msg);
+        }
+    }
+    
+    /*package*/ static synchronized void assertFalse(String msg, boolean cond) {
+        if (cond) {
+            failed(msg);
+        }
+    }
+    
     /*package*/ static synchronized void passed(String msg) {
         String testName = findTestClass();
         if (result.containsKey(testName)) return;
