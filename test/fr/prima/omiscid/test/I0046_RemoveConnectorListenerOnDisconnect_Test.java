@@ -38,6 +38,8 @@ import fr.prima.omiscid.user.util.Utility;
 import fr.prima.omiscid.user.variable.LocalVariableListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 import org.junit.Test;
 
@@ -56,6 +58,7 @@ public class I0046_RemoveConnectorListenerOnDisconnect_Test {
         ServiceFactory factory = FactoryFactory.factory();
         {
             final Service server = factory.create("I0046Server");
+            final Vector<ServiceProxy> client = new Vector<ServiceProxy>();
             server.addVariable("target", "string", "", VariableAccessType.READ_WRITE);
             server.addConnector("rec", "", ConnectorType.INOUTPUT);
             server.addLocalVariableListener("target", new LocalVariableListener() {
@@ -64,22 +67,28 @@ public class I0046_RemoveConnectorListenerOnDisconnect_Test {
                 }
 
                 public boolean isValid(final Service service, String variableName, String newValue) {
+                    // We do not do search here anymore as jivedns makes it fail
+                    System.err.println("Server received connection order");
+                    service.connectTo("rec", client.firstElement(), "bug");
+                    /*
                     // Should not do long processing here (so we do it in a separate thread)
                     // jivedns even fails to answer in time to pass the test if we do search here
                     new Thread(new Runnable(){
                         public void run() {
+                            System.err.println("Server received connection order");
                             final ServiceProxy proxy = service.findService(ServiceFilters.nameIs("I0046Client"));
                             service.connectTo("rec", proxy, "bug");
-                            System.out.println("Server received connection order");
+                            System.err.println("Server connected on demand");
                         }
                     }).start();
+                     */
                     return false;
                 }
             });
             server.addConnectorListener("rec", new ConnectorListener() {
 
                 public void messageReceived(Service service, String localConnectorName, Message message) {
-                    System.out.println("Server received disconnection order");
+                    System.err.println("Server received disconnection order");
                     service.closeAllConnections();
                 }
 
@@ -91,9 +100,19 @@ public class I0046_RemoveConnectorListenerOnDisconnect_Test {
             });
             server.start();
             System.err.println(server.getPeerIdAsString());
-            new Thread(new Runnable() { // pre-fetch client informations
+            /*new Timer().schedule(new TimerTask() {
+                @Override
                 public void run() {
+                    // prefetch service to avoid jivedns long search time make the test fail
                     final ServiceProxy proxy = server.findService(ServiceFilters.nameIs("I0046Client"));
+                    System.err.println("Client "+proxy.getPeerIdAsString()+" prefetched");
+                }
+            }, 500, 500);*/
+            new Thread(new Runnable() {
+                public void run() {
+                    // prefetch service to avoid jivedns long search time make the test fail
+                    final ServiceProxy proxy = server.findService(ServiceFilters.nameIs("I0046Client"));
+                    client.add(proxy);
                     System.err.println("Client "+proxy.getPeerIdAsString()+" prefetched");
                 }
             }).start();
@@ -146,9 +165,9 @@ public class I0046_RemoveConnectorListenerOnDisconnect_Test {
             client.addConnectorListener("bug", new RemoveListenerOnDisconnect());
             proxy.setVariableValue("target", "connect");
             client.addConnectorListener("bug", new RemoveListenerOnDisconnect());
-            Thread.sleep(10000);
+            Thread.sleep(1000);
             client.closeAllConnections();
-            Thread.sleep(10000);
+            Thread.sleep(1000);
             if (received.size() != 2) {
                 FactoryFactory.failed("Wrong received count (remote/local): "+received.size());
             }
