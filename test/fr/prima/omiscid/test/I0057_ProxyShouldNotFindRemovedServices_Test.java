@@ -27,7 +27,6 @@
 package fr.prima.omiscid.test;
 
 
-import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import java.io.IOException;
 import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceFactory;
@@ -42,7 +41,6 @@ public class I0057_ProxyShouldNotFindRemovedServices_Test {
     
     @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException, InterruptedException {
-        DNSSDFactory.DefaultFactory.factoryToTryFirst = "mdns";
         final ServiceFactory factory = FactoryFactory.factory();
         final ServiceRepository first = factory.createServiceRepository();
         assertNotNull(first);

@@ -91,7 +91,7 @@ public class TcpClient extends MessageSocketTCP {
             }
         }
         super.setSocket(socket);
-        super.start(false);
+        super.start(true);
         initializeConnection();
     }
 }
