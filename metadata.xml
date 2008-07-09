@@ -1,0 +1,7 @@
+<ipojo>
+	<component classname="fr.prima.omiscid.user.service.impl.ServiceFactoryImpl">
+	<provides/>
+</component>
+<instance component="fr.prima.omiscid.user.service.impl.ServiceFactoryImpl"/>
+</ipojo>
+
