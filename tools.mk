@@ -16,6 +16,7 @@ remote-dist:
 	$m gui-jar
 	$m release-package
 	$m maven-build
+	$m clean-build-bundle
 
 	$m clean-destination
 
@@ -76,11 +77,13 @@ clean-destination:
 	ssh $(release-server) mkdir -p $(release-server-path)/$(release-version)
 
 maven-build:
-	mkdir  ,,rel-maven
+	mkdir -p  ,,rel-maven
 	cat pom.core.xml | sed 's/@@@v@@@/'$(release-version)'/g' > ,,rel-maven/pom.xml
 	cp $(BASEJAR) ,,rel-maven/$(release-omiscid-jar)
 	cd ,,rel-maven && mvn deploy:deploy-file -Dfile=$(release-omiscid-jar) -DpomFile=pom.xml -DrepositoryId=archiva.internal -Durl=dav:http://oberon:8080/archiva/repository/internal/ 
 
+maven-build-bundle:
+	mkdir -p  ,,rel-maven
 	cat pom.bundle.xml | sed 's/@@@v@@@/'$(release-version)'/g' | sed 's/@@@bv@@@/'$(release-bundle-version)'/g' > ,,rel-maven/pom.xml
 	cp metadata.xml ,,rel-maven
 	cd ,,rel-maven && mvn package -DpomFile=pom.xml
