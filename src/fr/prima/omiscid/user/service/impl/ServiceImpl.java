@@ -612,7 +612,7 @@ public class ServiceImpl implements Service {
         
         connectTo(localClientServer, proxy.getHostName(), remoteAttribute.getTcpPort());
     }
-    private void connectTo(TcpClientServer localClientServer, String hostName, int tcpPort)
+    synchronized private void connectTo(TcpClientServer localClientServer, String hostName, int tcpPort)
     throws ConnectionRefused {
         try {
             localClientServer.connectTo(hostName, tcpPort);

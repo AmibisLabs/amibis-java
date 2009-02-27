@@ -3,6 +3,27 @@
                         CHANGES
 
 In this files, you will find changes between java OMiSCID versions.
+*should: make configurable (through Java and C++) the timeout for control queries
+*could: dnssd client auto connect/reconnect
+*could: dnssd client has a list of expected servers
+*could: Service isa ServiceProxy!
+
+http://gforge.inria.fr/tracker/?atid=1526&group_id=363&func=browse
+
+REMOVE: "Unknown Bip Connector io"
+
+
+!!! a service video started on prometheus /loc.../svbugdiscovery rev. 5096
+p   omiscid                         - Object Oriented Opensource Middleware for 
+i   omiscid-avahi-debug             - OMiSCID libraries (using avahi).          Version : 1.5.0
+i   omiscid-dev                     - OMiSCID Headers and Dev files             
+p   omiscid-ext                     - Extension for the OMiSCID middleware inclu
+p   omiscid-ext-dev                 - OMiSCID Extension development files       
+!!! is visible with omiscidgui using mdns but not using jive
+
+1.
+r
+added missing synchronized to ServiceImpl#connectTo
 
 1.5.0
 r4950
