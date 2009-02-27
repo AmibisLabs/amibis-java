@@ -24,6 +24,9 @@ p   omiscid-ext-dev                 - OMiSCID Extension development files
 1.
 r
 added missing synchronized to ServiceImpl#connectTo
+TODO review synchro here isInitMessageReceived
+TODO ==> review all synchro (at least in MessageSocket)
+TODO +add test for these failing stuffs
 
 1.5.0
 r4950

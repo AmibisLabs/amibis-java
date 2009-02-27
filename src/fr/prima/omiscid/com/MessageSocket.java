@@ -255,6 +255,8 @@ final class ReceiveBuffer {
  */
 public abstract class MessageSocket {
 
+    final private Object syncInitConnection = "initConnectionSync";
+
     /**
      * The BIP peer id used in BIP exhanges: used to represent the local peer
      * when a message is send to the remote peer.
@@ -296,8 +298,11 @@ public abstract class MessageSocket {
 
     private boolean initMessageSent = false;
 
-    synchronized boolean isInitMessageReceived() {
+
+    boolean isInitMessageReceived() {
+        synchronized (syncInitConnection) {
         return initMessageReceived;
+        }
     }
 
     /**
@@ -307,11 +312,13 @@ public abstract class MessageSocket {
      *            the remote peer id of the connection who sends the empty
      *            messages
      */
-    synchronized void initMessageReceived(int peerId) {
+    void initMessageReceived(int peerId) {
+        synchronized (syncInitConnection) {
         initMessageReceived = true;
         remotePeerId = peerId;
         initializeConnection();
         possiblyNotifyListenersOfConnection();
+        }
     }
 
 
@@ -400,7 +407,8 @@ public abstract class MessageSocket {
         }
     }
 
-    private synchronized void possiblyNotifyListenersOfConnection() {
+    private void possiblyNotifyListenersOfConnection() {
+        synchronized (syncInitConnection) {
         if (notifyListenersOnConnection && initMessageReceived && initMessageSent) {
             notifyListenersOnConnection = false;
             ArrayList<BipMessageListener> listeners;
@@ -415,6 +423,7 @@ public abstract class MessageSocket {
                     e.printStackTrace();
                 }
             }
+        }
         }
     }
 
@@ -491,11 +500,16 @@ public abstract class MessageSocket {
     /**
      * Initializes the connection (protocol initialisation).
      */
-    public synchronized void initializeConnection() {
+    public void initializeConnection() {
+        // double check locking to avoid unnecssary lock causing deadlocks
         if (!initMessageSent) {
-            send((byte[]) null);
+        synchronized (syncInitConnection) {
+        if (!initMessageSent) {
             initMessageSent = true;
+            send((byte[]) null);
             possiblyNotifyListenersOfConnection();
+        }
+        }
         } else {
             //System.err.println("Warning: in MessageSocket, multiple calls to initializeConnection");
             
