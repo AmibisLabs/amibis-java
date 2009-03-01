@@ -502,20 +502,22 @@ public abstract class MessageSocket {
      */
     public void initializeConnection() {
         // double check locking to avoid unnecssary lock causing deadlocks
-        if (!initMessageSent) {
+        boolean shouldSendInitMessage = false;
         synchronized (syncInitConnection) {
-        if (!initMessageSent) {
-            initMessageSent = true;
+            if (!initMessageSent) {
+                initMessageSent = true;
+                shouldSendInitMessage = true;
+            } else {
+                //System.err.println("Warning: in MessageSocket, multiple calls to initializeConnection");
+
+                // Multiple calls to initializeConnection may happen.
+                // This can be because both connections ends are sending an init message
+                // and the MessageSocket retries to send it when it receives one.
+            }
+        }
+        if (shouldSendInitMessage) {
             send((byte[]) null);
             possiblyNotifyListenersOfConnection();
-        }
-        }
-        } else {
-            //System.err.println("Warning: in MessageSocket, multiple calls to initializeConnection");
-            
-            // Multiple calls to initializeConnection may happen.
-            // This can be because both connections ends are sending an init message
-            // and the MessageSocket retries to send it when it receives one.
         }
     }
 
