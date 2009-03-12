@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<schemas xmlns='http://xml.netbeans.org/schema/JAXBWizConfig' destdir='build/generated/addons/jaxb' projectName='jOMiSCID'>
+<schemas xmlns='http://xml.netbeans.org/schema/JAXBWizConfig' destdir='build/generated/addons/jaxb' projectName='jOMiSCID' version='0.5'>
 	<schema type='-xmlschema' package='fr.prima.omiscid.generated.servicexml' name='ServiceXml'>
 		<xjc-options>
 		</xjc-options>

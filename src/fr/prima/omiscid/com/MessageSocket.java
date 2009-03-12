@@ -301,7 +301,7 @@ public abstract class MessageSocket {
 
     boolean isInitMessageReceived() {
         synchronized (syncInitConnection) {
-        return initMessageReceived;
+            return initMessageReceived;
         }
     }
 
@@ -314,11 +314,13 @@ public abstract class MessageSocket {
      */
     void initMessageReceived(int peerId) {
         synchronized (syncInitConnection) {
-        initMessageReceived = true;
-        remotePeerId = peerId;
-        initializeConnection();
-        possiblyNotifyListenersOfConnection();
+            if (initMessageReceived) {
+                System.err.println("Omiscid probably encountered an internal bug: multiple initMessages have been received. Please report this problem.");
+            }
+            initMessageReceived = true;
+            remotePeerId = peerId;
         }
+        initializeConnection();
     }
 
 

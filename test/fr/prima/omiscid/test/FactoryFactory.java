@@ -33,6 +33,7 @@ import fr.prima.omiscid.user.service.impl.ServiceFactoryImpl;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import junit.framework.TestSuite;
 import org.junit.Assert;
 public class FactoryFactory {
 
@@ -115,7 +116,7 @@ public class FactoryFactory {
         }
         return false;
     }
-
+  
 //    public static void main(String[] args) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 //        Class[] tests = new Class[] {
 //            CheckRemoteVariableRefresh_BugI0001.class,
