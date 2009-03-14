@@ -65,11 +65,11 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
         private static final String sharedFactoryEnvironmentVariable = "OMISCID_DNSSD_SHARED_FACTORY";
         private static final String verboseEnvironmentVariable = "OMISCID_DNSSD_FACTORY_VERBOSE_MODE";
         private static final String sharedTrueValue = "true";
-        private static final String sharedDefaultValue = sharedTrueValue;
         private static final PatchedIdentity<String> factoryRewriter = new PatchedIdentity<String>();
 
         public static boolean verboseMode = false;
         public static String factoryToTryFirst = null;
+        public static boolean shared = true;
         /**
          * This can be used (set to true) when the jvm does not support full introspection.
          * This only disables a additional check on the provided class name.
@@ -85,6 +85,10 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
                 if (System.getenv(verboseEnvironmentVariable) != null) {
                     verboseMode = true;
                 }
+                if (System.getenv(sharedFactoryEnvironmentVariable) != null) {
+                    String sharedString = System.getenv(sharedFactoryEnvironmentVariable);
+                    shared = sharedTrueValue.equals(sharedString);
+                }
             } catch (SecurityException e) {
                 // Access to environment variable is forbidden
             }
@@ -94,6 +98,12 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
 
         public static synchronized DNSSDFactory instance() {
             return instance != null ? instance : (instance = makeInstance());
+        }
+
+        private static void verboseMessage(String message) {
+            if (verboseMode) {
+                System.out.println("OmiscidDnssd: "+message);
+            }
         }
         
         private static class PatchedIdentity<V> extends HashMap<V,V> {
@@ -121,9 +131,7 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
             Class factoryClass = null;
             String className;
             while (!factories.isEmpty() && null != (className = factories.pop())) {
-                if (verboseMode) {
-                    System.out.println(className);
-                }
+                verboseMessage("trying factory " + className);
                 try {
                     factoryClass = Class.forName(className);
                 } catch (Throwable e) {
@@ -139,22 +147,12 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
                 }
                 try {
                     //System.out.println(factoryClass.getCanonicalName());
+                    verboseMessage("using factory " + className);
                     DNSSDFactory factory = (DNSSDFactory) factoryClass.newInstance();
-                    try {
-                        String shared = sharedDefaultValue;
-                        try {
-                            if (System.getenv(sharedFactoryEnvironmentVariable) != null) {
-                                shared = System.getenv(sharedFactoryEnvironmentVariable);
-                            }
-                        } catch (SecurityException e) {
-                            // Access to environment variable is forbidden
-                        }
-                        if (sharedTrueValue.equals(shared)) {
-                            factory = new SharedFactory(factory);
-                        }
-                    } catch (Exception e) {
-                        System.out.println("Problem while testing for shared factory");
-                    } 
+                    if (shared) {
+                        verboseMessage("using shared factory");
+                        factory = new SharedFactory(factory);
+                    }
                     return factory;
                 } catch (Exception e) {
                     System.out.println("Problem while instanciating \"" + className + "\", using default factory");
