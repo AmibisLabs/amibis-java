@@ -123,11 +123,17 @@ import fr.prima.omiscid.dnssd.interf.ServiceInformation;
     private synchronized void notifyServiceFound(NTuple11<Integer, Integer, String, String, String, String, Integer, String, UInt16, List<List<Byte>>, UInt32> serviceInfo) {
         ServiceInformation serviceInformation = new fr.prima.omiscid.dnssd.avahi.ServiceInformation(serviceInfo); 
 //        System.err.println("new "+serviceInformation.getFullName());
-        assert !services.containsKey(serviceInformation.getFullName()) : serviceInformation.getFullName();
-        services.put(serviceInformation.getFullName(), serviceInformation);
-        if (avahiBrowserListener!=null) {
-            avahiBrowserListener.serviceFound(serviceInformation);
+//        assert !services.containsKey(serviceInformation.getFullName()) : serviceInformation.getFullName();
+        if (!services.containsKey(serviceInformation.getFullName())) {
+            services.put(serviceInformation.getFullName(), serviceInformation);
+            if (avahiBrowserListener != null) {
+                avahiBrowserListener.serviceFound(serviceInformation);
+            }
+        } else {
+            // It happens that avahi notifies multiple times of service appearance ...
+            // We just ignore it
         }
+
     }
     private synchronized void notifyServiceLost(ItemRemove a) {
         String fullName = fr.prima.omiscid.dnssd.avahi.ServiceInformation.fullName(a.name, a.type, a.domain);
