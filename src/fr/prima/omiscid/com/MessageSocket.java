@@ -300,9 +300,7 @@ public abstract class MessageSocket {
 
 
     boolean isInitMessageReceived() {
-        synchronized (syncInitConnection) {
-            return initMessageReceived;
-        }
+        return initMessageReceived;
     }
 
     /**
@@ -330,7 +328,7 @@ public abstract class MessageSocket {
     ReceiveBuffer receiveBuffer = null;
 
     /** Set of listener to call when a BIP message is received */
-    private Set<BipMessageListener> listenersSet;
+    final private Set<BipMessageListener> listenersSet;
 
     private boolean notifyListenersOnConnection;
 
@@ -410,14 +408,17 @@ public abstract class MessageSocket {
     }
 
     private void possiblyNotifyListenersOfConnection() {
+        ArrayList<BipMessageListener> toNotify = null;
         synchronized (syncInitConnection) {
-        if (notifyListenersOnConnection && initMessageReceived && initMessageSent) {
-            notifyListenersOnConnection = false;
-            ArrayList<BipMessageListener> listeners;
-            synchronized (listenersSet) {
-                listeners = new ArrayList<BipMessageListener>(listenersSet);
+            if (notifyListenersOnConnection && initMessageReceived && initMessageSent) {
+                notifyListenersOnConnection = false;
+                synchronized (listenersSet) {
+                    toNotify = new ArrayList<BipMessageListener>(listenersSet);
+                }
             }
-            for (BipMessageListener listener : listeners) {
+        }
+        if (toNotify != null) {
+            for (BipMessageListener listener : toNotify) {
                 try {
                     listener.connected(remotePeerId);
                 } catch (Exception e) {
@@ -425,7 +426,6 @@ public abstract class MessageSocket {
                     e.printStackTrace();
                 }
             }
-        }
         }
     }
 
@@ -503,7 +503,6 @@ public abstract class MessageSocket {
      * Initializes the connection (protocol initialisation).
      */
     public void initializeConnection() {
-        // double check locking to avoid unnecssary lock causing deadlocks
         boolean shouldSendInitMessage = false;
         synchronized (syncInitConnection) {
             if (!initMessageSent) {
@@ -519,8 +518,8 @@ public abstract class MessageSocket {
         }
         if (shouldSendInitMessage) {
             send((byte[]) null);
-            possiblyNotifyListenersOfConnection();
         }
+        possiblyNotifyListenersOfConnection();
     }
 
     /**
