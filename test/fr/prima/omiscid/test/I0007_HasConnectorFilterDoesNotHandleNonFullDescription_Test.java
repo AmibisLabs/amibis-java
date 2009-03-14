@@ -31,12 +31,12 @@ import java.io.IOException;
 import fr.prima.omiscid.user.connector.ConnectorType;
 import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceFactory;
-import fr.prima.omiscid.user.service.ServiceFilters;
 import fr.prima.omiscid.user.variable.VariableAccessType;
+
+import static fr.prima.omiscid.user.service.ServiceFilters.*;
 
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class I0007_HasConnectorFilterDoesNotHandleNonFullDescription_Test {
     // This is not a bug in fact it already works (at the time of writing)
@@ -55,15 +55,15 @@ public class I0007_HasConnectorFilterDoesNotHandleNonFullDescription_Test {
             client.start();
             new Thread(new Runnable() {
                 public void run() {
-                    client.findService(ServiceFilters.hasConnector("bug", ConnectorType.INOUTPUT));
+                    client.findService(and(nameIs("I0007Server"), hasConnector("bug", ConnectorType.INOUTPUT)));
                     FactoryFactory.failed("server was wrongly found");
                 }
             }).start();
             Thread.sleep(250);
             new Thread(new Runnable() {
                 public void run() {
-                    client.findService(ServiceFilters.hasConnector("bug"));
-                    client.findService(ServiceFilters.hasConnector("bug", ConnectorType.INPUT));
+                    client.findService(and(nameIs("I0007Server"), hasConnector("bug")));
+                    client.findService(and(nameIs("I0007Server"), hasConnector("bug", ConnectorType.INPUT)));
                     FactoryFactory.passed("server was properly found each time");
                 }
             }).start();
