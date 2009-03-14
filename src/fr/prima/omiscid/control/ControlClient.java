@@ -169,8 +169,8 @@ public class ControlClient implements BipMessageListener {
     public boolean connectToControlServer(String host, int port) {
         try {
             tcpClient = new TcpClient(peerId);
-            tcpClient.connectTo(host, port);
             tcpClient.addBipMessageListener(this);
+            tcpClient.connectTo(host, port);
             return true;
         } catch (IOException e) {
             tcpClient = null;
