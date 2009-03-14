@@ -26,6 +26,7 @@
 
 package fr.prima.omiscid.test;
 
+import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.user.service.ServiceFactory;
 import fr.prima.omiscid.user.service.impl.ServiceFactoryImpl;
 
@@ -33,7 +34,6 @@ import fr.prima.omiscid.user.service.impl.ServiceFactoryImpl;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import junit.framework.TestSuite;
 import org.junit.Assert;
 public class FactoryFactory {
 
@@ -41,6 +41,9 @@ public class FactoryFactory {
     static final Object PASSED = new Object();
     
     /*package*/ static ServiceFactory factory() {
+        //DNSSDFactory.DefaultFactory.verboseMode = true;
+        //DNSSDFactory.DefaultFactory.shared = true;
+        //DNSSDFactory.DefaultFactory.factoryToTryFirst = "jmdns";
         return new ServiceFactoryImpl();
     }
     
@@ -110,7 +113,7 @@ public class FactoryFactory {
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
         for (StackTraceElement e : stack) {
             String name = e.getClassName();
-            if (name.equals("org.junit.internal.runners.TestClassRunner")) {
+            if (name.startsWith("org.junit.internal.runners.")) {
                 return true;
             }
         }
