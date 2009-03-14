@@ -41,6 +41,7 @@ import org.junit.Test;
 
 public class I0058_ShouldReceiveAllConnectionNotifications_Test {
     
+    // This test also tests the deadlock in race conditions with the cameraman (and many other things)
     @Test(expected=TestPassedPseudoException.class)
     public void doIt() throws IOException, InterruptedException {
         final ServiceFactory factory = FactoryFactory.factory();
@@ -61,7 +62,10 @@ public class I0058_ShouldReceiveAllConnectionNotifications_Test {
 
             public void connected(Service service, String localConnectorName, int peerId) {
                 count ++;
-                System.err.println("count is " + count + " after connection on " + service.getVariableValue("name") + ":" + localConnectorName);
+                // This also tests the problem with the cameraman
+                // A deadlock was caused by this call to synchronized methods from "service" from the listener
+                String name = service.getVariableValue("name");
+                System.err.println("count is " + count + " after connection on " + name + ":" + localConnectorName);
                 if (count == 6) {
                     FactoryFactory.passed("all 6 connected received");
                 }
