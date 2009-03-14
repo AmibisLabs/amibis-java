@@ -32,12 +32,13 @@ import java.util.Vector;
 import fr.prima.omiscid.dnssd.interf.ServiceEvent;
 import fr.prima.omiscid.dnssd.interf.ServiceEventListener;
 import fr.prima.omiscid.dnssd.interf.ServiceInformation;
+import java.util.ArrayList;
 import org.jivedns.JiveDNS;
 import org.jivedns.ServiceListener;
 
 public class ServiceBrowser implements fr.prima.omiscid.dnssd.interf.ServiceBrowser, ServiceListener {
 
-    private List<ServiceEventListener> listeners = new Vector<ServiceEventListener>();
+    private final List<ServiceEventListener> listeners = new Vector<ServiceEventListener>();
 
     private JiveDNS JiveDNS;
 
@@ -49,17 +50,21 @@ public class ServiceBrowser implements fr.prima.omiscid.dnssd.interf.ServiceBrow
     }
 
     public void addListener(ServiceEventListener l) {
-        listeners.add(l);
+        synchronized (listeners) {
+            listeners.add(l);
+        }
     }
 
     public void removeListener(ServiceEventListener l) {
-        listeners.remove(l);
+        synchronized (listeners) {
+            listeners.remove(l);
+        }
     }
 
     public void start() {
         JiveDNS.addServiceListener(registrationType, this);
-        JiveDNS.list(registrationType);
-    }
+            JiveDNS.list(registrationType);
+        }
 
     public void stop() {
         JiveDNS.removeServiceListener(registrationType, this);
@@ -74,14 +79,18 @@ public class ServiceBrowser implements fr.prima.omiscid.dnssd.interf.ServiceBrow
     }
 
     public void serviceAdded(org.jivedns.ServiceEvent event) {
-        // System.out.println("s added: "+event.getName());
-        // JiveDNS.requestServiceInfo(event.getType(), event.getName(),1);
+        // Required to force serviceResolved to be called again (after the first search)
+        JiveDNS.requestServiceInfo(event.getType(), event.getName(), 1);
     }
 
     public void serviceRemoved(org.jivedns.ServiceEvent event) {
         // System.out.println("s removed: "+event.getName());
         ServiceEvent ev = new ServiceEvent(infoOf(event), ServiceEvent.LOST);
-        for (ServiceEventListener listener : listeners) {
+        ArrayList<ServiceEventListener> toNotify = new ArrayList();
+        synchronized (listeners) {
+            toNotify.addAll(listeners);
+        }
+        for (ServiceEventListener listener : toNotify) {
             listener.serviceEventReceived(ev);
         }
     }
@@ -89,7 +98,11 @@ public class ServiceBrowser implements fr.prima.omiscid.dnssd.interf.ServiceBrow
     public void serviceResolved(org.jivedns.ServiceEvent event) {
         // System.out.println("s registered: "+event.getName());
         ServiceEvent ev = new ServiceEvent(fullInfoOf(event), ServiceEvent.FOUND);
-        for (ServiceEventListener listener : listeners) {
+        ArrayList<ServiceEventListener> toNotify = new ArrayList();
+        synchronized (listeners) {
+            toNotify.addAll(listeners);
+        }
+        for (ServiceEventListener listener : toNotify) {
             listener.serviceEventReceived(ev);
         }
     }
