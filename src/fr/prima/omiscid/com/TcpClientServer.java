@@ -55,6 +55,7 @@ public class TcpClientServer extends TcpServer {
         super(peerId, port);
     }
 
+    @Override
     public void closeAllConnections() {
         super.closeAllConnections();
         synchronized (this) {
