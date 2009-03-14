@@ -13,7 +13,6 @@ http://gforge.inria.fr/tracker/?atid=1526&group_id=363&func=browse
 
 REMOVE: "Unknown Bip Connector io"
 
-
 !!! a service video started on prometheus /loc.../svbugdiscovery rev. 5096
 p   omiscid                         - Object Oriented Opensource Middleware for 
 i   omiscid-avahi-debug             - OMiSCID libraries (using avahi).          Version : 1.5.0
@@ -22,9 +21,21 @@ p   omiscid-ext                     - Extension for the OMiSCID middleware inclu
 p   omiscid-ext-dev                 - OMiSCID Extension development files       
 !!! is visible with omiscidgui using mdns but not using jive
 
+!!! some errors in tests (was running with avahi)
+test 0007 caused a "server was wrongly found" from command line ! (but passed from netbeans)
+
+
 1.
 r
+fixed avahi-handling problem causing NPE at fr.prima.omiscid.dnssd.common.SharedBrowser.serviceEventReceived(SharedBrowser.java:100)
+fixed duplication of service addition with jive
+improved programmatic configurability of the factory (shared)
+improved reporting when dnssd factory is in verbose mode
+fixed jive problems with multiple searchs
+fixed race conditions: possible symptoms included “deadlock on connection”, “missing notification of serviceConnected”, “no response from introspection (e.g. for the service interconnection view in the GUI)”
 added missing synchronized to ServiceImpl#connectTo
+patch for multiple avahi notifications for existing services
+
 TODO review synchro here isInitMessageReceived
 TODO ==> review all synchro (at least in MessageSocket)
 TODO +add test for these failing stuffs

@@ -33,12 +33,15 @@ import fr.prima.omiscid.dnssd.interf.ServiceEvent;
 import fr.prima.omiscid.dnssd.interf.ServiceEventListener;
 import fr.prima.omiscid.dnssd.interf.ServiceInformation;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import org.jivedns.JiveDNS;
 import org.jivedns.ServiceListener;
 
 public class ServiceBrowser implements fr.prima.omiscid.dnssd.interf.ServiceBrowser, ServiceListener {
 
     private final List<ServiceEventListener> listeners = new Vector<ServiceEventListener>();
+    private final Set<String> serviceNames = new HashSet();
 
     private JiveDNS JiveDNS;
 
@@ -86,24 +89,31 @@ public class ServiceBrowser implements fr.prima.omiscid.dnssd.interf.ServiceBrow
     public void serviceRemoved(org.jivedns.ServiceEvent event) {
         // System.out.println("s removed: "+event.getName());
         ServiceEvent ev = new ServiceEvent(infoOf(event), ServiceEvent.LOST);
-        ArrayList<ServiceEventListener> toNotify = new ArrayList();
-        synchronized (listeners) {
-            toNotify.addAll(listeners);
-        }
-        for (ServiceEventListener listener : toNotify) {
-            listener.serviceEventReceived(ev);
+        String fullName = ev.getServiceInformation().getFullName();
+        if (serviceNames.remove(fullName)) {
+            ArrayList<ServiceEventListener> toNotify = new ArrayList();
+            synchronized (listeners) {
+                toNotify.addAll(listeners);
+            }
+            for (ServiceEventListener listener : toNotify) {
+                listener.serviceEventReceived(ev);
+            }
         }
     }
 
     public void serviceResolved(org.jivedns.ServiceEvent event) {
         // System.out.println("s registered: "+event.getName());
         ServiceEvent ev = new ServiceEvent(fullInfoOf(event), ServiceEvent.FOUND);
-        ArrayList<ServiceEventListener> toNotify = new ArrayList();
-        synchronized (listeners) {
-            toNotify.addAll(listeners);
-        }
-        for (ServiceEventListener listener : toNotify) {
-            listener.serviceEventReceived(ev);
+        String fullName = ev.getServiceInformation().getFullName();
+        if (!serviceNames.contains(fullName)) {
+            serviceNames.add(fullName);
+            ArrayList<ServiceEventListener> toNotify = new ArrayList();
+            synchronized (listeners) {
+                toNotify.addAll(listeners);
+            }
+            for (ServiceEventListener listener : toNotify) {
+                listener.serviceEventReceived(ev);
+            }
         }
     }
 
