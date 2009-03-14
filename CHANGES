@@ -21,25 +21,16 @@ p   omiscid-ext                     - Extension for the OMiSCID middleware inclu
 p   omiscid-ext-dev                 - OMiSCID Extension development files       
 !!! is visible with omiscidgui using mdns but not using jive
 
-!!! some errors in tests (was running with avahi)
-test 0007 caused a "server was wrongly found" from command line ! (but passed from netbeans)
-
-
 1.
 r
-fixed avahi-handling problem causing NPE at fr.prima.omiscid.dnssd.common.SharedBrowser.serviceEventReceived(SharedBrowser.java:100)
-fixed duplication of service addition with jive
-improved programmatic configurability of the factory (shared)
-improved reporting when dnssd factory is in verbose mode
-fixed jive problems with multiple searchs
-fixed race conditions: possible symptoms included “deadlock on connection”, “missing notification of serviceConnected”, “no response from introspection (e.g. for the service interconnection view in the GUI)”
-added missing synchronized to ServiceImpl#connectTo
-patch for multiple avahi notifications for existing services
-
-TODO review synchro here isInitMessageReceived
-TODO ==> review all synchro (at least in MessageSocket)
-TODO +add test for these failing stuffs
-TODO check usage of XmlUtils.generateCDataSection (and fix it if contains ]]>)
+        fix:  race conditions causing deadlock on connection
+        fix:  race conditions loosing notifications of service connections
+        fix:  race conditions causing an absence of response from introspection (e.g. for the service interconnection view in the GUI)
+        fix:  (jivedns/jmdns) problem with multiple service search in some cases
+        fix:  (jivedns/jmdns) duplicate addition of services in some cases
+        fix:  (avahi) duplicate addition of services on some networks causing ghosts and NPE at fr.prima.omiscid.dnssd.common.SharedBrowser.serviceEventReceived(SharedBrowser.java:100)
+        impr: clearer reporting when verbose mode is on for dnssd factory
+        impr: whether dnssd factory is a shared one or not can now be set programatically
 
 1.5.0
 r4950
