@@ -60,7 +60,7 @@ public class I0058_ShouldReceiveAllConnectionNotifications_Test {
             public void disconnected(Service service, String localConnectorName, int peerId) {
             }
 
-            public void connected(Service service, String localConnectorName, int peerId) {
+            public synchronized void connected(Service service, String localConnectorName, int peerId) {
                 count ++;
                 // This also tests the problem with the cameraman
                 // A deadlock was caused by this call to synchronized methods from "service" from the listener
@@ -81,7 +81,9 @@ public class I0058_ShouldReceiveAllConnectionNotifications_Test {
         client.connectTo("ci", proxy, "co");
         client.connectTo("co", proxy, "ci");
         client.connectTo("cio", proxy, "cio");
+        System.err.println("Searching client from server");
         proxy = server.findService(ServiceFilters.nameIs("I0058Client"));
+        System.err.println("Client found "+proxy.getPeerIdAsString());
         server.connectTo("ci", proxy, "co");
         server.connectTo("co", proxy, "ci");
         server.connectTo("cio", proxy, "cio");
