@@ -42,7 +42,6 @@ import java.util.Vector;
 
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class I0032_MultipleConnectionRefusalImmediateDisconnect_Test {
     

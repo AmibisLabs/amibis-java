@@ -38,6 +38,8 @@ import com.apple.dnssd.TXTRecord;
 
 import fr.prima.omiscid.dnssd.interf.ServiceEvent;
 import fr.prima.omiscid.dnssd.interf.ServiceEventListener;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author emonet build from BrowseForService by pesnel and reignier
@@ -45,7 +47,8 @@ import fr.prima.omiscid.dnssd.interf.ServiceEventListener;
 public class ServiceBrowser implements BrowseListener, fr.prima.omiscid.dnssd.interf.ServiceBrowser {
 
     private List<ServiceEventListener> listeners = new Vector<ServiceEventListener>();
-
+    private final Set<String> serviceNames = new HashSet();
+    
     private String registrationType;
 
     private DNSSDService dnssdService;
@@ -85,7 +88,11 @@ public class ServiceBrowser implements BrowseListener, fr.prima.omiscid.dnssd.in
     }
 
     public synchronized void serviceLost(DNSSDService browser, int flags, int ifIndex, String serviceName, String regType, String domain) {
-        notifyListeners(new ServiceInformation(regType+domain, serviceName), ServiceEvent.LOST);
+        ServiceInformation serviceInformation = new ServiceInformation(regType + domain, serviceName);
+        String fullName = serviceInformation.getFullName();
+        if (serviceNames.remove(fullName)) {
+            notifyListeners(serviceInformation, ServiceEvent.LOST);
+        }
     }
 
     public synchronized void operationFailed(DNSSDService service, int errorCode) {
@@ -105,13 +112,16 @@ public class ServiceBrowser implements BrowseListener, fr.prima.omiscid.dnssd.in
             this.serviceName = serviceName;
         }
 
-        public synchronized void serviceResolved(final DNSSDService resolver, int flags, int ifIndex, String fullName, String hostName, int port,
-                TXTRecord txtRecord) {
+        public synchronized void serviceResolved(final DNSSDService resolver, int flags, int ifIndex, String fullName, String hostName, int port, TXTRecord txtRecord) {
             ServiceInformation serviceInformation = new ServiceInformation(this.registrationType, fullName, hostName, port, txtRecord);
-            notifyListeners(serviceInformation, ServiceEvent.FOUND);
-            // it seems to be important to be after that notify listener ...
-            // probably a dnssd implementation bug
-            resolver.stop();
+            String infoFullName = serviceInformation.getFullName();
+            if (!serviceNames.contains(infoFullName)) {
+                serviceNames.add(infoFullName);
+                notifyListeners(serviceInformation, ServiceEvent.FOUND);
+                // it seems to be important to be after that notify listener ...
+                // probably a dnssd implementation bug
+                resolver.stop();
+            }
         }
 
         public synchronized void operationFailed(DNSSDService service, int errorCode) {

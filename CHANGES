@@ -21,13 +21,21 @@ p   omiscid-ext                     - Extension for the OMiSCID middleware inclu
 p   omiscid-ext-dev                 - OMiSCID Extension development files       
 !!! is visible with omiscidgui using mdns but not using jive
 
+
+cvs -d:pserver:anonymous@anoncvs.opensource.apple.com:2401/cvs/root login
+anonymous
+cvs -z3 -d:pserver:anonymous@anoncvs.opensource.apple.com:2401/cvs/root co -P mDNSResponder
+
+
+
 1.
 r
         fix:  race conditions causing deadlock on connection
         fix:  race conditions loosing notifications of service connections
         fix:  race conditions causing an absence of response from introspection (e.g. for the service interconnection view in the GUI)
-        fix:  (jivedns/jmdns) problem with multiple service search in some cases
+        fix:  (jivedns/jmdns) problem with multiple service search (only the first search worked in some cases)
         fix:  (jivedns/jmdns) duplicate addition of services in some cases
+        fix:  (mdns) duplicate addition of services in some cases
         fix:  (avahi) duplicate addition of services on some networks causing ghosts and NPE at fr.prima.omiscid.dnssd.common.SharedBrowser.serviceEventReceived(SharedBrowser.java:100)
         impr: clearer reporting when verbose mode is on for dnssd factory
         impr: whether dnssd factory is a shared one or not can now be set programatically
