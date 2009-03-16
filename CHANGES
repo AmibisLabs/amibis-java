@@ -3,47 +3,23 @@
                         CHANGES
 
 In this files, you will find changes between java OMiSCID versions.
-*should: make configurable (through Java and C++) the timeout for control queries
-*could: dnssd client auto connect/reconnect
-*could: dnssd client has a list of expected servers
-*could: Service isa ServiceProxy!
-*should: see Socket. keepAlive
 
-http://gforge.inria.fr/tracker/?atid=1526&group_id=363&func=browse
-
-REMOVE: "Unknown Bip Connector io"
-
-!!! a service video started on prometheus /loc.../svbugdiscovery rev. 5096
-p   omiscid                         - Object Oriented Opensource Middleware for 
-i   omiscid-avahi-debug             - OMiSCID libraries (using avahi).          Version : 1.5.0
-i   omiscid-dev                     - OMiSCID Headers and Dev files             
-p   omiscid-ext                     - Extension for the OMiSCID middleware inclu
-p   omiscid-ext-dev                 - OMiSCID Extension development files       
-!!! is visible with omiscidgui using mdns but not using jive
-
-
-cvs -d:pserver:anonymous@anoncvs.opensource.apple.com:2401/cvs/root login
-anonymous
-cvs -z3 -d:pserver:anonymous@anoncvs.opensource.apple.com:2401/cvs/root co -P mDNSResponder
-
-
-
-1.
-r
+1.5.1
+r6108
         fix:  race conditions causing deadlock on connection
-        fix:  race conditions loosing notifications of service connections
+        fix:  race conditions preventing notifications of service connections
         fix:  race conditions causing an absence of response from introspection (e.g. for the service interconnection view in the GUI)
         fix:  (jivedns/jmdns) problem with multiple service search (only the first search worked in some cases)
         fix:  (jivedns/jmdns) duplicate addition of services in some cases
         fix:  (mdns) duplicate addition of services in some cases
         fix:  (avahi) duplicate addition of services on some networks causing ghosts and NPE at fr.prima.omiscid.dnssd.common.SharedBrowser.serviceEventReceived(SharedBrowser.java:100)
         impr: clearer reporting when verbose mode is on for dnssd factory
-        impr: whether dnssd factory is a shared one or not can now be set programatically
+        impr: whether dnssd factory is a shared one can now be set programatically
 
 1.5.0
 r4950
         fix:  trying to send message (or reply message) through a input connector now properly throws an exception
-        fix:  service disapparitions were properly notified but browsing with a new service repository caused disappeared services to be reported as present
+        fix:  service disappearances were properly notified but browsing with a new service repository caused disappeared services to be reported as present
         fix:  some corner case problems with connection notifications and early message sending that appeared with the removal of castor-xml
         fix: connector listeners now receive "connected" notifications even when connections are initiated locally (this behavior may be subject to discussion, please contact us in case you'd rather have the opposite to happen)
         impr: convert to JAXB. Omiscid was using castor-xml for its xml communication but it now uses jaxb which is included in Java 6.0 and only requires 2 jars (900k) with java 5.0. JAXB is also faster than castor-xml when used within omiscid
