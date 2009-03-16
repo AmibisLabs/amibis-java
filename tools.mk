@@ -16,14 +16,14 @@ remote-dist:
 	$m gui-jar
 	$m release-package
 	$m maven-build
-	$m clean-build-bundle
+	$m clean-bundle-build
 
 	$m clean-destination
 
-	$m omiscid-upload
+	#$m omiscid-upload
 	#$m bundle-upload
-	$m release-package-upload
-	$m gui-upload
+	#$m release-package-upload
+	#$m gui-upload
 
 # displays a warning if default domain is wrong
 	$m checkdomain
