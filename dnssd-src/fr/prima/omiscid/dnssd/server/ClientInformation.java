@@ -130,7 +130,7 @@ public class ClientInformation implements ServiceEventListener {
         ServiceRegistration serviceRegistration = dnssdFactory.createServiceRegistration(serviceInformation.getFullName(), serviceInformation.getRegistrationType());
         String hostName = serviceInformation.getHostName();
         if (hostName == null && !socket.getInetAddress().isLoopbackAddress()) {
-            hostName = socket.getInetAddress().getCanonicalHostName()+".local.";
+            hostName = socket.getInetAddress().getCanonicalHostName() + ".";
         }
         serviceRegistration.setHostName(hostName);
         for (String key : serviceInformation.getPropertyKeys()) {

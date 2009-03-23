@@ -81,6 +81,7 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
             factoryRewriter.put("jivedns", "fr.prima.omiscid.dnssd.jivedns.DNSSDFactoryJivedns");
             factoryRewriter.put("mdns", "fr.prima.omiscid.dnssd.mdns.DNSSDFactoryMdns");
             factoryRewriter.put("avahi", "fr.prima.omiscid.dnssd.avahi.DNSSDFactoryAvahi");
+            factoryRewriter.put("proxy", "fr.prima.omiscid.dnssd.client.DNSSDFactoryOmiscid");
             try {
                 if (System.getenv(verboseEnvironmentVariable) != null) {
                     verboseMode = true;
