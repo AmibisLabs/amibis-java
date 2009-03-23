@@ -485,9 +485,9 @@ public class ServiceImpl implements Service {
         /* (non-Javadoc)
          * @see fr.prima.omiscid.service.Service#getVariableAccessType(java.lang.String)
          */
-    synchronized  public String getVariableAccessType(String varName) throws UnknownVariable {
+    synchronized  public VariableAccessType getVariableAccessType(String varName) throws UnknownVariable {
         VariableAttribute var = getVariableAttribut(varName) ;
-        return var.getAccessString() ;
+        return var.getAccess();
     }
     
     /**

@@ -319,7 +319,7 @@ public interface Service {
      * @throws UnknownVariable thrown if the variable has not been decladed
      * @see Service#addVariable(String, String, String, VariableAccessType)
      */
-    public String getVariableAccessType(String variableName)
+    public VariableAccessType getVariableAccessType(String variableName)
     throws UnknownVariable;
     
     /**
