@@ -42,14 +42,19 @@ import java.util.Vector;
  * 
  * Instance of this class are serialized to do the communication between the server and its clients.
  * The serialization is based on:
- *  - the serialization of integer, in US locale ASCII, alone in one line
+ *  - the serialization of integers, in ASCII, using US locale, alone in one line
  *  - the serialization of byte array, that is the serialization of its size follow by the raw bytes
  *  - the serialization of strings, that is the serialization of the byte array representing the string in UTF-8 encoding
  *  - the serialization of the null string is the serialization of the integer -1
- * 
+ *  - the serialization of booleans, serialized as the strings "true" and "false"
+ *
  * An instance is serialized as follow (pseudo code):
  *  - serialize registrationType as string
  *  - serialize fullName as string
+ *  - serialize a boolean telling if we should try backup names on registration failure
+ *  - serialize number (T) of names to try for the registration (even if the previous boolean is false)
+ *  - foreach T names to try
+ *    - serialize this name as string
  *  - serialize hostName as string
  *  - serialize port as integer
  *  - serialize status as integer (see below)
