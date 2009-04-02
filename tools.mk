@@ -80,7 +80,7 @@ maven-build:
 	mkdir -p  ,,rel-maven
 	cat pom.core.xml | sed 's/@@@v@@@/'$(release-version)'/g' > ,,rel-maven/pom.xml
 	cp $(BASEJAR) ,,rel-maven/$(release-omiscid-jar)
-	cd ,,rel-maven && mvn deploy:deploy-file -Dfile=$(release-omiscid-jar) -DpomFile=pom.xml -DrepositoryId=archiva.internal -Durl=dav:http://oberon:8080/archiva/repository/internal/ 
+	cd ,,rel-maven && mvn deploy:deploy-file -Dfile=$(release-omiscid-jar) -DpomFile=pom.xml -DrepositoryId=archiva.internal -Durl=dav:http://oberon:8080/archiva/repository/internal
 
 maven-build-bundle:
 	mkdir -p  ,,rel-maven
