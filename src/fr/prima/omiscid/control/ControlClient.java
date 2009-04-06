@@ -69,9 +69,9 @@ import javax.xml.bind.JAXBContext;
 //\REVIEWTASK shouldn't contain the sets it contains (should be in an higher level class (this one has two functionnalities))
 public class ControlClient implements BipMessageListener {
     /** The max time to wait for the answer to a query */
-    private final int maxTimeToWait = 5000; // milliseconds
-
+    public static final int maxTimeToWait = 5000; // milliseconds
     // \REVIEWTASK should be configurable in a specific way (env variable?)
+    // such timeout is also used for tcpclient connections
 
     /** The connection to the control port */
     private TcpClient tcpClient = null;
@@ -340,7 +340,7 @@ public class ControlClient implements BipMessageListener {
                 if (!waitAnswer) {
                     monitor.sent();
                 } else {
-                    ControlAnswer controlAnswer = monitor.willProcess(theMsgId,maxTimeToWait);
+                    ControlAnswer controlAnswer = monitor.willProcess(theMsgId, ControlClient.maxTimeToWait);
                     if (controlAnswer == null) {
                         System.err.println(Utility.intTo8HexString(this.peerId)+" got a null answer from " + Utility.intTo8HexString(getPeerId()));
                     }

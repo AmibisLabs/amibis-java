@@ -26,6 +26,7 @@
 
 package fr.prima.omiscid.com;
 
+import fr.prima.omiscid.control.ControlClient;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -79,13 +80,13 @@ public class TcpClient extends MessageSocketTCP {
         }
         InetSocketAddress endpoint = new InetSocketAddress(host, port);
         try {
-            socket.connect(endpoint);
+            socket.connect(endpoint, ControlClient.maxTimeToWait);
         } catch (UnknownHostException e) {
             String removalPattern = "^(.*)-[0-9][0-9]?$";
             if (host.matches(removalPattern)) {
                 host = host.replaceFirst(removalPattern, "$1");
                 endpoint = new InetSocketAddress(host, port);
-                socket.connect(endpoint);
+                socket.connect(endpoint, ControlClient.maxTimeToWait);
             } else {
                 throw e;
             }
