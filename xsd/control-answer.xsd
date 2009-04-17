@@ -39,7 +39,7 @@
       <xs:element name="tcp" type="xs:nonNegativeInteger" minOccurs="0" />
       <xs:element name="udp" type="xs:nonNegativeInteger" minOccurs="0" />
       <xs:element name="description" type="xs:string" minOccurs="0" />
-      <xs:element name="formatDescription" type="xs:string" minOccurs="0" />
+      <!--xs:element name="formatDescription" type="xs:string" minOccurs="0" /-->
       <xs:element name="peers" type="Peers" minOccurs="0" />
       <xs:element name="peerId" type="IDType" minOccurs="0" />
       <xs:element name="require" type="xs:positiveInteger" minOccurs="0" />
@@ -72,7 +72,7 @@
       <xs:element name="default" type="xs:string" minOccurs="0" />
       <xs:element name="type" type="xs:string" minOccurs="0" />
       <xs:element name="description" type="xs:string" minOccurs="0" />
-      <xs:element name="formatDescription" type="xs:string" minOccurs="0" />
+      <!--xs:element name="formatDescription" type="xs:string" minOccurs="0" /-->
     </xs:all>
     <xs:attribute name="name" type="VariableNameType" use="required" />
   </xs:complexType>
