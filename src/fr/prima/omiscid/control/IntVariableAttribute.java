@@ -51,7 +51,7 @@ public class IntVariableAttribute {
     public IntVariableAttribute(VariableAttribute variableAttribute, int value) {
         this.variableAttribute = variableAttribute;
         this.variableAttribute.setType("integer");
-        this.variableAttribute.setFormatDescription("decimal representation");
+        this.variableAttribute.setType("decimal representation");
         if (value == integerValue) {
             integerValue = value + 1; // forces the following setIntValue to
                                         // trigger value change

@@ -187,7 +187,7 @@ public class ServiceProxyImpl implements ServiceProxy {
     }
 
     public String getVariableType(String varName) throws UnknownVariable {
-        return getVariable(varName).getFormatDescription();
+        return getVariable(varName).getType();
     }
 
     public String getVariableDescription(String varName) throws UnknownVariable {

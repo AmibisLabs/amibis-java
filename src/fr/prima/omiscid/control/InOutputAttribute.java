@@ -129,10 +129,9 @@ public class InOutputAttribute extends Attribute {
         }
         if (inoutput.getName() != null) this.setName(inoutput.getName());
         if (inoutput.getDescription() != null) this.setDescription(inoutput.getDescription());
-        if (inoutput.getFormatDescription() != null) this.setFormatDescription(inoutput.getFormatDescription());
         if (inoutput.getPeerId() != null) this.setPeerId(Utility.hexStringToInt(inoutput.getPeerId()));
         this.setTcpPort(inoutput.getTcp().intValue());
-        this.setUdpPort(inoutput.getUdp().intValue());
+        if (inoutput.getUdp() != null) this.setUdpPort(inoutput.getUdp().intValue());
         this.peerVector.clear();
         for (String peer : inoutput.getPeers().getPeer()) {
             addPeer(Utility.hexStringToInt(peer));
@@ -148,15 +147,13 @@ public class InOutputAttribute extends Attribute {
         default: System.err.println("unhandled connector type in InOutputAttribute generateControlAnswer");
         }
         inoutput.setDescription(getDescription());
-        inoutput.setFormatDescription(getFormatDescription());
         inoutput.setName(getName());
         inoutput.setPeerId(Utility.intTo8HexString(getPeerId()).toLowerCase());
         inoutput.setTcp(BigInteger.valueOf(getTcpPort()));
-        //??? if (getUdpPort() != 0) inoutput.setTcp(getTcpPort());
-        inoutput.setUdp(BigInteger.valueOf(getUdpPort()));
+        if (getUdpPort() != 0) inoutput.setUdp(BigInteger.valueOf(getUdpPort()));
         Peers peers = new Peers();
-        for (int peerId : getPeerVector()) {
-            peers.getPeer().add(Utility.intTo8HexString(peerId).toLowerCase());
+        for (int pId : getPeerVector()) {
+            peers.getPeer().add(Utility.intTo8HexString(pId).toLowerCase());
         }
         inoutput.setPeers(peers);
         return inoutput;

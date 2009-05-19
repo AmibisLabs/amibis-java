@@ -115,7 +115,6 @@ public class VariableAttribute extends Attribute {
         this.setDescription(variable.getDescription());
         this.setType(variable.getType());
         this.setDefaultValue(variable.getDefault());
-        this.setFormatDescription(variable.getFormatDescription());
     }
 
     public synchronized Variable generateControlAnswer() {
@@ -128,7 +127,6 @@ public class VariableAttribute extends Attribute {
         }
         variable.setDefault(getDefaultValue());
         variable.setDescription(getDescription());
-        variable.setFormatDescription(getFormatDescription());
         variable.setName(getName());
         variable.setType(getType());
         variable.setValue(getValueStr());
@@ -145,7 +143,6 @@ public class VariableAttribute extends Attribute {
         }
         this.setDefaultValue(variable.getDefault());
         this.setDescription(variable.getDescription());
-        this.setFormatDescription(variable.getFormatDescription());
         this.setType(variable.getType());
         this.setValueStr(variable.getValue());
     }
@@ -235,7 +232,6 @@ public class VariableAttribute extends Attribute {
      */
     public void setType(String type) {
         this.type = type;
-        this.setFormatDescription(type); // there should not be these two fields I think (test I0051)
     }
 
     /**

@@ -39,9 +39,6 @@ public abstract class Attribute {
     /** Description of the attribute */
     private String description = null;
 
-    /** Format description of the attribute */
-    private String formatDescription = null;
-
     /**
      * Creates a new instance of Attribute.
      *
@@ -62,15 +59,6 @@ public abstract class Attribute {
         this.description = description;
     }
 
-    /**
-     * Sets the format description of the attribute.
-     *
-     * @param formatDescription
-     *            the description to affect to the format
-     */
-    public void setFormatDescription(String formatDescription) {
-        this.formatDescription = formatDescription;
-    }
 
     /**
      * Accesses to the attribute name.
@@ -90,14 +78,7 @@ public abstract class Attribute {
         return description;
     }
 
-    /**
-     * Accesses to the format description of the attribute.
-     *
-     * @return formatDescription
-     */
-    public String getFormatDescription() {
-        return formatDescription;
-    }
+
 
 //    /**
 //     * Generates a brief description for the attribute (in XML string).
@@ -113,27 +94,6 @@ public abstract class Attribute {
 //     */
 //    public abstract String generateLongDescription();
 
-    /**
-     * Generates the tags about the description and format description for the
-     * XML description. Generates tags only when the descriptions are not empty.
-     *
-     * @return
-     *
-     * <pre>
-     * &lt;description&gt;+ getDescription() +&lt;/description&gt; +
-     *          &lt;formatDescription&gt;+ getFormatDescription() +&lt;/formatDescription&gt;
-     * </pre>
-     */
-    protected String generateTagDescriptionToStr() {
-        String str = "";
-        if (getDescription() != null && !getDescription().equals("")) {
-            str = "<description>" + XmlUtils.generateCDataSection(getDescription()) + "</description>";
-        }
-        if (getFormatDescription() != null && !getFormatDescription().equals("")) {
-            str += "<formatDescription>" + XmlUtils.generateCDataSection(getFormatDescription()) + "</formatDescription>";
-        }
-        return str;
-    }
 
     /**
      * Generates the topmost tag of the XML description.
