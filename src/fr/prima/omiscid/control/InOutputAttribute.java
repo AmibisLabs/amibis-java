@@ -130,12 +130,13 @@ public class InOutputAttribute extends Attribute {
         if (inoutput.getName() != null) this.setName(inoutput.getName());
         if (inoutput.getDescription() != null) this.setDescription(inoutput.getDescription());
         if (inoutput.getPeerId() != null) this.setPeerId(Utility.hexStringToInt(inoutput.getPeerId()));
-        this.setTcpPort(inoutput.getTcp().intValue());
+        if (inoutput.getTcp() != null) this.setTcpPort(inoutput.getTcp().intValue());
         if (inoutput.getUdp() != null) this.setUdpPort(inoutput.getUdp().intValue());
         this.peerVector.clear();
-        for (String peer : inoutput.getPeers().getPeer()) {
-            addPeer(Utility.hexStringToInt(peer));
-        }
+        if (inoutput.getPeers() != null)
+            for (String peer : inoutput.getPeers().getPeer()) {
+                addPeer(Utility.hexStringToInt(peer));
+            }
     }
 
     public IOType generateControlAnswer() {

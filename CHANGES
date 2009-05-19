@@ -41,7 +41,7 @@ In this files, you will find changes between java OMiSCID versions.
 1.
 r
         fix:  TODO doc fix problem with missing description requiring updateDescription
-        fix:  bad handling of absent udp port in received remote service description
+        fix:  bad handling of absent udp port or missing peers in received remote service description
 
 //1.6.0
 //r6250
