@@ -27,8 +27,9 @@
 package fr.prima.omiscid.user.service.impl;
 
 import fr.prima.omiscid.dnssd.interf.ServiceInformation;
+import fr.prima.omiscid.user.service.Service;
 import fr.prima.omiscid.user.service.ServiceProxy;
-import java.util.HashMap;
+import fr.prima.omiscid.user.service.ServiceRepository;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -63,6 +64,10 @@ public final class Digger {
             res.put(k, info.getProperty(k));
         }
         return res;
+    }
+
+    public static ServiceRepository createServiceRepository(ServiceFactoryImpl factory, Service service, String regType) {
+        return factory.createServiceRepository(service, regType);
     }
 
 }

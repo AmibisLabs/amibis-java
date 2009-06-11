@@ -77,6 +77,7 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
         public static boolean skipIntrospectionBasedVerification = false;
         
         static {
+            //factoryRewriter.put("jmdns",  "fr.prima.omiscid.dnssd.jmdns.DNSSDFactoryJmdns");
             factoryRewriter.put("jmdns",  "fr.prima.omiscid.dnssd.jivedns.DNSSDFactoryJivedns");
             factoryRewriter.put("jivedns", "fr.prima.omiscid.dnssd.jivedns.DNSSDFactoryJivedns");
             factoryRewriter.put("mdns", "fr.prima.omiscid.dnssd.mdns.DNSSDFactoryMdns");

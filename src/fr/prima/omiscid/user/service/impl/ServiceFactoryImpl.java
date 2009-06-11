@@ -89,6 +89,10 @@ public class ServiceFactoryImpl implements ServiceFactory {
     public ServiceRepository createServiceRepository(Service service) {
         return new ServiceRepositoryImpl((ServiceImpl)service);
     }
+
+    /*diggable*/ ServiceRepository createServiceRepository(Service service, String regType) {
+        return new ServiceRepositoryImpl((ServiceImpl)service);
+    }
     
     public ServiceRepository createServiceRepository() {
         // Creates a new service with a dummy name

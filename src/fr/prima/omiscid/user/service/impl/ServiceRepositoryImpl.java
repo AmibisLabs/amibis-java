@@ -54,9 +54,12 @@ public class ServiceRepositoryImpl implements ServiceRepository {
     private ServiceBrowser serviceBrowser;
     private boolean stopped = false;
 
-    public ServiceRepositoryImpl(ServiceImpl service) {
+    /*diggable*/ ServiceRepositoryImpl(ServiceImpl service) {
+        this(service, OmiscidService.REG_TYPE());
+    }
+    public ServiceRepositoryImpl(ServiceImpl service, String regType) {
         this.service = service;
-        serviceBrowser = OmiscidService.dnssdFactory.createServiceBrowser(OmiscidService.REG_TYPE());
+        serviceBrowser = OmiscidService.dnssdFactory.createServiceBrowser(regType);
         serviceBrowser.addListener(new ServiceEventListener() {
             public void serviceEventReceived(ServiceEvent e) {
                 if (e.isFound()) serviceFound(e); else serviceLost(e);
