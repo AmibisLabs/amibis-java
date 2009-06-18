@@ -8,6 +8,7 @@
   <name>jOMiSCID-Maven</name>
   <url>http://maven.apache.org</url>
     <build>
+        <plugins>
         <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>jaxb2-maven-plugin</artifactId>
@@ -22,7 +23,6 @@
                 <packageName>fr.prima.omiscid.generated</packageName> <!-- The name of your generated source package -->
             </configuration>
         </plugin>
-        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
