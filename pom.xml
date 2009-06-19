@@ -14,16 +14,29 @@
                 <artifactId>jaxb2-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>control</id>
                         <goals>
                             <goal>xjc</goal>
                         </goals>
+                        <configuration>
+                            <packageName>fr.prima.omiscid.generated.control</packageName>
+                            <clearOutputDir>false</clearOutputDir>
+                            <schemaFiles>control.xsd</schemaFiles>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>service-xml</id>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                        <configuration>
+                            <packageName>fr.prima.omiscid.generated.servicexml</packageName>
+                            <clearOutputDir>false</clearOutputDir>
+                            <staleFile>target/generated-sources/jaxb/.staleFlagSXML</staleFile>
+                            <schemaFiles>service-xml.xsd</schemaFiles>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                        <!-- generate files in the control package and make them non-public -->
-                        <!-- see binding file for details -->
-                    <packageName>fr.prima.omiscid.generated.control</packageName>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

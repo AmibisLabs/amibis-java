@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www-prima.inrialpes.fr/schemas/omiscid/service.xsd" xmlns:omiscid="http://www-prima.inrialpes.fr/schemas/omiscid/service.xsd">
+<schema
+     xmlns="http://www.w3.org/2001/XMLSchema"
+     targetNamespace="http://www-prima.inrialpes.fr/schemas/omiscid/service.xsd" xmlns:t="http://www-prima.inrialpes.fr/schemas/omiscid/service.xsd">
 
 	<element name="service">
 		<complexType>
 			<choice maxOccurs="unbounded" minOccurs="0">
-				<element ref="omiscid:variable" />
-				<element ref="omiscid:input" />
-				<element ref="omiscid:output" />
-				<element ref="omiscid:inoutput" />
+				<element ref="t:variable" />
+				<element ref="t:input" />
+				<element ref="t:output" />
+				<element ref="t:inoutput" />
 			</choice>
 			<attribute name="name" type="string" use="required" />
 			<attribute name="docURL" type="string" use="optional" />
@@ -23,13 +25,13 @@
 				<element name="value" type="string" minOccurs="0" />
 				<element name="default" type="string" minOccurs="0" />
 				<element name="type" type="string" minOccurs="0" />
-				<element ref="omiscid:access" minOccurs="1" maxOccurs="1"/>
+				<element ref="t:access" minOccurs="1" maxOccurs="1"/>
 			</all>
 			<attribute name="name" type="string" use="required"></attribute>
 		</complexType>
 	</element>
 
-	<element name="access" type="omiscid:accessType"> <!-- fix? for jaxb (I0012) -->
+	<element name="access" type="t:accessType"> <!-- fix? for jaxb (I0012) -->
 	</element>
 
 	<simpleType name="accessType">
@@ -51,22 +53,22 @@
 	</complexType>
 
         <complexType name="inputConnector">
-                <complexContent><extension base="omiscid:connectorType"/></complexContent>
+                <complexContent><extension base="t:connectorType"/></complexContent>
         </complexType>
 
         <complexType name="outputConnector">
-                <complexContent><extension base="omiscid:connectorType"/></complexContent>
+                <complexContent><extension base="t:connectorType"/></complexContent>
         </complexType>
 
         <complexType name="inoutputConnector">
-                <complexContent><extension base="omiscid:connectorType"/></complexContent>
+                <complexContent><extension base="t:connectorType"/></complexContent>
         </complexType>
 
-	<element name="input" type="omiscid:inputConnector"></element>
+	<element name="input" type="t:inputConnector"></element>
 
-	<element name="output" type="omiscid:outputConnector"></element>
+	<element name="output" type="t:outputConnector"></element>
 
-	<element name="inoutput" type="omiscid:inoutputConnector"></element>
+	<element name="inoutput" type="t:inoutputConnector"></element>
 
 
 
