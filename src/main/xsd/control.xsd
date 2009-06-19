@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema
+     xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+     targetNamespace="http://www-prima.inrialpes.fr/schemas/omiscid/control.xsd" xmlns:t="http://www-prima.inrialpes.fr/schemas/omiscid/control.xsd">
+
+    <!--annotation>
+        <appinfo>
+            <globalBindings >
+            </globalBindings>
+            <binding node="//xs:complexType" xmlns="http://java.sun.com/xml/ns/jaxb" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc">
+                <property name="concat(, @name)"/>
+            </binding>
+        </appinfo>
+    </annotation-->
+
+    <xs:simpleType name="IDType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9]" />
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="NameType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[ -&lt;>-~]+" /><!-- intervals describing anything but '=' !-->
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="VariableNameType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[ -&lt;>-~]+" />
+        </xs:restriction>
+    </xs:simpleType>
+    
+    
+    <xs:simpleType name="AccessType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="constant" />
+            <xs:enumeration value="read" />
+            <xs:enumeration value="readWrite" />
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:complexType name="Peers">
+        <xs:sequence>
+            <xs:element name="peer" type="t:IDType" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="IOType">
+        <xs:all>
+            <xs:element name="tcp" type="xs:nonNegativeInteger" minOccurs="0" />
+            <xs:element name="udp" type="xs:nonNegativeInteger" minOccurs="0" />
+            <xs:element name="description" type="xs:string" minOccurs="0" />
+            <!--xs:element name="formatDescription" type="xs:string" minOccurs="0" /-->
+            <xs:element name="peers" type="t:Peers" minOccurs="0" />
+            <xs:element name="peerId" type="t:IDType" minOccurs="0" />
+            <xs:element name="require" type="xs:positiveInteger" minOccurs="0" />
+        </xs:all>
+        <xs:attribute name="name" type="t:NameType" use="required" />
+    </xs:complexType>
+    
+    <xs:complexType name="Input">
+        <xs:complexContent>
+            <xs:extension base="t:IOType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="Output">
+        <xs:complexContent>
+            <xs:extension base="t:IOType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="InOutput">
+        <xs:complexContent>
+            <xs:extension base="t:IOType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="Variable">
+        <xs:all>
+            <xs:element name="access" type="t:AccessType" minOccurs="0" />
+            <xs:element name="value" type="xs:string" minOccurs="0" />
+            <xs:element name="default" type="xs:string" minOccurs="0" />
+            <xs:element name="type" type="xs:string" minOccurs="0" />
+            <xs:element name="description" type="xs:string" minOccurs="0" />
+            <!--xs:element name="formatDescription" type="xs:string" minOccurs="0" /-->
+        </xs:all>
+        <xs:attribute name="name" type="t:VariableNameType" use="required" />
+    </xs:complexType>
+    
+    <xs:simpleType name="LockResult">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ok" />
+            <xs:enumeration value="failed" />
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:complexType name="Lock">
+        <xs:attribute name="result" type="t:LockResult"  use="required"/>
+        <xs:attribute name="peer" type="t:IDType"  use="required"/>
+    </xs:complexType>
+    
+    <xs:element name="controlAnswer">
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="input" type="t:Input" />
+                <xs:element name="output" type="t:Output" />
+                <xs:element name="inoutput" type="t:InOutput" />
+                <xs:element name="variable" type="t:Variable" />
+                <xs:element name="lock" type="t:Lock" />
+                <xs:element name="unlock" type="t:Lock" />
+            </xs:choice>
+            <xs:attribute name="id" type="t:IDType" use="required" />
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="controlEvent">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="variable" type="t:Variable" minOccurs="0"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+    
+    
+    <xs:element name="controlQuery">
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element name="fullDescription">
+                    <xs:complexType/>
+                </xs:element>
+                <xs:element name="input">
+                    <xs:complexType>
+                        <xs:attribute name="name" type="t:NameType" use="required" />
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="output">
+                    <xs:complexType>
+                        <xs:attribute name="name" type="t:NameType" use="required" />
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="inoutput">
+                    <xs:complexType>
+                        <xs:attribute name="name" type="t:NameType" use="required" />
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="variable">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="1" />
+                        </xs:sequence>
+                        <xs:attribute name="name" type="t:VariableNameType" use="required" />
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="connect">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="host" type="xs:string" minOccurs="1" maxOccurs="1" />
+                            <xs:choice minOccurs="1" maxOccurs="1">
+                                <xs:element name="tcp" type="xs:positiveInteger" />
+                                <xs:element name="udp" type="xs:positiveInteger" />
+                            </xs:choice>
+                        </xs:sequence>
+                        <xs:attribute name="name" type="t:NameType" use="required" />
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="disconnect">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="peer" type="t:IDType" minOccurs="0" maxOccurs="unbounded" />
+                        </xs:sequence>
+                        <xs:attribute name="name" type="t:NameType" use="required" />
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="subscribe">
+                    <xs:complexType>
+                        <xs:attribute name="name" type="t:VariableNameType" use="required" />
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="unsubscribe">
+                    <xs:complexType>
+                        <xs:attribute name="name" type="t:VariableNameType" use="required" />
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="lock">
+                    <xs:complexType/>
+                </xs:element>
+                <xs:element name="unlock">
+                    <xs:complexType/>
+                </xs:element>
+            </xs:choice>
+            <xs:attribute name="id" type="t:IDType" use="required" />
+        </xs:complexType>
+    </xs:element>
+    
+</schema>

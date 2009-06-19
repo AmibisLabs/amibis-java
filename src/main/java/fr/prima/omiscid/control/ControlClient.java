@@ -37,20 +37,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.bind.JAXBException;
 import org.w3c.dom.Element;
 
 import fr.prima.omiscid.com.TcpClient;
 import fr.prima.omiscid.com.XmlMessage;
 import fr.prima.omiscid.com.interf.BipMessageListener;
 import fr.prima.omiscid.control.interf.GlobalConstants;
-import fr.prima.omiscid.generated.controlanswer.ControlAnswer;
-import fr.prima.omiscid.generated.controlquery.ControlQuery;
+import fr.prima.omiscid.generated.control.ControlAnswer;
+import fr.prima.omiscid.generated.control.ControlQuery;
 import fr.prima.omiscid.user.connector.Message;
 import fr.prima.omiscid.user.util.Utility;
-import javax.xml.bind.JAXBContext;
 
 /**
  * Handles the communication with the control server of a OMiSCID service.

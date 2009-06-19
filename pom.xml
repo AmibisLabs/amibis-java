@@ -20,7 +20,9 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <packageName>fr.prima.omiscid.generated</packageName>
+                        <!-- generate files in the control package and make them non-public -->
+                        <!-- see binding file for details -->
+                    <packageName>fr.prima.omiscid.generated.control</packageName>
                 </configuration>
             </plugin>
             <plugin>

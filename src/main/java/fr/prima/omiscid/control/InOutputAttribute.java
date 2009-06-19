@@ -33,11 +33,11 @@ import java.util.Vector;
 
 import fr.prima.omiscid.com.CommunicationServer;
 import fr.prima.omiscid.com.TcpServer;
-import fr.prima.omiscid.generated.controlanswer.IOType;
-import fr.prima.omiscid.generated.controlanswer.InOutput;
-import fr.prima.omiscid.generated.controlanswer.Input;
-import fr.prima.omiscid.generated.controlanswer.Output;
-import fr.prima.omiscid.generated.controlanswer.Peers;
+import fr.prima.omiscid.generated.control.IOType;
+import fr.prima.omiscid.generated.control.InOutput;
+import fr.prima.omiscid.generated.control.Input;
+import fr.prima.omiscid.generated.control.Output;
+import fr.prima.omiscid.generated.control.Peers;
 import fr.prima.omiscid.user.connector.ConnectorType;
 import fr.prima.omiscid.user.util.Utility;
 import java.math.BigInteger;

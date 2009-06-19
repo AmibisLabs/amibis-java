@@ -32,8 +32,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import fr.prima.omiscid.control.interf.VariableChangeListener;
-import fr.prima.omiscid.generated.controlanswer.AccessType;
-import fr.prima.omiscid.generated.controlanswer.Variable;
+import fr.prima.omiscid.generated.control.AccessType;
+import fr.prima.omiscid.generated.control.Variable;
 import fr.prima.omiscid.user.variable.VariableAccessType;
 import java.util.Vector;
 
