@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema
-     xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-     targetNamespace="http://www-prima.inrialpes.fr/schemas/omiscid/control.xsd" xmlns:t="http://www-prima.inrialpes.fr/schemas/omiscid/control.xsd">
+<xs:schema
+     xmlns:xs="http://www.w3.org/2001/XMLSchema"
+     >
+<!--     targetNamespace="http://www-prima.inrialpes.fr/schemas/omiscid/control.xsd" xmlns:t="http://www-prima.inrialpes.fr/schemas/omiscid/control.xsd"-->
 
     <!--annotation>
         <appinfo>
@@ -42,7 +43,7 @@
     
     <xs:complexType name="Peers">
         <xs:sequence>
-            <xs:element name="peer" type="t:IDType" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="peer" type="IDType" minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
     </xs:complexType>
     
@@ -52,41 +53,41 @@
             <xs:element name="udp" type="xs:nonNegativeInteger" minOccurs="0" />
             <xs:element name="description" type="xs:string" minOccurs="0" />
             <!--xs:element name="formatDescription" type="xs:string" minOccurs="0" /-->
-            <xs:element name="peers" type="t:Peers" minOccurs="0" />
-            <xs:element name="peerId" type="t:IDType" minOccurs="0" />
+            <xs:element name="peers" type="Peers" minOccurs="0" />
+            <xs:element name="peerId" type="IDType" minOccurs="0" />
             <xs:element name="require" type="xs:positiveInteger" minOccurs="0" />
         </xs:all>
-        <xs:attribute name="name" type="t:NameType" use="required" />
+        <xs:attribute name="name" type="NameType" use="required" />
     </xs:complexType>
     
     <xs:complexType name="Input">
         <xs:complexContent>
-            <xs:extension base="t:IOType"/>
+            <xs:extension base="IOType"/>
         </xs:complexContent>
     </xs:complexType>
     
     <xs:complexType name="Output">
         <xs:complexContent>
-            <xs:extension base="t:IOType"/>
+            <xs:extension base="IOType"/>
         </xs:complexContent>
     </xs:complexType>
     
     <xs:complexType name="InOutput">
         <xs:complexContent>
-            <xs:extension base="t:IOType"/>
+            <xs:extension base="IOType"/>
         </xs:complexContent>
     </xs:complexType>
     
     <xs:complexType name="Variable">
         <xs:all>
-            <xs:element name="access" type="t:AccessType" minOccurs="0" />
+            <xs:element name="access" type="AccessType" minOccurs="0" />
             <xs:element name="value" type="xs:string" minOccurs="0" />
             <xs:element name="default" type="xs:string" minOccurs="0" />
             <xs:element name="type" type="xs:string" minOccurs="0" />
             <xs:element name="description" type="xs:string" minOccurs="0" />
             <!--xs:element name="formatDescription" type="xs:string" minOccurs="0" /-->
         </xs:all>
-        <xs:attribute name="name" type="t:VariableNameType" use="required" />
+        <xs:attribute name="name" type="VariableNameType" use="required" />
     </xs:complexType>
     
     <xs:simpleType name="LockResult">
@@ -97,28 +98,28 @@
     </xs:simpleType>
     
     <xs:complexType name="Lock">
-        <xs:attribute name="result" type="t:LockResult"  use="required"/>
-        <xs:attribute name="peer" type="t:IDType"  use="required"/>
+        <xs:attribute name="result" type="LockResult"  use="required"/>
+        <xs:attribute name="peer" type="IDType"  use="required"/>
     </xs:complexType>
     
     <xs:element name="controlAnswer">
         <xs:complexType>
             <xs:choice minOccurs="0" maxOccurs="unbounded">
-                <xs:element name="input" type="t:Input" />
-                <xs:element name="output" type="t:Output" />
-                <xs:element name="inoutput" type="t:InOutput" />
-                <xs:element name="variable" type="t:Variable" />
-                <xs:element name="lock" type="t:Lock" />
-                <xs:element name="unlock" type="t:Lock" />
+                <xs:element name="input" type="Input" />
+                <xs:element name="output" type="Output" />
+                <xs:element name="inoutput" type="InOutput" />
+                <xs:element name="variable" type="Variable" />
+                <xs:element name="lock" type="Lock" />
+                <xs:element name="unlock" type="Lock" />
             </xs:choice>
-            <xs:attribute name="id" type="t:IDType" use="required" />
+            <xs:attribute name="id" type="IDType" use="required" />
         </xs:complexType>
     </xs:element>
     
     <xs:element name="controlEvent">
         <xs:complexType>
             <xs:all>
-                <xs:element name="variable" type="t:Variable" minOccurs="0"/>
+                <xs:element name="variable" type="Variable" minOccurs="0"/>
             </xs:all>
         </xs:complexType>
     </xs:element>
@@ -132,17 +133,17 @@
                 </xs:element>
                 <xs:element name="input">
                     <xs:complexType>
-                        <xs:attribute name="name" type="t:NameType" use="required" />
+                        <xs:attribute name="name" type="NameType" use="required" />
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="output">
                     <xs:complexType>
-                        <xs:attribute name="name" type="t:NameType" use="required" />
+                        <xs:attribute name="name" type="NameType" use="required" />
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="inoutput">
                     <xs:complexType>
-                        <xs:attribute name="name" type="t:NameType" use="required" />
+                        <xs:attribute name="name" type="NameType" use="required" />
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="variable">
@@ -150,7 +151,7 @@
                         <xs:sequence>
                             <xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="1" />
                         </xs:sequence>
-                        <xs:attribute name="name" type="t:VariableNameType" use="required" />
+                        <xs:attribute name="name" type="VariableNameType" use="required" />
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="connect">
@@ -162,25 +163,25 @@
                                 <xs:element name="udp" type="xs:positiveInteger" />
                             </xs:choice>
                         </xs:sequence>
-                        <xs:attribute name="name" type="t:NameType" use="required" />
+                        <xs:attribute name="name" type="NameType" use="required" />
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="disconnect">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="peer" type="t:IDType" minOccurs="0" maxOccurs="unbounded" />
+                            <xs:element name="peer" type="IDType" minOccurs="0" maxOccurs="unbounded" />
                         </xs:sequence>
-                        <xs:attribute name="name" type="t:NameType" use="required" />
+                        <xs:attribute name="name" type="NameType" use="required" />
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="subscribe">
                     <xs:complexType>
-                        <xs:attribute name="name" type="t:VariableNameType" use="required" />
+                        <xs:attribute name="name" type="VariableNameType" use="required" />
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="unsubscribe">
                     <xs:complexType>
-                        <xs:attribute name="name" type="t:VariableNameType" use="required" />
+                        <xs:attribute name="name" type="VariableNameType" use="required" />
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="lock">
@@ -190,8 +191,8 @@
                     <xs:complexType/>
                 </xs:element>
             </xs:choice>
-            <xs:attribute name="id" type="t:IDType" use="required" />
+            <xs:attribute name="id" type="IDType" use="required" />
         </xs:complexType>
     </xs:element>
     
-</schema>
+</xs:schema>
