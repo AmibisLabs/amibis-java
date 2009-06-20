@@ -2,10 +2,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.prima.omiscid</groupId>
-    <artifactId>jOMiSCID-Maven</artifactId>
+    <artifactId>OMiSCID</artifactId>
     <packaging>jar</packaging>
     <version>1.6-SNAPSHOT</version>
-    <name>jOMiSCID-Maven</name>
+    <name>OMiSCID Java</name>
     <url>http://omiscid.gforge.inria.fr/</url>
     <build>
         <plugins>
