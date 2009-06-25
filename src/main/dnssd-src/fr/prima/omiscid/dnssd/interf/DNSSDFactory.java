@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.Stack;
 
 import fr.prima.omiscid.dnssd.common.SharedFactory;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * Factory interface used to generate objects to access the dnssd network. The
@@ -58,16 +60,15 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
      * returned.
      */
     public static final class DefaultFactory {
-        private static final String propertyBundle = "cfg";
-        private static final String dnssdFactoryKey = "dnssdFactory";
-
         private static final String factoryEnvironmentVariable = "OMISCID_DNSSD_FACTORY";
+        private static final String factoryEnvironmentVariableDebugValue = "DEBUG";
         private static final String sharedFactoryEnvironmentVariable = "OMISCID_DNSSD_SHARED_FACTORY";
         private static final String verboseEnvironmentVariable = "OMISCID_DNSSD_FACTORY_VERBOSE_MODE";
         private static final String sharedTrueValue = "true";
         private static final PatchedIdentity<String> factoryRewriter = new PatchedIdentity<String>();
 
         public static boolean verboseMode = false;
+        public static boolean verboseModeMore = false;
         public static String factoryToTryFirst = null;
         public static boolean shared = true;
         /**
@@ -86,6 +87,9 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
             try {
                 if (System.getenv(verboseEnvironmentVariable) != null) {
                     verboseMode = true;
+                    if (System.getenv(verboseEnvironmentVariable).equalsIgnoreCase(factoryEnvironmentVariableDebugValue)) {
+                        verboseModeMore = true;
+                    }
                 }
                 if (System.getenv(sharedFactoryEnvironmentVariable) != null) {
                     String sharedString = System.getenv(sharedFactoryEnvironmentVariable);
@@ -105,6 +109,16 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
         private static void verboseMessage(String message) {
             if (verboseMode) {
                 System.out.println("OmiscidDnssd: "+message);
+            }
+        }
+        private static void verboseMessage(Throwable e) {
+            if (verboseMode) {
+                StringWriter w = new StringWriter();
+                PrintWriter wr = new PrintWriter(w);
+                e.printStackTrace(wr);
+                for (String line : w.toString().split("\n")) {
+                    verboseMessage(line);
+                }
             }
         }
         
@@ -138,6 +152,9 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
                     factoryClass = Class.forName(className);
                 } catch (Throwable e) {
                     // Problem while looking for given class, falling back to the next choice
+                    if (verboseModeMore) {
+                        verboseMessage(e);
+                    }
                     continue;
                 }
                 if (factoryClass != null
