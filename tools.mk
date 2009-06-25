@@ -30,11 +30,11 @@ remote-dist:
 
 
 headers:
-	find src -name \*.java -exec ./set-header.sh {} \;
-	find dnssd-src -name \*.java -exec ./set-header.sh {} \;
-	find user-level-src -name \*.java -exec ./set-header.sh {} \;
-	find test -name \*.java -exec ./set-header.sh {} \;
-	find other-test -name \*.java -exec ./set-header.sh {} \;
+	find src/main/java -name \*.java -exec ./set-header.sh {} \;
+	find src/main/dnssd-src -name \*.java -exec ./set-header.sh {} \;
+	find src/main/user-level-src -name \*.java -exec ./set-header.sh {} \;
+	find src/test/java -name \*.java -exec ./set-header.sh {} \;
+	find src/test/other-test -name \*.java -exec ./set-header.sh {} \;
 
 
 
