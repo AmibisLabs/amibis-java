@@ -95,4 +95,36 @@ public class TcpClient extends MessageSocketTCP {
         super.start(true);
         initializeConnection();
     }
+
+/*    public static void main(String[] args) throws IOException, InterruptedException {
+        final ServiceFactory f = new ServiceFactoryImpl();
+        final Service s = f.create("da");
+        s.addConnector("c", "...", ConnectorType.INPUT);
+        s.addConnectorListener("c", new ConnectorListener() {
+
+            public void messageReceived(Service service, String localConnectorName, Message message) {
+            }
+
+            public void disconnected(Service service, String localConnectorName, int peerId) {
+            }
+
+            public void connected(Service service, String localConnectorName, int peerId) {
+                System.err.println("CONNECTED");
+            }
+        });
+        ServiceRepository rep = f.createServiceRepository();
+        rep.addListener(new ServiceRepositoryListener() {
+
+            public void serviceAdded(ServiceProxy serviceProxy) {
+                System.err.println("ADD "+serviceProxy.getName()+" on "+serviceProxy.getHostName());
+                s.connectTo("c", serviceProxy, "events");
+            }
+
+            public void serviceRemoved(ServiceProxy serviceProxy) {
+
+            }
+        }, ServiceFilters.hasConnector("events"));
+        Thread.sleep(10000);
+        System.exit(0);
+    }*/
 }

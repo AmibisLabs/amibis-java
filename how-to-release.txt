@@ -1,0 +1,9 @@
+
+Maven only:
+* clean
+* build
+* check tests are passing
+* set proper version (e.g. 1.6.0) in pom.xml
+* mvn deploy -Dmaven.test.skip=true
+* scp -r output-repository/* oberon:/var/www/release/maven
+

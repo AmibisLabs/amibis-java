@@ -4,7 +4,7 @@
     <groupId>fr.prima.omiscid</groupId>
     <artifactId>OMiSCID</artifactId>
     <packaging>jar</packaging>
-    <version>1.6-SNAPSHOT</version>
+    <version>1.6.0</version>
     <name>OMiSCID Java</name>
     <url>http://omiscid.gforge.inria.fr/</url>
     <build>
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.1</version>
+            <version>4.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -113,7 +113,29 @@
             <version>1.0</version>
         </dependency>
     </dependencies>
+    <distributionManagement>
+        <!-- use the following if you're not using a snapshot version. -->
+        <repository>
+            <id>repo</id>
+            <name>Local Repository (to be uploaded)</name>
+            <url>file://output-repository</url>
+        </repository>
+    </distributionManagement>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <excludePackageNames>*.impl:fr.prima.omiscid.dnssd:fr.prima.omiscid.com:fr.prima.omiscid.control:fr.prima.omiscid.generated:org.freedesktop.*</excludePackageNames>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>
+
+
 
 
 

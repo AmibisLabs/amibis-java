@@ -187,10 +187,12 @@ public class ServiceProxyImpl implements ServiceProxy {
     }
 
     public String getVariableType(String varName) throws UnknownVariable {
+        checkedUpdateDescription();
         return getVariable(varName).getType();
     }
 
     public String getVariableDescription(String varName) throws UnknownVariable {
+        checkedUpdateDescription();
         return getVariable(varName).getDescription();
     }
 
@@ -259,6 +261,7 @@ public class ServiceProxyImpl implements ServiceProxy {
     }
     
     public String getConnectorDescription(String connectorName) throws UnknownConnector {
+        checkedUpdateDescription();
         InOutputAttribute connector = omiscidService.findConnector(connectorName);
         if (connector == null) {
             throw new UnknownConnector("Unknown connector '"+connectorName+"'");

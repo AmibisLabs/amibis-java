@@ -3,7 +3,6 @@
                         CHANGES
 ---------------------------------
 In this files, you will find changes between java OMiSCID versions.
-*MUST: remove necessity for ServiceProy#updateDescription() to obtain variable type and desc
 *should: allow an improved java.nio Buffers based message reception (gain 1 copy)
 *should: make configurable (through Java and C++) the timeout for control queries
 *should: see Socket. keepAlive
@@ -40,16 +39,14 @@ In this files, you will find changes between java OMiSCID versions.
 
 1.
 r
-        fix:  TODO doc fix problem with missing description requiring updateDescription
         fix:  bad handling of absent udp port or missing peers in received remote service description
-        impr: added higher verbosity for the automatic selection DNSSD implementation (by setting environment variable to DEBUG)
-
-//1.6.0
-//r6250
         fix:  problem with ServiceProxy#getVariableType() returning null for a remote non-Java service
+        fix:  problem with missing descriptions (connector description, variable description and type) requiring updateDescription
         fix:  (API) Service#getVariableAccessType now returns VariableAccessType instead of string
+        impr: omiscid is available using maven2
         impr: dnssd server/proxy now fully operational (useful on networks where multicast is filtered)
         impr: (internal) added a class to expose some internal details used for instance in the GUI
+        impr: added higher verbosity for the automatic selection DNSSD implementation (by setting environment variable to DEBUG)
 
 1.5.1
 r6108
