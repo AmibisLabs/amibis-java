@@ -1,5 +1,6 @@
 
-Maven only:
+Maven only and Pure Java only:
+* scope: jOMiSCID-Maven
 * clean
 * build
 * check tests are passing
@@ -7,3 +8,8 @@ Maven only:
 * mvn deploy -Dmaven.test.skip=true
 * scp -r output-repository/* oberon:/var/www/release/maven
 
+Maven only and netbeans module only:
+* scope: jOMiSCID-Netbeans
+* build
+* deploy
+* scp -r output-repository/* oberon:/var/www/release/maven
