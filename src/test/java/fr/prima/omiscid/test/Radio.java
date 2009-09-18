@@ -42,11 +42,11 @@ import java.util.logging.Logger;
 import org.junit.Test;
 
 public class Radio {
-    private final static String serviceName = "Radio";
-    private final static String audioOutputName = "audioStream";
+    private final static String serviceName = "Microphone";
+    private final static String audioOutputName = "AudioFlow";
     private final static String titleVariableName = "songTitle";
-    private final static String channelsVariable = "Channels";
-    private final static String sampleRateVariable = "SampleRate";
+    private final static String channelsVariable = "NumChannel";
+    private final static String sampleRateVariable = "Frequency";
     private int sampleRate = 44100;
     private int channels = 2;
     private Service service;
@@ -55,7 +55,7 @@ public class Radio {
     
    @Test
     public void callMain() {
-        //main(new String[0]);
+        main(new String[0]);
     }
     public Radio() {
         
