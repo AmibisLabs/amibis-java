@@ -70,4 +70,15 @@ public final class Digger {
         return factory.createServiceRepository(service, regType);
     }
 
+    /**
+     *
+     * @param factory
+     * @param serviceName
+     * @param domain e.g. "_bip._tcp"
+     * @return
+     */
+    public static Service createServiceInDomain(ServiceFactoryImpl factory, String serviceName, String domain) {
+        return factory.createServiceInDomain(serviceName, domain);
+    }
+
 }

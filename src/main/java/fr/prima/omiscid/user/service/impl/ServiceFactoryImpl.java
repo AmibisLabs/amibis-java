@@ -29,9 +29,11 @@ package fr.prima.omiscid.user.service.impl;
 import java.io.InputStream;
 
 import fr.prima.omiscid.control.ControlServer;
+import fr.prima.omiscid.control.OmiscidService;
 import fr.prima.omiscid.control.ServiceFromXml;
 import fr.prima.omiscid.control.VariableAttribute;
 import fr.prima.omiscid.control.interf.GlobalConstants;
+import fr.prima.omiscid.dnssd.interf.DNSSDFactory;
 import fr.prima.omiscid.user.exception.InvalidDescriptionException;
 import fr.prima.omiscid.user.service.MainClass;
 import fr.prima.omiscid.user.service.Service;
@@ -55,7 +57,7 @@ public class ServiceFactoryImpl implements ServiceFactory {
     synchronized  public Service create(String serviceName) {
         return create(serviceName, ServiceFactoryImpl.DEFAULTCLASS);
     }
-    
+
         /* (non-Javadoc)
          * @see fr.prima.bip.service.ServiceFactory#createFromXml()
          */
@@ -85,6 +87,24 @@ public class ServiceFactoryImpl implements ServiceFactory {
         
         return service;
     }
+
+    /*diggable*/ Service createServiceInDomain(String serviceName, final String regType) {
+        ControlServer ctrlServer = new ControlServer(serviceName) {
+
+            @Override
+            protected void initServiceRegistration() {
+                serviceRegistration = DNSSDFactory.DefaultFactory.instance().createServiceRegistration("O3MiSCID_default_name", regType);
+            }
+
+        };
+        Service service = new ServiceImpl(ctrlServer);
+
+        VariableAttribute classVar = ctrlServer.findVariable(GlobalConstants.constantNameForClass);
+        classVar.setValueStr(ServiceFactoryImpl.DEFAULTCLASS);
+
+        return service;
+    }
+
     
     public ServiceRepository createServiceRepository(Service service) {
         return new ServiceRepositoryImpl((ServiceImpl)service);
@@ -93,7 +113,7 @@ public class ServiceFactoryImpl implements ServiceFactory {
     /*diggable*/ ServiceRepository createServiceRepository(Service service, String regType) {
         return new ServiceRepositoryImpl((ServiceImpl)service, regType);
     }
-    
+
     public ServiceRepository createServiceRepository() {
         // Creates a new service with a dummy name
         // Logically the service name isn't used anywhere and should be indifferent

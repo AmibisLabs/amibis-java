@@ -131,7 +131,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     private Thread threadProcessMessages = null;
 
     /** Object to register the service to DNS-SD */
-    private ServiceRegistration serviceRegistration = null;
+    protected ServiceRegistration serviceRegistration = null;
 
     /** Tells the listening thread when to stop */
     private boolean processMessagesThreadRunning;
@@ -154,7 +154,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         setServiceName(serviceName);
     }
 
-    private void initServiceRegistration() {
+    protected void initServiceRegistration() {
         serviceRegistration = DNSSDFactory.DefaultFactory.instance().createServiceRegistration("O3MiSCID_default_name", OmiscidService.REG_TYPE());
     }
 
