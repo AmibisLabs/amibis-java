@@ -3,6 +3,10 @@
                         CHANGES
 ---------------------------------
 In this files, you will find changes between java OMiSCID versions.
+* MUST MUST : fix the fact that when services are stopped, most thread are still running
+                              as they are not notified of the event
+                              start a service, stop it and look at running threads
+                              see also // FIXME UNCLOSED
 *should: allow an improved java.nio Buffers based message reception (gain 1 copy)
 *should: make configurable (through Java and C++) the timeout for control queries
 *should: see Socket. keepAlive

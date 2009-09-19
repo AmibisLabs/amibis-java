@@ -462,6 +462,7 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             threadProcessMessages = new Thread("Omiscid Control Server Thread") {
                 @Override
                 public void run() {
+                    // FIXME UNCLOSED use a condition with notification to interupt this waitForMessages
                     while (ControlServer.this.processMessagesThreadRunning) {
                         if (waitForMessages()) {
                             processMessages();

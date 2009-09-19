@@ -265,6 +265,8 @@ public class ServiceImpl implements Service {
             TcpClientServer tcpClientServer = it.next() ;
             tcpClientServer.close() ;
         }
+        // FIXME UNCLOSED
+        // FIXME must remove listeners and variable listeners before closing this ctrlServer (it is used to unregister variable listeners)
         ctrlServer.stop() ;
         
         // to avoid on an oscar update command to stop and start the bundle
