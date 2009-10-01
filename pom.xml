@@ -122,10 +122,15 @@
 
     <distributionManagement>
         <repository>
+            <id>prima.public</id>
+            <name>Public PRIMA Repository</name>
+            <url>http://oberon.inrialpes.fr:8080/archiva/repository/internal</url>
+        </repository>
+        <!--repository>
             <id>repo</id>
             <name>Local Repository (to be uploaded)</name>
             <url>file://output-repository</url>
-        </repository>
+        </repository-->
     </distributionManagement>
 
     <profiles>
