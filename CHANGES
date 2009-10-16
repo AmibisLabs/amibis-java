@@ -42,7 +42,9 @@ test 55 failed once with avahi (connection refused exception)
 In this files, you will find changes between java OMiSCID versions.
 
 1.6.0
-r7405
+r????7405
+        fix:  service.xml reader ignoring some information due to JAXB and CastorXML difference in XSD handling
+
         fix:  bad handling of absent udp port or missing peers in received remote service description
         fix:  problem with ServiceProxy#getVariableType() returning null for a remote non-Java service
         fix:  problem with missing descriptions (connector description, variable description and type) requiring updateDescription

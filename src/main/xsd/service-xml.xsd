@@ -20,20 +20,24 @@
 	<element name="variable">
 		<complexType>
 			<all>
-				<element name="description" type="string" minOccurs="0" />
-				<element name="formatDescription" type="string" minOccurs="0" />
-				<element name="value" type="string" minOccurs="0" />
-				<element name="default" type="string" minOccurs="0" />
-				<element name="type" type="string" minOccurs="0" />
+				<element ref="t:description" minOccurs="0" />
+                                <element ref="t:value" minOccurs="0" />
+				<element ref="t:type" minOccurs="0" />
 				<element ref="t:access" minOccurs="1" maxOccurs="1"/>
 			</all>
 			<attribute name="name" type="string" use="required"></attribute>
 		</complexType>
 	</element>
 
+	<element name="description" type="t:simpleStringType"/> <!-- for jaxb -->
+	<element name="value" type="t:simpleStringType"/> <!-- for jaxb -->
+	<element name="type" type="t:simpleStringType"/> <!-- for jaxb -->
+	<simpleType name="simpleStringType">
+		<restriction base="string"/>
+	</simpleType>
+
 	<element name="access" type="t:accessType"> <!-- fix? for jaxb (I0012) -->
 	</element>
-
 	<simpleType name="accessType">
 		<restriction base="string">
 			<enumeration value="constant"></enumeration>

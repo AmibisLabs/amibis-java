@@ -141,7 +141,6 @@ public class VariableAttribute extends Attribute {
         case READ_WRITE: this.setAccessType(VariableAccessType.READ_WRITE); break;
         default: System.err.println("unhandled variable type in VariableAttribute.init "+variable.getAccess());
         }
-        this.setDefaultValue(variable.getDefault());
         this.setDescription(variable.getDescription());
         this.setType(variable.getType());
         this.setValueStr(variable.getValue());
