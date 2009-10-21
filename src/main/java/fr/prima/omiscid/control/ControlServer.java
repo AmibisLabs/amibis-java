@@ -175,6 +175,9 @@ public class ControlServer extends MessageManager implements VariableChangeListe
     public void stop() {
         serviceRegistration.unregister();
         processMessagesThreadRunning = false;
+        if (tcpServer != null) {
+            tcpServer.close();
+        }
     }
 
     /**
@@ -462,9 +465,9 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             threadProcessMessages = new Thread("Omiscid Control Server Thread") {
                 @Override
                 public void run() {
-                    // FIXME UNCLOSED use a condition with notification to interupt this waitForMessages
                     while (ControlServer.this.processMessagesThreadRunning) {
-                        if (waitForMessages()) {
+                        // set an arbitrary timeout to have the thread closed when control server is stopped but no new events arrive (basic case)
+                        if (waitForMessages(500)) {
                             processMessages();
                         }
                     }

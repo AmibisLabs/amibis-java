@@ -30,17 +30,19 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Set;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import fr.prima.omiscid.com.interf.BipMessageListener;
-import fr.prima.omiscid.user.connector.Message;
-import fr.prima.omiscid.user.exception.MessageInterpretationException;
 import fr.prima.omiscid.user.util.Utility;
+import java.net.SocketTimeoutException;
 
 /**
  * TCP Server. Accept multiple connections. Enables sending messages to one or
@@ -52,7 +54,7 @@ import fr.prima.omiscid.user.util.Utility;
 // \REVIEWTASK shouldn't this be a monitor?
 public class TcpServer implements CommunicationServer {
     /** Set of connections : set of MessageSocketTcp objects */
-    private Set<MessageSocketTCP> connectionsSet;
+    private final Set<MessageSocketTCP> connectionsSet;
 
     /** Service id used to identify connecton in BIP exchanges */
     protected int peerId;
@@ -64,7 +66,7 @@ public class TcpServer implements CommunicationServer {
     private Thread listeningThread;
 
     /** Set of listener call when OMiSCID messages arrive */
-    protected Set<BipMessageListener> listenersSet;
+    protected final Set<BipMessageListener> listenersSet;
 
     /**
      * Creates a new instance of TcpServer.
@@ -94,13 +96,13 @@ public class TcpServer implements CommunicationServer {
      *
      */
     public void close() {
+        closeServer();
         synchronized (connectionsSet) {
             for (MessageSocketTCP socket : connectionsSet) {
                 socket.closeConnection();
             }
             connectionsSet.clear();
         }
-        closeServer();
     }
 
     /**
@@ -108,12 +110,11 @@ public class TcpServer implements CommunicationServer {
      * stopped. However all the initiated connections are still alive.
      * See {@link #close()} for a complete close (closing already initiated connections}
      */
-    public void closeServer() {
+    public final void closeServer() {
         try {
             serverSocket.close();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (IOException ex) {
+            Logger.getLogger(TcpServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -144,6 +145,11 @@ public class TcpServer implements CommunicationServer {
      * initialize {@link MessageSocketTCP}.
      */
     private void run() {
+        try {
+            serverSocket.setSoTimeout(900);
+        } catch (SocketException ex) {
+            throw new RuntimeException("socket problem", ex);
+        }
         while (!serverSocket.isClosed()) {
             try {
                 Socket socket = serverSocket.accept();
@@ -160,6 +166,8 @@ public class TcpServer implements CommunicationServer {
                 }
                 messageSocket.start(true);
                 messageSocket.initializeConnection();
+            } catch (SocketTimeoutException e) {
+                // normal timeout to allow proper closing of this thread when the service is stopped
             } catch (IOException e) {
                 /** Connection closed by {@link #close()} */
             }
@@ -445,63 +453,6 @@ public class TcpServer implements CommunicationServer {
         }
     }
 
-    /**
-     * main for test Create a TCP server and a TCP client The server send
-     * message and the client connects to the server and receives the message. A
-     * listener displays the message.
-     */
-    public static void main(String[] arg) {
-
-        int port = 5001;
-
-        TcpClient tcpClient = null;
-        try {
-            final TcpServer tcpServer = new TcpServer(666, port);
-            System.out.println("Connect?");
-
-            tcpServer.start();
-
-            tcpClient = new TcpClient(999);
-            tcpClient.connectTo("localhost", port);
-
-            Thread t = new Thread() {
-                @Override
-                public void run() {
-                    int nb = -1;
-                    String str = "toto12345678901234567890";
-                    while (true) {
-                        nb++;
-                        if (nb % 100 == 0) {
-                            tcpServer.sendToAllClientsUnchecked(str);
-                            nb = 0;
-                        }
-                    }
-                }
-            };
-            t.start();
-
-            MessageManager messageManager = new MessageManager() {
-                protected void processMessage(Message message) {
-                    try {
-                        System.out.println(message.getBufferAsString());
-                    } catch (MessageInterpretationException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                }
-            };
-            tcpClient.addBipMessageListener(messageManager);
-
-            while (true) {
-                messageManager.waitForMessages();
-                int nbProcess = messageManager.processMessages();
-                System.out.println("----------------process : " + nbProcess);
-            }
-        } catch (IOException e) {
-            System.out.println("main");
-            System.out.println(e);
-        }
-    }
 
     /**
      * Starts this server. A background thread is started to listen for incoming

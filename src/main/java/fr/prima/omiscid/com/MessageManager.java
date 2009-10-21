@@ -42,7 +42,7 @@ import fr.prima.omiscid.user.connector.Message;
  */
 public abstract class MessageManager implements BipMessageListener {
     /** List of the messages received */
-    private Queue<Message> messagesQueue = new LinkedList<Message>();
+    private final Queue<Message> messagesQueue = new LinkedList<Message>();
 
     /*
      * (non-Javadoc)
@@ -110,13 +110,13 @@ public abstract class MessageManager implements BipMessageListener {
      * @return an indicative boolean, the value return by hasMessage() after the
      *         waiting time
      */
-    public boolean waitForMessages() {
+    public boolean waitForMessages(long timeout) {
         synchronized (messagesQueue) {
             if (hasMessage()) {
                 return true;
             }
             try {
-                messagesQueue.wait();
+                messagesQueue.wait(timeout);
                 return hasMessage();
             } catch (InterruptedException e) {
                 e.printStackTrace();

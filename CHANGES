@@ -3,10 +3,7 @@
                         CHANGES
 ---------------------------------
 In this files, you will find changes between java OMiSCID versions.
-* MUST MUST : fix the fact that when services are stopped, most thread are still running
-                              as they are not notified of the event
-                              start a service, stop it and look at running threads
-                              see also // FIXME UNCLOSED
+*check: cannot stop() a service too fast ? ==> in fact cannot stop() an un-started service (npe instead of clear message or of nothing)
 *should: allow an improved java.nio Buffers based message reception (gain 1 copy)
 *should: make configurable (through Java and C++) the timeout for control queries
 *should: see Socket. keepAlive
@@ -43,8 +40,8 @@ In this files, you will find changes between java OMiSCID versions.
 
 1.6.0
 r????7405
+        fix:  some unclosed threads with quite classical services
         fix:  service.xml reader ignoring some information due to JAXB and CastorXML difference in XSD handling
-
         fix:  bad handling of absent udp port or missing peers in received remote service description
         fix:  problem with ServiceProxy#getVariableType() returning null for a remote non-Java service
         fix:  problem with missing descriptions (connector description, variable description and type) requiring updateDescription

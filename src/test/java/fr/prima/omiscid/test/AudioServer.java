@@ -26,8 +26,15 @@
 
 package fr.prima.omiscid.test;
 
+import fr.prima.omiscid.user.connector.ConnectorListener;
+import fr.prima.omiscid.user.connector.ConnectorType;
+import fr.prima.omiscid.user.connector.Message;
 import fr.prima.omiscid.user.service.Service;
+import fr.prima.omiscid.user.variable.LocalVariableListener;
+import fr.prima.omiscid.user.variable.VariableAccessType;
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,11 +48,23 @@ public class AudioServer {
     private Service service;
 
     public AudioServer(){
+        this(false);
+    }
+    public AudioServer(boolean startInBg) {
         if(!init()){
             System.err.println("error initialization.");
             System.exit(0);
         }
-        process();
+        Runnable process = new Runnable() {
+            public void run() {
+                process();
+            }
+        };
+        if (startInBg) {
+            new Thread(process).start();
+        } else {
+            process.run();
+        }
     }
 
 
