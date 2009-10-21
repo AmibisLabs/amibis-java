@@ -1,22 +1,21 @@
 
 
-howto run tests (easily)
+howto run tests (easily and sequentially)
   good question
 
-deploy on archiva (WARNING, check current version)
-  mvn deploy -Dmaven.test.skip=true
-  ! then change version number (e.g. to a minor version 1.6.0.12 (4 numbers))
-=> this creates the raw jar (no javadoc, no CHANGES, ...), not the forge release
 
-build the forge release
-  ! check the CHANGES file is correct (clean + version number + revision number)
 
-(Memo) Maven only and Pure Java only:
+Maven only and Pure Java only:
 * scope: jOMiSCID-Maven
 * "clean and build"
 * "test" then wait and check tests are passing
 * set proper version (e.g. 1.6.0) in pom.xml
 * mvn -Prelease -Dmaven.test.skip=true deploy
+* ! then change version number (e.g. to a minor version 1.6.0.12 (4 numbers))
+* ! check the CHANGES file is correct (clean + version number + revision number)
+* change release.conf with proper version number
+* make -f release.mk
+* 
 
 Maven only and netbeans module only:
 * scope: jOMiSCID-Netbeans
