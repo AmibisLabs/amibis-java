@@ -100,7 +100,7 @@ public class I0050_ServiceRepositoryWithFilter_Test {
         Thread.sleep(1000);
 
         service1.stop();
-        Thread.sleep(1000);
+        Thread.sleep(1200);
         repository.removeListener(listener3, true);
         Thread.sleep(1000);
         service2.stop();

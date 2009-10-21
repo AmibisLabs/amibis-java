@@ -266,14 +266,6 @@ public class ServiceImpl implements Service {
             tcpClientServer.close() ;
         }
         
-        // to avoid on an oscar update command to stop and start the bundle
-        // too quickly. If stop and start are too close, DNSSD does not see the
-        // unregistration and the new registration :-(
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e1) {
-        }
-        
         // we remove all the connectors listeners
         for (String connectorName : msgListeners.keySet()) {
             HashMap<ConnectorListener, BipMessageListener> map = msgListeners.get(connectorName);
@@ -308,6 +300,13 @@ public class ServiceImpl implements Service {
         }
         
         ctrlServer.stop() ;
+        // to avoid on an oscar update command to stop and start the bundle
+        // too quickly. If stop and start are too close, DNSSD does not see the
+        // unregistration and the new registration :-(
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e1) {
+//        }
     }
     
         /* (non-Javadoc)

@@ -26,6 +26,7 @@
 
 package fr.prima.omiscid.test;
 
+import org.junit.Test;
 /**
  *
  * @author emonet
@@ -34,6 +35,11 @@ public class TestPassedPseudoException extends RuntimeException {
 
     public TestPassedPseudoException() {
         super("Test passed, this is an execption to be expected by junit");
+    }
+
+    @Test(expected = TestPassedPseudoException.class)
+    public void doIt() {
+        FactoryFactory.passed("Cool");
     }
 
     
