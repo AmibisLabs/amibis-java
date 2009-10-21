@@ -46,9 +46,10 @@ r????7405
         fix:  problem with ServiceProxy#getVariableType() returning null for a remote non-Java service
         fix:  problem with missing descriptions (connector description, variable description and type) requiring updateDescription
         fix:  (API) Service#getVariableAccessType now returns VariableAccessType instead of string
+        impr: removed delay on service stop() that was introduced a long time a go o help oscar bundle reload
         impr: omiscid is available using maven2 (currently in the repository: http://www-prima.imag.fr/maven)
         impr: dnssd server/proxy now fully operational (useful on networks where multicast is filtered)
-        impr: (internal) added a class to expose some internal details used for instance in the GUI
+        impr: (internal) added a class to expose some internal (possible future-API) details used for instance in the GUI
         impr: added higher verbosity for the automatic selection DNSSD implementation (by setting environment variable to DEBUG)
 
 1.5.1
