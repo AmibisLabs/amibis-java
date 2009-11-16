@@ -4,7 +4,7 @@
     <groupId>fr.prima.omiscid</groupId>
     <artifactId>OMiSCID</artifactId>
     <packaging>jar</packaging>
-    <version>1.6.0-SNAPSHOT</version>
+    <version>1.6.1</version>
     <name>OMiSCID Java</name>
     <url>http://omiscid.gforge.inria.fr/</url>
     <build>

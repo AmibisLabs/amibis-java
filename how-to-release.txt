@@ -7,7 +7,7 @@ howto run tests (easily and sequentially)
 
 Maven only and Pure Java only:
 * scope: jOMiSCID-Maven
-* "clean and build"
+* NO (this runs the tests ...) "clean and build"
 * "test" then wait and check tests are passing
 * set proper version (e.g. 1.6.0) in pom.xml
 * change release.conf with proper version number
