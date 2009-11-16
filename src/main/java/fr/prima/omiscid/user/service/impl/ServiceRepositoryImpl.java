@@ -124,7 +124,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
         ServiceProxy serviceProxy = ServiceProxyImpl.forService(service, new OmiscidService(((ServiceImpl)service).getPeerId(), e.getServiceInformation()));
         if (serviceProxy != null) {
             services.add(serviceProxy);
-            for (ServiceRepositoryListener listener : serviceRepositoryListeners.keySet()) {
+            for (ServiceRepositoryListener listener : new ArrayList<ServiceRepositoryListener>(serviceRepositoryListeners.keySet())) {
                 added(listener, serviceProxy);
             }
         }
@@ -142,7 +142,7 @@ public class ServiceRepositoryImpl implements ServiceRepository {
         }
         if (matching != null) {
             services.remove(matching);
-            for (ServiceRepositoryListener listener : serviceRepositoryListeners.keySet()) {
+            for (ServiceRepositoryListener listener : new ArrayList<ServiceRepositoryListener>(serviceRepositoryListeners.keySet())) {
                 removed(listener, matching);
             }
         } else {

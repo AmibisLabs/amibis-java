@@ -40,7 +40,7 @@ public class I0062_StartServiceTwiceWithNoStopTest {
     @Test(expected = TestPassedPseudoException.class)
     public void doIt() throws IOException {
         final ServiceFactory factory = FactoryFactory.factory();
-        final Service s = factory.create("test");
+        final Service s = factory.create("I0062Service");
         s.start();
         try {
             s.start();

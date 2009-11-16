@@ -26,7 +26,6 @@
 
 package fr.prima.omiscid.test;
 
-import fr.prima.omiscid.user.exception.ServiceRunning;
 import java.io.IOException;
 
 import fr.prima.omiscid.user.service.Service;
@@ -41,7 +40,7 @@ public class I0063_StartServiceWithNullVariableTest {
     @Test(expected = TestPassedPseudoException.class)
     public void doIt() throws IOException {
         final ServiceFactory factory = FactoryFactory.factory();
-        final Service s = factory.create("test");
+        final Service s = factory.create("I0063Service");
         s.addVariable("soNull", "Void", "null valued variable", VariableAccessType.CONSTANT);
         try {
             s.start();
