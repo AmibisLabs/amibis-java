@@ -30,7 +30,7 @@ package fr.prima.omiscid.user.exception;
  * @author reignier
  *
  */
-public class ServiceRunning extends RuntimeException {
+public class ServiceRunning extends IllegalStateException {
     public ServiceRunning(String message) {
         super(message);
     }

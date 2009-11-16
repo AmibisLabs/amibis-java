@@ -40,6 +40,8 @@ In this files, you will find changes between java OMiSCID versions.
 
 1.6.???
 r????
+        fix:  possibility to start twice a service at the same time (now throw an exception)
+        impr: automatically set property java.net.preferIPv4Stack to make jivedns/jmdns work without a network connection
 
 1.6.0
 r7694

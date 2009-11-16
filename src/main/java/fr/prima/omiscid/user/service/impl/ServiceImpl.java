@@ -121,7 +121,7 @@ public class ServiceImpl implements Service {
         return ((MessageOnConnector)message).connectorName;
     }
     
-    private Object lock = new Object(); // TODO: review, Couldn't this be removed?
+    private final Object lock = new Object(); // TODO: review, Couldn't this be removed?
     
     /* the Bip Control Server : this is the heart of the bip service */
     private ControlServer ctrlServer ;
@@ -244,6 +244,9 @@ public class ServiceImpl implements Service {
          * @see fr.prima.omiscid.service.Service#start()
          */
     synchronized  public void start() {
+         if (started) {
+            throw new ServiceRunning("While calling start()");
+        }
         synchronized (lock) {
             if(ctrlServer.startServer(0)){
                 //Thread process msg
