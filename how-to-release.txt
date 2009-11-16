@@ -20,7 +20,6 @@ Maven only and Pure Java only:
 * commit as a post version
 
 Maven only and netbeans module only:
-* scope: jOMiSCID-Netbeans
-* build
-* deploy
-* scp -r output-repository/* oberon:/var/www/release/maven
+* scope: jOMiSCID-Maven-Netbeans
+* mvn clean install deploy
+* cp target/fr-prima-netbeans-omiscid-*.nbm /home/oberon/public-nbms/
