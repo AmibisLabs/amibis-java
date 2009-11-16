@@ -65,6 +65,7 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
         private static final String sharedFactoryEnvironmentVariable = "OMISCID_DNSSD_SHARED_FACTORY";
         private static final String verboseEnvironmentVariable = "OMISCID_DNSSD_FACTORY_VERBOSE_MODE";
         private static final String sharedTrueValue = "true";
+        private static final String preventIPV4Preference = "OMISCID_DNSSD_FACTORY_NO_PREFERIPV4STACK";
         private static final PatchedIdentity<String> factoryRewriter = new PatchedIdentity<String>();
 
         public static boolean verboseMode = false;
@@ -90,6 +91,9 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
                     if (System.getenv(verboseEnvironmentVariable).equalsIgnoreCase(factoryEnvironmentVariableDebugValue)) {
                         verboseModeMore = true;
                     }
+                }
+                if (System.getenv(preventIPV4Preference) == null) {
+                    System.setProperty("java.net.preferIPv4Stack", "true");
                 }
                 if (System.getenv(sharedFactoryEnvironmentVariable) != null) {
                     String sharedString = System.getenv(sharedFactoryEnvironmentVariable);
