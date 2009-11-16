@@ -30,6 +30,7 @@ import fr.prima.omiscid.user.exception.MessageInterpretationException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 import java.util.Map.Entry;
 
@@ -244,8 +245,12 @@ public class ServiceImpl implements Service {
          * @see fr.prima.omiscid.service.Service#start()
          */
     synchronized  public void start() {
-         if (started) {
+        if (started) {
             throw new ServiceRunning("While calling start()");
+        }
+        if (!ctrlServer.getUnsetVariables().isEmpty()) {
+            List<String> unset = ctrlServer.getUnsetVariables();
+            throw new IllegalStateException("While calling start(), unset variable" + (unset.size() == 1 ? " " : "s ") + unset.toString());
         }
         synchronized (lock) {
             if(ctrlServer.startServer(0)){

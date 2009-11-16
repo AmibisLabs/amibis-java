@@ -40,8 +40,10 @@ In this files, you will find changes between java OMiSCID versions.
 
 1.6.???
 r????
+        fix:  (API) (WARNING) possibility to start a service with unset variables (now throw an exception)
         fix:  possibility to start twice a service at the same time (now throw an exception)
-        impr: automatically set property java.net.preferIPv4Stack to make jivedns/jmdns work without a network connection
+        impr: automatically set property java.net.preferIPv4Stack to make jivedns/jmdns work without a network connection (set environment variable OMISCID_DNSSD_FACTORY_NO_PREFERIPV4STACK to disable this improvement)
+        impr: (internal) improved variable blacklisting process for service registration
 
 1.6.0
 r7694

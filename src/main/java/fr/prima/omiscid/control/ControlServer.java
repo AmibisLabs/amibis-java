@@ -62,6 +62,8 @@ import fr.prima.omiscid.user.connector.Message;
 import fr.prima.omiscid.user.util.impl.Constants;
 import fr.prima.omiscid.user.util.Utility;
 import fr.prima.omiscid.user.variable.VariableAccessType;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a "local" OmiscidService. To access remote service, use the
@@ -236,6 +238,16 @@ public class ControlServer extends MessageManager implements VariableChangeListe
         return tcpServer;
     }
 
+    public List<String> getUnsetVariables() {
+        List<String> res = new ArrayList<String>();
+        for (VariableAttribute var : variablesSet) {
+            if (null == var.getValueStr()) {
+                res.add(var.getName());
+            }
+        }
+        return res;
+    }
+
     /**
      * Starts the control server and register the service to DNS-SD. If all went
      * fine, the status become INIT.
@@ -293,7 +305,8 @@ public class ControlServer extends MessageManager implements VariableChangeListe
             {
                 filteredVariableSet.addAll(variablesSet);
                 for (String rem : blackList) {
-                    filteredVariableSet.remove(rem);
+                    VariableAttribute toRemove = findVariable(rem);
+                    filteredVariableSet.remove(toRemove);
                 }
                 for (String variableName : GlobalConstants.specialVariablesNames) {
                     VariableAttribute variable = findVariable(variableName);
