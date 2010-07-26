@@ -1,3 +1,4 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -7,6 +8,104 @@
     <version>1.6.1-SNAPSHOT</version>
     <name>OMiSCID Java</name>
     <url>http://omiscid.gforge.inria.fr/</url>
+
+    <repositories>
+        <repository>
+            <id>netbeans</id>
+            <name>repository hosting netbeans.org api artifacts</name>
+            <url>http://deadlock.netbeans.org/maven2</url>
+        </repository>
+        <repository>
+            <id>ibiblio</id>
+            <name>ibiblio.org</name>
+            <url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>
+        </repository>
+        <repository>
+            <id>central</id>
+            <name>Maven2 repository central</name>
+            <url>http://repo1.maven.org/maven2/</url>
+        </repository>
+        <repository>
+            <id>prima.public</id>
+            <name>Public PRIMA Repository</name>
+            <url>http://www-prima.inrialpes.fr/archiva/repository/internal</url>
+        </repository>
+        <repository>
+            <id>java.net</id>
+            <name>repository Java.net</name>
+            <url>http://download.java.net/maven/2/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>dev.java.net</groupId>
+            <artifactId>JiveDNS</artifactId>
+            <version>1.1-lightened</version>
+        </dependency>
+        <dependency>
+            <groupId>org.freedesktop</groupId>
+            <artifactId>dbus</artifactId>
+            <version>2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.freedesktop</groupId>
+            <artifactId>dbus-bin</artifactId>
+            <version>2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>cx.ath</groupId>
+            <artifactId>unix</artifactId>
+            <version>0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>cx.ath</groupId>
+            <artifactId>hexdump</artifactId>
+            <version>0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>cx.ath</groupId>
+            <artifactId>debug-disable</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.apple</groupId>
+            <artifactId>dns_sd</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.6</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>prima.public</id>
+            <name>Public PRIMA Repository</name>
+            <url>http://oberon.inrialpes.fr:8080/archiva/repository/internal</url>
+        </repository>
+        <snapshotRepository>
+            <id>prima.public</id>
+            <name>Public PRIMA Repository</name>
+            <url>http://oberon.inrialpes.fr:8080/archiva/repository/internal</url>
+        </snapshotRepository>
+        <!--repository>
+            <id>repo</id>
+            <name>Local Repository (to be uploaded)</name>
+            <url>file://output-repository</url>
+        </repository-->
+    </distributionManagement>
+
+
     <build>
         <plugins>
             <plugin>
@@ -68,68 +167,6 @@
             </plugin>
         </plugins>
     </build>
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.5</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>dev.java.net</groupId>
-            <artifactId>JiveDNS</artifactId>
-            <version>1.1-lightened</version>
-        </dependency>
-        <dependency>
-            <groupId>org.freedesktop</groupId>
-            <artifactId>dbus</artifactId>
-            <version>2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.freedesktop</groupId>
-            <artifactId>dbus-bin</artifactId>
-            <version>2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>cx.ath</groupId>
-            <artifactId>unix</artifactId>
-            <version>0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>cx.ath</groupId>
-            <artifactId>hexdump</artifactId>
-            <version>0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>cx.ath</groupId>
-            <artifactId>debug-disable</artifactId>
-            <version>1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.apple</groupId>
-            <artifactId>dns_sd</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.6</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
-    <distributionManagement>
-        <repository>
-            <id>prima.public</id>
-            <name>Public PRIMA Repository</name>
-            <url>http://oberon.inrialpes.fr:8080/archiva/repository/internal</url>
-        </repository>
-        <!--repository>
-            <id>repo</id>
-            <name>Local Repository (to be uploaded)</name>
-            <url>file://output-repository</url>
-        </repository-->
-    </distributionManagement>
 
     <profiles>
         <profile>
