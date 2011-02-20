@@ -80,7 +80,7 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
         
         static {
             //factoryRewriter.put("jmdns",  "fr.prima.omiscid.dnssd.jmdns.DNSSDFactoryJmdns");
-            factoryRewriter.put("jmdns",  "fr.prima.omiscid.dnssd.jivedns.DNSSDFactoryJivedns");
+            factoryRewriter.put("jmdns",  "fr.prima.omiscid.dnssd.jmdns.DNSSDFactoryJmdns");
             factoryRewriter.put("jivedns", "fr.prima.omiscid.dnssd.jivedns.DNSSDFactoryJivedns");
             factoryRewriter.put("mdns", "fr.prima.omiscid.dnssd.mdns.DNSSDFactoryMdns");
             factoryRewriter.put("avahi", "fr.prima.omiscid.dnssd.avahi.DNSSDFactoryAvahi");
@@ -135,6 +135,7 @@ extends DNSSDServiceBrowserFactory, DNSSDServiceRegistrationFactory {
 
         private static DNSSDFactory makeInstance() {
             Stack<String> factories = new Stack<String>();
+            factories.push(factoryRewriter.get("jivedns")); // tried really last
             factories.push(factoryRewriter.get("jmdns")); // tried last
             factories.push(factoryRewriter.get("mdns"));
             factories.push(factoryRewriter.get("avahi"));

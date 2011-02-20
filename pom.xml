@@ -85,6 +85,11 @@
             <version>4.6</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>javax.jmdns</groupId>
+            <artifactId>jmdns</artifactId>
+            <version>3.4.0</version>
+        </dependency>
     </dependencies>
 
     <distributionManagement>
