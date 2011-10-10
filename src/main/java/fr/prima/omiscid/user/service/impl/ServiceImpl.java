@@ -45,6 +45,7 @@ import fr.prima.omiscid.control.filter.OmiscidServiceFilter;
 import fr.prima.omiscid.control.interf.GlobalConstants;
 import fr.prima.omiscid.control.interf.VariableChangeListener;
 import fr.prima.omiscid.control.interf.VariableChangeQueryListener;
+import fr.prima.omiscid.dnssd.interf.AddressProvider;
 import fr.prima.omiscid.user.connector.ConnectorListener;
 import fr.prima.omiscid.user.connector.ConnectorType;
 import fr.prima.omiscid.user.connector.Message;
@@ -63,6 +64,8 @@ import fr.prima.omiscid.user.service.ServiceProxy;
 import fr.prima.omiscid.user.util.Utility;
 import fr.prima.omiscid.user.variable.LocalVariableListener;
 import fr.prima.omiscid.user.variable.VariableAccessType;
+import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
@@ -617,8 +620,24 @@ public class ServiceImpl implements Service {
                 // this is not the good type
                 throw new IncorrectConnectorType("Cannot connect two output connectors : " + localConnector + " to " + remoteConnector) ;
         }
-        
-        connectTo(localClientServer, proxy.getHostName(), remoteAttribute.getTcpPort());
+        boolean doDefault = true;
+        if (proxy instanceof ServiceProxyImpl) {
+            ServiceProxyImpl proxyImpl = (ServiceProxyImpl) proxy;
+            if (proxyImpl.omiscidService.getServiceInformation() instanceof AddressProvider) {
+                InetAddress[] addresses=((AddressProvider)proxyImpl.omiscidService.getServiceInformation()).getInetAddresses();
+                if (addresses.length > 0) {
+                    try {
+                        connectTo(localClientServer, addresses[0].getHostAddress(), remoteAttribute.getTcpPort());
+                        doDefault = false;
+                    } catch (ConnectionRefused ee) {
+                        // continue with default
+                    }
+                }
+            }
+        }
+        if (doDefault) {
+            connectTo(localClientServer, proxy.getHostName(), remoteAttribute.getTcpPort());
+        }
     }
     synchronized private void connectTo(TcpClientServer localClientServer, String hostName, int tcpPort)
     throws ConnectionRefused {

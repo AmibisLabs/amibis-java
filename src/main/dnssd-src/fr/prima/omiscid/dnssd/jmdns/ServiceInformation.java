@@ -26,11 +26,13 @@
 
 package fr.prima.omiscid.dnssd.jmdns;
 
+import fr.prima.omiscid.dnssd.interf.AddressProvider;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import javax.jmdns.ServiceInfo;
 
-public class ServiceInformation implements fr.prima.omiscid.dnssd.interf.ServiceInformation {
+public class ServiceInformation implements fr.prima.omiscid.dnssd.interf.ServiceInformation, AddressProvider {
 
     private ServiceInfo serviceInfo;
 
@@ -83,6 +85,11 @@ public class ServiceInformation implements fr.prima.omiscid.dnssd.interf.Service
             res.add((String) enumeration.nextElement());
         }
         return res;
+    }
+
+    // for AddressProvider
+    public InetAddress[] getInetAddresses() {
+        return serviceInfo.getInetAddresses();
     }
 
 }
