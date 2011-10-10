@@ -65,8 +65,8 @@ public class ServiceBrowser implements fr.prima.omiscid.dnssd.interf.ServiceBrow
 
     public void start() {
         jmdns.addServiceListener(registrationType, this);
-            jmdns.list(registrationType);
-        }
+        //jmdns.list(registrationType);
+    }
 
     public void stop() {
         jmdns.removeServiceListener(registrationType, this);

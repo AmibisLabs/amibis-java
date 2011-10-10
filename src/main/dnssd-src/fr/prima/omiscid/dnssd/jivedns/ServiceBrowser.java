@@ -66,8 +66,8 @@ public class ServiceBrowser implements fr.prima.omiscid.dnssd.interf.ServiceBrow
 
     public void start() {
         JiveDNS.addServiceListener(registrationType, this);
-            JiveDNS.list(registrationType);
-        }
+        //JiveDNS.list(registrationType);
+    }
 
     public void stop() {
         JiveDNS.removeServiceListener(registrationType, this);
